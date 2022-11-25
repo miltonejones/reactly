@@ -1,21 +1,16 @@
 import React from 'react';
 import { styled, Box, TextField, InputAdornment } from '@mui/material';
 import { Icons } from '../icons';
- 
-const Layout = styled(Box)(({ theme }) => ({
- margin: theme.spacing(4)
-}));
- 
-const ReactlyTextbox = ({ settings, ...props }) => {
-  const args = settings.reduce((items, res) => {
-    items[res.SettingName] = res.SettingValue;
-    return items;
-  }, {})
-
-
+import { GenericStyles } from '../styles';
+import { TextFields } from "@mui/icons-material";
+import ReactlyComponent from '../reactly';
+import { getSettings } from '../util';
+  
+const ReactlyTextboxComponent = (props) => {
+  const args = getSettings(props.settings);
+   
   const Icon = Icons[args.icon];
   const End = Icons[args.end];
-
 
   const startAdornment = !Icon ? null : <InputAdornment position="start"><Icon /></InputAdornment>;
   const endAdornment = !End ? null : <InputAdornment position="start"><End /></InputAdornment>;
@@ -27,9 +22,9 @@ const ReactlyTextbox = ({ settings, ...props }) => {
 
 
  return (
-  <TextField {...args} {...props} InputProps={adornment} >
+  <ReactlyComponent component={TextField} {...props} InputProps={adornment} >
      {args.Label}
-  </TextField>
+  </ReactlyComponent>
  );
 }
 
@@ -72,7 +67,7 @@ export const ReactlyTextboxSettings = {
   categories: [
     {
       name: 'General',
-      open: true,
+      always: true,
 
       settings:  [
         {
@@ -193,6 +188,20 @@ export const ReactlyTextboxSettings = {
 }
  
 
+const ReactlyTextbox = {
+  Icon: TextFields,
+  Component: ReactlyTextboxComponent,
+  Settings: ReactlyTextboxSettings,
+  Styles: GenericStyles,
+  Events: ReactlyTextboxEvents,
+  Defaults: {
+    label: 'Enter some text',
+    variant: 'outlined',
+    value: 'Textbox component',
+    size: 'small'
+  }
+}
+ 
 
 ReactlyTextbox.defaultProps = {};
 export default ReactlyTextbox;

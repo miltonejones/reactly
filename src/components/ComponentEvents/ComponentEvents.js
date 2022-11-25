@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material';
-import Library, { Events } from '../library';
+import Library from '../library';
 import { Flex, TextBtn,Spacer } from '..';
 import { Add, Close } from "@mui/icons-material";
 import { SetState } from '../library/events';
@@ -30,6 +30,7 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
 const HandlerCard = ({ event, action, selected, onClick  }) => {
   const [rise, setRise] = React.useState(1);
   
+  if (!action) return <u />
   const title = 'When component is clicked';
 
   let act = 'Unknown action'
@@ -50,6 +51,7 @@ const HandlerCard = ({ event, action, selected, onClick  }) => {
       <Typography variant="caption"><b>{title}</b></Typography>
       <Typography variant="caption">{act}</Typography>
     </Stack>
+ 
   </Card>
 }
 
@@ -57,7 +59,7 @@ const HandlerCard = ({ event, action, selected, onClick  }) => {
 const ComponentEvents = ({ selectedPage, component, onChange }) => {
   const [open, setOpen] = React.useState(false)
   const [selectedEvent, setSelectedEvent] = React.useState(false)
-  const data = Events [component.ComponentType]  ;
+  const data = Library [component.ComponentType].Events  ;
   if (!data || !component?.events) {
     return <Alert sx={{ m: 1 }}>This component has no configurable events.</Alert>
   } 
@@ -66,6 +68,15 @@ const ComponentEvents = ({ selectedPage, component, onChange }) => {
     icon: open ? Close : Add
   }
   const Icon = args.icon;
+
+  const freshEvent = {
+    event: selectedEvent
+  }
+
+  const handleSave = state => { 
+    setSelectedEvent(null); 
+    !!state && onChange && onChange(component.ID, state)
+  }
   
  return (
    <Layout data-testid="test-for-ComponentEvents">
@@ -77,8 +88,11 @@ const ComponentEvents = ({ selectedPage, component, onChange }) => {
    
       {data
         .filter(f => !selectedEvent || f.name === selectedEvent)
-        .map (d => <EventCard selected={selectedEvent} onClick={setSelectedEvent} {...d} key={d.name} />)} 
+        .map (d => <EventCard selected={selectedEvent}  onClick={(e) => {
+          setSelectedEvent(selectedEvent ? null : e)
+        }}  {...d} key={d.name} />)} 
     </Collapse>
+
 
     {!!component.events?.length && <>
     
@@ -86,17 +100,18 @@ const ComponentEvents = ({ selectedPage, component, onChange }) => {
       <Typography variant="caption"> <b>Component Events</b></Typography>
       </Flex>
       {component.events?.map(e => <HandlerCard selected={selectedEvent} onClick={setSelectedEvent} {...e} />)}
-    </>}
+    </>} 
 
-      {!!selectedEvent && component?.events.map (e => <SetState
-      handleSave={state => { 
-        setSelectedEvent(null); 
-        onChange && onChange(component.ID, state)
-      }}
+      {/* [{JSON.stringify(selectedEvent)}] */}
+
+      {!!selectedEvent && (component?.events || [freshEvent]).map (e => <SetState
+      handleSave={handleSave}
       event={e} key={e.type} page={selectedPage} />) }
 
+{/* {JSON.stringify(freshEvent)} */}
+     {!!selectedEvent && <SetState handleSave={handleSave} page={selectedPage} event={freshEvent} />}
 
-    {/* {JSON.stringify(component?.events)} */}
+   
    </Layout>
  );
 }

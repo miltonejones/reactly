@@ -1,4 +1,5 @@
 import * as React from 'react';
+import Library from '../components/library';
 import { getMax } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
 
@@ -12,7 +13,7 @@ export const useEditor = (apps) => {
   const updateProg = (prog) =>{
     const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
     setApplications(updated);
-  //  app.setAppData(updated)
+    app.setAppData(updated)
   }
 
 
@@ -28,6 +29,54 @@ export const useEditor = (apps) => {
       const page = app.pages.find((c) => c.ID === pageID);
       await edit(page, app);
       app.pages = app.pages.map((c) => c.ID === pageID ? page : c);
+    });
+  };
+
+  const dropComponent = async (appID, pageID, componentID) => {
+    editPage(appID, pageID, async (page) => {
+      page.components = page.components.filter(f => f.ID !== componentID) 
+    });
+  }
+  
+  const addComponent = async (appID, pageID, component, options) => {
+    const { order, after, before } = options ?? {}
+    // alert (JSON.stringify({ order, after, before }))
+    editPage(appID, pageID, async (page, app) => { 
+      const settings = Library[component.ComponentType].Defaults;
+  
+
+
+      const maxID = getMax(page.components.map(f => f.ID)); 
+      let maxOrder = getMax(page.components.map(f => f.order));
+
+      const box = {...component, ID: maxID + 1, order: maxOrder + 100}
+      
+      if (after) {
+        const nextID = page.components.find(f => f.order > order);
+        const diff = order + parseInt((nextID.order - order) / 2);
+        
+        Object.assign(box, {order: diff});
+ 
+      } else if (before) {
+        const previousIDs = page.components.filter(f => f.order < order);
+        const previousID = getMax(previousIDs.map(f => f.order)); 
+
+        const diff = order - parseInt((order - previousID) / 2);
+        
+        Object.assign(box, {order: diff});
+ 
+      }
+
+      if (settings) {
+        Object.keys(settings).map(setting => {
+          return box.settings.push({
+            SettingName: setting,
+            SettingValue: settings[setting]
+          })
+        }) 
+      }
+      
+      page.components = page.components.concat(box)
     });
   };
   
@@ -113,6 +162,6 @@ export const useEditor = (apps) => {
   }
 
 
-  return { applications, editProg, editPage, editComponent , setComponentEvent,
+  return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps };
 }

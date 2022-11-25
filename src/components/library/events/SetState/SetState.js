@@ -14,13 +14,13 @@ const StateValue = ({ Value, Type, handleChange, ...props }) => {
       }} 
     />
   }
-  return <TextField {...props} value={Value} onChange={e => {
+  return <TextField size="small" label="enter value" {...props} value={Value} onChange={e => {
     handleChange && handleChange(e.target.value)
   }}  />
 }
 
 const SetState = ({ event = {}, page, handleSave }) => {
-  const [state, setState ] = React.useState({ ...event.action });
+  const [state, setState ] = React.useState({ ...event.action, type: 'setState' });
   const { target, value } = state;
 
   const handled = !(page.state && event.action) 
@@ -53,16 +53,13 @@ const SetState = ({ event = {}, page, handleSave }) => {
     
    </Stack></Card>
 
-{/*    
-   <Json> 
+   
+   {/* <Json> 
       {JSON.stringify(state,0,2)}
       </Json>
       <Json> 
       {JSON.stringify(event,0,2)}
-      </Json>
-      <Json> 
-         {JSON.stringify(page.state,0,2)} 
-      </Json> */}
+      </Json>  */}
 </>
 
  );

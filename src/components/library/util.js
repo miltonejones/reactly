@@ -31,12 +31,12 @@ const colorTransform = (prop) => {
   return arg?.value;
 };
  
-export const getSettings = settings => settings.reduce((items, res) => {
+export const getSettings = (settings = []) => settings.reduce((items, res) => {
     items[res.SettingName] = res.SettingValue;
     return items;
   }, {});
 
-export const objectReduce = object => object.reduce((items, res) => {
+export const objectReduce = (object = []) => object.reduce((items, res) => {
   items[res.Key] =  res.Value === undefined 
     ? ""
     : res.Value; // || typeof res.Value;

@@ -14,37 +14,67 @@ import {
   Typography, IconButton,
   Collapse
 } from "@mui/material";
-import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,
+import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,RotateButton,
   ComponentPanel, ContentTree, PageTree, ComponentTree } from "../..";
-import { Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActors, Code } from "@mui/icons-material";
+import { ExpandMore, Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActors, Code } from "@mui/icons-material";
 import { AppStateContext, useNavigation } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
 import { useEditor } from '../../../hooks/useEditor';
-import { Json } from '../../../colorize';
+import { Json } from '../../../colorize'; 
  
-const Pane = styled(Grid)(({ short, wide }) => ({
-  outline: "dotted 1px green",
-  height: short ? 56 : "calc(100vh - 64px)",
-  minWidth: wide ? "calc(100vw - 830px)" : 380,
-  maxWidth:  wide ? "calc(100vw - 830px)" : 380,
-  overflow: 'auto',
-}));
+const Pane = styled(Grid)(({ short, wide, left, right, thin }) => {
+
+  const args = {
+    minWidth: wide ? "calc(100vw - 830px)" : 380,
+    maxWidth:  wide ? "calc(100vw - 830px)" : 380,
+  };
+  if (thin) {
+    Object.assign(args, {
+      minWidth: 60,
+      maxWidth: 60
+    })
+  } else if (left && right && wide) {
+    Object.assign(args, {
+      minWidth: "calc(100vw - 180px)"  ,
+      maxWidth:  "calc(100vw - 180px)"  
+    })
+  } else if ((left || right) && wide) {
+    Object.assign(args, {
+      minWidth: "calc(100vw - 510px)"  ,
+      maxWidth:  "calc(100vw - 510px)"  
+    })
+  }
+
+  return  {
+    outline: wide ? "" : "dotted 1px green",
+    height: short ? 56 : "calc(100vh - 64px)",
+    transition: 'all .2s linear',
+    ...args,
+    overflow: 'auto',
+  }
+});
 
  
  
 const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
-  const { applications, setComponentProp, setPageState, setComponentEvent
-    , dropPageState, setComponentStyle, setPageProps } = useEditor(apps);
+  const { applications, setComponentProp, setPageState, setComponentEvent, dropComponent
+    , dropPageState, setComponentStyle, setPageProps, addComponent } = useEditor(apps);
   const [ drawerState, setDrawerState] = React.useState({
     stateOpen: false
+  })
+
+  const [collapsed, setCollapsed] = React.useState({
+    left: false,
+    right: false,
   })
 
   const [json, setJSON] = React.useState(false)
 
   const { stateOpen } = drawerState;
 
-  const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
+ 
+  const { queryState = {}, setQueryState, CreateComponent,Shout, Confirm  } = React.useContext(AppStateContext);
 
   if (!applications.find) {
     return <>error</>
@@ -75,6 +105,52 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleStateDrop = (stateID) => { 
     dropPageState(appData.ID, queryState.page.ID, stateID);
+  }
+
+  const menuOptions = [
+    {
+      name: json ? 'Hide JSON' : 'Show JSON',
+      action: () => setJSON(!json)
+    },
+    {
+      name: 'Show Components',
+      action: async () => {
+        const ok = await CreateComponent();
+        alert (ok)
+      }
+    }, 
+    {
+      name: collapsed.left ? 'Show Navigation Panel' : 'Hide Navigation Panel',
+      action: () => setCollapsed(s => ({...s, left: !s.left}))
+    },
+    {
+      name: collapsed.right ? 'Show Settings Panel' : 'Hide Settings Panel',
+      action: () => setCollapsed(s => ({...s, right: !s.right}))
+    },
+  ]
+
+  const handleDropComponent = async (componentID) => {
+    const ok = await Confirm('Are you sure you want to delete this component?', 'Confirm delete');
+    if (!ok) return;
+    dropComponent(appData.ID, queryState.page.ID, componentID)
+  }
+ 
+  const createComponent = async (componentID, options) => {
+    const ok = await CreateComponent();
+    if (!ok) return;
+    const component = {
+      ComponentType: ok.selected,
+      ComponentName: ok.name,
+      componentID,
+      children: ok.selected === 'Box' ,
+      state: [],
+      styles: [],
+      events: [],
+      settings: [],
+      scripts: [],
+      data: []
+    }
+    addComponent(appData.ID, queryState.page.ID, component, options); 
   }
 
 
@@ -117,8 +193,11 @@ const Editor = ({ applications: apps = {} }) => {
               <Chip label={appData.Name} />
 
               <Box>
-                <QuickMenu small caret options={[json ? "Hide JSON" : "Show JSON"]} title="App Menu" label="Menu" 
-                    onChange={() => setJSON(!json)}/>
+                <QuickMenu small caret options={menuOptions.map(f => f.name)} title="App Menu" label="Menu" 
+                    onChange={(n) => {
+                      const {action} = menuOptions.find(f => f.name === n)
+                      action()
+                    }}/>
               </Box>
 
               <Addressbox value={`/${path.join('/')}`} />
@@ -134,54 +213,74 @@ const Editor = ({ applications: apps = {} }) => {
               <TextBtn variant="contained">Save</TextBtn>
             </Flex>
           </Pane>
-          <Pane item >
+          <Pane item thin={ collapsed.left ? 1 : 0 }>
             <Stack sx={{p: 1, height: 300}} >
 
 
-            <Flex baselinespacing={1}>
+            <Flex  spacing={1}>
 
-            <Typography variant="caption">
-              <b>Page</b>
-            </Typography>
-              <QuickMenu small caret options={appData.pages.map(f => f.PageName)} title="Choose Page" label={queryState.page?.PageName || "non selected"} onChange={p => {
-                 setQueryState(s => ({...s, page: appData.pages.find(f => f.PageName === p)}))
-              }}/>
+            <RotateButton deg={collapsed.left ? 270 : 90}
+              
+                onClick={() => setCollapsed(s => ({...s, left: !collapsed.left}))}>
+              <ExpandMore />
+            </RotateButton>
 
-              <Spacer />
-              <TextBtn endIcon={<Add />}>Create</TextBtn>
+              {!collapsed.left && <>
+                <Typography variant="caption">
+                  <b>Page</b>
+                </Typography>
+                  <QuickMenu small caret options={appData.pages.map(f => f.PageName)} title="Choose Page" label={queryState.page?.PageName || "non selected"} onChange={p => {
+                    setQueryState(s => ({...s, page: appData.pages.find(f => f.PageName === p)}))
+                  }}/>
+
+                  <Spacer />
+                  <TextBtn endIcon={<Add />}>Create</TextBtn>
+              </>}
+
             </Flex>
+
+
+            {!collapsed.left && <>
               <Box  sx={{border: 'solid 1px gray', height: 240, p: 1}}>
 
                 <PageTree tree={appData.pages} selected={queryState.page?.PageName}
                     onClick={(name) => setQueryState(s => ({...s, page: appData.pages.find(f => f.PageName === name)}))}/>
 
               </Box>
+              </>}
 
             </Stack>
-              <Divider />
 
-              <Stack sx={{p: 1, height: 'calc(100vh - 404px)'}}>
+            {!collapsed.left && <>
+               
+                <Divider />
 
-            <Flex  spacing={1}>
+                <Stack sx={{p: 1, height: 'calc(100vh - 404px)'}}>
 
-              <Flex fullWidth>
+                {!!queryState.page && <Flex  spacing={1}>
 
-              <Typography variant="caption">
-                <b>Content</b>
-              </Typography>
-             
+                <Flex fullWidth>
 
-              <Spacer />
-              <TextBtn endIcon={<Add />}>Add</TextBtn>
-              </Flex>
+                <Typography variant="caption">
+                  <b>Content</b>
+                </Typography>
 
-            </Flex>
 
-            <ContentTree tree={queryState.page?.components} />
- 
-              </Stack> 
+                <Spacer />
+                <TextBtn onClick={() => createComponent()} endIcon={<Add />}>Add</TextBtn>
+                </Flex>
+
+                </Flex>}
+
+                <ContentTree 
+                  onDrop={handleDropComponent}
+                  onCreate={(type, options) => createComponent (type, options)} tree={queryState.page?.components} />
+
+                </Stack> 
+              </>}
+
           </Pane>
-          <Pane wide item>
+          <Pane wide {...collapsed} item>
 
           <Collapse in={json}>
               
@@ -197,9 +296,11 @@ const Editor = ({ applications: apps = {} }) => {
        
            
           </Pane>
-          <Pane item>
+          <Pane item thin={ collapsed.right ? 1 : 0 }>
             
          {!!queryState.page &&  <ComponentPanel 
+            onCollapse={() => setCollapsed(s => ({...s, right: !collapsed.right}))}
+            collapsed={collapsed.right}
             selectedPage={queryState.page}
             onPropChange={handlePropChange}
             onStyleChange={handleStyleChange}
@@ -241,7 +342,7 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
       size="small"
       disabled
       {...props}
-      sx={{ width: "calc(100vw - 500px)" }}
+      sx={{ width: "calc(100vw - 540px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}

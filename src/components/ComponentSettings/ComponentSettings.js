@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, Switch, Box, Alert, TextField, Stack, Typography } from '@mui/material';
-import Library, { Settings } from '../library';
+import Library from '../library';
 import { QuickSelect, Flex, Spacer, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add } from "@mui/icons-material";
@@ -187,18 +187,24 @@ const ComponentSettings = ({ selectedPage, component, onChange }) => {
   if (!component?.settings) {
     return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
   }
-  const { categories } = Settings [component.ComponentType] ?? {}
+  const { categories } = Library [component.ComponentType].Settings ?? {}
+
+
+  if (!categories) {
+    return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
+  }
   const args = getSettings(component.settings);
 
-  return categories.map(category => <ComponentCollapse
+  return <> 
+  {categories.map(category => <ComponentCollapse
       component={component}
       onChange={onChange}
       selectedPage={selectedPage}
       {...category}
       args={args}
       key={category.name}
-    />)
- 
+    />)}
+ </>
 }
 
 ComponentSettings.defaultProps = {};

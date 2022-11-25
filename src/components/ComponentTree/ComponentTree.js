@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box } from '@mui/material';
+import { styled, Box, Alert } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { Json } from '../../colorize';
 import Library from '../library';
@@ -16,6 +16,8 @@ const Preview = ({ component: Component, on, children, sx, ...props}) => {
   </Component>
 }
  
+const componentOrder = (a,b) => a.order - b.order;
+
 const ComponentTree = ({ selectedPage, preview }) => {
   const componentTree = selectedPage?.components;
   const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
@@ -29,7 +31,7 @@ const ComponentTree = ({ selectedPage, preview }) => {
     setPageClientState(stateProps);
   }, [stateProps])
 
-  if (!componentTree) return <>no content</>
+  if (!componentTree) return <Alert sx={{m: 1}}>Select a page to see its components</Alert>
 
   // components with no parents 
   const components = componentTree.filter(f => !f.componentID);
@@ -39,11 +41,11 @@ const ComponentTree = ({ selectedPage, preview }) => {
       pageClientState, 
       setPageClientState
    }}> 
-      {components.map(c => <RenderComponent selectedComponent={selectedComponent} 
+      {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
-   <Json>
+   {/* <Json>
    {JSON.stringify(pageClientState,0,2)}
-   </Json>
+   </Json> */}
    </PageStateContext.Provider>
  );
 }
@@ -56,7 +58,7 @@ const RenderComponent = ({ component, trees = [], preview, selectedComponent }) 
 
   const on = selectedComponent?.ID === component.ID;
   const kids = trees.filter(t => t.componentID === component.ID);
-  const Component = Library[component.ComponentType];
+  const { Component } = Library[component.ComponentType];
 
   const { 
     handleComponentEvent ,
@@ -95,7 +97,7 @@ const RenderComponent = ({ component, trees = [], preview, selectedComponent }) 
       {...eventMap}  
       preview={preview}
      >
-      {!!kids.length && <>{kids.map(c => <RenderComponent 
+      {!!kids.length && <>{kids.sort(componentOrder).map(c => <RenderComponent 
           selectedComponent={selectedComponent} 
           
           trees={trees} 

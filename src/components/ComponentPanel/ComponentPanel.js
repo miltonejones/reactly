@@ -7,7 +7,8 @@ import {  ComponentSettings, ComponentStyles, ComponentEvents } from '..';
 import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
 import { Spacer } from '..';
 import { TextBtn } from '..';
-import { Flex } from '..';
+import { Flex, RotateButton } from '..';
+import { ExpandMore } from "@mui/icons-material";
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -25,7 +26,9 @@ const ComponentPanel = ({
     onSettingsChange,
     onStyleChange ,
     onPropChange,
-    onEventChange
+    onEventChange,
+    onCollapse,
+    collapsed
  }) => {
  
   const [value, setValue] = React.useState(0);
@@ -43,9 +46,19 @@ const ComponentPanel = ({
     : changes[value];
   
   return <Stack>
-     <Box sx={{ m: 1}}>
-      <Chip variant="outlined" icon={<Article />} label={component?.ComponentName || selectedPage?.PageName} /> 
-     </Box>
+     <Flex sx={{ m: 1}}>
+      {!collapsed && <>
+        <Chip variant="outlined" icon={<Article />} label={!!component 
+        ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} /> 
+      <Spacer />
+      </>}
+        <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
+          <ExpandMore />
+        </RotateButton>
+     </Flex>
+
+      {!collapsed && <>
+      
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
         <Btn icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
@@ -54,9 +67,11 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
-
     {!!component && <Panel component={component} selectedPage={selectedPage} onChange={onChange} />}
     {!component && !!selectedPage && <PageSettings page={selectedPage} onChange={onChange} />}
+
+      </>}
+
 
     </Stack>
  

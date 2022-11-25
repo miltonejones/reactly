@@ -9,6 +9,9 @@ import {
 } from "@mui/material";
 import { Flex, Tooltag, Spacer, TextBtn, TextBox, QuickMenu, DATA_TYPES } from "..";
 import { Business, Close, Announcement , Help, Info  } from "@mui/icons-material";
+import { ComponentModal } from './components';
+
+
  
 // global style for Modal TextFields
 // TODO: this should be in a styled component
@@ -274,6 +277,15 @@ export const useModal = () => {
     required: ['name', 'expression']
   });
 
+  const CreateComponent = (value) => 
+  createModalMethod({
+    message: 'Add Component',
+    title: 'Add Component', 
+    component: ComponentModal, 
+    minWidth: 600,
+    required: ['name']
+  });
+
  const [modalProps, setModelProps] = React.useState({ open: false });
  
  /**
@@ -329,7 +341,9 @@ export const useModal = () => {
    Prompt,
    ExpressionModal,
    createModalMethod,
+   CreateComponent,
    modalProps,
+   Shout: Alert
  };
 };
  

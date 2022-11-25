@@ -1,36 +1,28 @@
 import React from 'react';
-import { styled, Box, Button } from '@mui/material';
-import { getStyles } from '../util';
+import { styled, Box, Button } from '@mui/material'; 
 import { GenericStyles } from '../styles';
 import { Icons } from '../icons';
-
+import { SmartButton } from "@mui/icons-material";
+import ReactlyComponent from '../reactly';
+import { getSettings } from '../util';
 
  
-const Layout = styled(Box)(({ theme }) => ({
- margin: theme.spacing(4)
-}));
  
-const ReactlyButton = ({ styles = [], settings = [], ...props }) => {
-  const args = settings.reduce((items, res) => {
-    items[res.SettingName] = res.SettingValue;
-    return items;
-  }, {})
-
-
-  const css = getStyles(styles) ;
+const ReactlyButtonComponent = (props) => {
+  const args = getSettings(props.settings);
 
   const Icon = Icons[args.icon];
   const End = Icons[args.end];
 
-  const more = !Icon ? {} : {
+  const icons = !Icon ? {} : {
     startIcon: <Icon />
   }
 
-  !!End && Object.assign(more, {endIcon: <End />})
+  !!End && Object.assign(icons, {endIcon: <End />})
  return (
-   <Button {...props} {...args} {...more}  style={css}>
+   <ReactlyComponent component={Button} {...props} {...icons}>
       {args.Label}  
-   </Button>
+   </ReactlyComponent>
  );
 } 
 
@@ -81,12 +73,14 @@ export const ReactlyButtonSettings = {
           title: 'Variant',
           label: 'variant',
           types: ['contained', 'outlined', 'text'],
-          start: 'outlined'
+          start: 'outlined',
+          type: 'pill'
         },
         {
           title: 'Size',
           label: 'size',
-          types: ['small','medium','large']
+          types: ['small','medium','large'],
+          type: 'pill'
         },
         {
           title: 'Color',
@@ -114,6 +108,20 @@ export const ReactlyButtonSettings = {
     }
   ] 
 }
+
+const ReactlyButton = {
+  Icon: SmartButton,
+  Component: ReactlyButtonComponent,
+  Settings: ReactlyButtonSettings,
+  Styles: ReactlyButtonStyles,
+  Events: ReactlyButtonEvents,
+  Defaults: {
+    Label: 'Button',
+    variant: 'contained'
+  }
+}
  
+
+
 ReactlyButton.defaultProps = {};
 export default ReactlyButton;

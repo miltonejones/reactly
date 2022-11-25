@@ -2,22 +2,26 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { getStyles } from '../util';
 import { LayoutStyles } from '../styles'; 
+import { CheckBoxOutlineBlank } from "@mui/icons-material";
+import ReactlyComponent from '../reactly';
   
  
-const ReactlyBox = ( { styles = [], children, ...props } ) => {
- const style = getStyles(styles) ;
+const ReactlyBoxComponent = ( { children, ...props } ) => { 
 
  return (
-  <Box {...props} style={style}> 
+  <ReactlyComponent component={Box} {...props}> 
     {children}
-  </Box> 
+  </ReactlyComponent> 
  );
 }
+ 
 
-export const ReactlyBoxStyles = {
-  ...LayoutStyles
+const ReactlyBox = {
+  Icon: CheckBoxOutlineBlank,
+  Component: ReactlyBoxComponent, 
+  Styles: LayoutStyles, 
 }
-
+ 
 
 ReactlyBox.defaultProps = {};
 export default ReactlyBox;

@@ -15,6 +15,7 @@ export const AppData = [
           ComponentType: 'Box',
           ComponentName: 'Box 1',
           children: true,
+          order: 100,
           events: [],
           styles: [
             {
@@ -41,6 +42,7 @@ export const AppData = [
         {
           ComponentType: 'Button',
           ComponentName: 'My Button 1',
+          order: 200,
           ID: 14,
           componentID: 11,
           events: [
@@ -73,6 +75,7 @@ export const AppData = [
           ComponentType: 'Textbox',
           ComponentName: 'Textbox 1',
           componentID: 11,
+          order: 300,
           ID: 15,
           styles: [],
           events: [],
@@ -133,6 +136,7 @@ export const AppData = [
         {
           ComponentType: 'Box',
           ComponentName: 'Box 1', 
+          order: 400,
           ID: 12,
           children: true,
           events: [],
@@ -151,6 +155,7 @@ export const AppData = [
           ID: 13,
           ComponentType: 'Button',
           ComponentName: 'Button 1',
+          order: 500,
           events: [],
           styles: [],
           componentID: 12,
