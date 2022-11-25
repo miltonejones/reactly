@@ -13,7 +13,7 @@ const componentOrder = (a,b) => a.order - b.order;
 
 
 
-const ContentTree = ({ tree, onCreate, onDrop }) => {
+const ContentTree = ({ tree, onCreate, onNameChange, onDrop }) => {
   const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
   if (!tree) return <i />
@@ -22,17 +22,24 @@ const ContentTree = ({ tree, onCreate, onDrop }) => {
     <List dense>
       {components
       .sort(componentOrder)
-      .map(c => <Contents onCreate={onCreate} onSelect={(component, on) => {
-        setQueryState(s => ({...s, selectedComponent:on ? null :  component}));
-      }} selectedComponent={selectedComponent} onDrop={onDrop} trees={tree} key={c.ComponentType} tree={c} /> )} 
+      .map(c => <Contents 
+        onCreate={onCreate} 
+        onNameChange={onNameChange}
+        onSelect={(component, on) => {
+          setQueryState(s => ({...s, selectedComponent:on ? null :  component}));
+        }} selectedComponent={selectedComponent} onDrop={onDrop} trees={tree} key={c.ComponentType} tree={c} /> )} 
     </List>
   );
 };
 
-const Contents = ({ tree, parentID, onDrop, trees, label, indent = 0, onCreate, onSelect, selectedComponent }) => { 
+const Contents = ({ tree, parentID, onDrop, trees, label, indent = 0, onNameChange, onCreate, onSelect, selectedComponent }) => { 
   const kids = !!label ? [] : trees.filter(t => t.componentID === tree.ID);
   const on = !!label ? null : selectedComponent?.ID === tree.ID;
   const options = [
+    {
+      name: 'Rename',
+      action: () => onNameChange(tree.ID, tree.ComponentName)
+    },
     {
       name: 'Add Component before',
       action: () => onCreate(parentID, { before: !0, order: tree.order})
@@ -57,7 +64,7 @@ const Contents = ({ tree, parentID, onDrop, trees, label, indent = 0, onCreate, 
        <ListItemIcon sx={{minWidth: 24}}>
            <Icon />
         </ListItemIcon>
-        <ListItemText sx={{ml: 0, pl: 0}} primary={<Typography 
+        <ListItemText sx={{ml: 1, pl: 0}} primary={<Typography 
         onClick={() => onSelect && onSelect(tree, on)} sx={{fontWeight: on ? 600 : 400}}>{label || tree.ComponentName}</Typography>} />
         {!!tree && <ListItemSecondaryAction>
           <QuickMenu options={options.map(f => f.name)} 
@@ -71,7 +78,13 @@ const Contents = ({ tree, parentID, onDrop, trees, label, indent = 0, onCreate, 
       {tree?.children && <Contents label={<Link onClick={() => onCreate(tree.ID)}>Add component</Link>} indent={indent + 3.5} />} 
       {!!kids?.length && <>{kids
         .sort(componentOrder)
-        .map(c => <Contents onCreate={onCreate} onDrop={onDrop} parentID={tree.ID} selectedComponent={selectedComponent} onSelect={onSelect} trees={trees} indent={indent + 3.5} key={c.ComponentName} tree={c} /> )}</>}
+        .map(c => <Contents 
+          onCreate={onCreate} 
+          onDrop={onDrop} 
+          parentID={tree.ID} 
+          selectedComponent={selectedComponent} 
+          onNameChange={onNameChange}
+          onSelect={onSelect} trees={trees} indent={indent + 3.5} key={c.ComponentName} tree={c} /> )}</>}
     </>
   );
 };

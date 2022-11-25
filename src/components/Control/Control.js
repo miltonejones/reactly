@@ -112,7 +112,7 @@ export const OptionSwitch = ({ options = [], value, onChange }) => {
 export const Flex = styled(Box)(({ theme, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
  display: "flex",
  width: fullWidth ? '100%' : 'inherit',
- alignItems: baseline ? "flex-start" : "center",
+ alignItems: baseline ? "baseline" : "center",
  flexDirection: direction,
  gap: theme.spacing(spacing),
  flexWrap: wrap ? "wrap" : "nowrap",

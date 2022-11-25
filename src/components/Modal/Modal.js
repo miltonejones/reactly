@@ -82,7 +82,13 @@ const Modal = ({
    submitClicked,
  };
  return (
-   <Tag anchor={anchor} onClose={handleClose} open={open}>
+   <Tag anchor={anchor} onClose={handleClose} open={open}
+      sx={{
+        '& .MuiPaper-root':  {
+           maxWidth
+        }
+      }}
+      >
      <Stack sx={{ maxWidth, minWidth, height: "100%" }}>
        {/* modal header */}
  
@@ -282,7 +288,8 @@ export const useModal = () => {
     message: 'Add Component',
     title: 'Add Component', 
     component: ComponentModal, 
-    minWidth: 600,
+    minWidth: 720,
+    maxWidth: 720,
     required: ['name']
   });
 

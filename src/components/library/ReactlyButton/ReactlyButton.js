@@ -51,7 +51,7 @@ export const ReactlyButtonSettings = {
   categories: [
     {
       name: 'General',
-      open: true,
+      always: true,
       settings: [  
         {
           title: 'Label',

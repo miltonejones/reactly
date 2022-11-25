@@ -1,13 +1,11 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import { getStyles } from '../util';
+import { Box } from '@mui/material'; 
 import { LayoutStyles } from '../styles'; 
 import { CheckBoxOutlineBlank } from "@mui/icons-material";
 import ReactlyComponent from '../reactly';
   
  
 const ReactlyBoxComponent = ( { children, ...props } ) => { 
-
  return (
   <ReactlyComponent component={Box} {...props}> 
     {children}

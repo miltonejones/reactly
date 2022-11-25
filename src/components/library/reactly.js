@@ -12,13 +12,11 @@ const ReactlyComponent = ({
 }) => {
 
   const args = getSettings(settings); 
-  const css = getStyles(styles) ; 
-
-
+  const style = getStyles(styles) ; 
 
  return (
-   <Component {...props} {...args} style={css}>
-      {children}  
+   <Component {...args} {...props} style={style}>
+      {children || args.children}  
    </Component>
  );
 } 

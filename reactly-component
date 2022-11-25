@@ -1,0 +1,78 @@
+#!/bin/bash
+ 
+if [[ $# -eq 0 ]] ; then
+   echo 'Please provide a component name!'
+   exit 1
+fi
+ 
+OLDIFS=$IFS
+IFS='/'
+read -a strarr <<< "$1"
+IFS=$OLDIFS
+directory="src/components/library/Reactly$1" 
+component=${strarr[${#strarr[@]}-1]}
+ 
+mkdir -p $directory
+ 
+# Generate JS file
+echo "import React from 'react';
+import { $component } from '@mui/material'; 
+import { GenericStyles } from '../styles'; 
+import { $2 } from '@mui/icons-material';
+import ReactlyComponent from '../reactly';
+  
+const ReactlyComponent$component = ({ children, ...props }) => {
+ return (
+   <ReactlyComponent component={$component} {...props}>
+      {children}
+   </ReactlyComponent>
+ );
+}
+
+
+const Settings = {
+  categories: [
+
+    {
+      name: 'General',
+      always: true,
+      settings: [  
+        {
+          title: 'Label',
+          label: 'label' 
+        }, 
+      ]
+    },
+    {
+      name: 'Appearance',
+      settings: [ 
+        {
+          title: 'Variant',
+          label: 'variant',
+          types: [ ], 
+        } 
+      ]
+    },
+  ]
+}
+
+
+const Reactly$component = {
+  Icon: $2,
+  Component: ReactlyComponent$component,
+  Settings,
+  Styles: GenericStyles, 
+  Defaults: { }
+}
+ 
+
+export default Reactly$component;
+
+" > "$directory/Reactly$component.js"
+echo "Created $directory/Reactly$component.js"
+ 
+  
+ 
+
+
+

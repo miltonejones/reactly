@@ -134,12 +134,18 @@ export const useEditor = (apps) => {
     });
   }
 
+  const setComponentName = async (appID, pageID, componentID, ComponentName) => {
+    editComponent(appID, pageID, componentID, async (component) => {
+      Object.assign(component, { ComponentName }) ;
+    });
+  }
+
   const setComponentStyle = async (appID, pageID, componentID, key, value) => {
     editComponent(appID, pageID, componentID, async (component) => {
       const style = {
         Key: key ,
         Value: value 
-      }
+      };
 
       if (value === null) { 
         return  component.styles = component.styles.filter(f => f.Key !== key) 
@@ -163,5 +169,5 @@ export const useEditor = (apps) => {
 
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
-    dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps };
+    setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps };
 }

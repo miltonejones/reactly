@@ -11,12 +11,15 @@ import {
   Menu,
   Stack,
   Divider,
-  Typography, IconButton,
+  Typography, 
+  IconButton,
+  FormControlLabel,
+  Switch,
   Collapse
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,RotateButton,
   ComponentPanel, ContentTree, PageTree, ComponentTree } from "../..";
-import { ExpandMore, Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActors, Code } from "@mui/icons-material";
+import { ExpandMore, Close, Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActors, Code } from "@mui/icons-material";
 import { AppStateContext, useNavigation } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
 import { useEditor } from '../../../hooks/useEditor';
@@ -59,7 +62,7 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin }) => {
 const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
   const { applications, setComponentProp, setPageState, setComponentEvent, dropComponent
-    , dropPageState, setComponentStyle, setPageProps, addComponent } = useEditor(apps);
+    , setComponentName, dropPageState, setComponentStyle, setPageProps, addComponent } = useEditor(apps);
   const [ drawerState, setDrawerState] = React.useState({
     stateOpen: false
   })
@@ -74,7 +77,7 @@ const Editor = ({ applications: apps = {} }) => {
   const { stateOpen } = drawerState;
 
  
-  const { queryState = {}, setQueryState, CreateComponent,Shout, Confirm  } = React.useContext(AppStateContext);
+  const { queryState = {}, setQueryState, CreateComponent,Shout, Confirm, Prompt  } = React.useContext(AppStateContext);
 
   if (!applications.find) {
     return <>error</>
@@ -87,9 +90,13 @@ const Editor = ({ applications: apps = {} }) => {
     setComponentStyle(appData.ID, queryState.page.ID, componentID, label, value);
   }
 
-
   const handleSettingsChange = (componentID, label, value) => { 
     setComponentProp(appData.ID, queryState.page.ID, componentID, label, value);
+  }
+  const handleNameChange = async (componentID, old) => {
+    const name = await Prompt(`Enter a new name for "${old}"`, 'Rename component' , old);
+    if (!name) return; 
+    setComponentName(appData.ID, queryState.page.ID, componentID, name);
   }
   
   const handleStateChange = (stateID, label, value, type) => { 
@@ -107,17 +114,10 @@ const Editor = ({ applications: apps = {} }) => {
     dropPageState(appData.ID, queryState.page.ID, stateID);
   }
 
-  const menuOptions = [
-    {
-      name: json ? 'Hide JSON' : 'Show JSON',
-      action: () => setJSON(!json)
-    },
+  const menuOptions = [ 
     {
       name: 'Show Components',
-      action: async () => {
-        const ok = await CreateComponent();
-        alert (ok)
-      }
+      action: CreateComponent
     }, 
     {
       name: collapsed.left ? 'Show Navigation Panel' : 'Hide Navigation Panel',
@@ -195,6 +195,7 @@ const Editor = ({ applications: apps = {} }) => {
               <Box>
                 <QuickMenu small caret options={menuOptions.map(f => f.name)} title="App Menu" label="Menu" 
                     onChange={(n) => {
+                      if((!n)) return;
                       const {action} = menuOptions.find(f => f.name === n)
                       action()
                     }}/>
@@ -202,6 +203,15 @@ const Editor = ({ applications: apps = {} }) => {
 
               <Addressbox value={`/${path.join('/')}`} />
 
+              <FormControlLabel
+                  sx={{m: 1}}
+                        label="Show JSON"
+                        control={ <Switch 
+                          checked={json}
+                          size="small"
+                          onChange={e => setJSON(e.target.checked)} 
+                        />}
+                      />
               <IconButton  
               sx={{ border: 1, borderColor: 'divider'}}
               size="small"
@@ -219,12 +229,6 @@ const Editor = ({ applications: apps = {} }) => {
 
             <Flex  spacing={1}>
 
-            <RotateButton deg={collapsed.left ? 270 : 90}
-              
-                onClick={() => setCollapsed(s => ({...s, left: !collapsed.left}))}>
-              <ExpandMore />
-            </RotateButton>
-
               {!collapsed.left && <>
                 <Typography variant="caption">
                   <b>Page</b>
@@ -235,7 +239,14 @@ const Editor = ({ applications: apps = {} }) => {
 
                   <Spacer />
                   <TextBtn endIcon={<Add />}>Create</TextBtn>
+
               </>}
+
+                  <RotateButton deg={collapsed.left ? 270 : 90}
+                    
+                      onClick={() => setCollapsed(s => ({...s, left: !collapsed.left}))}>
+                  {collapsed.left ? <ExpandMore /> : <Close />}
+                  </RotateButton>
 
             </Flex>
 
@@ -274,6 +285,7 @@ const Editor = ({ applications: apps = {} }) => {
 
                 <ContentTree 
                   onDrop={handleDropComponent}
+                  onNameChange={handleNameChange}
                   onCreate={(type, options) => createComponent (type, options)} tree={queryState.page?.components} />
 
                 </Stack> 
@@ -342,7 +354,7 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
       size="small"
       disabled
       {...props}
-      sx={{ width: "calc(100vw - 540px)" }}
+      sx={{ width: "calc(100vw - 660px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}

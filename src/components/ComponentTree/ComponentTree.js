@@ -48,11 +48,7 @@ const ComponentTree = ({ selectedPage, preview }) => {
    </Json> */}
    </PageStateContext.Provider>
  );
-}
-
-const eventTypes =  [
-  'onClick', 'onKeyup', 'onKeyDown', 'onBlur',
-  'onChange', 'onFocus'];
+} 
 
 const RenderComponent = ({ component, trees = [], preview, selectedComponent }) => {
 
@@ -60,36 +56,11 @@ const RenderComponent = ({ component, trees = [], preview, selectedComponent }) 
   const kids = trees.filter(t => t.componentID === component.ID);
   const { Component } = Library[component.ComponentType];
 
-  const { 
-    handleComponentEvent ,
-    pageClientState,
-    setPageClientState 
-  } = usePageContext()
+  const { attachEventHandlers} = usePageContext()
 
-  const eventMap = eventTypes.reduce((items, name) => {
-    items[name] = e => handleComponentEvent(e, {
-      name ,
-      component
-    });  
-    return items;
-  },{});
- 
-  const bound = component.settings?.find(f => f.SettingName === 'bound' && !!f.SettingValue);
-  if (bound && pageClientState) {
-    const node = component.settings?.find(f => f.SettingName === 'target')
-    if (node) {
-      const target = node.SettingValue;
-      Object.assign(eventMap, {
-        value: pageClientState[target],
-        onChange: e => setPageClientState(s => ({...s, [target]: e.target.value}))
-      })
-    }
-  }
+  const eventMap = attachEventHandlers(component); 
 
-  
-
-  return <>  
-  {/* {JSON.stringify(eventMap)} */}
+  return <>   
     <Preview 
       on={on} 
       component={Component} 

@@ -8,7 +8,7 @@ import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
 import { Spacer } from '..';
 import { TextBtn } from '..';
 import { Flex, RotateButton } from '..';
-import { ExpandMore } from "@mui/icons-material";
+import { ExpandMore, Close } from "@mui/icons-material";
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -53,7 +53,7 @@ const ComponentPanel = ({
       <Spacer />
       </>}
         <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
-          <ExpandMore />
+             {collapsed ? <ExpandMore /> : <Close />}
         </RotateButton>
      </Flex>
 
