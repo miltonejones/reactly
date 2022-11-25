@@ -24,8 +24,10 @@ const ReactlyTextbox = ({ settings, ...props }) => {
     startAdornment,
     endAdornment 
   };
+
+
  return (
-  <TextField {...props} {...args} InputProps={adornment} >
+  <TextField {...args} {...props} InputProps={adornment} >
      {args.Label}
   </TextField>
  );
@@ -36,6 +38,34 @@ const renderOption = (props, option) => {
   if (!Icon) return <Box {...props}>{option}</Box>
   return <Box {...props}><Icon /> {option}</Box>
 }
+
+export const ReactlyTextboxEvents =  [
+  {
+    name: 'onChange',
+    title: 'Input value changes',
+    description: 'User types or pastes text into the input.'
+  },
+  {
+    name: 'onFocus',
+    title: 'Input action: focus',
+    description: 'User focuses the cursor on the input.'
+  },
+  {
+    name: 'onBlur',
+    title: 'Input action: blur',
+    description: 'Focused Input loses focus.'
+  },
+  {
+    name: 'onKeyDown',
+    title: 'Keyboard action: keydown',
+    description: 'User presses a key on the keyboard.'
+  },
+  {
+    name: 'onKeyUp',
+    title: 'Keyboard action: keyup',
+    description: 'User releases a key on the keyboard.'
+  }
+]
 
 
 export const ReactlyTextboxSettings = {
@@ -51,9 +81,25 @@ export const ReactlyTextboxSettings = {
           start: 'Textbox'
         },
         {
+          title: 'Placeholder Text',
+          label: 'placeholder', 
+        },
+        {
           title: 'Value',
           label: 'value',
-          start: 'Textbox'
+          start: 'Textbox',
+          when: e => !e.bound
+        },
+        {
+          title: 'State Variable',
+          label: 'target',
+          type: 'state', 
+          when: e => e.bound
+        },
+        {
+          title: 'Bind value to client state',
+          label: 'bound',
+          type: 'boolean'
         },
     
       ]
@@ -66,17 +112,36 @@ export const ReactlyTextboxSettings = {
           title: 'Variant',
           label: 'variant',
           types: ['filled', 'outlined', 'standard'],
-          start: 'filled'
+          start: 'filled',
+          type: 'pill',
+        },
+        {
+          title: 'Size',
+          label: 'size',
+          types: ['small','medium'],
+          type: 'pill',
         },
         {
           title: 'Color',
           label: 'color',
           types: ['primary', 'secondary', 'warning', 'error', 'success']
         },
+      ]
+    },
+    {
+      name: 'Icons',
+      settings: [
         {
-          title: 'Size',
-          label: 'size',
-          types: ['small','medium']
+          title: 'Start Icon',
+          label: 'icon',
+          types: Object.keys(Icons),
+          renderOption
+        },
+        {
+          title: 'End Icon',
+          label: 'end',
+          types: Object.keys(Icons),
+          renderOption
         },
       ]
     },
@@ -87,7 +152,8 @@ export const ReactlyTextboxSettings = {
         {
           title: 'Auto-Complete',
           label: 'autoComplete',
-          types: ['off','on']
+          types: ['off','on'],
+          type: 'pill',
         },
         {
           title: 'Full Width',
@@ -122,23 +188,6 @@ export const ReactlyTextboxSettings = {
       ]
     },
 
-    {
-      name: 'Icons',
-      settings: [
-        {
-          title: 'Start Icon',
-          label: 'icon',
-          types: Object.keys(Icons),
-          renderOption
-        },
-        {
-          title: 'End Icon',
-          label: 'end',
-          types: Object.keys(Icons),
-          renderOption
-        },
-      ]
-    }
 
   ]
 }

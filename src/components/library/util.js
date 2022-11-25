@@ -36,12 +36,16 @@ export const getSettings = settings => settings.reduce((items, res) => {
     return items;
   }, {});
 
+export const objectReduce = object => object.reduce((items, res) => {
+  items[res.Key] =  res.Value === undefined 
+    ? ""
+    : res.Value; // || typeof res.Value;
+  return items;
+}, {});
+
 
 export const getStyles = styles => {
-  const args = styles.reduce((items, res) => {
-    items[res.Key] = res.Value || "";
-    return items;
-  }, {});
+  const args = objectReduce(styles)
 
    if (args['grid-template-rows']) {
     Object.assign(args, {'grid-template-rows': gridTransform(args['grid-template-rows'])})

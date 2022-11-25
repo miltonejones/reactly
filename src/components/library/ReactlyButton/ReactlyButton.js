@@ -1,5 +1,7 @@
 import React from 'react';
 import { styled, Box, Button } from '@mui/material';
+import { getStyles } from '../util';
+import { GenericStyles } from '../styles';
 import { Icons } from '../icons';
 
 
@@ -8,11 +10,14 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(4)
 }));
  
-const ReactlyButton = ({ settings = [], ...props }) => {
+const ReactlyButton = ({ styles = [], settings = [], ...props }) => {
   const args = settings.reduce((items, res) => {
     items[res.SettingName] = res.SettingValue;
     return items;
   }, {})
+
+
+  const css = getStyles(styles) ;
 
   const Icon = Icons[args.icon];
   const End = Icons[args.end];
@@ -23,7 +28,7 @@ const ReactlyButton = ({ settings = [], ...props }) => {
 
   !!End && Object.assign(more, {endIcon: <End />})
  return (
-   <Button {...props} {...args} {...more}>
+   <Button {...props} {...args} {...more}  style={css}>
       {args.Label}  
    </Button>
  );
@@ -35,6 +40,19 @@ const renderOption = (props, option) => {
   if (!Icon) return <Box {...props}>{option}</Box>
   return <Box {...props}><Icon /> {option}</Box>
 }
+
+export const ReactlyButtonStyles = {
+  ...GenericStyles
+}
+
+export const ReactlyButtonEvents =  [
+  {
+    name: 'onClick',
+    title: 'Button is clicked',
+    description: 'User clicks on component or focuses and presses SPAACE.'
+  }
+]
+
 
 
 export const ReactlyButtonSettings = {

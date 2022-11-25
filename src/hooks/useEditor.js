@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { getMax } from '../components/library/util';
+import { AppStateContext } from './AppStateContext';
 
 export const useEditor = (apps) => {
   const [applications, setApplications] = React.useState(apps);
+  const app = React.useContext(AppStateContext)
 
 
   const findProg = ID => applications.find(a => a.ID === ID);
 
   const updateProg = (prog) =>{
-    setApplications((f) =>  f.map((t) => (t.ID === prog.ID ? prog : t)) );
+    const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
+    setApplications(updated);
+  //  app.setAppData(updated)
   }
 
 
@@ -35,14 +39,22 @@ export const useEditor = (apps) => {
     });
   };
 
+  const setPageProps = async (appID, pageID, props) => { 
+    editPage(appID, pageID, async (page, app) => {
+      Object.assign(page, props) 
+    });
+  }
+
   
   
-  const setPageState = async (appID, pageID, stateID, key, value) => {
+  const setPageState = async (appID, pageID, stateID, key, value, type) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
         Key: key,
-        Value: value
+        Value: value,
+        Type: type
       }
+ 
 
       const maxID = getMax(page.state.map(f => f.ID));
 
@@ -89,7 +101,18 @@ export const useEditor = (apps) => {
     });
   }
 
+  const setComponentEvent = async (appID, pageID, componentID, event) => {
+    editComponent(appID, pageID, componentID, async (component) => {
+     
+      const maxID = getMax(component.events.map(f => f.ID));
 
-  return { applications, editProg, editPage, editComponent ,
-    dropPageState, setPageState, setComponentStyle, setComponentProp };
+      component.events = component.events.find(f => f.ID === event.ID)
+        ? component.events.map((c) => c.ID === event.ID ? event : c)
+        : component.events.concat({...event, ID: maxID + 1});
+    });
+  }
+
+
+  return { applications, editProg, editPage, editComponent , setComponentEvent,
+    dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps };
 }

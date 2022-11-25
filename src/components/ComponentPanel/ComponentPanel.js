@@ -1,21 +1,31 @@
 import React from 'react';
- import { styled,Box, Stack, Tabs, Tab, Chip } from '@mui/material';
+ import { styled, Box, TextField, Stack, Tabs, Tab, Chip,
+  Typography } from '@mui/material';
 // import Library, { Settings } from '../library';
 import {  ComponentSettings, ComponentStyles, ComponentEvents } from '..';
 // import { getSettings } from '../library/util';
-import { Palette, Settings, Bolt } from "@mui/icons-material";
+import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
+import { Spacer } from '..';
+import { TextBtn } from '..';
+import { Flex } from '..';
  
+const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
-const Btn = styled(Tab)(() => ({ 
+const Btn = styled(Tab)(({theme}) => ({ 
   textTransform: 'capitalize',
   margin: 0,
-  padding: 0,
-  height: 24
+  padding: theme.spacing(1, 2),
+  height: 24,
+  minHeight: 24
 }))
 
-const ComponentPanel = ({ component, 
+const ComponentPanel = ({ 
+    component, 
+    selectedPage,
     onSettingsChange,
-    onStyleChange 
+    onStyleChange ,
+    onPropChange,
+    onEventChange
  }) => {
  
   const [value, setValue] = React.useState(0);
@@ -27,25 +37,49 @@ const ComponentPanel = ({ component,
     setValue(newValue);
   };
 
-  const changes = [onSettingsChange, onStyleChange];
-  const onChange = changes[value];
+  const changes = [onSettingsChange, onStyleChange, onEventChange];
+  const onChange = !component && !!selectedPage 
+    ? onPropChange
+    : changes[value];
   
   return <Stack>
      <Box sx={{ m: 1}}>
-      <Chip label={component.ComponentName} /> 
+      <Chip variant="outlined" icon={<Article />} label={component?.ComponentName || selectedPage?.PageName} /> 
      </Box>
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
-        <Btn sx={{minHeight: 24}}  icon={<Settings sx={{m: 0, width: 16, height: 16}} />} iconPosition="start"  label="Settings"   />
-        <Btn sx={{minHeight: 24}}  icon={<Palette sx={{m: 0, width: 16, height: 16}} />} iconPosition="start"  label="Styles"  />
-        <Btn sx={{minHeight: 24}}  icon={<Bolt sx={{m: 0, width: 16, height: 16}} />} iconPosition="start"  label="Events"  />
+        <Btn icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
+        <Btn icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+        <Btn icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
       </Tabs>
     </Box>
 
-    <Panel component={component} onChange={onChange} />
+
+    {!!component && <Panel component={component} selectedPage={selectedPage} onChange={onChange} />}
+    {!component && !!selectedPage && <PageSettings page={selectedPage} onChange={onChange} />}
 
     </Stack>
  
+}
+
+
+function PageSettings({ page, onChange }) {
+  const [state, setState] = React.useState(page);
+  const { PageName, PagePath} = state
+  return <Stack spacing={1} sx={{p: 1}}>
+    <Typography>Page Name</Typography>
+    <TextField value={PageName} label="Name" 
+    onChange={e => setState(s => ({
+      ...s, PageName: e.target.value, PagePath: e.target.value.toLowerCase().replace(/\s/g, '-')
+    }))}
+     helperText={`Path: ${PagePath}`} size="small"/>
+
+      <Flex>
+        <Spacer /> 
+        <TextBtn variant="contained" onClick={() => onChange(state)}>Save</TextBtn>
+      </Flex>
+    
+  </Stack>
 }
 
 ComponentPanel.defaultProps = {};

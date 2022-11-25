@@ -14,7 +14,20 @@ const Layout = styled(Box)(({ theme }) => ({
 
 
 
-export const ComponentInput = ({ label, types, title, type,getOptionLabel, image,  renderOption, start, args = {}, when, onChange }) => {
+export const ComponentInput = ({ 
+    label, 
+    types, 
+    title, 
+    type,
+    getOptionLabel, 
+    image,  
+    renderOption, 
+    start, 
+    args = {}, 
+    when, 
+    onChange ,
+    selectedPage
+  }) => {
   const [value, setValue] = React.useState(args[label]);
 
   const handleChange = prop => {  
@@ -29,6 +42,17 @@ export const ComponentInput = ({ label, types, title, type,getOptionLabel, image
   }
 
   const header = <Typography variant="caption">{title}</Typography>
+
+  if (type === 'state') {
+    if (!selectedPage) {
+      return <Alert>No state vars are available</Alert>
+    }
+
+    return <Stack>
+      {header}
+      <QuickSelect options={selectedPage.state.map(d => d.Key)}  value={value} onChange={handleChange}/>
+    </Stack>
+  }
 
   if (type === 'pill') {
     return <Flex>
@@ -79,7 +103,7 @@ const attempt = str => {
   }
 }
 
-export const ComponentPanelSettings = ({ component, settings ,args,  onChange }) => { 
+export const ComponentPanelSettings = ({ selectedPage, component, settings ,args,  onChange }) => { 
    
 
  return (
@@ -97,7 +121,7 @@ export const ComponentPanelSettings = ({ component, settings ,args,  onChange })
       return (
         <>
          <Grid item xs={setting.xs || xs}  key={setting.label}>
-          <ComponentInput {...setting}  args={args} onChange={(label, value) => onChange && onChange(component.ID, label, value)}/>
+          <ComponentInput {...setting}  selectedPage={selectedPage} args={args} onChange={(label, value) => onChange && onChange(component.ID, label, value)}/>
           {/* {JSON.stringify(hue)} */}
         </Grid>
         {color && <Grid item xs={2}>
@@ -114,6 +138,7 @@ export const ComponentPanelSettings = ({ component, settings ,args,  onChange })
 export const ComponentCollapse = ({ 
     component, 
     onChange, 
+    selectedPage,
     name, 
     settings, 
     args,  
@@ -151,15 +176,16 @@ export const ComponentCollapse = ({
       args={args}
       settings={settings}
       component={component}
+      selectedPage={selectedPage}
       onChange={onChange}  />
   </Collapse>
   </Stack>
  
 }
 
-const ComponentSettings = ({ component, onChange }) => {
+const ComponentSettings = ({ selectedPage, component, onChange }) => {
   if (!component?.settings) {
-    return <Alert>This component has no configurable settings.</Alert>
+    return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
   }
   const { categories } = Settings [component.ComponentType] ?? {}
   const args = getSettings(component.settings);
@@ -167,6 +193,7 @@ const ComponentSettings = ({ component, onChange }) => {
   return categories.map(category => <ComponentCollapse
       component={component}
       onChange={onChange}
+      selectedPage={selectedPage}
       {...category}
       args={args}
       key={category.name}

@@ -103,6 +103,66 @@ export const getOptionColor =  (option, key = 'name') => {
   return opt?.[key] || JSON.stringify(option); // ; 
 }
 
+export const GenericStyles =  {
+  categories: [
+    {
+      name: 'Dimensions',
+      styles: [
+        {
+          title: 'Width',
+          label: 'width',  
+          xs: 6
+        },
+        {
+          title: 'Height',
+          label: 'height',  
+          xs: 6
+        },
+        {
+          title: 'Minimum Width',
+          label: 'min-width',  
+          xs: 6
+        },
+        {
+          title: 'Minimum Height',
+          label: 'min-heignt',  
+          xs: 6
+        },
+        {
+          title: 'Maximum Width',
+          label: 'max-width',  
+          xs: 6
+        },
+        {
+          title: 'Maximum Height',
+          label: 'max-heignt',  
+          xs: 6
+        },
+      ]
+    },
+    {
+      name: 'Padding',
+      styles: [
+        { 
+          label: 'padding',
+          types: PaddingSizes,
+          renderOption
+        }
+      ]
+    },
+    {
+      name: 'Margin',
+      styles: [
+        { 
+          label: 'margin',
+          types: PaddingSizes,
+          renderOption
+        }
+      ]
+    },
+  ]
+}
+
 export const LayoutStyles = {
   categories: [
     {
@@ -212,61 +272,7 @@ export const LayoutStyles = {
 
       ]
     },
-    {
-      name: 'Dimensions',
-      styles: [
-        {
-          title: 'Width',
-          label: 'width',  
-          xs: 6
-        },
-        {
-          title: 'Height',
-          label: 'height',  
-          xs: 6
-        },
-        {
-          title: 'Minimum Width',
-          label: 'min-width',  
-          xs: 6
-        },
-        {
-          title: 'Minimum Height',
-          label: 'min-heignt',  
-          xs: 6
-        },
-        {
-          title: 'Maximum Width',
-          label: 'max-width',  
-          xs: 6
-        },
-        {
-          title: 'Maximum Height',
-          label: 'max-heignt',  
-          xs: 6
-        },
-      ]
-    },
-    {
-      name: 'Padding',
-      styles: [
-        { 
-          label: 'padding',
-          types: PaddingSizes,
-          renderOption
-        }
-      ]
-    },
-    {
-      name: 'Margin',
-      styles: [
-        { 
-          label: 'margin',
-          types: PaddingSizes,
-          renderOption
-        }
-      ]
-    },
+    ...GenericStyles.categories,
     {
       name: 'Border',
       styles: [
@@ -300,8 +306,7 @@ export const LayoutStyles = {
           (!!e['border-style'] && e['border-style'] !== 'null') && 
           (!!e['border-width'] && e['border-width'] !== 'null') ,
         },
-      ]
-
+      ] 
     },
     {
       name: 'Background',

@@ -37,7 +37,10 @@
   }
 }
 
- 
+ pre { 
+  line-height: 1.5;
+ }
+
 .string { color: green; }
 .number { color: darkorange; }
 .boolean { color: blue; }

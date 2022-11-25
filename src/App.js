@@ -41,21 +41,25 @@ function App() {
   const store = useLocalStorage({
     menu_pos: "bottom",
     use_menus: "1",
-    page_data_items: AppData,
+    page_db: AppData,
   });
 
   const menuPos = store.getItem("menu_pos");
   const useMenus = store.getItem("use_menus");
-  const appData = store.getItem("page_data_items");
+  const appData = store.getItem("page_db");
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
 
   const path = [appData.path].concat(!queryState.page?.PagePath ? [] : queryState.page.PagePath)
+
+  const setAppData = data => store.setItem('page_db', data);
  
 
   return (
     <AppStateContext.Provider
       value={{
+        appData,
+        setAppData,
         queryState,
         setQueryState,
         ...appHistory,  
@@ -64,6 +68,7 @@ function App() {
         PopComponent,
       }}
     >
+     
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home appData={appData} />} />  

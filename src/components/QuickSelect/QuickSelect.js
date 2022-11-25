@@ -31,7 +31,7 @@ export const QuickSelect = ({
   .filter(f => !filterText || f.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
 
   return <>  
-  {/* {props.getOptionLabel?.toString()} */}
+  {/* {props.getOptionLabel?.toString()} */} 
   <Autocomplete  
     disablePortal
     disableClearable={disableClearable}

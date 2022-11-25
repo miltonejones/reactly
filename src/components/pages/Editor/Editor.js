@@ -11,7 +11,8 @@ import {
   Menu,
   Stack,
   Divider,
-  Typography, IconButton
+  Typography, IconButton,
+  Collapse
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,
   ComponentPanel, ContentTree, PageTree, ComponentTree } from "../..";
@@ -19,6 +20,7 @@ import { Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActor
 import { AppStateContext, useNavigation } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
 import { useEditor } from '../../../hooks/useEditor';
+import { Json } from '../../../colorize';
  
 const Pane = styled(Grid)(({ short, wide }) => ({
   outline: "dotted 1px green",
@@ -32,15 +34,21 @@ const Pane = styled(Grid)(({ short, wide }) => ({
  
 const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
-  const { applications, setComponentProp, setPageState
-    , dropPageState, setComponentStyle } = useEditor(apps);
+  const { applications, setComponentProp, setPageState, setComponentEvent
+    , dropPageState, setComponentStyle, setPageProps } = useEditor(apps);
   const [ drawerState, setDrawerState] = React.useState({
     stateOpen: false
   })
 
+  const [json, setJSON] = React.useState(false)
+
   const { stateOpen } = drawerState;
 
-  const { queryState = {}, setQueryState } = React.useContext(AppStateContext);
+  const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
+
+  if (!applications.find) {
+    return <>error</>
+  }
   const appData = applications.find(f => f.path === appname);
   
   const path = ['apps', appData.path].concat(!queryState.page?.PagePath ? [] : queryState.page.PagePath); 
@@ -53,9 +61,16 @@ const Editor = ({ applications: apps = {} }) => {
   const handleSettingsChange = (componentID, label, value) => { 
     setComponentProp(appData.ID, queryState.page.ID, componentID, label, value);
   }
- 
-  const handleStateChange = (stateID, label, value) => { 
-    setPageState(appData.ID, queryState.page.ID, stateID, label, value);
+  
+  const handleStateChange = (stateID, label, value, type) => { 
+    setPageState(appData.ID, queryState.page.ID, stateID, label, value, type);
+  }
+  const handlePropChange = (props) => { 
+    setPageProps(appData.ID, queryState.page.ID, props);
+  }
+
+  const handleEventChange = (componentID, event) => { 
+    setComponentEvent(appData.ID, queryState.page.ID, componentID, event);
   }
 
   const handleStateDrop = (stateID) => { 
@@ -66,22 +81,24 @@ const Editor = ({ applications: apps = {} }) => {
  return (
    <>
       <Flex baseline fullWidth>
-        <Stack sx={{justifyContent: 'space-between', alignItems: 'center',  height: '95vh'}}>
+        <Stack sx={{justifyContent: 'space-between', alignItems: 'center',  height: '100vh', width: 48,
+          color: 'white',
+            backgroundColor: t => t.palette.primary.dark }}>
 
         <Box>
-          <IconButton href="/" sx={{mt: 4}}>
+          <IconButton href="/" sx={{mt: 4}} color="inherit">
             <Home />
           </IconButton>
         </Box>
         
          <Stack>
-          <IconButton  sx={{mt: 1}}>
+          <IconButton color="inherit" sx={{mt: 1}}>
               <AutoStories />
             </IconButton>
-            <IconButton sx={{mt: 1}}>
+            <IconButton color="inherit" sx={{mt: 1}}>
               <Code />
             </IconButton>
-            <IconButton sx={{mt: 1}} onClick={() => {
+            <IconButton color="inherit" sx={{mt: 1, mb: 4}} onClick={() => {
               setDrawerState(s => ({...s, stateOpen: !stateOpen}))
             }}>
               <RecentActors />
@@ -100,7 +117,8 @@ const Editor = ({ applications: apps = {} }) => {
               <Chip label={appData.Name} />
 
               <Box>
-                <QuickMenu small caret options={["Edit Page Settings"]} title="App Menu" label="Menu" onChange={window.alert}/>
+                <QuickMenu small caret options={[json ? "Hide JSON" : "Show JSON"]} title="App Menu" label="Menu" 
+                    onChange={() => setJSON(!json)}/>
               </Box>
 
               <Addressbox value={`/${path.join('/')}`} />
@@ -165,16 +183,28 @@ const Editor = ({ applications: apps = {} }) => {
           </Pane>
           <Pane wide item>
 
-
-          <ComponentTree preview tree={queryState.page?.components} />
-          
+          <Collapse in={json}>
+              
+              <Json>
+                {JSON.stringify(appData, 0, 2)}
+              </Json>
+           </Collapse>
+       
+           <Collapse in={!json}>
+              
+              <ComponentTree preview selectedPage={queryState.page} />
+           </Collapse>
+       
            
           </Pane>
           <Pane item>
             
-            {!!queryState.selectedComponent && <ComponentPanel 
+         {!!queryState.page &&  <ComponentPanel 
+            selectedPage={queryState.page}
+            onPropChange={handlePropChange}
             onStyleChange={handleStyleChange}
             onSettingsChange={handleSettingsChange}
+            onEventChange={handleEventChange}
             component={queryState.selectedComponent} />}
 
           </Pane>
@@ -193,7 +223,8 @@ const Editor = ({ applications: apps = {} }) => {
 
 
 export const Addressbox = ({ value, onChange, onClose, ...props }) => {
-  const startAdornment = <InputAdornment position="start">URL</InputAdornment>; 
+  const startAdornment = <InputAdornment  
+  position="start">URL</InputAdornment>; 
 
   const adornment = {
     startAdornment,
@@ -208,6 +239,7 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
   return (
     <TextField
       size="small"
+      disabled
       {...props}
       sx={{ width: "calc(100vw - 500px)" }}
       value={value}

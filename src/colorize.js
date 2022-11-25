@@ -1,4 +1,4 @@
-function syntaxHighlight(json) {
+function syntaxHighlight(json, css) {
   if (typeof json != 'string') {
        json = JSON.stringify(json, undefined, 2);
   }
@@ -17,12 +17,12 @@ function syntaxHighlight(json) {
           cls = 'null';
       }
       return '<span class="' + cls + '">' + match + '</span>';
-  });
+  }).replace(css ? /"/g : '', '');
 }
 
-const Json = ({ children }) =>  <pre>
+const Json = ({ children, css }) =>  <pre>
   <div
-  dangerouslySetInnerHTML={{__html: syntaxHighlight(children)}}
+  dangerouslySetInnerHTML={{__html: syntaxHighlight(children, css)}}
 />
 </pre>
 

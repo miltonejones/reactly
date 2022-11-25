@@ -10,17 +10,19 @@ import { AppStateContext } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
   
  
-const Renderer = ({ applications = {} }) => { 
+const Renderer = ({ applications: apps = {} }) => { 
   const { appname, pagename } = useParams();
   const { queryState = {}, setQueryState } = React.useContext(AppStateContext);
-  const appData = applications.find(f => f.path === appname);
 
+  const applications = typeof apps === 'object'
+    ? apps 
+    : JSON.parse(apps)
 
-  const crawl = React.useCallback((node, items = []) => {
-    const papa = appData.pages.find(f => f.ID === node.pageID);
+  const createBreadcrumbs = React.useCallback((node, items = []) => {
+    const selectedPage = appData.pages.find(f => f.ID === node.pageID);
 
-    if (papa) {
-      return crawl(papa).concat([{
+    if (selectedPage) {
+      return createBreadcrumbs(selectedPage).concat([{
         text: node.PageName,
         href: `/apps/${appname}/` + node.PagePath
       }]);
@@ -30,12 +32,16 @@ const Renderer = ({ applications = {} }) => {
       text: node.PageName,
       href: `/apps/${appname}/` + node.PagePath
     })
-  } , [appData, appname])
+  } , [ appname])
+ 
 
+  const appData = applications.find(f => f.path === appname);
+
+  
   const firstpage = !!pagename ? appData.pages.find(f => f.PagePath === pagename) : appData.pages[0];
  
 
-  const breadcrumbs = crawl(firstpage);
+  const breadcrumbs = createBreadcrumbs(firstpage);
 
  return (
    <>
@@ -46,7 +52,7 @@ const Renderer = ({ applications = {} }) => {
   </Breadcrumbs>
 
 
-  <ComponentTree tree={firstpage.components} />
+  <ComponentTree selectedPage={firstpage} />
   
 </>
  );

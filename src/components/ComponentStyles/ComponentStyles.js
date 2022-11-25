@@ -11,16 +11,20 @@ const Layout = styled(Box)(({ theme }) => ({
  
 const ComponentStyles = ({ component, onChange }) => {
   const [checked, setChecked] = React.useState(false);
-  if (!component?.styles) {
-    return <Alert>This component has no configurable settings.</Alert>
+  const { categories } = Styles [component.ComponentType]  ?? {}
+  if (!(categories && component?.styles)) {
+    return <Alert sx={{ m: 1 }}>This component has no configurable styles.</Alert>
   }
   const args = getStyles(component.styles);
-  const { categories } = Styles [component.ComponentType] ?? []
 
   const handleChange = async (event) => {
     setChecked(event.target.checked);  
   };
 
+  if (!(categories && categories.map)) {
+    return <Alert>could not render categories</Alert>
+  }
+ 
   return <>
   
   {!checked && categories.map(category => <ComponentCollapse
@@ -32,7 +36,7 @@ const ComponentStyles = ({ component, onChange }) => {
     key={category.name}
   />)}
   
-    {!!checked && <Paper sx={{m: 1, p: 2, height: 'calc(100vh - 300px)'}}><Json>
+    {!!checked && <Paper sx={{m: 1, p: 2, height: 'calc(100vh - 300px)'}}><Json css>
       {JSON.stringify(args,0,2)}
     </Json></Paper>}
 

@@ -15,6 +15,7 @@ export const AppData = [
           ComponentType: 'Box',
           ComponentName: 'Box 1',
           children: true,
+          events: [],
           styles: [
             {
               Key: 'display',
@@ -39,13 +40,25 @@ export const AppData = [
 
         {
           ComponentType: 'Button',
-          ComponentName: 'Button 1',
+          ComponentName: 'My Button 1',
           ID: 14,
           componentID: 11,
+          events: [
+            {
+              ID: 1,
+              event: 'onClick',
+              action: {
+                type: 'setState',
+                target: 'search_state',
+                value: false
+              }
+            }
+          ],
+          styles: [],
           settings: [
             {
               SettingName: 'Label',
-              SettingValue: 'Button'
+              SettingValue: 'Button!'
             },
 
             {
@@ -61,6 +74,8 @@ export const AppData = [
           ComponentName: 'Textbox 1',
           componentID: 11,
           ID: 15,
+          styles: [],
+          events: [],
           settings: [ 
             {
               SettingName: 'size',
@@ -95,6 +110,12 @@ export const AppData = [
           ID: 2,
           Key: 'search_type' ,
           Value: 'song'
+        },
+        {
+          ID: 3,
+          Type: 'boolean',
+          Key: 'search_state' ,
+          Value: true
         }
       ],
 
@@ -111,9 +132,10 @@ export const AppData = [
       components: [
         {
           ComponentType: 'Box',
-          ComponentName: 'Box 1',
+          ComponentName: 'Box 1', 
           ID: 12,
           children: true,
+          events: [],
           styles: [
             {
               Key: 'display',
@@ -129,6 +151,8 @@ export const AppData = [
           ID: 13,
           ComponentType: 'Button',
           ComponentName: 'Button 1',
+          events: [],
+          styles: [],
           componentID: 12,
           settings: [
             {
