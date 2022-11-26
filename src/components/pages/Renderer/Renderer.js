@@ -52,7 +52,7 @@ const Renderer = ({ applications: apps = {} }) => {
   </Breadcrumbs>
 
 
-  <ComponentTree selectedPage={firstpage} />
+  <ComponentTree appContext={appData} selectedPage={firstpage} />
   
 </>
  );

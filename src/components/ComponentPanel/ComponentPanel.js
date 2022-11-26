@@ -8,7 +8,7 @@ import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
 import { Spacer } from '..';
 import { TextBtn } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
-import { ExpandMore, Close } from "@mui/icons-material";
+import { ExpandMore, Close, Input } from "@mui/icons-material";
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -30,7 +30,9 @@ const ComponentPanel = ({
     onMove,
     onCollapse,
     onEventDelete,
-    collapsed
+    collapsed,
+    connections,
+    resources,
  }) => {
  
   const [value, setValue] = React.useState(0);
@@ -43,8 +45,12 @@ const ComponentPanel = ({
   };
 
   const handleMove = (name) => {
+    if (!name) return;
     const target = selectedPage.components.find(f => f.ComponentName === name);
-    onMove && onMove(component.ID, target.ID) 
+    if (target) {
+      return onMove && onMove(component.ID, target.ID) 
+    } 
+    return onMove && onMove(component.ID, null) 
   };
 
   const others = selectedPage.components.filter(f => !!f.children)
@@ -62,10 +68,14 @@ const ComponentPanel = ({
 
 
         {!!others && !!component && <Box sx={{ml: 2}}>
-          <QuickMenu options={others.map(f => f.ComponentName)} 
+          <QuickMenu options={others.map(f => `${f.ComponentType}: ${f.ComponentName}`).concat(
+            !component.componentID 
+              ? []
+              : ['-', 'Move to root level']
+          )} 
           value={component?.ComponentName}
           onChange={handleMove}
-           caret label="Move component"/>
+           caret label="Move" icon={Input}/>
         </Box>}
       <Spacer />
       </>}
@@ -84,7 +94,11 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
-    {!!component && <Panel onEventDelete={onEventDelete} component={component} selectedPage={selectedPage} onChange={onChange} />}
+    {!!component && <Panel 
+    onEventDelete={onEventDelete} component={component} selectedPage={selectedPage} onChange={onChange} 
+        connections={connections}
+        resources={resources}
+    />}
     {!component && !!selectedPage && <PageSettings page={selectedPage} onChange={onChange} />}
 
       </>}

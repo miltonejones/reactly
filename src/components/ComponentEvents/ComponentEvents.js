@@ -1,10 +1,11 @@
 import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material';
 import Library from '../library';
-import { Flex, TextBtn, Spacer, Tiny } from '..';
+import { Flex, TextBtn, Spacer, Tiny, QuickSelect } from '..';
 import { Add, Close, Delete } from "@mui/icons-material";
-import { SetState } from '../library/events';
+import { SetState, RunScript, OpenLink, DataExec } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
+import { EditorStateContext } from '../../hooks/AppStateContext';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -28,16 +29,34 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
   </Card>
 }
 
-const HandlerCard = ({ ID, event: eventName, action, selected, onSelect, onDelete  }) => {
+const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, onDelete  }) => {
+  const { appData  } = React.useContext(EditorStateContext);
+  const { pages, resources } = appData;
   const [rise, setRise] = React.useState(1);
   
   if (!action) return <u />
-  const title = eventTypes.find(f => f.name === eventName).description; // 'When component is clicked';
-
+  const chosenEvent = eventTypes.find(f => f.name === eventName)
+  const title = !chosenEvent ? `unknown event ${eventName}` : chosenEvent.description; 
   let act = 'Unknown action'
   switch(action.type) {
     case 'setState':
       act = <>Set the value of "{action.target}" to <b>{action.value.toString()}</b></>
+      break;
+    case 'dataExec':
+      const obj = resources.find(e => e.ID === action.target)
+      act = <>Execute "{obj.name} - {obj.method}"</>
+      break;
+    case 'openLink':
+      const href = pages.find(e => e.ID === action.target).PageName
+      act = <>Open a link to "{href}"</>
+      break;
+    case 'scriptRun':
+      const scr = page.scripts.find(f => f.ID === action.target);
+      if (scr) {
+        act = <>Run script "{scr.name}"</>
+      } else {
+        act = <>Could not find script {action.target}</>
+      }
       break;
     default:
       //do nothing;
@@ -61,10 +80,11 @@ const HandlerCard = ({ ID, event: eventName, action, selected, onSelect, onDelet
 }
 
  
-const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange }) => {
+const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, connections, resources }) => {
   const [open, setOpen] = React.useState(false)
   const [selectedEvent, setSelectedEvent] = React.useState(false)
   const [selectedHandler, setSelectedHandler] = React.useState(false)
+  const [selectedType, setSelectedType] = React.useState(false)
   const supportedEvents = Library [component.ComponentType].Events  ;
 
   if (!supportedEvents) {
@@ -85,6 +105,34 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange }) =
     setSelectedHandler(null); 
     !!state && onChange && onChange(component.ID, state)
   }
+
+  const options = [
+    {
+      name: 'Set state value',
+      value: 'setState'
+    },
+    {
+      name: 'Execute client script',
+      value: 'scriptRun'
+    } ,
+    {
+      name: 'Link to page',
+      value: 'openLink'
+    } 
+  ].concat(resources?.length ? {
+    name: 'Execute data resource',
+    value: 'dataExec'
+  } : []);
+
+  const forms = {
+    setState: SetState,
+    scriptRun: RunScript,
+    openLink: OpenLink,
+    dataExec: DataExec
+    
+  }
+
+  const EventEditor = forms[selectedType]
   
  return (
    <Layout>
@@ -97,42 +145,59 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange }) =
 
     {/* events that the component supports  */}
     <Collapse in={open}>
+    <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
+        <Typography variant="caption"> <b>Supported Events</b></Typography>
+      </Flex>
       {supportedEvents
         .filter(f => !selectedEvent || f.name === selectedEvent)
         .map (d => <EventCard selected={selectedEvent}  onClick={(e) => {
           setSelectedEvent(selectedEvent ? null : e);
           setSelectedHandler(null)
+          setSelectedType(null)
         }}  {...d} key={d.name} />)} 
     </Collapse>
 
     {/* events that have handlers  */}
     {!!component.events?.length && !selectedEvent &&  <>    
-      <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
+      <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
         <Typography variant="caption"> <b>Component Events</b></Typography>
       </Flex>
-      {component.events?.map(e => <HandlerCard selected={selectedHandler} onSelect={(key, id) => {
+      {component.events?.map(e => <HandlerCard 
+        selected={selectedHandler} 
+        page={selectedPage}
+        onSelect={(key, id) => {
         setSelectedEvent(key)
         setSelectedHandler(id)
+        setSelectedType(null)
       }} {...e} onDelete={(id) => onEventDelete(component.ID, id)} />)}
     </>} 
+ 
 
-      {!selectedHandler && !!selectedEvent && 
-      <><SetState
+    {!selectedHandler && !selectedType && !!selectedEvent && 
+      <><QuickSelect options={options.map(o => o.name)}
+             onChange={b => {
+              setSelectedType(options.find(e => e.name === b).value)
+             }} /></>}
+
+    {!selectedHandler && !!selectedType && !!selectedEvent && 
+      <><EventEditor
+            resources={resources}
             handleSave={handleSave}
             event={freshEvent} page={selectedPage} /></>}
-
-      {/* [{JSON.stringify(selectedEvent)}] */}
+ 
 
       {!!selectedHandler && !!selectedEvent && 
         component.events
           .filter(f => f.ID === selectedHandler)
-          .map (e => <SetState
-            handleSave={handleSave}
-            event={e} key={e.type} page={selectedPage} />) }
-
-{/* {JSON.stringify(freshEvent)} */}
-     {/* {!!selectedEvent && <SetState handleSave={handleSave} page={selectedPage} event={freshEvent} />} */}
-
+          .map (e => {
+            const Editor = forms[e.action.type];
+            if (!Editor) return <>could not render editor {e.type}</>
+            return <Editor
+              resources={resources}
+              handleSave={handleSave}
+              event={e} key={e.action.type} page={selectedPage} />
+          }) }
+ 
    
    </Layout>
  );

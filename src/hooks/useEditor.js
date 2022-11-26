@@ -14,6 +14,7 @@ export const useEditor = (apps) => {
     const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
     setApplications(updated);
     app.setAppData(updated)
+    app.setDirty(true)
   }
 
 
@@ -95,7 +96,32 @@ export const useEditor = (apps) => {
   }
 
   
+  const dropPageScript = async (appID, pageID, scriptID) => {
+    editPage(appID, pageID, async (page) => { 
+      Object.assign(page, { scripts: page.scripts.filter(f => f.ID !== scriptID) }); 
+    });
+  }
+
   
+  const setPageScript = async (appID, pageID, scriptID, name, code) => {
+    editPage(appID, pageID, async (page) => {
+      const setting = {
+        name, code
+      }
+      
+      if (!page.scripts) {
+        Object.assign(page, { scripts: []});
+      }
+
+      const maxID = getMax(page.scripts.map(f => f.ID));
+      // alert (JSON.stringify({setting, maxID}))
+ 
+      page.scripts = page.scripts.find(f => f.ID === scriptID)
+        ? page.scripts.map((c) => c.ID === scriptID ? {...setting, ID: scriptID} : c)
+        : page.scripts.concat({...setting, ID: maxID + 1});
+    });
+  }
+
   const setPageState = async (appID, pageID, stateID, key, value, type) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
@@ -106,9 +132,7 @@ export const useEditor = (apps) => {
  
 
       const maxID = getMax(page.state.map(f => f.ID));
-
-      // return alert (maxID)
-
+ 
       page.state = page.state.find(f => f.ID === stateID)
         ? page.state.map((c) => c.ID === stateID ? {...setting, ID: stateID} : c)
         : page.state.concat({...setting, ID: maxID + 1});
@@ -120,6 +144,7 @@ export const useEditor = (apps) => {
       page.state = page.state.filter(f => f.ID !== stateID) 
     });
   }
+
 
   
   const setComponentProp = async (appID, pageID, componentID, key, value) => {
@@ -136,7 +161,7 @@ export const useEditor = (apps) => {
 
   const dropComponentEvent = async (appID, pageID, componentID, eventID) => {
     editComponent(appID, pageID, componentID, async (component) => {
-      alert (eventID) 
+      // alert (eventID) 
       Object.assign(component, { events: component.events.filter(f => f.ID !== eventID)   }) ;
     });
   }
@@ -149,7 +174,7 @@ export const useEditor = (apps) => {
 
   const setComponentParent = async (appID, pageID, childID, componentID) => {
     editComponent(appID, pageID, childID, async (component) => {
-       alert (JSON.stringify({ childID, componentID }))
+      //  alert (JSON.stringify({ childID, componentID }))
       Object.assign(component, { componentID }) ;
     });
   }
@@ -184,5 +209,5 @@ export const useEditor = (apps) => {
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
-    dropComponentEvent, setComponentParent  };
+    dropComponentEvent, setComponentParent, setPageScript , dropPageScript };
 }

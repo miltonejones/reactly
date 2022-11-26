@@ -8,16 +8,21 @@ import { getSettings } from '../util';
   
 const ReactlyComponentChip = ({ children, ...props }) => {
   const args = getSettings(props.settings);
-  const Icon = Icons[args.icon];
+  const Icon = Icons[props.icon || args.icon];
   const DeleteIcon = Icons[args.deleteIcon];
   const icons = {};
   !!Icon && Object.assign(icons, { icon: <Icon /> });
   !!DeleteIcon && Object.assign(icons, { deleteIcon: <DeleteIcon /> });
 
  return (
-   <ReactlyComponent component={Chip} {...props} {...icons}>
+  <>
+ <pre>
+ 
+ </pre>
+   <ReactlyComponent component={Chip} {...props} {...icons} >
       {children}
    </ReactlyComponent>
+  </>
  );
 }
 
@@ -90,8 +95,9 @@ const Settings = {
           title: 'Start Icon',
           label: 'icon',
           types: Object.keys(Icons),
-          renderOption: renderIconOption
-        },
+          renderOption: renderIconOption, 
+        }, 
+    
         {
           title: 'Delete Icon',
           label: 'deleteIcon',

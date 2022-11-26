@@ -31,39 +31,131 @@ export const eventTypes =  [
     name: 'onDelete',
     description: 'When component delete icon is clicked'
   },
+  {
+    name: 'onItemClick',
+    description: 'WHen user clicks a list item'
+  },
+ {
+
+    name: 'onSecondaryClick', 
+    description: 'User clicks on the icon at the right of a list item.'
+ }
 ];
  
+/**
+ * 
+ * 
+
+ */
+
+
 export const usePageContext = () => { 
-  const { pageClientState, setPageClientState} = React.useContext(PageStateContext);
+  const { pageClientState, 
+          setPageClientState,
+          pageResourceState, 
+          setPageResourceState,
+          selectedPage, 
+          appContext, 
+        } = React.useContext(PageStateContext);
 
-  const handleComponentEvent = (event, options) => {
-    const { component, name } = options;
-    const trigger = component.events.find( e => e.event === name);
-    console.log ({ trigger , component, name })
-    if (!trigger) return;
 
-    switch(trigger.action.type) {
-      case "setState":  
-        setPageClientState(s => ({...s, 
-          [trigger.action.target]: trigger.action.value === 'toggle' 
-            ? !s[trigger.action.target]
-            : trigger.action.value }))
-        break;
-      default:
-        // do nothing
-    } 
+
+  const executeComponentRequest = async (connections,  qs,  { connectionID, path, node, columns }) => {
+    const connection = connections.find(f => f.ID === connectionID);
+    const url = new URL(path, connection.root); 
+    const endpoint = `${url}?${qs}`;
+ 
+    const response = await fetch(endpoint); 
+    const json = await response.json();
+
+    const rows = !node ? json : json[node];
+
+    const collated = rows.map(row => columns.reduce((items, res) => { 
+      items[res] = row[res]
+      return items
+    }, {})); 
+
+    return collated 
+    
+  }
+
+
+
+  const handleComponentEvent = (event, eventProps) => {
+    const { component, name , options } = eventProps;
+    const triggers = component.events.filter( e => e.event === name);
+ 
+    triggers.map(trigger => { 
+      switch(trigger.action.type) {
+        case "setState":  
+          setPageClientState(s => ({...s, 
+            [trigger.action.target]: trigger.action.value === 'toggle' 
+              ? !s[trigger.action.target]
+              : trigger.action.value }))
+          break;
+        case 'dataExec':
+          const resource = appContext.resources.find(f => f.ID === trigger.action.target);
+          const { target, action } = trigger.action; 
+
+          const qs = Object.keys(trigger.action.terms).map(term => {
+            const prop = pageClientState[trigger.action.terms[term]];
+            return `${term}=${prop}`
+          }).join('&');
+          executeComponentRequest(appContext.connections, qs, resource)
+            .then(records => {
+              // alert (JSON.stringify(records))
+              setPageResourceState(s => s.filter(e => e.resourceID !== trigger.action.target)
+                .concat({
+                  resourceID: resource.ID,
+                  name: resource.name,
+                  records
+                }))
+            })
+           
+          break;
+        case "scriptRun":  
+          const scr = selectedPage.scripts.find(f => f.ID === trigger.action.target);
+          if (scr) { 
+            // create a function that returns the client script
+            const block = `function runscript() {
+              return  ${scr.code}
+            }`;
+
+            try {
+
+              // call that function to get the client function
+              const action = eval(`(${block})()`); 
+
+              // call the client function
+              action(selectedPage, {
+                state: pageClientState, 
+                setState: setPageClientState,
+                data: options
+              })
+            } catch (ex) {
+              alert (ex.message);
+            }
+          }  
+          break;
+        default:
+          // do nothing
+      } 
+  
+    })
+ 
   } 
 
   const attachEventHandlers = component => {
 
-    const eventHandlers = eventTypes.map(e => e.name).reduce((handlers, event) => {
-      const supported = component.events?.find( f => f.event === event);
+    const eventHandlers = eventTypes.map(e => e.name).reduce((handlers, eventName) => {
+      const supported = component.events?.find( f => f.event === eventName);
       if (!supported) return handlers;
 
-      handlers[event] = e => handleComponentEvent(e, {
-        name: event ,
+      handlers[eventName] = (e, options) => handleComponentEvent(e, {
+        name: eventName ,
         component,
-        pageClientState
+        pageClientState,
+        options
       });  
       return handlers;
     }, {});
@@ -84,7 +176,7 @@ export const usePageContext = () => {
         })
       }
     }
-  component.ComponentType === 'Chip' && console.log ({ eventHandlers })
+  // component.ComponentType === 'Chip' && console.log ({ eventHandlers })
       
     return eventHandlers;
 

@@ -14,6 +14,7 @@ const QuickMenu = ({
   caret, icons = [], 
   options, 
   input,
+  icon: LabelIcon,
   onChange 
 }) => {
 
@@ -32,7 +33,10 @@ return <>
 
 
 <AU style={{marginRight: 4}} small={small}
-  active={open ? 1 : 0} error={error || open ? 1 : 0} onClick={handleClick}>{label || 'Choose'}</AU> 
+  active={open ? 1 : 0} error={error || open ? 1 : 0} onClick={handleClick}
+  >
+    {!!LabelIcon && <TinyButton icon={LabelIcon}  sx={{mr: 1}}/>}
+    {label || 'Choose'}</AU> 
 {!!caret && <TinyButton onClick={handleClick} icon={ExpandMore} deg={open ? 180 : 0} />}
 
 <MenuComponent  

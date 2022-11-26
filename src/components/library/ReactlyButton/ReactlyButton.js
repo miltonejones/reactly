@@ -19,8 +19,7 @@ const ReactlyButtonComponent = (props) => {
   }
 
   !!End && Object.assign(icons, {endIcon: <End />})
-
-  console.log(args)
+ 
  return (
    <ReactlyComponent component={Button} {...props} {...icons}>
       {args.Label} 
@@ -36,7 +35,21 @@ const renderOption = (props, option) => {
 }
 
 export const ReactlyButtonStyles = {
-  ...GenericStyles
+  categories: [
+
+  ...GenericStyles.categories,
+  {
+    name: 'Text',
+    styles: [
+      {
+        title: 'Transform',
+        label: "text-transform",
+        types: ['capitalize', 'uppercase'],
+        type: 'pill'
+      }
+    ]
+  }
+  ]
 }
 
 export const ReactlyButtonEvents =  [

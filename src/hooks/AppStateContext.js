@@ -2,6 +2,7 @@ import * as React from 'react';
 import { useNavigate } from "react-router-dom"; 
 
 export const AppStateContext = React.createContext({});
+export const EditorStateContext = React.createContext({});
 
 export const useNavigation = () => {
   const navigateTo = useNavigate();

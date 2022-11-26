@@ -17,10 +17,10 @@ import {
   Switch,
   Collapse
 } from "@mui/material";
-import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,RotateButton,
-  ComponentPanel, ContentTree, PageTree, ComponentTree } from "../..";
+import { Flex, TextBtn, QuickMenu, Spacer, StateDrawer,RotateButton,useClipboard,
+  ScriptDrawer, ComponentPanel, ContentTree, PageTree, ComponentTree , ConnectionDrawer } from "../..";
 import { ExpandMore, Close, Launch, Save, Sync, Add, Home, AutoStories,AppRegistration, RecentActors, Code } from "@mui/icons-material";
-import { AppStateContext, useNavigation } from '../../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
 import { useEditor } from '../../../hooks/useEditor';
 import { Json } from '../../../colorize'; 
@@ -64,10 +64,14 @@ const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
   const { applications, setComponentProp, setPageState, setComponentEvent, dropComponent
     , setComponentName, dropPageState, setComponentStyle, setPageProps, addComponent,
-    dropComponentEvent, setComponentParent } = useEditor(apps);
+    dropComponentEvent, setComponentParent, setPageScript, dropPageScript } = useEditor(apps);
   const [ drawerState, setDrawerState] = React.useState({
-    stateOpen: false
+    stateOpen: false,
+    scriptOpen: false,
+    connectOpen: false
   })
+
+  const { copy, copied } = useClipboard()
 
   const [collapsed, setCollapsed] = React.useState({
     left: false,
@@ -76,10 +80,10 @@ const Editor = ({ applications: apps = {} }) => {
 
   const [json, setJSON] = React.useState(false)
 
-  const { stateOpen } = drawerState;
+  const { stateOpen, scriptOpen, connectOpen } = drawerState;
 
- 
-  const { queryState = {}, setQueryState, CreateComponent,Shout, Confirm, Prompt  } = React.useContext(AppStateContext);
+  
+  const { queryState = {}, setQueryState, setAppData, CreateComponent,Shout, Confirm, Prompt, dirty, setDirty  } = React.useContext(AppStateContext);
 
   if (!applications.find) {
     return <>error</>
@@ -104,6 +108,11 @@ const Editor = ({ applications: apps = {} }) => {
   const handleStateChange = (stateID, label, value, type) => { 
     setPageState(appData.ID, queryState.page.ID, stateID, label, value, type);
   }
+  
+  const handleScriptChange = (scriptID, name, code) => { 
+    setPageScript(appData.ID, queryState.page.ID, scriptID, name, code);
+  }
+  
   const handlePropChange = (props) => { 
     setPageProps(appData.ID, queryState.page.ID, props);
   }
@@ -134,6 +143,13 @@ const Editor = ({ applications: apps = {} }) => {
       action: () => setCollapsed(s => ({...s, right: !s.right}))
     },
   ]
+
+  const handleDropScript = async(scriptID) => {
+    const ok = await Confirm('Are you sure you want to delete this script?', 'Confirm delete');
+    if (!ok) return;
+    dropPageScript(appData.ID, queryState.page.ID, scriptID)
+    
+  }
 
   const handleDropComponent = async (componentID) => {
     const ok = await Confirm('Are you sure you want to delete this component?', 'Confirm delete');
@@ -167,7 +183,7 @@ const Editor = ({ applications: apps = {} }) => {
 
 
  return (
-   <>
+   <EditorStateContext.Provider value={{ appData }}>
       <Flex baseline fullWidth>
         <Stack sx={{justifyContent: 'space-between', alignItems: 'center',  height: '100vh', width: 48,
           color: 'white',
@@ -180,10 +196,14 @@ const Editor = ({ applications: apps = {} }) => {
         </Box>
         
          <Stack>
-          <IconButton color="inherit" sx={{mt: 1}}>
+          <IconButton color="inherit" sx={{mt: 1}} onClick={() => {
+              setDrawerState(s => ({...s, connectOpen: !connectOpen}))
+            }}>
               <AutoStories />
             </IconButton>
-            <IconButton color="inherit" sx={{mt: 1}}>
+            <IconButton color="inherit" sx={{mt: 1}} onClick={() => {
+              setDrawerState(s => ({...s, scriptOpen: !scriptOpen}))
+            }}>
               <Code />
             </IconButton>
             <IconButton color="inherit" sx={{mt: 1, mb: 4}} onClick={() => {
@@ -229,10 +249,17 @@ const Editor = ({ applications: apps = {} }) => {
               size="small"
               onClick={() => {
                 setQueryState(null);
+                setAppData(null)
                 window.location.reload()
               }}
                 variant="outlined"><Sync /></IconButton>
-              <TextBtn variant="contained" disabled>Save</TextBtn>
+              <TextBtn variant="contained" disabled={!dirty}
+              sx={{ cursor: !copied ? 'pointer !important' : 'progress'}}
+              onClick={() => {
+                copy(JSON.stringify(applications, 0, 2));
+                setDirty(false)
+              }}
+              >Save</TextBtn>
             </Flex>
           </Pane>
           <Pane item sx={{borderRight: 1, borderColor: 'divider'}} thin={ collapsed.left ? 1 : 0 }>
@@ -315,7 +342,7 @@ const Editor = ({ applications: apps = {} }) => {
        
            <Collapse in={!json}>
               
-              <ComponentTree preview selectedPage={queryState.page} />
+              <ComponentTree appContext={appData} preview selectedPage={queryState.page} />
            </Collapse>
        
            
@@ -324,6 +351,8 @@ const Editor = ({ applications: apps = {} }) => {
             
          {!!queryState.page &&  <ComponentPanel 
             onCollapse={() => setCollapsed(s => ({...s, right: !collapsed.right}))}
+            connections={appData.connections}
+            resources={appData.resources}
             onMove={handleMove}
             collapsed={collapsed.right}
             selectedPage={queryState.page}
@@ -338,13 +367,32 @@ const Editor = ({ applications: apps = {} }) => {
         </Grid>
       </Flex>
 
+      <ScriptDrawer 
+        scripts={queryState.page?.scripts} 
+        handleDrop={handleDropScript}
+        handleChange={handleScriptChange}
+        open={scriptOpen} 
+        handleClose={() => {
+          setDrawerState(s => ({...s, scriptOpen: false}))
+        }} 
+      />
+      
+      <ConnectionDrawer 
+        connections={appData.connections}
+        resources={appData.resources}
+        open={connectOpen} 
+        handleClose={() => {
+          setDrawerState(s => ({...s, connectOpen: false}))
+        }} 
+      />
+      
       <StateDrawer 
         handleDrop={handleStateDrop}
         handleChange={handleStateChange}
         state={queryState.page?.state} open={stateOpen} handleClose={() => {
         setDrawerState(s => ({...s, stateOpen: false}))
       }} />
-   </>
+   </EditorStateContext.Provider>
  );
 }
 

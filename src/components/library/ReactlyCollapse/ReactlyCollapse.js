@@ -27,20 +27,8 @@ const Settings = {
           title: 'Expanded',
           label: 'in' ,
           type: 'boolean',
-          when: e => !e.bound 
-        }, 
-        {
-          title: 'State Variable',
-          label: 'target',
-          type: 'state', 
-          when: e => e.bound 
-        },
-        {
-          title: 'Bind value to client state',
-          label: 'bound',
-          type: 'boolean',
-          trueProp: 'in'
-        },
+          bindable: !0,  
+        },  
       ]
     }, 
   ]

@@ -38,6 +38,7 @@ function App() {
     loaded: false,
     data: null,
   });
+  const [dirty, setDirty] = React.useState(false);
 
   const store = useLocalStorage({
     menu_pos: "bottom",
@@ -51,11 +52,13 @@ function App() {
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
+ 
 
-  const appData = JSON.parse(appText);
+  const appData = appText === null || appText === 'null' 
+    ? AppData 
+    : JSON.parse(appText);
 
-
-  const path = [appData.path].concat(!queryState.page?.PagePath ? [] : queryState.page.PagePath)
+ 
 
   const setAppData = data => store.setItem('page_db_items', JSON.stringify(data));
  
@@ -72,6 +75,7 @@ function App() {
         menuPos,
         MenuComponent,
         PopComponent,
+        dirty, setDirty
       }}
     >
      

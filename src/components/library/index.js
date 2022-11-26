@@ -12,6 +12,14 @@ import ReactlyList from './ReactlyList/ReactlyList';
 import ReactlyPaper from './ReactlyPaper/ReactlyPaper';
 import ReactlyTextbox from './ReactlyTextbox/ReactlyTextbox';  
 import ReactlyTypography from './ReactlyTypography/ReactlyTypography';
+import ReactlyTable from './ReactlyTable/ReactlyTable';
+import { Box } from '@mui/material';
+import { East } from '@mui/icons-material';
+
+const ReactlySpacer = {
+  Component: () => <Box sx={{ flexGrow: 1}} />,
+  Icon: East
+}
  
 const Library = {
   Box: ReactlyBox,
@@ -27,7 +35,9 @@ const Library = {
   Chip: ReactlyChip,
   AppBar: ReactlyAppBar,
   Collapse: ReactlyCollapse,
-  List: ReactlyList
+  List: ReactlyList,
+  Spacer: ReactlySpacer,
+  DataGrid: ReactlyTable
 }
 
 export default Library;

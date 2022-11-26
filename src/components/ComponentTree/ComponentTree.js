@@ -18,13 +18,14 @@ const Preview = ({ component: Component, on, children, sx, ...props}) => {
  
 const componentOrder = (a,b) => a.order - b.order;
 
-const ComponentTree = ({ selectedPage, preview }) => {
+const ComponentTree = ({ selectedPage, preview, appContext }) => {
   const componentTree = selectedPage?.components;
   const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
 
   const stateProps = !selectedPage?.state ? null : objectReduce(selectedPage.state);
   const [pageClientState, setPageClientState] = React.useState(null);
+  const [pageResourceState, setPageResourceState] = React.useState([]);
 
   React.useEffect(() => {
     if (!!pageClientState) return;
@@ -39,13 +40,16 @@ const ComponentTree = ({ selectedPage, preview }) => {
  return (
    <PageStateContext.Provider value={{
       pageClientState, 
-      setPageClientState
+      setPageClientState,
+      pageResourceState, 
+      setPageResourceState,
+      selectedPage,
+      appContext
    }}> 
+  {/* <pre> {JSON.stringify(pageResourceState,0,2)}</pre> */}
       {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
-   <Json>
-   {JSON.stringify(pageClientState,0,2)}
-   </Json>
+ 
    </PageStateContext.Provider>
  );
 } 
