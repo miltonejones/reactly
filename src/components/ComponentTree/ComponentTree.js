@@ -11,7 +11,7 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
 
 const Preview = ({ component: Component, on, children, sx, ...props}) => {
-  return <Component {...props} sx={{...sx, outline: on ? 'dotted 2px gray' : 'none', outlineOffset: 2}}>
+  return <Component {...props} sx={{...sx, outline: on ? 'dotted 2px gray' : 'none', outlineOffset: 4}}>
     {children}
   </Component>
 }
@@ -43,9 +43,9 @@ const ComponentTree = ({ selectedPage, preview }) => {
    }}> 
       {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
-   {/* <Json>
+   <Json>
    {JSON.stringify(pageClientState,0,2)}
-   </Json> */}
+   </Json>
    </PageStateContext.Provider>
  );
 } 

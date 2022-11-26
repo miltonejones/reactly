@@ -16,6 +16,7 @@ const ReactlyBoxComponent = ( { children, ...props } ) => {
 
 const ReactlyBox = {
   Icon: CheckBoxOutlineBlank,
+  allowChildren: !0,
   Component: ReactlyBoxComponent, 
   Styles: LayoutStyles, 
 }

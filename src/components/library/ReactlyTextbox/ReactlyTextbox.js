@@ -73,8 +73,23 @@ export const ReactlyTextboxSettings = {
         {
           title: 'Label',
           label: 'label',
-          start: 'Textbox'
+          start: 'Textbox', 
+          when: e => e.bound !== 'label'
         },
+
+        {
+          title: 'State Variable',
+          label: 'target',
+          type: 'state', 
+          when: e => e.bound === 'label'
+        },
+        {
+          title: 'Bind label to client state',
+          label: 'bound',
+          type: 'boolean',
+          trueProp: 'label'
+        }, 
+
         {
           title: 'Placeholder Text',
           label: 'placeholder', 
@@ -83,18 +98,19 @@ export const ReactlyTextboxSettings = {
           title: 'Value',
           label: 'value',
           start: 'Textbox',
-          when: e => !e.bound
+          when: e => e.bound !== 'value'
         },
         {
           title: 'State Variable',
           label: 'target',
           type: 'state', 
-          when: e => e.bound
+          when: e => e.bound === 'value'
         },
         {
           title: 'Bind value to client state',
           label: 'bound',
-          type: 'boolean'
+          type: 'boolean',
+          trueProp: 'value'
         },
     
       ]

@@ -1,20 +1,26 @@
 import React from 'react';
-import { styled, Card, Grid, FormControlLabel, Collapse, Switch, Box, Alert, TextField, Stack, Typography } from '@mui/material';
+import { styled, Card, Grid, FormControlLabel, Collapse, 
+    Switch, Box, Alert, TextField, Stack, Typography } from '@mui/material';
 import Library from '../library';
 import { QuickSelect, Flex, Spacer, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
 
-const Layout = styled(Box)(({ theme }) => ({
- margin: theme.spacing(1)
-}));
+import { 
+  StateComponentInput, 
+  PillComponentInput,
+  BooleanComponentInput,
+  ListComponentInput
+} from './components' 
+ 
 
 
 
 
 
-export const ComponentInput = ({ 
+export const ComponentInput = (props) => {
+  const { 
     label, 
     types, 
     title, 
@@ -26,15 +32,23 @@ export const ComponentInput = ({
     args = {}, 
     when, 
     onChange ,
-    selectedPage
-  }) => {
+    trueProp,
+    selectedPage,
+    helperText
+  } = props;
+
   const [value, setValue] = React.useState(args[label]);
 
   const handleChange = prop => {  
-    setValue(prop);
-    onChange && onChange(label, typeof prop === 'object'
-      ? JSON.stringify(prop)
-      : prop)
+    
+    const inputProp = type === 'boolean' && !!trueProp && prop 
+      ? trueProp
+      : prop;
+ 
+    setValue(inputProp);
+    onChange && onChange(label, typeof inputProp === 'object'
+      ? JSON.stringify(inputProp)
+      : inputProp)
   }
 
   if (when && !when(args)) {
@@ -43,65 +57,50 @@ export const ComponentInput = ({
 
   const header = <Typography variant="caption">{title}</Typography>
 
-  if (type === 'state') {
-    if (!selectedPage) {
-      return <Alert>No state vars are available</Alert>
-    }
-
-    return <Stack>
-      {header}
-      <QuickSelect options={selectedPage.state.map(d => d.Key)}  value={value} onChange={handleChange}/>
-    </Stack>
+  const inputProps = {
+    ...props,
+    header,
+    handleChange,
+    value
   }
 
-  if (type === 'pill') {
-    return <Flex>
-      {header}
-      <Spacer />
-      <PillMenu image={image} options={types} value={value} onChange={handleChange} />
-    </Flex>
+  const customInputs = {
+    state: StateComponentInput,
+    pill: PillComponentInput,
+    boolean: BooleanComponentInput,
+    listbuilder: ListComponentInput,
   }
 
-  if (type === 'boolean') {
-    return <Flex>
-      {header}
-    <Spacer />
-      <Box>
-        
-      <Switch  size="small"
-        checked={value}
-        onChange={e => {
-          handleChange(e.target.checked); 
-        }} 
-      />
-
-      </Box>
-    </Flex>
-  }
-
-
+  const CustomInput = customInputs[type];
+  if (CustomInput) {
+    return <CustomInput {...inputProps} /> 
+  } 
 
   if (types) {
     return <Stack>
       {header}
-      <QuickSelect getOptionLabel={getOptionLabel} renderOption={renderOption} options={types}  value={value} onChange={handleChange}/>
+      <QuickSelect helperText={helperText} 
+         getOptionLabel={getOptionLabel} 
+         renderOption={renderOption} 
+         options={types}  
+         value={value} 
+         onChange={handleChange} />
     </Stack>
   }
 
   return <Stack>
   {header}
-  <TextField onChange={e => handleChange(e.target.value)} size="small" value={value} placeholder={title}/>
+  <TextField 
+    helperText={helperText}  
+    onChange={e => handleChange(e.target.value)} 
+    size="small" 
+    value={value} 
+    placeholder={title}
+  />
 </Stack>
 
 }
- 
-const attempt = str => {
-  try {
-    return JSON.parse(str)
-  } catch (e) {
-    return false;
-  }
-}
+  
 
 export const ComponentPanelSettings = ({ selectedPage, component, settings ,args,  onChange }) => { 
    

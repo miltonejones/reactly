@@ -1,9 +1,10 @@
 import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material';
 import Library from '../library';
-import { Flex, TextBtn,Spacer } from '..';
-import { Add, Close } from "@mui/icons-material";
+import { Flex, TextBtn, Spacer, Tiny } from '..';
+import { Add, Close, Delete } from "@mui/icons-material";
 import { SetState } from '../library/events';
+import { eventTypes } from '../../hooks/usePageContext';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -27,11 +28,11 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
   </Card>
 }
 
-const HandlerCard = ({ event, action, selected, onClick  }) => {
+const HandlerCard = ({ ID, event: eventName, action, selected, onSelect, onDelete  }) => {
   const [rise, setRise] = React.useState(1);
   
   if (!action) return <u />
-  const title = 'When component is clicked';
+  const title = eventTypes.find(f => f.name === eventName).description; // 'When component is clicked';
 
   let act = 'Unknown action'
   switch(action.type) {
@@ -43,24 +44,30 @@ const HandlerCard = ({ event, action, selected, onClick  }) => {
   }
 
   return <Card sx={{p: 2, cursor: 'pointer', mb: 1,
-  outline: selected === event ? 'solid 2px red' : ''}} 
-    elevation={2} 
-    onClick={() => onClick && onClick(event)}
+        outline: selected === ID ? 'solid 2px red' : ''}} 
+          elevation={2}  
     >
     <Stack>
-      <Typography variant="caption"><b>{title}</b></Typography>
-      <Typography variant="caption">{act}</Typography>
+      <Flex>
+        <Typography onClick={() => onSelect && onSelect(eventName, ID)} variant="caption"><b>{title}</b></Typography>
+        <Spacer />
+        <Tiny icon={Delete} onClick={() => onDelete && onDelete(ID)}/>
+      </Flex>
+      <Typography onClick={() => onSelect && onSelect(eventName, ID)} variant="caption">{act}</Typography>
+ 
     </Stack>
  
   </Card>
 }
 
  
-const ComponentEvents = ({ selectedPage, component, onChange }) => {
+const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange }) => {
   const [open, setOpen] = React.useState(false)
   const [selectedEvent, setSelectedEvent] = React.useState(false)
-  const data = Library [component.ComponentType].Events  ;
-  if (!data || !component?.events) {
+  const [selectedHandler, setSelectedHandler] = React.useState(false)
+  const supportedEvents = Library [component.ComponentType].Events  ;
+
+  if (!supportedEvents) {
     return <Alert sx={{ m: 1 }}>This component has no configurable events.</Alert>
   } 
   const args = {
@@ -73,43 +80,58 @@ const ComponentEvents = ({ selectedPage, component, onChange }) => {
     event: selectedEvent
   }
 
-  const handleSave = state => { 
+  const handleSave = state => {  
     setSelectedEvent(null); 
+    setSelectedHandler(null); 
     !!state && onChange && onChange(component.ID, state)
   }
   
  return (
-   <Layout data-testid="test-for-ComponentEvents">
+   <Layout>
+
+    {/* panel header  */}
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
       <Spacer />
       <TextBtn onClick={() => setOpen(!open)} endIcon={<Icon />}>{args.label}</TextBtn>
     </Flex>
+
+    {/* events that the component supports  */}
     <Collapse in={open}>
-   
-      {data
+      {supportedEvents
         .filter(f => !selectedEvent || f.name === selectedEvent)
         .map (d => <EventCard selected={selectedEvent}  onClick={(e) => {
-          setSelectedEvent(selectedEvent ? null : e)
+          setSelectedEvent(selectedEvent ? null : e);
+          setSelectedHandler(null)
         }}  {...d} key={d.name} />)} 
     </Collapse>
 
-
-    {!!component.events?.length && <>
-    
+    {/* events that have handlers  */}
+    {!!component.events?.length && !selectedEvent &&  <>    
       <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
-      <Typography variant="caption"> <b>Component Events</b></Typography>
+        <Typography variant="caption"> <b>Component Events</b></Typography>
       </Flex>
-      {component.events?.map(e => <HandlerCard selected={selectedEvent} onClick={setSelectedEvent} {...e} />)}
+      {component.events?.map(e => <HandlerCard selected={selectedHandler} onSelect={(key, id) => {
+        setSelectedEvent(key)
+        setSelectedHandler(id)
+      }} {...e} onDelete={(id) => onEventDelete(component.ID, id)} />)}
     </>} 
+
+      {!selectedHandler && !!selectedEvent && 
+      <><SetState
+            handleSave={handleSave}
+            event={freshEvent} page={selectedPage} /></>}
 
       {/* [{JSON.stringify(selectedEvent)}] */}
 
-      {!!selectedEvent && (component?.events || [freshEvent]).map (e => <SetState
-      handleSave={handleSave}
-      event={e} key={e.type} page={selectedPage} />) }
+      {!!selectedHandler && !!selectedEvent && 
+        component.events
+          .filter(f => f.ID === selectedHandler)
+          .map (e => <SetState
+            handleSave={handleSave}
+            event={e} key={e.type} page={selectedPage} />) }
 
 {/* {JSON.stringify(freshEvent)} */}
-     {!!selectedEvent && <SetState handleSave={handleSave} page={selectedPage} event={freshEvent} />}
+     {/* {!!selectedEvent && <SetState handleSave={handleSave} page={selectedPage} event={freshEvent} />} */}
 
    
    </Layout>

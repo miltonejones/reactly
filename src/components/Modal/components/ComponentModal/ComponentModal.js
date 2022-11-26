@@ -30,14 +30,14 @@ const ComponentModal = ({ onChange }) => {
    <Layout data-testid="test-for-ComponentModal">
     <Stack>
 
-    <Flex baseline wrap sx={{ maxHeight: 400, overflowY: 'auto' }}>
+    <Flex baseline wrap sx={{ maxHeight: 400, overflowY: 'auto', pb: 1 }}>
 
     {Object.keys(Library)
     .sort((a,b) => a > b ? 1 : -1)
     .map(icon => {
       const Icon = Library[icon].Icon;
       return <Card 
-        onClick={() => select(icon)} sx={{cursor: 'pointer', p: 2, mr: 1,  mb: 1, 
+        onClick={() => select(icon)} sx={{cursor: 'pointer', p: 2, ml: 1,  mt: 1, 
             minWidth: 120, outline: selected === icon ? 'solid 2px red' : ''}} key={icon}>
         <Flex>
             <Icon /> {icon}
@@ -46,7 +46,7 @@ const ComponentModal = ({ onChange }) => {
     })}
 
     </Flex>
-    <TextField autoComplete="off" fullWidth size="small" value={name} label="Component Name" onChange={rename}/>
+    <TextField sx={{ mt: 2 }} autoComplete="off" fullWidth size="small" value={name} label="Component Name" onChange={rename}/>
     </Stack>
    </Layout>
  );

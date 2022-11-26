@@ -2,29 +2,22 @@ import React from 'react';
 import { Box, Alert } from '@mui/material';  
 import { Error } from "@mui/icons-material";
 import ReactlyComponent from '../reactly';
-import { GenericStyles } from '../styles';
-import { Icons } from '../icons';
-import { getSettings } from '../util';
+import { GenericStyles } from '../styles'; 
+
+ 
 
 
-const renderOption = (props, option) => {
-  const Icon = Icons[option];
-  if (!Icon) return <Box {...props}>{option}</Box>
-  return <Box {...props}><Icon /> {option}</Box>
-}
-
-
-const ReactlyAlertComponent = ({ children, ...props}) => {
-  const args = getSettings(props.settings);
-   
-  const Icon = Icons[args.icon];
+const ReactlyAlertComponent = ({ children, ...props}) => { 
   return (
    <ReactlyComponent component={Alert} {...props} > 
      {children}
    </ReactlyComponent> 
   );
 }
-const ReactlyAlertSettings = {
+
+
+
+const Settings = {
   categories: [
     {
       name: 'General',
@@ -56,18 +49,7 @@ const ReactlyAlertSettings = {
         },  
       ]
     },
-
-    // {
-    //   name: 'Icons',
-    //   settings: [
-    //     {
-    //       title: 'Icon',
-    //       label: 'icon',
-    //       types: Object.keys(Icons),
-  //       renderOption
-    //     }, 
-    //   ]
-    // },
+ 
    
   ]
 }
@@ -76,7 +58,7 @@ const ReactlyAlertSettings = {
 const ReactlyAlert = {
   Icon: Error,
   Component: ReactlyAlertComponent ,
-  Settings: ReactlyAlertSettings,
+  Settings,
   Styles: GenericStyles,
   Defaults: {
     severity: 'info',

@@ -14,10 +14,16 @@ const ReactlyComponent = ({
   const args = getSettings(settings); 
   const style = getStyles(styles) ; 
 
+    
+
  return (
+  <>
+  
+  {/* {JSON.stringify(args)} */}
    <Component {...args} {...props} style={style}>
       {children || args.children}  
    </Component>
+  </>
  );
 } 
 

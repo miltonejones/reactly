@@ -13,7 +13,7 @@ import PillMenu, { Pill } from "./PillMenu/PillMenu";
 import StateDrawer from "./StateDrawer/StateDrawer";
 import PageTree from './PageTree/PageTree'
 
-import { Flex, AU, Tooltag, PopoverTextBox, PopoverInput, RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton, Area, SearchBox, TextBox } from './Control/Control';
+import { Flex, Tiny, AU, Tooltag, PopoverTextBox, PopoverInput, RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton, Area, SearchBox, TextBox } from './Control/Control';
 
 const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'datetime', 'image', 'audio', 'video'];
 
@@ -22,6 +22,7 @@ export {
   Area,
   ConnectionModal,
   MenuDrawer, 
+  Tiny,
   PillMenu,
   PopoverInput,
   PopoverTextBox, 

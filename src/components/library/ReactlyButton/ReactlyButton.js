@@ -19,9 +19,11 @@ const ReactlyButtonComponent = (props) => {
   }
 
   !!End && Object.assign(icons, {endIcon: <End />})
+
+  console.log(args)
  return (
    <ReactlyComponent component={Button} {...props} {...icons}>
-      {args.Label}  
+      {args.Label} 
    </ReactlyComponent>
  );
 } 
@@ -56,8 +58,8 @@ export const ReactlyButtonSettings = {
         {
           title: 'Label',
           label: 'Label',
-          start: 'Button'
-        },
+          start: 'Button', 
+        }, 
         {
           title: 'Disabled',
           label: 'disabled',

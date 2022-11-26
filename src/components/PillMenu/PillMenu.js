@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Box, Typography, Tooltip } from '@mui/material';
 import { Flex } from "..";
  
-export const Pill = styled(Box)(({ theme, square ,round, selected, backgroundColor = 'white' }) => ({
+export const Pill = styled(Box)(({ theme, square , round, selected, backgroundColor = 'white' }) => ({
  padding: square || round ? 0 : theme.spacing(0.5, 1),
  borderRadius: round ? '50%' : theme.spacing(0.5),
  width: square || round ? 32 : 'fit-content',

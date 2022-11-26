@@ -163,6 +163,58 @@ export const GenericStyles =  {
   ]
 }
 
+export const ColorStyles =  {
+  categories: [ 
+    {
+      name: 'Border',
+      styles: [
+        {
+          title: 'Thickness',
+          label: 'border-width',
+          types: PaddingSizes,
+          renderOption
+        },
+        {
+          title: 'Type',
+          label: 'border-style', 
+          when: e => !!e['border-width'] && e['border-width'] !== 'null' ,
+          types: ['dotted', 'solid', 'dashed', 'ridge', 'double', 'groove', 'inset', 'outset','unset', 'initial', 'inherit' ]
+        },
+        {
+          title: 'Color',
+          label: 'border-color',
+          when: e => (!!e['border-width'] && e['border-width'] !== 'null') && 
+            (!!e['border-style'] && e['border-style'] !== 'null') ,
+          types: StandardColors,
+          renderOption: colorOption,
+          getOptionLabel: getOptionColor
+        },
+        {
+          title: 'Radius',
+          label: 'border-radius',
+          types: PaddingSizes,
+          renderOption,
+          when: e => (!!e['border-width'] && e['border-width'] !== 'null') && 
+          (!!e['border-style'] && e['border-style'] !== 'null') && 
+          (!!e['border-width'] && e['border-width'] !== 'null') ,
+        },
+      ] 
+    },
+    {
+      name: 'Background',
+      styles: [
+        {
+          title: 'Color',
+          label: 'background-color',
+          types: StandardColors,
+          renderOption: colorOption,
+          getOptionLabel : getOptionColor
+        }
+      ]
+    }
+  ]
+}
+
 export const LayoutStyles = {
   categories: [
     {
@@ -273,53 +325,8 @@ export const LayoutStyles = {
       ]
     },
     ...GenericStyles.categories,
-    {
-      name: 'Border',
-      styles: [
-        {
-          title: 'Thickness',
-          label: 'border-width',
-          types: PaddingSizes,
-          renderOption
-        },
-        {
-          title: 'Type',
-          label: 'border-style', 
-          when: e => !!e['border-width'] && e['border-width'] !== 'null' ,
-          types: ['dotted', 'solid', 'dashed', 'ridge', 'double', 'groove', 'inset', 'outset','unset', 'initial', 'inherit' ]
-        },
-        {
-          title: 'Color',
-          label: 'border-color',
-          when: e => (!!e['border-width'] && e['border-width'] !== 'null') && 
-            (!!e['border-style'] && e['border-style'] !== 'null') ,
-          types: StandardColors,
-          renderOption: colorOption,
-          getOptionLabel: getOptionColor
-        },
-        {
-          title: 'Radius',
-          label: 'border-radius',
-          types: PaddingSizes,
-          renderOption,
-          when: e => (!!e['border-width'] && e['border-width'] !== 'null') && 
-          (!!e['border-style'] && e['border-style'] !== 'null') && 
-          (!!e['border-width'] && e['border-width'] !== 'null') ,
-        },
-      ] 
-    },
-    {
-      name: 'Background',
-      styles: [
-        {
-          title: 'Color',
-          label: 'background-color',
-          types: StandardColors,
-          renderOption: colorOption,
-          getOptionLabel : getOptionColor
-        }
-      ]
-    }
+    ...ColorStyles.categories
+   
   ]
 }
 

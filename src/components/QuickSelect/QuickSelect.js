@@ -14,6 +14,7 @@ export const QuickSelect = ({
   value: selected, 
   options = [], 
   onChange ,
+  helperText,
   small,
   limit = 20,
   ...props
@@ -43,7 +44,7 @@ export const QuickSelect = ({
     onChange={handleChange} 
     {...props}
     sx={{...props.sx, mr: 1, minWidth: small ? 120 : 220}}
-    renderInput={(params) => <TextField {...params} label={label} placeholder="Filter options" size="small" />}
+    renderInput={(params) => <TextField {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
  />
   </>
 

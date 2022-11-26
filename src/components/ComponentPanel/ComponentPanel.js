@@ -7,7 +7,7 @@ import {  ComponentSettings, ComponentStyles, ComponentEvents } from '..';
 import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
 import { Spacer } from '..';
 import { TextBtn } from '..';
-import { Flex, RotateButton } from '..';
+import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Close } from "@mui/icons-material";
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
@@ -27,7 +27,9 @@ const ComponentPanel = ({
     onStyleChange ,
     onPropChange,
     onEventChange,
+    onMove,
     onCollapse,
+    onEventDelete,
     collapsed
  }) => {
  
@@ -40,6 +42,13 @@ const ComponentPanel = ({
     setValue(newValue);
   };
 
+  const handleMove = (name) => {
+    const target = selectedPage.components.find(f => f.ComponentName === name);
+    onMove && onMove(component.ID, target.ID) 
+  };
+
+  const others = selectedPage.components.filter(f => !!f.children)
+
   const changes = [onSettingsChange, onStyleChange, onEventChange];
   const onChange = !component && !!selectedPage 
     ? onPropChange
@@ -50,6 +59,14 @@ const ComponentPanel = ({
       {!collapsed && <>
         <Chip variant="outlined" icon={<Article />} label={!!component 
         ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} /> 
+
+
+        {!!others && !!component && <Box sx={{ml: 2}}>
+          <QuickMenu options={others.map(f => f.ComponentName)} 
+          value={component?.ComponentName}
+          onChange={handleMove}
+           caret label="Move component"/>
+        </Box>}
       <Spacer />
       </>}
         <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
@@ -67,7 +84,7 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
-    {!!component && <Panel component={component} selectedPage={selectedPage} onChange={onChange} />}
+    {!!component && <Panel onEventDelete={onEventDelete} component={component} selectedPage={selectedPage} onChange={onChange} />}
     {!component && !!selectedPage && <PageSettings page={selectedPage} onChange={onChange} />}
 
       </>}

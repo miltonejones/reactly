@@ -109,6 +109,10 @@ export const OptionSwitch = ({ options = [], value, onChange }) => {
  
 }
 
+
+export const Tiny = ({icon: Icon, ...props}) => <Icon {...props} sx={{m: 0, width: 16, height: 16}} />
+
+
 export const Flex = styled(Box)(({ theme, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
  display: "flex",
  width: fullWidth ? '100%' : 'inherit',

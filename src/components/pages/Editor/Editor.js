@@ -24,8 +24,9 @@ import { AppStateContext, useNavigation } from '../../../hooks/AppStateContext';
 import { useParams } from "react-router-dom";
 import { useEditor } from '../../../hooks/useEditor';
 import { Json } from '../../../colorize'; 
+import Library from '../../library';
  
-const Pane = styled(Grid)(({ short, wide, left, right, thin }) => {
+const Pane = styled(Grid)(({ short, wide, left, right, thin, tool }) => {
 
   const args = {
     minWidth: wide ? "calc(100vw - 830px)" : 380,
@@ -49,11 +50,11 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin }) => {
   }
 
   return  {
-    outline: wide ? "" : "dotted 1px green",
+    // outline: wide ? "" : "dotted 1px green",
     height: short ? 56 : "calc(100vh - 64px)",
-    transition: 'all .2s linear',
+    transition: 'all .2s linear', 
     ...args,
-    overflow: 'auto',
+    overflow: 'auto', 
   }
 });
 
@@ -62,7 +63,8 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin }) => {
 const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
   const { applications, setComponentProp, setPageState, setComponentEvent, dropComponent
-    , setComponentName, dropPageState, setComponentStyle, setPageProps, addComponent } = useEditor(apps);
+    , setComponentName, dropPageState, setComponentStyle, setPageProps, addComponent,
+    dropComponentEvent, setComponentParent } = useEditor(apps);
   const [ drawerState, setDrawerState] = React.useState({
     stateOpen: false
   })
@@ -114,6 +116,10 @@ const Editor = ({ applications: apps = {} }) => {
     dropPageState(appData.ID, queryState.page.ID, stateID);
   }
 
+  const handleMove = (componentID, parentID) => {
+    setComponentParent(appData.ID, queryState.page.ID, componentID, parentID)
+  }
+
   const menuOptions = [ 
     {
       name: 'Show Components',
@@ -134,6 +140,12 @@ const Editor = ({ applications: apps = {} }) => {
     if (!ok) return;
     dropComponent(appData.ID, queryState.page.ID, componentID)
   }
+
+  const handledEventDelete = async (componentID, eventID) => { 
+    const ok = await Confirm('Are you sure you want to delete this event?', 'Confirm delete');
+    if (!ok) return;
+    dropComponentEvent(appData.ID, queryState.page.ID, componentID, eventID) 
+  }
  
   const createComponent = async (componentID, options) => {
     const ok = await CreateComponent();
@@ -142,7 +154,7 @@ const Editor = ({ applications: apps = {} }) => {
       ComponentType: ok.selected,
       ComponentName: ok.name,
       componentID,
-      children: ok.selected === 'Box' ,
+      children: Library[ok.selected].allowChildren, // , ok.selected === 'Box' ,
       state: [],
       styles: [],
       events: [],
@@ -182,7 +194,7 @@ const Editor = ({ applications: apps = {} }) => {
          </Stack>
         </Stack>
         <Grid container>
-          <Pane short item xs={12}>
+          <Pane short item xs={12} sx={{borderBottom: 1, borderColor: 'divider'}}>
             <Flex sx={{ p: 1 }}>
 
               <Flex sx={{borderRight: 1, borderColor: 'divider', pr: 2 , mr: 1}}>
@@ -220,10 +232,10 @@ const Editor = ({ applications: apps = {} }) => {
                 window.location.reload()
               }}
                 variant="outlined"><Sync /></IconButton>
-              <TextBtn variant="contained">Save</TextBtn>
+              <TextBtn variant="contained" disabled>Save</TextBtn>
             </Flex>
           </Pane>
-          <Pane item thin={ collapsed.left ? 1 : 0 }>
+          <Pane item sx={{borderRight: 1, borderColor: 'divider'}} thin={ collapsed.left ? 1 : 0 }>
             <Stack sx={{p: 1, height: 300}} >
 
 
@@ -292,7 +304,7 @@ const Editor = ({ applications: apps = {} }) => {
               </>}
 
           </Pane>
-          <Pane wide {...collapsed} item>
+          <Pane wide {...collapsed} item sx={{p: 1}}>
 
           <Collapse in={json}>
               
@@ -308,16 +320,18 @@ const Editor = ({ applications: apps = {} }) => {
        
            
           </Pane>
-          <Pane item thin={ collapsed.right ? 1 : 0 }>
+          <Pane item thin={ collapsed.right ? 1 : 0 }  sx={{borderLeft: 1, borderColor: 'divider'}}>
             
          {!!queryState.page &&  <ComponentPanel 
             onCollapse={() => setCollapsed(s => ({...s, right: !collapsed.right}))}
+            onMove={handleMove}
             collapsed={collapsed.right}
             selectedPage={queryState.page}
             onPropChange={handlePropChange}
             onStyleChange={handleStyleChange}
             onSettingsChange={handleSettingsChange}
             onEventChange={handleEventChange}
+            onEventDelete={handledEventDelete}
             component={queryState.selectedComponent} />}
 
           </Pane>

@@ -134,9 +134,23 @@ export const useEditor = (apps) => {
     });
   }
 
+  const dropComponentEvent = async (appID, pageID, componentID, eventID) => {
+    editComponent(appID, pageID, componentID, async (component) => {
+      alert (eventID) 
+      Object.assign(component, { events: component.events.filter(f => f.ID !== eventID)   }) ;
+    });
+  }
+
   const setComponentName = async (appID, pageID, componentID, ComponentName) => {
     editComponent(appID, pageID, componentID, async (component) => {
       Object.assign(component, { ComponentName }) ;
+    });
+  }
+
+  const setComponentParent = async (appID, pageID, childID, componentID) => {
+    editComponent(appID, pageID, childID, async (component) => {
+       alert (JSON.stringify({ childID, componentID }))
+      Object.assign(component, { componentID }) ;
     });
   }
 
@@ -169,5 +183,6 @@ export const useEditor = (apps) => {
 
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
-    setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps };
+    setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
+    dropComponentEvent, setComponentParent  };
 }
