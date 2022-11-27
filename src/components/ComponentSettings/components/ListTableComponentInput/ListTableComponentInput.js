@@ -1,12 +1,14 @@
 import React from 'react';
-import { Typography, TextField, styled, Box, Stack } from '@mui/material';
-import { Flex, Spacer, TextBtn, QuickSelect } from '../../..';
+import { Typography, TextField, styled, Grid, Box, Stack } from '@mui/material';
+import { Flex, Spacer, TextBtn, QuickSelect, Text, Tiny } from '../../..';
 import { CheckCircle, CheckCircleOutline } from "@mui/icons-material"; 
 
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
+const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
+
 const ListTableComponentInput = ({ 
   header,
   value,
@@ -29,6 +31,17 @@ const ListTableComponentInput = ({
     setFields (f => f.indexOf(name) > -1 
       ? f.filter(e => e !== name)
       : f.concat(name));
+
+    const exists = state.bindings[name];
+    
+     setState(s => ({
+      ...s,
+      bindings: {
+        ...s.bindings,
+        [name]: exists ? '' : name
+      }
+    }))
+      
   }
 
 
@@ -49,18 +62,39 @@ const ListTableComponentInput = ({
       }}/>
 
       <Box sx={{mt: 2}}>
+        <Typography variant="caption">Available Fields</Typography>
+        <Grid container sx={{mt: 0.5}} spacing={1}>
+
+        <Grid item xs={5}>
+            <Text small active>Name</Text>
+          </Grid>
+          
+          <Grid item xs={7}>
+            <Text small active>Label</Text> 
+          </Grid>
+          
         {resource?.columns.map(col => {
           const active = colnames.indexOf(col) > -1 || fields.indexOf(col) > -1 ;
-          return <Stack key={col} sx={{mt: 1}}>
-          <Flex sx={{mb: 1}}>
-            {active ? <CheckCircle /> : <CheckCircleOutline />}
-            <Typography onClick={() => addProp(col)}
-              sx={{fontWeight: active ? 600 : 400 }}>
 
-            {col}
-            </Typography>
-          </Flex>
-          {active && <TextField 
+
+          return <>
+          
+          
+          <Grid item xs={5} key={col} >
+              <Flex >
+                <Check on={active} />
+                <Text small onClick={() => addProp(col)}
+                  sx={{fontWeight: active ? 600 : 400 }}>
+
+                {col}
+                </Text>
+              </Flex>
+        
+          </Grid>
+            <Grid item xs={7}>
+
+            <TextField 
+            disabled={!active}
               value={state.bindings[col]}
              onChange={e => {
               setState(s => ({
@@ -72,9 +106,14 @@ const ListTableComponentInput = ({
               }))
             }}
 
-            size="small" placeholder={`Label for ${col}`}/>}
-        </Stack>
+            size="small" placeholder={`Label for ${col}`}/>
+
+            </Grid>
+                </> 
         })}
+
+      </Grid>
+
       </Box>
  
 
@@ -83,9 +122,9 @@ const ListTableComponentInput = ({
 
           <TextBtn variant="contained" onClick={() => handleChange(state) }>save</TextBtn>
         </Flex>
-    <pre>
-      {JSON.stringify(state,0,2)}
-    </pre>
+ {/* [   <pre>
+      {JSON.stringify(resource,0,2)}
+    </pre>] */}
    </Layout>
  );
 }

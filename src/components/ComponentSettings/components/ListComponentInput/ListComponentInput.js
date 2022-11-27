@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box, Button, Typography, TextField, Stack, Collapse } from '@mui/material';
+import { styled, Box, Button, Typography,  Stack, Collapse } from '@mui/material';
 import { Close, Add, Delete, Save, Settings } from "@mui/icons-material"; 
-import {  Flex, Spacer, TextBtn, PopoverInput, QuickSelect, TinyButton } from '../../..';
+import { TextInput, Flex, Spacer, TextBtn, PopoverInput, QuickSelect, TinyButton } from '../../..';
 import { getMax } from '../../../library/util';
 import { IconComponentInput } from '..';
 
@@ -54,17 +54,21 @@ const ListComponentInput = ({
     handleChange(msg)
   }
 
-  const addListItem = text => {
-
-    const maxID = getMax(listItems.map(f => f.ID)); 
-    const msg = listItems.concat({
-      ID: isNaN(maxID) ? 1 : (maxID + 1),
-      text, 
-      startIcon: null,
-      endIcon: null,
-      subtext: null
-    })
+  const addListItem = (text) => {
  
+    const maxID = getMax(listItems.map(f => f.ID)); 
+    const items = []
+    const rows = text.split(',').map((word, e) => { 
+      return items.push({
+        ID: isNaN(maxID) ? 1 : (maxID + 1 + e),
+        text: word, 
+        startIcon: null,
+        endIcon: null,
+        subtext: null
+      })
+    })
+
+    const msg = listItems.concat(items) 
 
     setListItems(msg);
     handleChange(msg)
@@ -121,7 +125,7 @@ function ListOption ({ text, subtext, ID ,
   <Flex sx={{p: 1, borderBottom: 1, borderColor: 'divider'}} 
         >
           {expanded 
-            ?   <TextField onChange={handleTextChange('text')} size="small" placeholder="Text" value={value.text} />
+            ?   <TextInput onChange={handleTextChange('text')} size="small" placeholder="Text" value={value.text} />
           :  <Typography variant="caption"> {text}</Typography>}
       
 
@@ -139,7 +143,7 @@ function ListOption ({ text, subtext, ID ,
 
         <Collapse in={expanded}>
           <Stack sx={{pl: 1}}>
-            <TextField sx={{mb: 1}} onChange={handleTextChange('subtext')} value={value.subtext} size="small" placeholder="Subtext" />
+            <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} value={value.subtext} size="small" placeholder="Subtext" />
 
             <IconComponentInput value={value.startIcon} sx={{mb: 1}} onChange={handlePropChange('startIcon')}  label="Start Icon"/>
             <IconComponentInput value={value.endIcon} sx={{mb: 1}} onChange={handlePropChange('endIcon')}  label="End Icon"/>

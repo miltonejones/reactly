@@ -15,9 +15,9 @@ import StateDrawer from "./StateDrawer/StateDrawer";
 import ScriptDrawer from "./ScriptDrawer/ScriptDrawer";
 import PageTree from './PageTree/PageTree'
 
-import { Flex, Tiny, AU, Tooltag, PopoverTextBox, PopoverInput, 
+import { Flex, Tiny, TextInput, AU, Tooltag, PopoverTextBox, PopoverInput, 
     RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton,
-    useClipboard, Area, SearchBox, TextBox } from './Control/Control';
+    useClipboard, Area, SearchBox, TextBox, Text } from './Control/Control';
 
 const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'datetime', 'image', 'audio', 'video'];
 
@@ -58,5 +58,7 @@ export {
   OptionSwitch,
   ComponentPanel,
   ComponentSettings,
-  DATA_TYPES
+  Text,
+  DATA_TYPES,
+  TextInput
 }

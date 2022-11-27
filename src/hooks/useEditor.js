@@ -24,6 +24,37 @@ export const useEditor = (apps) => {
     updateProg(app);
   };
 
+  const dropResource = async(appID, ID) => { 
+    editProg(appID, async (app) => {
+      app.resources = app.resources.filter(f => f.ID !== ID) 
+    })
+  }
+
+  const setResource = async(appID, resource) => { 
+    editProg(appID, async (app) => {
+      
+      const maxID = getMax(app.resources.map(f => f.ID)); 
+      app.resources = app.resources.find(f => f.ID === resource.ID)
+        ? app.resources.map((c) => c.ID === resource.ID ? {...resource, ID: resource.ID} : c)
+        : app.resources.concat({...resource, ID: maxID + 1});
+    })
+  }
+
+  const dropConnection = async(appID, ID) => { 
+    editProg(appID, async (app) => {
+      app.connections = app.connections.filter(f => f.ID !== ID) 
+    })
+  }
+  
+  const setConnection = async(appID, connection) => { 
+    editProg(appID, async (app) => {
+      
+      const maxID = getMax(app.connections.map(f => f.ID)); 
+      app.connections = app.connections.find(f => f.ID === connection.ID)
+        ? app.connections.map((c) => c.ID === connection.ID ? {...connection, ID: connection.ID} : c)
+        : app.connections.concat({...connection, ID: maxID + 1});
+    })
+  }
 
   const editPage = async (appID, pageID, edit) => {
     editProg(appID, async (app) => {
@@ -38,10 +69,36 @@ export const useEditor = (apps) => {
       page.components = page.components.filter(f => f.ID !== componentID) 
     });
   }
-  
+
+  const dropPage = async(appID, pageID) => {
+    editProg(appID, async (app) => {
+      app.pages = app.pages.filter(f => f.ID !== pageID) 
+    });
+  }
+
+  const duplicatePage = async(appID, pageID) => {
+    editProg(appID, async (app) => {
+      const existing = app.pages.find((c) => c.ID === pageID);
+      const maxID = getMax(app.pages.map(f => f.ID)); 
+      app.pages = app.pages.concat({ ...existing, ID: maxID + 1
+          , PageName: existing.PageName + ' (copy)'
+          , PagePath: existing.PagePath + '-copy'}) 
+    })
+  }
+   
+  const setPage = async(appID, page, pageID) => {
+    editProg(appID, async (app) => {
+      const existing = app.pages.find((c) => c.ID === page.ID);
+      const maxID = getMax(app.pages.map(f => f.ID)); 
+      app.pages = !existing 
+        ? app.pages.concat({ ...page, ID: maxID + 1})
+        : app.pages.filter(f => f.ID === page.ID ? {...page, pageID} : f)
+    })
+  }
+   
   const addComponent = async (appID, pageID, component, options) => {
     const { order, after, before } = options ?? {}
-    // alert (JSON.stringify({ order, after, before }))
+    
     editPage(appID, pageID, async (page, app) => { 
       const settings = Library[component.ComponentType].Defaults;
   
@@ -160,8 +217,7 @@ export const useEditor = (apps) => {
   }
 
   const dropComponentEvent = async (appID, pageID, componentID, eventID) => {
-    editComponent(appID, pageID, componentID, async (component) => {
-      // alert (eventID) 
+    editComponent(appID, pageID, componentID, async (component) => { 
       Object.assign(component, { events: component.events.filter(f => f.ID !== eventID)   }) ;
     });
   }
@@ -173,8 +229,7 @@ export const useEditor = (apps) => {
   }
 
   const setComponentParent = async (appID, pageID, childID, componentID) => {
-    editComponent(appID, pageID, childID, async (component) => {
-      //  alert (JSON.stringify({ childID, componentID }))
+    editComponent(appID, pageID, childID, async (component) => { 
       Object.assign(component, { componentID }) ;
     });
   }
@@ -209,5 +264,6 @@ export const useEditor = (apps) => {
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
-    dropComponentEvent, setComponentParent, setPageScript , dropPageScript };
+    dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
+    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage};
 }

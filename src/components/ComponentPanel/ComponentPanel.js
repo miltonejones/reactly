@@ -1,18 +1,19 @@
 import React from 'react';
- import { styled, Box, TextField, Stack, Tabs, Tab, Chip,
+ import { styled, Box,  Stack, Tabs, Tab, Chip,
   Typography } from '@mui/material';
 // import Library, { Settings } from '../library';
 import {  ComponentSettings, ComponentStyles, ComponentEvents } from '..';
 // import { getSettings } from '../library/util';
 import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
 import { Spacer } from '..';
-import { TextBtn } from '..';
+import { TextBtn, TextInput } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Close, Input } from "@mui/icons-material";
+import { Text } from '../Control/Control';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
-const Btn = styled(Tab)(({theme}) => ({ 
+export const TabButton = styled(Tab)(({theme}) => ({ 
   textTransform: 'capitalize',
   margin: 0,
   padding: theme.spacing(1, 2),
@@ -88,9 +89,9 @@ const ComponentPanel = ({
       
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
-        <Btn icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
-        <Btn icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
-        <Btn icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
+        <TabButton icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
+        <TabButton icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+        <TabButton icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
       </Tabs>
     </Box>
 
@@ -113,8 +114,8 @@ function PageSettings({ page, onChange }) {
   const [state, setState] = React.useState(page);
   const { PageName, PagePath} = state
   return <Stack spacing={1} sx={{p: 1}}>
-    <Typography>Page Name</Typography>
-    <TextField value={PageName} label="Name" 
+    <Text small>Page Name</Text>
+    <TextInput value={PageName} label="Name" 
     onChange={e => setState(s => ({
       ...s, PageName: e.target.value, PagePath: e.target.value.toLowerCase().replace(/\s/g, '-')
     }))}

@@ -27,8 +27,6 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
   const [dirty, setDirty] = React.useState(false)
   const [anchorEl, setAnchorEl] = React.useState(null);
 
-  const { ID, name, code } = selected;
-
   const handleAliasOpen = event => {
     setAnchorEl(event.currentTarget)
   } 
@@ -36,6 +34,8 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
   const handleAliasClose = event => {
     setAnchorEl(null)
   } 
+
+  const { ID, name, code } = selected;
 
  return (
 

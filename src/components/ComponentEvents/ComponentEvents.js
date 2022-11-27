@@ -1,11 +1,11 @@
 import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material';
 import Library from '../library';
-import { Flex, TextBtn, Spacer, Tiny, QuickSelect } from '..';
+import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
 import { Add, Close, Delete } from "@mui/icons-material";
-import { SetState, RunScript, OpenLink, DataExec } from '../library/events';
+import { SetState, RunScript, OpenLink, DataExec, ModalOpen } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
-import { EditorStateContext } from '../../hooks/AppStateContext';
+import { EditorStateContext } from '../../hooks/AppStateContext'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -50,6 +50,10 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       const href = pages.find(e => e.ID === action.target).PageName
       act = <>Open a link to "{href}"</>
       break;
+    case 'modalOpen':
+      const dialogName = page.components.find(e => e.ID === action.target)
+      act = <>{action.open ? 'Open' : 'Close'} modal <b>{dialogName?.ComponentName}</b></>
+      break;
     case 'scriptRun':
       const scr = page.scripts.find(f => f.ID === action.target);
       if (scr) {
@@ -68,11 +72,11 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
     >
     <Stack>
       <Flex>
-        <Typography onClick={() => onSelect && onSelect(eventName, ID)} variant="caption"><b>{title}</b></Typography>
+        <Text small onClick={() => onSelect && onSelect(eventName, ID)} variant="caption"><b>{title}</b></Text>
         <Spacer />
         <Tiny icon={Delete} onClick={() => onDelete && onDelete(ID)}/>
       </Flex>
-      <Typography onClick={() => onSelect && onSelect(eventName, ID)} variant="caption">{act}</Typography>
+      <Text small onClick={() => onSelect && onSelect(eventName, ID)} variant="caption">{act}</Text>
  
     </Stack>
  
@@ -100,6 +104,8 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     event: selectedEvent
   }
 
+  const modalsExist = ['Dialog', 'Menu'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
+
   const handleSave = state => {  
     setSelectedEvent(null); 
     setSelectedHandler(null); 
@@ -122,13 +128,17 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
   ].concat(resources?.length ? {
     name: 'Execute data resource',
     value: 'dataExec'
+  } : []).concat(modalsExist ? {
+    name: 'Open or close a modal',
+    value: 'modalOpen'
   } : []);
 
   const forms = {
     setState: SetState,
     scriptRun: RunScript,
     openLink: OpenLink,
-    dataExec: DataExec
+    dataExec: DataExec,
+    modalOpen: ModalOpen
     
   }
 

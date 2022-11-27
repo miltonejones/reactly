@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, ContentTree, PageTree } from "./components";
 import { AppData } from "./data";
-import { Home, Editor, Renderer } from "./components/pages";
+import { Home, Editor, Renderer, Detail } from "./components/pages";
 import { Launch, Save, Sync, Add } from "@mui/icons-material";
 
 import { useAppHistory } from "./hooks/useAppHistory";
@@ -83,6 +83,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home appData={appData} />} />  
           <Route path="/edit/:appname" element={<Editor applications={appData} />} />  
+          <Route path="/info/:appname" element={<Detail applications={appData} />} />  
           <Route path="/apps/:appname" element={<Renderer applications={appData} />} />  
           <Route path="/apps/:appname/:pagename" element={<Renderer applications={appData} />} />  
         </Routes>

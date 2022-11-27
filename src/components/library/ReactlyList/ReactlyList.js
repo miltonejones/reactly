@@ -35,7 +35,7 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
  return (
    <>
- 
+ {/* {JSON.stringify(parsed)} */}
    <ReactlyComponent component={List} {...props} subheader={header}> 
  {parsed?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;

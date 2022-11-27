@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box, Divider, TextField, Autocomplete, Typography, MenuItem } from '@mui/material';
+import { styled, Box, Divider, Autocomplete, Typography, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
-import { AU, TinyButton, Flex, OptionSwitch } from '..';
+import { AU, TinyButton, TextInput, Flex, OptionSwitch } from '..';
 import { ExpandMore } from "@mui/icons-material";
  
 
@@ -44,7 +44,7 @@ export const QuickSelect = ({
     onChange={handleChange} 
     {...props}
     sx={{...props.sx, mr: 1, minWidth: small ? 120 : 220}}
-    renderInput={(params) => <TextField {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
+    renderInput={(params) => <TextInput {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
  />
   </>
 

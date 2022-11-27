@@ -36,10 +36,18 @@ export const eventTypes =  [
     description: 'WHen user clicks a list item'
   },
  {
-
     name: 'onSecondaryClick', 
     description: 'User clicks on the icon at the right of a list item.'
- }
+ },
+
+ {
+  name: 'onRowClick', 
+  description: 'User clicks on a row in the list.'
+}, 
+{
+  name: 'onCellClick', 
+  description: 'User clicks on a cell in a row.'
+}, 
 ];
  
 /**
@@ -54,6 +62,8 @@ export const usePageContext = () => {
           setPageClientState,
           pageResourceState, 
           setPageResourceState,
+          pageModalState, 
+          setPageModalState,
           selectedPage, 
           appContext, 
         } = React.useContext(PageStateContext);
@@ -92,6 +102,14 @@ export const usePageContext = () => {
             [trigger.action.target]: trigger.action.value === 'toggle' 
               ? !s[trigger.action.target]
               : trigger.action.value }))
+          break;
+        case "modalOpen":  
+            const state = {
+              ...pageModalState,
+              [trigger.action.target]: trigger.action.open,
+              anchorEl: event.currentTarget
+            } 
+            setPageModalState(state)
           break;
         case 'dataExec':
           const resource = appContext.resources.find(f => f.ID === trigger.action.target);
@@ -186,7 +204,8 @@ export const usePageContext = () => {
     handleComponentEvent ,
     pageClientState,
     setPageClientState,
-    attachEventHandlers
+    attachEventHandlers,
+    executeComponentRequest
   }
 
 }

@@ -13,8 +13,10 @@ import ReactlyPaper from './ReactlyPaper/ReactlyPaper';
 import ReactlyTextbox from './ReactlyTextbox/ReactlyTextbox';  
 import ReactlyTypography from './ReactlyTypography/ReactlyTypography';
 import ReactlyTable from './ReactlyTable/ReactlyTable';
+import ReactlyDialog from './ReactlyDialog/ReactlyDialog';
 import { Box } from '@mui/material';
 import { East } from '@mui/icons-material';
+import ReactlyMenu from './ReactlyMenu/ReactlyMenu';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -37,7 +39,9 @@ const Library = {
   Collapse: ReactlyCollapse,
   List: ReactlyList,
   Spacer: ReactlySpacer,
-  DataGrid: ReactlyTable
+  DataGrid: ReactlyTable,
+  Dialog: ReactlyDialog,
+  Menu: ReactlyMenu
 }
 
 export default Library;

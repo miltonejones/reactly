@@ -11,7 +11,7 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
 
 const Preview = ({ component: Component, on, children, sx, ...props}) => {
-  return <Component {...props} sx={{...sx, outline: on ? 'dotted 2px gray' : 'none', outlineOffset: 4}}>
+  return <Component {...props} componentEditing={on} sx={{...sx, outline: on ? 'dotted 2px gray' : 'none', outlineOffset: 4}}>
     {children}
   </Component>
 }
@@ -26,6 +26,7 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
   const stateProps = !selectedPage?.state ? null : objectReduce(selectedPage.state);
   const [pageClientState, setPageClientState] = React.useState(null);
   const [pageResourceState, setPageResourceState] = React.useState([]);
+  const [pageModalState, setPageModalState] = React.useState({});
 
   React.useEffect(() => {
     if (!!pageClientState) return;
@@ -43,6 +44,8 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
       setPageClientState,
       pageResourceState, 
       setPageResourceState,
+      pageModalState, 
+      setPageModalState,
       selectedPage,
       appContext
    }}> 

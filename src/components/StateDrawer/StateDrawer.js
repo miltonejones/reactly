@@ -61,7 +61,7 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
     </Flex>
     <Divider />
 
-    <Grid container>
+    <Grid container sx={{mt: 2}}>
 
     <Grid item xs={6}>
         
@@ -69,15 +69,16 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
 
           {/* state property name  */}
           <Stack>
-            <Typography>Key</Typography>
-            <TextField {...args} value={item.Key} onChange={e => {
+            {/* <Typography>Key</Typography> */}
+            <TextField {...args} value={item.Key}  label="Key" onChange={e => {
               handleChange && handleChange(item.ID, e.target.value, item.Value, item.Type)
             }} />
           </Stack>  
 
           <Stack>
-            <Typography>Type</Typography>
+            {/* <Typography>Type</Typography> */}
             <QuickSelect options={['string', 'object', 'array', 'boolean']}
+            label="Type"
                 value={item.Type || 'string'} onChange={value => {
                   handleChange && handleChange(item.ID, item.Key, item.Value, value)
                 }} />
@@ -85,12 +86,12 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
 
           {/* state property value  */}
           <Stack>
-            <Typography>Value</Typography>
+            {/* <Typography>Value</Typography> */}
             <StateValue {...args} {...item} handleChange={handleChange}  />
           </Stack>
 
           <Box>
-            <IconButton sx={{mt: 3}} onClick={() => handleDrop && handleDrop(item.ID)}>
+            <IconButton onClick={() => handleDrop && handleDrop(item.ID)}>
               <Delete />
             </IconButton>
           </Box>

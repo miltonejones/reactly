@@ -1,8 +1,8 @@
 import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, 
-    Switch, Box, Alert, TextField, Stack, Typography } from '@mui/material';
+    Switch, Box, Alert,  Stack, Typography } from '@mui/material';
 import Library from '../library';
-import { QuickSelect, Flex, Spacer, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, Flex, TextInput, Spacer, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
@@ -123,7 +123,7 @@ export const ComponentInputBody = (props) => {
 
   return <Stack>
   {header}
-  <TextField 
+  <TextInput 
     helperText={helperText}  
     onChange={e => handleChange(e.target.value)} 
     size="small" 

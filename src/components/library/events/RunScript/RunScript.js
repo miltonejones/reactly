@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Box, Typography } from '@mui/material'; 
-import { QuickSelect, Flex, Spacer, TextBtn } from '../../..';
+import { QuickSelect, Flex, Spacer, TextBtn, Text } from '../../..';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(2, 0)
@@ -13,7 +13,7 @@ const RunScript = ({ event = {}, page, handleSave }) => {
     : page.scripts.find(e => e.ID === event.action.target).name
  return (
    <Layout data-testid="test-for-RunScript">
-    <Typography>Run client script:</Typography> 
+    <Text small>Run client script:</Text> 
     <QuickSelect options={page.scripts.map(d => d.name)} value={target}
       onChange={value => setState(s => ({...s, target: page.scripts.find(d => d.name === value).ID}))}
     />

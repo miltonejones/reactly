@@ -110,7 +110,10 @@ export const OptionSwitch = ({ options = [], value, onChange }) => {
 }
 
 
-export const Tiny = ({icon: Icon, ...props}) => <Icon {...props} sx={{m: 0, width: 16, height: 16}} />
+export const Tiny = ({icon: Icon, hidden, ...props}) => <Icon {...props} 
+    sx={{m: 0, width: 16, height: 16, ...props.sx,
+      opacity: hidden ? 0 : 1,
+      transition: 'opacity 0.1s linear'}} />
 
 
 export const Flex = styled(Box)(({ theme, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
@@ -170,15 +173,7 @@ export const UL = styled("ul")(({ theme, margin, collapsed }) => ({
  },
 }));
  
-export const Text = styled(Box)(({ small, on }) => ({
- cursor: "pointer",
- position: "relative",
- fontSize: small ? "0.9rem" : "1rem",
- "&:hover": {
-   textDecoration: "underline",
-   color: "#37a",
- }, 
-}));
+ 
  
 export const Arrow = styled(ExpandMore)(({ on }) => ({
  transform: on ? "rotate(450deg)" : "rotate(270deg)",
@@ -267,3 +262,20 @@ export const TextBox = styled(TextField)(({ theme }) => ({
 export const TinyButton = ({icon: Icon, ...props}) => <RotateButton {...props}  sx={{ ...props.sx, width: 18, height: 18}}>
   <Icon sx={{width: 16, height: 16}} />
 </RotateButton>
+
+export const TextInput = styled(TextField)(() => ({
+  // height: '1.em',
+  fontSize: '0.85rem'
+}))
+ 
+export const Text = styled(Box)(({ theme, active, small }) => ({
+  display: 'flex',
+  gap: theme.spacing(1) ,
+  alignItems: 'center',
+  borderBottom: small ? '' : 'solid 1px gray',
+  fontSize: small ? '0.85rem' : '1rem',
+  maxWidth: 400,
+  padding: theme.spacing(0.5, 0),
+  fontWeight: active ? 600 : 400,
+  cursor: 'pointer', 
+}));

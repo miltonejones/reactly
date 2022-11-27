@@ -9,7 +9,7 @@ const Home = ({ appData }) => {
  return (
    <Layout data-testid="test-for-Home">
      {appData.map(app => <Box sx={{p: 1}} key={app.Name}>
-      <Link href={`/edit/${app.path}`}>{app.Name}</Link>
+      <Link href={`/info/${app.path}`}>{app.Name}</Link>
      </Box>)}
    </Layout>
  );
