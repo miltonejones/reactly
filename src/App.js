@@ -24,13 +24,7 @@ import { useAppHistory } from "./hooks/useAppHistory";
 import { AppStateContext } from "./hooks/AppStateContext";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import Modal, { useModal } from "./components/Modal/Modal";
-
-const Pane = styled(Grid)(({ short, wide }) => ({
-  outline: "dotted 1px green",
-  height: short ? 56 : "calc(100vh - 56px)",
-  minWidth: wide ? "calc(100vw - 660px)" : 300,
-  overflow: 'auto',
-}));
+ 
 
 function App() {
   const appHistory = useAppHistory();
@@ -59,6 +53,18 @@ function App() {
     : JSON.parse(appText);
 
  
+    const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
+      if (!pages) return items.concat('huh');
+      const selectedPage  = pages.find(f => f.ID === node.pageID);
+  
+      if (selectedPage) {
+        return createBreadcrumbs(pages, selectedPage).concat(node.PageName);
+      }
+  
+      return items.concat(node.PageName); //.concat(node.PageName)
+    } , [ appData ])
+   
+  
 
   const setAppData = data => store.setItem('page_db_items', JSON.stringify(data));
  
@@ -75,7 +81,8 @@ function App() {
         menuPos,
         MenuComponent,
         PopComponent,
-        dirty, setDirty
+        dirty, setDirty,
+        createBreadcrumbs
       }}
     >
      
@@ -92,32 +99,5 @@ function App() {
     </AppStateContext.Provider>
   );
 }
-
-export const Addressbox = ({ value, onChange, onClose, ...props }) => {
-  const startAdornment = <InputAdornment position="start">URL</InputAdornment>;
-
-  const adornment = {
-    startAdornment,
-    endAdornment: (
-      <InputAdornment position="end">
-        <Launch />
-        Open
-      </InputAdornment>
-    ),
-  };
-
-  return (
-    <TextField
-      size="small"
-      {...props}
-      sx={{ width: "calc(100vw - 480px)" }}
-      value={value}
-      autoComplete="off"
-      onChange={onChange}
-      InputProps={adornment}
-      autoFocus
-    />
-  );
-};
-
+ 
 export default App;

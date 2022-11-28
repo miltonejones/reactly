@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, FormControl, InputLabel, MenuItem } from '@mui/material'; 
+import { Select, FormControl, InputLabel, MenuItem, Box, TextField } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { Grading } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -8,6 +8,7 @@ import { getSettings } from '../util';
 const ReactlyComponentSelect = ({ children, ...props }) => {
   const args = getSettings(props.settings);
   const initialProp = props.value || args.value;
+  const [filter, setFilter] = React.useState('')
   const [selectValue, setSelectValue] = React.useState(args.multiple ? [initialProp] : initialProp)
   
   const parsed = !!args?.items && typeof args?.items === 'string' 
@@ -22,7 +23,11 @@ const ReactlyComponentSelect = ({ children, ...props }) => {
       setSelectValue (e.target.value);
       props.onChange && props.onChange(e) 
     }}>
-      {parsed?.map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
+      {args.filterOptions && <Box sx={{p: 1}}>
+      <TextField size="small" value={filter} onChange={e => setFilter(e.target.value)}
+        placeholder="Filter options" autoComplete="off"/>
+      </Box>}
+      {parsed?.filter(e => !filter || e.text.toLowerCase().indexOf(filter.toLowerCase()) > -1).map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
    </ReactlyComponent></FormControl>
 {/* <pre>
 {JSON.stringify(props,0,2)}
@@ -54,11 +59,24 @@ const Settings = {
           label: 'multiple' ,
           type: 'boolean'
         }, 
+        {
+          title: 'Filter options',
+          label: 'filterOptions' ,
+          type: 'boolean'
+        }, 
       ]
     },
     {
       name: 'Appearance',
       settings: [ 
+        {
+          title: 'Variant',
+          label: 'variant',
+          types: ['filled'
+          , 'outlined'
+          , 'standard'],
+          type: 'pill'
+        },
         {
           title: 'Size',
           label: 'size',
@@ -87,7 +105,9 @@ const ReactlySelect = {
   Component: ReactlyComponentSelect,
   Settings,
   Styles: GenericStyles, 
-  Defaults: { }
+  Defaults: { 
+    size: 'small'
+  }
 }
  
 

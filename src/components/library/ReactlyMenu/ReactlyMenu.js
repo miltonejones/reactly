@@ -43,7 +43,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
      open={open || componentEditing} 
      {...rest}
      component={open || !preview ? Menu : FauxMenu} 
-     {...props}>
+     {...props} >
 
     {parsed?.map((item, i) => {
       const StartIcon = Icons[item.startIcon] ;

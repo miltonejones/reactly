@@ -1,6 +1,7 @@
 import React from 'react';
 import { styled, Box, Alert } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
+import { Helmet } from "react-helmet";
 import { Json } from '../../colorize';
 import Library from '../library';
 import { objectReduce } from '../library/util'; 
@@ -20,7 +21,7 @@ const componentOrder = (a,b) => a.order - b.order;
 
 const ComponentTree = ({ selectedPage, preview, appContext }) => {
   const componentTree = selectedPage?.components;
-  const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
+  const { queryState = {}, setQueryState, createBreadcrumbs  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
 
   const stateProps = !selectedPage?.state ? null : objectReduce(selectedPage.state);
@@ -33,6 +34,10 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
     if (!!pageClientState) return;
     setPageClientState(stateProps);
   }, [stateProps])
+let path;
+  if (selectedPage) {
+     path = createBreadcrumbs(appContext.pages, selectedPage)
+  }
 
   if (!componentTree) return <Alert sx={{m: 1}}>Select a page to see its components</Alert>
 
@@ -53,7 +58,12 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
       appContext
    }}>  
    <pre>
-   {/* {JSON.stringify(pageResourceState)} */}
+   {JSON.stringify(path)}
+        {/* document title  */}
+        {path && <Helmet> 
+            <title>Reactly |{preview ? ' Editor | ' : ""} {path.join(' | ')}</title> 
+        </Helmet>}
+
    </pre>
       {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
@@ -82,7 +92,6 @@ const RenderComponent = ({ component, trees = [], preview, selectedComponent }) 
      >
       {!!kids.length && <>{kids.sort(componentOrder).map(c => <RenderComponent 
           selectedComponent={selectedComponent} 
-          
           trees={trees} 
           key={c.ComponentName} 
           component={c} /> )}</>} 
