@@ -18,8 +18,11 @@ const ReactlyComponentSelect = ({ children, ...props }) => {
   <FormControl >
   {!!args.label && <InputLabel id="demo-select-small">{args.label}</InputLabel>}
  <ReactlyComponent component={Select} {...props} value={selectValue}
-    onChange={e => setSelectValue (e.target.value)}>
-      {parsed.map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
+    onChange={e => {
+      setSelectValue (e.target.value);
+      props.onChange && props.onChange(e) 
+    }}>
+      {parsed?.map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
    </ReactlyComponent></FormControl>
 {/* <pre>
 {JSON.stringify(props,0,2)}
