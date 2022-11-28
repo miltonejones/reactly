@@ -58,7 +58,7 @@ let path;
       appContext
    }}>  
    <pre>
-   {JSON.stringify(path)}
+   {/* {JSON.stringify(path)} */}
         {/* document title  */}
         {path && <Helmet> 
             <title>Reactly |{preview ? ' Editor | ' : ""} {path.join(' | ')}</title> 
