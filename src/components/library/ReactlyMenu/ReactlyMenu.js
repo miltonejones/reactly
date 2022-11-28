@@ -1,11 +1,16 @@
 import React from 'react';
-import { Menu, MenuItem, ListItemIcon, ListItemText, Typography } from '@mui/material'; 
+import { Menu, MenuItem, MenuList, ListItemIcon, ListItemText, Typography, styled } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { MenuOpen } from '@mui/icons-material';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import ReactlyComponent, { Faux } from '../reactly';
+
+const FauxMenu = styled(MenuList)(({ open }) => ({
+  maxWidth: 300,
+  display: !open ? 'none' : 'block'
+}))
   
 const ReactlyComponentMenu = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
@@ -37,7 +42,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
       onClose={handleClose}
      open={open || componentEditing} 
      {...rest}
-     component={open || !preview ? Menu : Faux} 
+     component={open || !preview ? Menu : FauxMenu} 
      {...props}>
 
     {parsed?.map((item, i) => {
@@ -91,7 +96,7 @@ const Settings = {
         {
           title: 'Add items to menu',
           label: 'items' ,
-          type: 'listbuilder'
+          type: 'menulist'
         },  
       ]
     }, 

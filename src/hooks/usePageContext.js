@@ -41,6 +41,18 @@ export const eventTypes =  [
  },
 
  {
+  name: 'onPlayerStart', 
+  description: 'Audio player playing event fires.'
+}, 
+{
+  name: 'onPlayerStop', 
+  description: 'Audio stop playing event fires.'
+}, 
+{
+  name: 'onPlayerEnded', 
+  description: 'Audio player track reaches its end.'
+}, 
+ {
   name: 'onRowClick', 
   description: 'User clicks on a row in the list.'
 }, 
@@ -174,7 +186,7 @@ export const usePageContext = () => {
                 state: pageClientState, 
                 setState: setPageClientState,
                 data: options,
-                api: { getRef }
+                api: { getRef, getRefByName }
               })
             } catch (ex) {
               alert (ex.message);
@@ -187,6 +199,14 @@ export const usePageContext = () => {
   
     })
   } 
+
+  const getRefByName = (name) => {
+    const component = selectedPage.components.find(f => f.ComponentName === name);
+    if (component) {
+      return getRef(component.ID)
+    }
+    alert ('Could not find component ' + name)
+  }
 
   const getRef = (ID) => {
      return pageRefState[ID]
@@ -203,7 +223,7 @@ export const usePageContext = () => {
         component,
         pageClientState,
         options,
-        api: { getRef }
+        api: { getRef, getRefByName }
       });  
       return handlers;
     }, {});

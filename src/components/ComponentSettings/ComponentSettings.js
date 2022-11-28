@@ -19,7 +19,7 @@ import {
 
 
 export const ComponentInput = props => {
-    const { bindable, label, title, args = {} } = props;
+    const { bindable, label, component, title, args = {} } = props;
     const bindProps = {
       ...props,
       title: `Bind ${title} to client state`,
@@ -31,7 +31,7 @@ export const ComponentInput = props => {
     const inputProps = args.bound === label
       ? {
           ...props,
-          title: 'State Variable',
+          title: <>Bind <b>{component.ComponentName}.{label}</b> to client state variable:</>,
           label: 'target',
           type: 'state' 
         }
@@ -101,6 +101,7 @@ export const ComponentInputBody = (props) => {
     pill: PillComponentInput,
     boolean: BooleanComponentInput,
     valuelist: ListComponentInput,
+    menulist: ListComponentInput,
     listbuilder: ListComponentInput,
     listbinder: ListBinderComponentInput,
     listtable: ListTableComponentInput

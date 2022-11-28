@@ -5,10 +5,11 @@ import { Mood } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { Icons, renderIconOption } from '../icons';
 import { getSettings } from '../util';
+import ReactlyButton from '../ReactlyButton/ReactlyButton';
   
 const ReactlyComponentIconButton = ({ children, ...props }) => {
   const args = getSettings(props.settings);
-  const Icon = Icons[args.icon] || Mood;
+  const Icon = Icons[props.icon || args.icon] || Mood;
  return (
    <ReactlyComponent component={IconButton} {...props}>
       <Icon />
@@ -28,7 +29,8 @@ const Settings = {
           title: 'Icon',
           label: 'icon' ,
           types: Object.keys(Icons),
-          renderOption: renderIconOption
+          renderOption: renderIconOption,
+          bindable: !0
         }, 
         {
           title: 'Disabled',
@@ -70,6 +72,7 @@ const ReactlyIconButton = {
   Icon: Mood,
   Component: ReactlyComponentIconButton,
   Settings,
+  Events: ReactlyButton.Events,
   Styles: {
     categories: [
 

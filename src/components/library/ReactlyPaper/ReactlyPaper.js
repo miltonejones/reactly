@@ -16,18 +16,10 @@ const ReactlyComponentPaper = ({ children, ...props }) => {
 const Settings = {
   categories: [
 
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Label',
-          label: 'label' 
-        }, 
-      ]
-    },
+   
     {
       name: 'Appearance',
+      always: true,
       settings: [ 
         {
           title: 'Variant',

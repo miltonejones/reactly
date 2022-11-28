@@ -14,6 +14,7 @@ const ReactlyAudioComponent = ({
 
 }) => { 
   const { pageRefState, setPageRefState, } = React.useContext(PageStateContext);
+  const { onPlayerStart, onPlayerStop, onPlayerEnded  } = props;
     const ref = React.useRef(null)
 
     const args = getSettings(settings); 
@@ -28,7 +29,21 @@ const ReactlyAudioComponent = ({
       setPageRefState({
         ...pageRefState,
         [props.ID]: ref.current
+      });
+
+      ref.current.addEventListener('play', () => {
+        onPlayerStart (1)
       })
+
+      ref.current.addEventListener('ended', () => {
+        onPlayerEnded (2)
+      })
+
+      ref.current.addEventListener('pause', () => {
+        onPlayerStop (3)
+      })
+
+      
     }, [])
   
   return (
@@ -70,11 +85,30 @@ const Settings = {
 }
  
 
+const Events =  [
+  {
+    name: 'onPlayerStart',
+    title: 'Audio Starts playing',
+    description: 'Audio player playing event fires.'
+  }, 
+  {
+    name: 'onPlayerStop',
+    title: 'Audio Stops playing',
+    description: 'Audio stop playing event fires.'
+  }, 
+  {
+    name: 'onPlayerEnded',
+    title: 'Audio track ended',
+    description: 'Audio player track reaches its end.'
+  }, 
+]
+
 
 const ReactlyAudio = {
   Icon: Speaker,
   Component: ReactlyAudioComponent ,
   Settings, 
+  Events,
   Defaults: { 
   }
 }

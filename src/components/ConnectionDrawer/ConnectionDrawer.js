@@ -372,7 +372,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
         <Typography variant="subtitle1">
           <b>Data Resources</b>
         </Typography>
-         
+         <TextBtn endIcon={<Add />} onClick={() => setSelectedConnectionByID('new')}>add</TextBtn>
         <Spacer />
         <IconButton  onClick={handleClose}>
           <Close />

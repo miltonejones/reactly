@@ -247,7 +247,7 @@ export const AppData = [
               },
               {
                 "SettingName": "variant",
-                "SettingValue": "circular"
+                "SettingValue": "square"
               },
               {
                 "SettingName": "color",
@@ -255,7 +255,7 @@ export const AppData = [
               },
               {
                 "SettingName": "src",
-                "SettingValue": "https://cdndoe.xyz/files/upload/127597_1592473062.jpg"
+                "SettingValue": "https://media.pitchfork.com/photos/5929b36eb1335d7bf169a5c1/1:1/w_600/9b34bb44.jpeg"
               },
               {
                 "SettingName": "size",
@@ -1548,8 +1548,8 @@ export const AppData = [
         "data": []
       },
       {
-        "PageName": "demo",
-        "PagePath": "demo",
+        "PageName": "Boombot",
+        "PagePath": "boombot",
         "components": [
           {
             "ComponentType": "Box",
@@ -1568,6 +1568,14 @@ export const AppData = [
               {
                 "Key": "margin",
                 "Value": "Sm/0.5"
+              },
+              {
+                "Key": "grid-template-columns",
+                "Value": "4"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
               }
             ],
             "events": [],
@@ -1587,11 +1595,11 @@ export const AppData = [
             "settings": [
               {
                 "SettingName": "label",
-                "SettingValue": "Enter some text"
+                "SettingValue": "Search for music"
               },
               {
                 "SettingName": "variant",
-                "SettingValue": "outlined"
+                "SettingValue": "filled"
               },
               {
                 "SettingName": "value",
@@ -1608,6 +1616,14 @@ export const AppData = [
               {
                 "SettingName": "target",
                 "SettingValue": "search_param"
+              },
+              {
+                "SettingName": "autoComplete",
+                "SettingValue": "off"
+              },
+              {
+                "SettingName": "end",
+                "SettingValue": "MusicNote"
               }
             ],
             "scripts": [],
@@ -1680,7 +1696,7 @@ export const AppData = [
             "settings": [
               {
                 "SettingName": "bindings",
-                "SettingValue": "{\"resourceID\":1,\"bindings\":{\"artistName\":\"artistName\",\"trackNumber\":\"trackNumber\",\"previewUrl\":\"previewUrl\",\"trackName\":\"trackName\"}}"
+                "SettingValue": "{\"resourceID\":1,\"bindings\":{\"artistName\":\"artist\",\"trackNumber\":\"#\",\"previewUrl\":\"previewUrl\",\"trackName\":\"title\"}}"
               },
               {
                 "SettingName": "bound",
@@ -1721,7 +1737,7 @@ export const AppData = [
             "settings": [
               {
                 "SettingName": "controls",
-                "SettingValue": false
+                "SettingValue": true
               },
               {
                 "SettingName": "autoplay",
@@ -1804,7 +1820,7 @@ export const AppData = [
         "scripts": [
           {
             "name": "handle user click",
-            "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  setState(value => ({...value, \n    selected_index: data.row,\n    player_url: data.previewUrl\n  }));\n\n  setTimeout (() => {\n    const player = api.getRef(5);  \n    player.play();\n  }, 1888)\n\n}\n",
+            "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  setState(value => ({...value, \n    selected_index: data.row,\n    player_url: data.previewUrl\n  }));\n\n  setTimeout (() => {\n    const player = api.getRefByName('player');  \n    !!player && player.play();\n  }, 888)\n\n}\n",
             "ID": 1
           }
         ]
@@ -1846,7 +1862,62 @@ export const AppData = [
     "Name": "Another Application",
     "path": "another-application",
     "ID": 2,
+    "pages": [
+      {
+        "PageName": "Home",
+        "PagePath": "home",
+        "components": [
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": 1,
+            "order": 100
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "componentID": 1,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": 2,
+            "order": 200
+          }
+        ],
+        "ID": 1
+      }
+    ],
+    "connections": [
+      {
+        "name": "New Connection",
+        "type": "rest",
+        "root": "dsfs",
+        "ID": 1
+      }
+    ],
+    "resources": []
+  },
+  {
+    "Name": "new application test",
+    "path": "new-application-test",
+    "ID": 2,
     "pages": [],
-    "connections": []
+    "connections": [],
+    "resources": []
   }
 ]

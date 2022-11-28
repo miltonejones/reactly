@@ -54,6 +54,12 @@ const JsonTree = ( { json, indent = 0 }) => {
         ? d.filter(f =>  f !== name)
         : d.concat(name))
   }
+
+  if (json.constructor === Array) {
+    return <>what now??</>
+  }
+
+
   return <> 
     {Object.keys(json).map(node => {
        if (Array.isArray(json[node])) {

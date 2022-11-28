@@ -42,8 +42,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   }
 
   if (!parsed.length) {
-    return <Box sx={{m: 2}}>No records to display.
-</Box>
+    return <Box sx={{m: 2}}>{args.emptyMessage}</Box>
   }
 
  return (
@@ -100,6 +99,10 @@ const Settings = {
       name: 'Appearance',
       always: true,
       settings: [ 
+        {
+          title: 'Message to display when empty',
+          label: 'emptyMessage'
+        },
         {
           title: 'Size',
           label: 'size',
@@ -159,7 +162,9 @@ const ReactlyTable = {
   Events,
   Settings,
   Styles: GenericStyles, 
-  Defaults: { }
+  Defaults: {
+    emptyMessage: 'No records to display.'
+   }
 }
  
 

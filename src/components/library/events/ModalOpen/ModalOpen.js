@@ -24,7 +24,7 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
 
  return (
    <Layout data-testid="test-for-ModalOpen">
-   <Text small>Select Modal:</Text> 
+   <Text small>Select component:</Text> 
 
 
    <QuickSelect getOptionLabel={getOptionLabel} options={modals.map(d => d.ComponentName)} value={state.target}

@@ -19,6 +19,8 @@ import { East } from '@mui/icons-material';
 import ReactlyMenu from './ReactlyMenu/ReactlyMenu';
 import ReactlyAudio from './ReactlyAudio/ReactlyAudio';
 import ReactlySelect from './ReactlySelect/ReactlySelect';
+import ReactlyBadge from './ReactlyBadge/ReactlyBadge';
+import ReactlyCard from './ReactlyCard/ReactlyCard';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -45,7 +47,9 @@ const Library = {
   Dialog: ReactlyDialog,
   Menu: ReactlyMenu,
   AudioPlayer: ReactlyAudio,
-  Select: ReactlySelect
+  Select: ReactlySelect,
+  Badge: ReactlyBadge,
+  Card: ReactlyCard
 }
 
 export default Library;

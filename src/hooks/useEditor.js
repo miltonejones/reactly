@@ -18,6 +18,21 @@ export const useEditor = (apps) => {
   }
 
 
+  const createProg = async (Name) => { 
+    const prog = {
+      Name,
+      "path": Name.toLowerCase().replace(/\s/g, '-'),
+      "ID": 2,
+      "pages": [],
+      "connections": [],
+      "resources": []
+    }
+    const updated = applications.concat(prog)
+    setApplications(updated);
+    app.setAppData(updated)
+    app.setDirty(true)
+  };
+
   const editProg = async (ID, edit) => {
     const app = findProg(ID);
     await edit(app);
@@ -269,5 +284,6 @@ export const useEditor = (apps) => {
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
-    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage};
+    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, 
+    createProg};
 }

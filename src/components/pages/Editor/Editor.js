@@ -393,7 +393,7 @@ const Editor = ({ applications: apps = {} }) => {
             short
             item
             xs={12}
-            sx={{ borderBottom: 1, borderColor: "divider" }}
+            sx={{ borderBottom: 1, borderColor: "divider", whiteSpace: 'nowrap' }}
           >
             <Flex sx={{ p: 1 }}>
               <Flex

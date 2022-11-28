@@ -155,11 +155,13 @@ function ListOption ({
 
         <Collapse in={expanded && type !== 'valuelist'}>
           <Stack sx={{pl: 1}}>
-            <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} 
-                value={optionValue.subtext} size="small" placeholder="Subtext" />
+
+            {type !== 'menulist' && <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} 
+                value={optionValue.subtext} size="small" placeholder="Subtext" />}
 
             <IconComponentInput value={optionValue.startIcon} sx={{mb: 1}} onChange={handlePropChange('startIcon')}  label="Start Icon"/>
-            <IconComponentInput value={optionValue.endIcon} sx={{mb: 1}} onChange={handlePropChange('endIcon')}  label="End Icon"/>
+
+            {type !== 'menulist' && <IconComponentInput value={optionValue.endIcon} sx={{mb: 1}} onChange={handlePropChange('endIcon')}  label="End Icon"/>}
           </Stack>
         </Collapse> 
         <Collapse in={expanded && type === 'valuelist'}>

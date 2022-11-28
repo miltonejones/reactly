@@ -52,7 +52,7 @@ const Detail = ({ applications, onConnect }) => {
     subtext:  f.root
   }))
   
-  const resources = application.resources.map(f => ({
+  const resources = application.resources?.map(f => ({
     text: f.name,
     subtext:  f.method + ' - ' + f.path
   }))
@@ -64,7 +64,7 @@ const Detail = ({ applications, onConnect }) => {
 
   const tabs = [
     `Connections (${application.connections.length})`,
-    `Resources (${application.resources.length})`,
+    `Resources (${application.resources?.length})`,
     `Pages (${application.pages.length})`
   ]
   

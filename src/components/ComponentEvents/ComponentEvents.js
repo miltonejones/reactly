@@ -137,7 +137,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     name: 'Reset data resource',
     value: 'dataReset'
   } ]: []).concat(modalsExist ? {
-    name: 'Open or close a modal',
+    name: 'Open or close a modal component',
     value: 'modalOpen'
   } : []);
 
