@@ -5,7 +5,7 @@ import QuickMenu from './QuickMenu/QuickMenu';
 import QuickSelect from './QuickSelect/QuickSelect';
 import ContentTree from './ContentTree/ContentTree'
 import ComponentTree from "./ComponentTree/ComponentTree";
-import ComponentPanel from "./ComponentPanel/ComponentPanel";
+import ComponentPanel, { TabButton } from "./ComponentPanel/ComponentPanel";
 import ComponentSettings, { ComponentCollapse, ComponentInput, ComponentPanelSettings } from "./ComponentSettings/ComponentSettings";
 import ComponentStyles from "./ComponentStyles/ComponentStyles";
 import ComponentEvents from "./ComponentEvents/ComponentEvents";
@@ -24,15 +24,16 @@ const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'd
 export {
   AU,
   Area,
+  TabButton,
   ConnectionModal,
   MenuDrawer, 
+  SearchBox,
   Tiny,
   PillMenu,
   PopoverInput,
   PopoverTextBox, 
   ListGrid,
-  RotateButton,
-  SearchBox,  
+  RotateButton, 
   Flex, 
   Tooltag, 
   Spacer,

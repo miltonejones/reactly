@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, 
     Switch, Box, Alert,  Stack, Typography } from '@mui/material';
 import Library from '../library';
-import { QuickSelect, Flex, TextInput, Spacer, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, Flex, Text, TextInput, Spacer, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
@@ -19,10 +19,10 @@ import {
 
 
 export const ComponentInput = props => {
-    const { bindable, label, args = {} } = props;
+    const { bindable, label, title, args = {} } = props;
     const bindProps = {
       ...props,
-      title: `Bind ${label} to client state`,
+      title: `Bind ${title} to client state`,
       label: 'bound',
       type: 'boolean',
       trueProp: label
@@ -84,7 +84,7 @@ export const ComponentInputBody = (props) => {
   }
 
   const { bindableProps }  = Library [component.ComponentType]
-  const header = <Typography variant="caption">{title}</Typography>
+  const header = <Text small variant="caption">{title}</Text>
 
   const inputProps = {
     ...props,
@@ -92,6 +92,7 @@ export const ComponentInputBody = (props) => {
     handleChange,
     resources,
     value,
+    type,
     bindableProps
   }
 
@@ -99,6 +100,7 @@ export const ComponentInputBody = (props) => {
     state: StateComponentInput,
     pill: PillComponentInput,
     boolean: BooleanComponentInput,
+    valuelist: ListComponentInput,
     listbuilder: ListComponentInput,
     listbinder: ListBinderComponentInput,
     listtable: ListTableComponentInput
@@ -124,6 +126,7 @@ export const ComponentInputBody = (props) => {
   return <Stack>
   {header}
   <TextInput 
+    autoComplete="off"
     helperText={helperText}  
     onChange={e => handleChange(e.target.value)} 
     size="small" 
@@ -140,6 +143,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, set
 
  return (
    <Grid container data-testid="test-for-ComponentSettings" spacing={2} sx={{p: 1}}>
+ 
     {settings.map(setting => {
 
       if (setting.when && !setting.when(args)) {

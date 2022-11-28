@@ -186,6 +186,10 @@ export const useEditor = (apps) => {
         Value: value,
         Type: type
       }
+
+      if (!page.state) {
+        Object.assign(page, {state: []})
+      }
  
 
       const maxID = getMax(page.state.map(f => f.ID));

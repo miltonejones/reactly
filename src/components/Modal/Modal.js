@@ -283,10 +283,11 @@ export const useModal = () => {
     required: ['name', 'expression']
   });
 
-  const CreateComponent = (value) => 
+  const CreateComponent = (components) => 
   createModalMethod({
     message: 'Add Component',
     title: 'Add Component', 
+    components,
     component: ComponentModal, 
     minWidth: 720,
     maxWidth: 720,

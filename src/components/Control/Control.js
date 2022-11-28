@@ -12,7 +12,7 @@ import {
   InputAdornment,  
   styled } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip"; 
-import { ExpandMore, FilterAlt, Save, Close } from "@mui/icons-material";
+import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext';
  
 export const AU = styled('u')(({ theme, active, error, small }) => ({
@@ -216,7 +216,7 @@ export const RotateExpand = styled(ExpandMore)(({ deg = 0 }) => ({
 export const SearchBox = ({value, onChange, onClose, startIcon = true, ...props}) => {
   const startAdornment = !startIcon ? null  : <InputAdornment position="start">
     <IconButton size="small">
-      <FilterAlt />
+      <Tiny icon={Search} />
     </IconButton>
   </InputAdornment>
 
@@ -229,7 +229,7 @@ export const SearchBox = ({value, onChange, onClose, startIcon = true, ...props}
     </InputAdornment>,
   }
 
-  return  <TextField size="small" {...props} value={value} autoComplete="off" onChange={onChange} 
+  return  <TextInput size="small" {...props} value={value} autoComplete="off" onChange={onChange} 
   InputProps={adornment} autoFocus/>
 };
 

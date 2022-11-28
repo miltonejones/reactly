@@ -27,6 +27,7 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
   const [pageClientState, setPageClientState] = React.useState(null);
   const [pageResourceState, setPageResourceState] = React.useState([]);
   const [pageModalState, setPageModalState] = React.useState({});
+  const [pageRefState, setPageRefState] = React.useState({});
 
   React.useEffect(() => {
     if (!!pageClientState) return;
@@ -46,10 +47,14 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
       setPageResourceState,
       pageModalState, 
       setPageModalState,
+      pageRefState, 
+      setPageRefState,
       selectedPage,
       appContext
-   }}> 
-  {/* <pre> {JSON.stringify(pageResourceState,0,2)}</pre> */}
+   }}>  
+   <pre>
+   {/* {JSON.stringify(pageResourceState)} */}
+   </pre>
       {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
  

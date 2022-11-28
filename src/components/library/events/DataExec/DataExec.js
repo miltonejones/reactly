@@ -1,14 +1,18 @@
 import React from 'react';
 import { styled, Box, Typography } from '@mui/material'; 
-import { QuickSelect, Flex, Spacer, TextBtn } from '../../..';
+import { QuickSelect, Flex, Text, Spacer, TextBtn } from '../../..';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const DataExec = ({ event , resources, page, handleSave }) => {
-  const [state, setState ] = React.useState({ ...event.action, type: 'dataExec' });
+const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
+  const [state, setState ] = React.useState({ ...event.action, type: selectedType });
   
+  const actionReset = selectedType === 'dataReset';
+  const actionDesc = actionReset
+    ? 'Reset'
+    : 'Execute' 
 
   const target = !event.action 
     ? null
@@ -20,12 +24,12 @@ const DataExec = ({ event , resources, page, handleSave }) => {
    <Layout data-testid="test-for-DataExec">
 
 
-<Typography>Execute Resource:</Typography> 
+<Text small>{actionDesc} Resource:</Text> 
     <QuickSelect options={resources.map(d => d.name)} value={resource?.name}
       onChange={value => setState(s => ({...s, target: resources.find(d => d.name === value).ID}))}
     />
-[{target}][{state.target}]
-      {!! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
+{/* [{target}][{state.target}] */}
+      {!actionReset && !! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
         <QuickSelect 
         options={page.state.map(f => f.Key)} 
         label={`Set value for ${val.key}`}
@@ -47,8 +51,8 @@ const DataExec = ({ event , resources, page, handleSave }) => {
         })}>Save</TextBtn>
       </Flex>
       
-<pre>{JSON.stringify(resource,0,2)}</pre> 
-      <pre>{JSON.stringify(state,0,2)}</pre> 
+{/* <pre>{JSON.stringify(resource,0,2)}</pre> 
+      <pre>{JSON.stringify(state,0,2)}</pre>  */}
    </Layout>
  );
 }

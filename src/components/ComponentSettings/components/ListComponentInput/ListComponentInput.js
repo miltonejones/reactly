@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, Button, Typography,  Stack, Collapse } from '@mui/material';
 import { Close, Add, Delete, Save, Settings } from "@mui/icons-material"; 
-import { TextInput, Flex, Spacer, TextBtn, PopoverInput, QuickSelect, TinyButton } from '../../..';
+import { TextInput, Text, Flex, Spacer, TextBtn, PopoverInput, QuickSelect, TinyButton } from '../../..';
 import { getMax } from '../../../library/util';
 import { IconComponentInput } from '..';
 
@@ -11,7 +11,8 @@ import { AppStateContext } from '../../../../hooks/AppStateContext';
  
 const ListComponentInput = ({
   handleChange,
-  value
+  value,
+  type
 }) => {
   
  
@@ -62,6 +63,7 @@ const ListComponentInput = ({
       return items.push({
         ID: isNaN(maxID) ? 1 : (maxID + 1 + e),
         text: word, 
+        value: word,
         startIcon: null,
         endIcon: null,
         subtext: null
@@ -78,7 +80,7 @@ const ListComponentInput = ({
 
 
  return (
-   <Box data-testid="test-for-ListComponentInput">
+   <Box data-testid="test-for-ListComponentInput"> 
       <Flex>
         <Spacer />
 
@@ -98,21 +100,26 @@ const ListComponentInput = ({
       expanded={expanded.indexOf(f.ID) > -1}
       onDelete={dropListItem} 
       onUpdate={updateListItemText}
+      type={type}
       key={f.text}/>)}
      </Stack>
    </Box>
  );
 }
 
-function ListOption ({ text, subtext, ID , 
-      startIcon,
+function ListOption ({ 
+  type,
+  text, subtext, ID , 
+  startIcon,
       endIcon,
+      value,
     expanded, onUpdate, onExpand, onDelete}) {
-  const [value, setValue] = React.useState({
+  const [optionValue, setValue] = React.useState({
     text,
     subtext,
     startIcon,
     endIcon,
+    value
   });
 
   const handleTextChange = f => e => {
@@ -122,32 +129,49 @@ function ListOption ({ text, subtext, ID ,
     setValue(s => ({...s, [f]: e })) 
   } 
   return <>
-  <Flex sx={{p: 1, borderBottom: 1, borderColor: 'divider'}} 
+  <Flex sx={{p: 1, borderBottom: type == 'valuelist' ? 0 : 1, borderColor: 'divider'}} 
         >
+          <Stack>
+
+          {expanded && type == 'valuelist' && <Text small>Option label</Text>}
           {expanded 
-            ?   <TextInput onChange={handleTextChange('text')} size="small" placeholder="Text" value={value.text} />
+            ?   <TextInput onChange={handleTextChange('text')} size="small" placeholder="Text" value={optionValue.text} />
           :  <Typography variant="caption"> {text}</Typography>}
       
 
+            
+          </Stack>
         
 
          <Spacer />
         <TinyButton onClick={() => {
           if (expanded) {
-            return onUpdate(ID, value);
+            return onUpdate(ID, optionValue);
           }
           onDelete(ID);
         }} icon={expanded ? Save : Delete} />
         <TinyButton onClick={() => onExpand(ID)} icon={Settings} />
         </Flex>
 
-        <Collapse in={expanded}>
+        <Collapse in={expanded && type !== 'valuelist'}>
           <Stack sx={{pl: 1}}>
-            <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} value={value.subtext} size="small" placeholder="Subtext" />
+            <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} 
+                value={optionValue.subtext} size="small" placeholder="Subtext" />
 
-            <IconComponentInput value={value.startIcon} sx={{mb: 1}} onChange={handlePropChange('startIcon')}  label="Start Icon"/>
-            <IconComponentInput value={value.endIcon} sx={{mb: 1}} onChange={handlePropChange('endIcon')}  label="End Icon"/>
+            <IconComponentInput value={optionValue.startIcon} sx={{mb: 1}} onChange={handlePropChange('startIcon')}  label="Start Icon"/>
+            <IconComponentInput value={optionValue.endIcon} sx={{mb: 1}} onChange={handlePropChange('endIcon')}  label="End Icon"/>
           </Stack>
+        </Collapse> 
+        <Collapse in={expanded && type === 'valuelist'}>
+          <Stack sx={{pl: 1}}>
+           {/* <pre>
+           {JSON.stringify(optionValue,0,2)}
+           </pre> */}
+           <Text small>Option value</Text>
+            <TextInput sx={{mb: 1}} onChange={handleTextChange('value')} 
+                value={optionValue.value} size="small" placeholder="value" />
+
+           </Stack>
         </Collapse> 
   </>
 }

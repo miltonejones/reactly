@@ -38,13 +38,16 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
   const chosenEvent = eventTypes.find(f => f.name === eventName)
   const title = !chosenEvent ? `unknown event ${eventName}` : chosenEvent.description; 
   let act = 'Unknown action'
+  const obj = resources.find(e => e.ID === action.target)
   switch(action.type) {
     case 'setState':
       act = <>Set the value of "{action.target}" to <b>{action.value.toString()}</b></>
       break;
     case 'dataExec':
-      const obj = resources.find(e => e.ID === action.target)
       act = <>Execute "{obj.name} - {obj.method}"</>
+      break;
+    case 'dataReset': 
+      act = <>Reset  "{obj.name} - {obj.method}"</>
       break;
     case 'openLink':
       const href = pages.find(e => e.ID === action.target).PageName
@@ -125,10 +128,15 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
       name: 'Link to page',
       value: 'openLink'
     } 
-  ].concat(resources?.length ? {
+  ].concat(resources?.length ? [
+    {
     name: 'Execute data resource',
     value: 'dataExec'
-  } : []).concat(modalsExist ? {
+  },
+  {
+    name: 'Reset data resource',
+    value: 'dataReset'
+  } ]: []).concat(modalsExist ? {
     name: 'Open or close a modal',
     value: 'modalOpen'
   } : []);
@@ -138,6 +146,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     scriptRun: RunScript,
     openLink: OpenLink,
     dataExec: DataExec,
+    dataReset: DataExec,
     modalOpen: ModalOpen
     
   }
@@ -193,7 +202,10 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
       <><EventEditor
             resources={resources}
             handleSave={handleSave}
-            event={freshEvent} page={selectedPage} /></>}
+            event={freshEvent} 
+            page={selectedPage} 
+            selectedType={selectedType}
+            /></>}
  
 
       {!!selectedHandler && !!selectedEvent && 
@@ -205,6 +217,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
             return <Editor
               resources={resources}
               handleSave={handleSave}
+              selectedType={e.action.type}
               event={e} key={e.action.type} page={selectedPage} />
           }) }
  

@@ -6,7 +6,7 @@ import { styled, List, Link, ListItemButton,
 
   import Library from '../library';
 import { Article, Add, MoreVert, Close, Delete } from "@mui/icons-material";
-import {QuickMenu, Tiny} from "..";
+import { QuickMenu, Tiny } from "..";
 import { AppStateContext } from '../../hooks/AppStateContext';
 
 const componentOrder = (a,b) => a.order - b.order;
@@ -57,6 +57,10 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, label, indent = 0, on
     {
       name: 'Add Component before',
       action: () => onCreate(parentID, { before: !0, order: tree.order})
+    },  
+    {
+      name: 'Add Component after',
+      action: () => onCreate(parentID, { after: !0, order: tree.order})
     },  
     {
       name: '-', 

@@ -6,6 +6,19 @@ import { GridOn } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
 import { PageStateContext } from '../../../hooks/usePageContext';
+
+const truncate = (value, length) => {
+  try {
+
+    if (!value.substr || !length) {
+      return value;
+    }
+    const over = value?.length && value.length > length;
+    return `${value.substr(0, length)}${over ? '...' : ''}`
+  } catch (ex) {
+    return typeof value;
+  }
+}
   
 const ReactlyComponentTable = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(PageStateContext);
@@ -29,13 +42,13 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   }
 
   if (!parsed.length) {
-    return <Box sx={{m: 2}}>No records to display.</Box>
+    return <Box sx={{m: 2}}>No records to display.
+</Box>
   }
 
  return (
   <> 
-
-
+{/* <pre>{JSON.stringify(args,0,2)}</pre> */}
    <ReactlyComponent component={Table} {...props}>
 
       <TableHead>
@@ -57,6 +70,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
             key={i} 
           >
             {Object.values(row).map((cell, k) => <TableCell 
+            sx={{fontWeight: props.selectedIndex?.toString() === i.toString() ? 600 : 400}}
               onClick={e => {
                 onCellClick && onCellClick(e, {
                   row: i,
@@ -65,7 +79,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
                 })
               }}
               key={k} component="th" scope="row">
-              {cell}
+              {truncate(cell, args.truncate)}
             </TableCell> )}
             
           </TableRow>
@@ -100,6 +114,15 @@ const Settings = {
           title: 'Sticky Header',
           label: 'stickyHeader',
           type:  'boolean'
+        } ,
+        {
+          title: 'Selected Row',
+          label: 'selectedIndex',
+          bindable:  !0
+        } ,
+        {
+          title: 'Truncate Cell Text',
+          label: 'truncate' 
         } 
       ]
     },

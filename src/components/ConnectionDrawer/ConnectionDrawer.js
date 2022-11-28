@@ -225,8 +225,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
   const dot = path.join('.');
   const fields = resource.columns;
 
-  return <> 
-    {/* <Divider  sx={{mb: 2}}/> */}
+  return <>  
       {Object.keys(nodes).map(node => { 
 
         if (Array.isArray(nodes[node])) {

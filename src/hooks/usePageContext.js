@@ -62,6 +62,8 @@ export const usePageContext = () => {
           setPageClientState,
           pageResourceState, 
           setPageResourceState,
+          pageRefState, 
+          setPageRefState,
           pageModalState, 
           setPageModalState,
           selectedPage, 
@@ -85,8 +87,21 @@ export const usePageContext = () => {
       return items
     }, {})); 
 
-    return collated 
-    
+    return collated ;
+  }
+
+  const handleComponentRequest = (qs, resource) => {
+
+    executeComponentRequest(appContext.connections, qs, resource)
+    .then(records => { 
+      setPageResourceState(s => s.filter(e => e.resourceID !== resource.ID)
+        .concat({
+          resourceID: resource.ID,
+          name: resource.name,
+          records
+        }))
+    })
+   
   }
 
 
@@ -111,6 +126,16 @@ export const usePageContext = () => {
             } 
             setPageModalState(state)
           break;
+        case 'dataReset':
+          
+          setPageResourceState(s => s.map(state => state.resourceID === trigger.action.target 
+                 ? {
+                  resourceID: state.resourceID,
+                  name: state.name,
+                  records: []
+                 } : state));
+
+          break;
         case 'dataExec':
           const resource = appContext.resources.find(f => f.ID === trigger.action.target);
           const { target, action } = trigger.action; 
@@ -119,9 +144,9 @@ export const usePageContext = () => {
             const prop = pageClientState[trigger.action.terms[term]];
             return `${term}=${prop}`
           }).join('&');
+
           executeComponentRequest(appContext.connections, qs, resource)
-            .then(records => {
-              // alert (JSON.stringify(records))
+            .then(records => { 
               setPageResourceState(s => s.filter(e => e.resourceID !== trigger.action.target)
                 .concat({
                   resourceID: resource.ID,
@@ -148,7 +173,8 @@ export const usePageContext = () => {
               action(selectedPage, {
                 state: pageClientState, 
                 setState: setPageClientState,
-                data: options
+                data: options,
+                api: { getRef }
               })
             } catch (ex) {
               alert (ex.message);
@@ -160,8 +186,11 @@ export const usePageContext = () => {
       } 
   
     })
- 
   } 
+
+  const getRef = (ID) => {
+     return pageRefState[ID]
+  }
 
   const attachEventHandlers = component => {
 
@@ -173,7 +202,8 @@ export const usePageContext = () => {
         name: eventName ,
         component,
         pageClientState,
-        options
+        options,
+        api: { getRef }
       });  
       return handlers;
     }, {});
@@ -182,7 +212,7 @@ export const usePageContext = () => {
     
     const bound = component.settings?.find(f => f.SettingName === 'bound' && !!f.SettingValue);
 
-
+     !!bound && console.log({bound, pageClientState})
  
     if (bound && pageClientState) {
       const node = component.settings?.find(f => f.SettingName === 'target');
@@ -193,8 +223,7 @@ export const usePageContext = () => {
           onChange: e => setPageClientState(s => ({...s, [target]: e.target.value}))
         })
       }
-    }
-  // component.ComponentType === 'Chip' && console.log ({ eventHandlers })
+    } 
       
     return eventHandlers;
 
@@ -205,7 +234,8 @@ export const usePageContext = () => {
     pageClientState,
     setPageClientState,
     attachEventHandlers,
-    executeComponentRequest
+    executeComponentRequest,
+    handleComponentRequest
   }
 
 }

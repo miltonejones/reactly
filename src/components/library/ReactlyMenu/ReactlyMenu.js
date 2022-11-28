@@ -13,10 +13,12 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
-    const args = getSettings(props.settings);
-    const parsed = !!args?.items && typeof args?.items === 'string' 
+  const args = getSettings(props.settings);
+  
+  const parsed = !!args?.items && typeof args?.items === 'string' 
       ? JSON.parse(args?.items)
       : args?.items;
+
   const { componentEditing, preview, ...rest } = props;
 
 

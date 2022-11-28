@@ -9,7 +9,7 @@ const Layout = styled(Box)(({ theme }) => ({
  minWidth: 580
 }));
  
-const ComponentModal = ({ onChange }) => {
+const ComponentModal = ({ onChange, components = [] }) => {
   const [state, setState] = React.useState({
     selected: null,
     name: null
@@ -17,7 +17,9 @@ const ComponentModal = ({ onChange }) => {
   const { selected, name } = state;
   
   const select = key => {
-    const datum = {...state , selected: key}
+    const  existing = components.filter(f => f.ComponentType === key);
+    const name = `${key}-${existing.length + 1}`
+    const datum = {...state , selected: key, name}
     setState(datum);
     onChange(datum)
   }
@@ -46,7 +48,7 @@ const ComponentModal = ({ onChange }) => {
     })}
 
     </Flex>
-    <TextField sx={{ mt: 2 }} autoComplete="off" fullWidth size="small" value={name} label="Component Name" onChange={rename}/>
+    <TextField sx={{ mt: 2 }} autoComplete="off" fullWidth size="small" value={name} placeholder="Component Name" onChange={rename}/>
     </Stack>
    </Layout>
  );

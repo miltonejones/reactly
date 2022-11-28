@@ -31,6 +31,7 @@ import {
   PageTree,
   ComponentTree,
   ConnectionDrawer,
+  SearchBox,
 } from "../..";
 import {
   ExpandMore,
@@ -54,6 +55,7 @@ import { useEditor } from "../../../hooks/useEditor";
 import { Json } from "../../../colorize";
 import Library from "../../library";
 import { TextInput } from "../..";
+import { JsonView } from "../../../colorize";
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, tool }) => {
   const args = {
@@ -330,7 +332,7 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const createComponent = async (componentID, options) => {
-    const ok = await CreateComponent();
+    const ok = await CreateComponent(queryState.page.components);
     if (!ok) return;
     appendComponent(ok, componentID, options);
   };
@@ -543,7 +545,9 @@ const Editor = ({ applications: apps = {} }) => {
                       </Flex>
                     </Flex>
                   )}
-                  <TextInput label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
+                  {!!queryState.page?.components && <>
+                  
+                  <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
                       sx={{mb: 1}} value={contentFilter} />
                   <ContentTree
                     filter={contentFilter}
@@ -552,13 +556,17 @@ const Editor = ({ applications: apps = {} }) => {
                     onCreate={(type, options) => createComponent(type, options)}
                     tree={queryState.page?.components}
                   />
+                  </>
+                    
+                  }
                 </Stack>
               </>
             )}
           </Pane>
           <Pane wide {...collapsed} item sx={{ p: 1 }}>
             <Collapse in={json}>
-              <Json>{JSON.stringify(appData, 0, 2)}</Json>
+            {!!json &&  <JsonView json={appData}/>}
+              {/* <Json>{JSON.stringify(appData, 0, 2)}</Json> */}
             </Collapse>
 
             <Collapse in={!json}>
