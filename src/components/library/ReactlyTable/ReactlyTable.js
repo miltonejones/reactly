@@ -96,13 +96,18 @@ const ReactlyComponentTable = ({ children, ...props }) => {
 const Settings = {
   categories: [ 
     {
-      name: 'Appearance',
+      name: 'General',
       always: true,
       settings: [ 
         {
           title: 'Message to display when empty',
           label: 'emptyMessage'
-        },
+        }, 
+      ]
+    },
+    {
+      name: 'Appearance', 
+      settings: [  
         {
           title: 'Size',
           label: 'size',
@@ -112,7 +117,22 @@ const Settings = {
           title: 'padding',
           label: 'padding',
           types: [ 	'checkbox','none','normal'], 
-        } ,
+        } , 
+      ]
+    },
+    {
+      name: 'Data',  
+      settings: [  
+        {
+          title: 'Bind to data resource',
+          label: 'bindings' ,
+          type: 'listtable'
+        },  
+      ]
+    }, 
+    {
+      name: 'Behavior', 
+      settings: [   
         {
           title: 'Sticky Header',
           label: 'stickyHeader',
@@ -129,16 +149,6 @@ const Settings = {
         } 
       ]
     },
-    {
-      name: 'Data',  
-      settings: [  
-        {
-          title: 'Bind to data resource',
-          label: 'bindings' ,
-          type: 'listtable'
-        },  
-      ]
-    }, 
   ]
 }
 
