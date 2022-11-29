@@ -100,7 +100,7 @@ export const getOptionColor =  (option, key = 'name') => {
   if (hail) {
     return hail[key];
   }
-  return opt?.[key] || JSON.stringify(option); // ; 
+  return opt?.[key] || option; //JSON.stringify({key, option}); // ; 
 }
 
 export const GenericStyles =  {
@@ -146,7 +146,9 @@ export const GenericStyles =  {
         { 
           label: 'padding',
           types: PaddingSizes,
-          renderOption
+          renderOption,
+          edges: !0,
+          free: !0
         }
       ]
     },
@@ -156,7 +158,9 @@ export const GenericStyles =  {
         { 
           label: 'margin',
           types: PaddingSizes,
-          renderOption
+          renderOption,
+          edges: !0,
+          free: !0
         }
       ]
     },
@@ -172,7 +176,9 @@ export const ColorStyles =  {
           title: 'Thickness',
           label: 'border-width',
           types: PaddingSizes,
-          renderOption
+          renderOption,
+          free: !0
+          // edges: !0,
         },
         {
           title: 'Type',
@@ -187,13 +193,16 @@ export const ColorStyles =  {
             (!!e['border-style'] && e['border-style'] !== 'null') ,
           types: StandardColors,
           renderOption: colorOption,
-          getOptionLabel: getOptionColor
+          getOptionLabel: getOptionColor,
+          color: !0
         },
         {
           title: 'Radius',
           label: 'border-radius',
           types: PaddingSizes,
+          free: !0,
           renderOption,
+          // edges: !0,
           when: e => (!!e['border-width'] && e['border-width'] !== 'null') && 
           (!!e['border-style'] && e['border-style'] !== 'null') && 
           (!!e['border-width'] && e['border-width'] !== 'null') ,
@@ -208,7 +217,8 @@ export const ColorStyles =  {
           label: 'background-color',
           types: StandardColors,
           renderOption: colorOption,
-          getOptionLabel : getOptionColor
+          getOptionLabel : getOptionColor,
+          color: !0
         }
       ]
     }
@@ -312,7 +322,8 @@ export const LayoutStyles = {
         {
           title: 'Gap',
           label: 'gap',
-          types: [4,8,12,16,20,24] .map(p => `${p}px`)
+          types: [4,8,12,16,20,24] .map(p => `${p}px`),
+          free: !0
         },
 
         {

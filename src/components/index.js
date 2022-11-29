@@ -5,6 +5,7 @@ import QuickMenu from './QuickMenu/QuickMenu';
 import QuickSelect from './QuickSelect/QuickSelect';
 import ContentTree from './ContentTree/ContentTree'
 import ComponentTree from "./ComponentTree/ComponentTree";
+import ThemePanel from "./ThemePanel/ThemePanel";
 import ComponentPanel, { TabButton } from "./ComponentPanel/ComponentPanel";
 import ComponentSettings, { ComponentCollapse, ComponentInput, ComponentPanelSettings } from "./ComponentSettings/ComponentSettings";
 import ComponentStyles from "./ComponentStyles/ComponentStyles";
@@ -49,6 +50,7 @@ export {
   ComponentCollapse, 
   ComponentInput, 
   ComponentPanelSettings,
+  ThemePanel,
   ConnectionDrawer,
   useClipboard,
   PageTree,

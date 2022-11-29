@@ -26,12 +26,14 @@ const ComponentStyles = ({ component, onChange }) => {
   }
  
   return <>
-  
+ 
+ 
   {!checked && categories.map(category => <ComponentCollapse
     component={component}
     onChange={onChange}
     {...category}
     settings={category.styles}
+    css={component.styles}
     args={args}
     key={category.name}
   />)}

@@ -150,7 +150,7 @@ const Editor = ({ applications: apps = {} }) => {
     setConnection,
     setPage, 
     duplicatePage,
-    dropPage
+    dropPage,setTheme, dropTheme
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -231,6 +231,12 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleEventChange = (componentID, event) => {
     setComponentEvent(appData.ID, queryState.page.ID, componentID, event);
+  };
+
+  const handleThemeChange = async (themeID, themeName, theme) => {
+    const ok = themeName || await Prompt('Enter a theme name');
+    if (!ok) return;
+    setTheme (appData.ID, theme, ok)
   };
 
   const handleStateDrop = (stateID) => {
@@ -571,6 +577,7 @@ const Editor = ({ applications: apps = {} }) => {
 
             <Collapse in={!json}>
               <ComponentTree
+                themes={appData.themes}
                 appContext={appData}
                 preview
                 selectedPage={queryState.page}
@@ -589,10 +596,12 @@ const Editor = ({ applications: apps = {} }) => {
                 }
                 connections={appData.connections}
                 resources={appData.resources}
+                themes={appData.themes}
                 onMove={handleMove}
                 collapsed={collapsed.right}
                 selectedPage={queryState.page}
                 onPropChange={handlePropChange}
+                onThemeChange={handleThemeChange}
                 onStyleChange={handleStyleChange}
                 onSettingsChange={handleSettingsChange}
                 onEventChange={handleEventChange}

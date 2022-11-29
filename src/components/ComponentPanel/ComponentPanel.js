@@ -2,10 +2,10 @@ import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
   Typography } from '@mui/material';
 // import Library, { Settings } from '../library';
-import {  ComponentSettings, ComponentStyles, ComponentEvents } from '..';
+import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..';
 // import { getSettings } from '../library/util';
-import { Palette, Settings, Bolt, Article } from "@mui/icons-material";
-import { Spacer } from '..';
+import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
+import { Spacer , QuickSelect } from '..';
 import { TextBtn, TextInput } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Close, Input } from "@mui/icons-material";
@@ -16,7 +16,7 @@ const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 export const TabButton = styled(Tab)(({theme}) => ({ 
   textTransform: 'capitalize',
   margin: 0,
-  padding: theme.spacing(1, 2),
+  padding: theme.spacing(1),
   height: 24,
   minHeight: 24
 }))
@@ -27,18 +27,20 @@ const ComponentPanel = ({
     onSettingsChange,
     onStyleChange ,
     onPropChange,
+    onThemeChange,
     onEventChange,
     onMove,
     onCollapse,
     onEventDelete,
     collapsed,
+    themes,
     connections,
     resources,
  }) => {
  
   const [value, setValue] = React.useState(0);
 
-  const panels = [ComponentSettings, ComponentStyles, ComponentEvents];
+  const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
   const Panel = panels[value];
 
   const handleChange = (event, newValue) => {
@@ -90,17 +92,23 @@ const ComponentPanel = ({
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
         <TabButton icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
-        <TabButton icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
-        <TabButton icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
+        <TabButton disabled={!component} icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+        <TabButton disabled={!component} icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
+        <TabButton icon={<Tiny icon={FormatColorFill}/>} iconPosition="start"  label="Theme"  />
       </Tabs>
     </Box>
 
-    {!!component && <Panel 
-    onEventDelete={onEventDelete} component={component} selectedPage={selectedPage} onChange={onChange} 
+    {(!!component || value === 3) && <Panel 
+        onEventDelete={onEventDelete} 
+        component={component} 
+        selectedPage={selectedPage} 
+        onChange={onChange} 
+        onThemeChange={onThemeChange}
         connections={connections}
         resources={resources}
+        themes={themes}
     />}
-    {!component && !!selectedPage && <PageSettings page={selectedPage} onChange={onChange} />}
+    {!component && !!selectedPage &&  value === 0 && <PageSettings themes={themes} page={selectedPage} onChange={onChange} />}
 
       </>}
 
@@ -110,7 +118,7 @@ const ComponentPanel = ({
 }
 
 
-function PageSettings({ page, onChange }) {
+function PageSettings({ page, themes = [], onChange }) {
   const [state, setState] = React.useState(page);
   const { PageName, PagePath} = state
   return <Stack spacing={1} sx={{p: 1}}>
@@ -120,6 +128,16 @@ function PageSettings({ page, onChange }) {
       ...s, PageName: e.target.value, PagePath: e.target.value.toLowerCase().replace(/\s/g, '-')
     }))}
      helperText={`Path: ${PagePath}`} size="small"/>
+
+      <Text small>Theme</Text>
+      <QuickSelect options={themes.map(f => f.name)} 
+         value={state.ThemeName} 
+         onChange={value => {
+          setState(s => ({
+            ...s, ThemeName: value
+          }))
+         }}
+         />
 
       <Flex>
         <Spacer /> 

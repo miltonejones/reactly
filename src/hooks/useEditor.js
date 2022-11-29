@@ -1,5 +1,6 @@
 import * as React from 'react';
 import Library from '../components/library';
+import { uniqueId } from '../components/library/util';
 import { getMax } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
 
@@ -17,12 +18,31 @@ export const useEditor = (apps) => {
     app.setDirty(true)
   }
 
+  const setTheme = (appID, theme, name) => {
+    editProg(appID, async (app) => {
+       
+      if (!app.themes) {
+        Object.assign(app, { themes: []});
+      }
+
+      app.themes = app.themes.find(f => f.ID === theme.ID)
+        ? app.themes.map((c) => c.ID === theme.ID ? {...theme, ID: theme.ID} : c)
+        : app.themes.concat({...theme, name, ID: uniqueId()});
+    })
+  }
+
+  const dropTheme = async(appID, ID) => { 
+    editProg(appID, async (app) => {
+      app.themes = app.themes.filter(f => f.ID !== ID) 
+    })
+  }
+
 
   const createProg = async (Name) => { 
     const prog = {
       Name,
       "path": Name.toLowerCase().replace(/\s/g, '-'),
-      "ID": 2,
+      "ID": uniqueId(),
       "pages": [],
       "connections": [],
       "resources": []
@@ -285,5 +305,5 @@ export const useEditor = (apps) => {
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, 
-    createProg};
+    createProg, setTheme, dropTheme};
 }

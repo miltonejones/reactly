@@ -12,7 +12,7 @@ const attempt = str => {
   try {
     return JSON.parse(str)
   } catch (e) {
-    return false;
+    return str;
   }
 }
 
@@ -28,7 +28,11 @@ const colorTransform = (prop) => {
     ? attempt(prop)
     : prop;
 
-  return arg?.value;
+    if (arg?.value) {
+      return arg.value;
+    }
+  
+  return arg;
 };
  
 export const getSettings = (settings = []) => settings.reduce((items, res) => {
@@ -36,7 +40,7 @@ export const getSettings = (settings = []) => settings.reduce((items, res) => {
     return items;
   }, {});
 
-export const objectReduce = (object = []) => object.reduce((items, res) => {
+export const objectReduce = (object = []) => [...object].reduce((items, res) => {
   items[res.Key] =  res.Value === undefined 
     ? ""
     : res.Value; // || typeof res.Value;
@@ -54,30 +58,58 @@ export const getStyles = styles => {
    if (args['grid-template-columns']) {
     Object.assign(args, {'grid-template-columns': gridTransform(args['grid-template-columns'])})
    }
+
+   Object.keys(args).map(key => {
+    if (key.indexOf('edges') > 0) return ;
+    if (key.indexOf('free') > 0) return ;//delete args[key];
+    ['padding', 'margin'].map(selector => {
+      if (key.indexOf(selector) === 0) {
+        if (!args[selector + '-edges'] && key.indexOf('-') > 0 ) return delete args[key];
+        !!args[selector + '-edges'] && delete args[selector];
+        Object.assign(args, {[key]: paddingTransform(args[key])})
+      }
+    });
+    if (key.indexOf('color') > -1) {
+      
+    }
+   })
   
-   if (args['padding']) {
-    Object.assign(args, {'padding': paddingTransform(args['padding'])})
-   }
+  //  if (args['padding']) {
+  //   Object.assign(args, {'padding': paddingTransform(args['padding'])})
+  //  }
   
-   if (args['margin']) {
-    Object.assign(args, {'margin': paddingTransform(args['margin'])})
-   }
+  //  if (args['margin']) {
+  //   Object.assign(args, {'margin': paddingTransform(args['margin'])})
+  //  }
    
-   if (args['border-radius']) {
-    Object.assign(args, {'border-radius': paddingTransform(args['border-radius'])})
-   }
-   
-   if (args['border-width']) {
-    Object.assign(args, {'border-width': paddingTransform(args['border-width'])})
-   }
-   
-   if (args['border-color']) {
-    Object.assign(args, {'border-color': colorTransform(args['border-color'])})
-   }
+  //  if (args['border-radius']) {
+  //   Object.assign(args, {'border-radius': paddingTransform(args['border-radius'])})
+  //  }
+
+  const transformKey = (key, fn) => {
+    if (args.hasOwnProperty(key)) {
+      const prop = fn(args[key]);
+      if (!fn || fn === 'null') return delete args[key];
+      Object.assign(args, { [key]: prop })
+      return;
+    } 
+    console.log ({key, val: args[key]})
+    // Object.assign(args, { [key]: null })
+  }
   
-   if (args['background-color']) {
-    Object.assign(args, {'background-color': colorTransform(args['background-color'])})
-   }
+  ['border-color', 'background-color'].map(type => transformKey(type, colorTransform));
+  transformKey('border-width', paddingTransform)
+  //  if (args['border-width']) {
+  //   Object.assign(args, {'border-width': paddingTransform(args['border-width'])})
+  //  }
+   
+  //  if (args['border-color']) {
+  //   Object.assign(args, {'border-color': colorTransform(args['border-color'])})
+  //  }
+  
+  //  if (args['background-color']) {
+  //   Object.assign(args, {'background-color': colorTransform(args['background-color'])})
+  //  }
   return args;
 }
 
@@ -86,3 +118,5 @@ export const getMax = array => array.reduce((count, res) => {
   return Math.max(res, count);
 }, 0);
 
+
+export const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);

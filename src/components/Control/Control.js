@@ -116,12 +116,13 @@ export const Tiny = ({icon: Icon, hidden, ...props}) => <Icon {...props}
       transition: 'opacity 0.1s linear'}} />
 
 
-export const Flex = styled(Box)(({ theme, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
+export const Flex = styled(Box)(({ theme, nowrap, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
  display: "flex",
  width: fullWidth ? '100%' : 'inherit',
  alignItems: baseline ? "baseline" : "center",
  flexDirection: direction,
  gap: theme.spacing(spacing),
+ whiteSpace: nowrap ? 'nowrap' : 'inherit',
  flexWrap: wrap ? "wrap" : "nowrap",
 }));
  

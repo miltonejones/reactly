@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Alert } from '@mui/material';
+import { createTheme, useTheme, ThemeProvider, styled, Box, Alert } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { Helmet } from "react-helmet";
 import { Json } from '../../colorize';
@@ -19,7 +19,7 @@ const Preview = ({ component: Component, on, children, sx, ...props}) => {
  
 const componentOrder = (a,b) => a.order - b.order;
 
-const ComponentTree = ({ selectedPage, preview, appContext }) => {
+const ComponentTree = ({ selectedPage, preview, appContext, themes = [] }) => {
   const componentTree = selectedPage?.components;
   const { queryState = {}, setQueryState, createBreadcrumbs  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
@@ -30,6 +30,7 @@ const ComponentTree = ({ selectedPage, preview, appContext }) => {
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
 
+  const defaultTheme = useTheme()
   React.useEffect(() => {
     if (!!pageClientState) return;
     setPageClientState(stateProps);
@@ -44,6 +45,14 @@ let path;
   // components with no parents 
   const components = componentTree.filter(f => !f.componentID);
 
+  const selectedTheme = themes.find(f => f.name === selectedPage?.ThemeName);
+
+  const theme = !selectedPage?.ThemeName 
+    ? defaultTheme
+    : selectedTheme
+
+  const pageTheme = createTheme(theme);
+  
  return (
    <PageStateContext.Provider value={{
       pageClientState, 
@@ -57,16 +66,17 @@ let path;
       selectedPage,
       appContext
    }}>  
-   <pre>
+ 
    {/* {JSON.stringify(path)} */}
         {/* document title  */}
         {path && <Helmet> 
             <title>Reactly |{preview ? ' Editor | ' : ""} {path.join(' | ')}</title> 
         </Helmet>}
 
-   </pre>
+    <ThemeProvider theme={pageTheme}>
       {components.sort(componentOrder).map(c => <RenderComponent selectedComponent={selectedComponent} 
               preview={preview} key={c.ComponentName} component={c} trees={componentTree}/> )}
+    </ThemeProvider>
  
    </PageStateContext.Provider>
  );
