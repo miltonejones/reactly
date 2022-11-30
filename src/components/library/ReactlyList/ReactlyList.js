@@ -46,12 +46,14 @@ const ReactlyComponentList = ({ children, ...props }) => {
               </ListItemIcon>}
           <ListItemText  onClick={e => {
     onItemClick && onItemClick(e, {
-      ...item
+      ...item,
+      row: i
     })
   }} primary={item.text} secondary={item.subtext}/>
  {!!EndIcon && <ListItemSecondaryAction  onClick={e => {
     onSecondaryClick && onSecondaryClick(e, {
-      ...item
+      ...item,
+      row: i
     })
   }} >
   <EndIcon />

@@ -1,0 +1,58 @@
+.running,
+.runnable {
+  height: 240px;
+  width: 100%;
+}
+
+
+.runnable .carousel-show,
+.runnable .carousel-hide {
+  transition: left 0.5s ease-in-out;
+}
+
+.carousel-show {
+  left: 0px !important;
+}
+.carousel-hide {
+  left: 100% !important;
+}
+
+
+.running .carousel-show {
+  left: -100% !important;
+}
+
+.running .carousel-hide {
+  left: 0px !important;
+}
+
+
+/* .running .carousel-show {
+  left: -100% !important;
+  opacity: .5;
+}
+
+.running .carousel-hide {
+  left: 0px !important;
+} */
+
+.scroll-head {
+  position: absolute;
+  top: -50%;
+  left: 0px;
+  width: 100%; 
+  height: auto; 
+}
+
+.scroll-head img { 
+  width: 100%; 
+  height: auto; 
+}
+
+.scroll-head .text { 
+  position: absolute;
+  top: 400px;
+  left: 50px;
+  font-size: 2.5rem;
+  color: white;
+}

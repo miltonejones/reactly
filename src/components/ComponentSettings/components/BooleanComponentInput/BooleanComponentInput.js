@@ -9,21 +9,15 @@ const BooleanComponentInput = ({
   value,
   handleChange
 }) => {
-  return <Flex>
+  const checked = !!trueProp 
+  ? value === trueProp 
+  : value
+
+  return <Flex onClick={() => handleChange(!checked)}>
     {header}
   <Spacer />
-    <Box>
-      
-    <Switch  size="small"
-      checked={!!trueProp 
-        ? value === trueProp 
-        : value
-    }
-      onChange={e => {
-        handleChange(e.target.checked); 
-      }} 
-    />
-
+    <Box> 
+      <Switch  size="small" checked={checked} /> 
     </Box>
   </Flex>
 }

@@ -31,7 +31,7 @@ import {
   PageTree,
   ComponentTree,
   ConnectionDrawer,
-  SearchBox,
+  SearchBox, Text
 } from "../..";
 import {
   ExpandMore,
@@ -57,27 +57,27 @@ import Library from "../../library";
 import { TextInput } from "../..";
 import { JsonView } from "../../../colorize";
 
-const Pane = styled(Grid)(({ short, wide, left, right, thin, tool }) => {
+const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
-    minWidth: wide ? "calc(100vw - 830px)" : 380,
-    maxWidth: wide ? "calc(100vw - 830px)" : 380,
+    minWidth: `var(--${side}${state}-width)`,  //  wide ? "calc(100vw - var(--workspace-width))" : "var(--sidebar-width)",
+    maxWidth: `var(--${side}${state}-width)`  // wide ? "calc(100vw - var(--workspace-width))" : "var(--sidebar-width)",
   };
-  if (thin) {
-    Object.assign(args, {
-      minWidth: 60,
-      maxWidth: 60,
-    });
-  } else if (left && right && wide) {
-    Object.assign(args, {
-      minWidth: "calc(100vw - 180px)",
-      maxWidth: "calc(100vw - 180px)",
-    });
-  } else if ((left || right) && wide) {
-    Object.assign(args, {
-      minWidth: "calc(100vw - 510px)",
-      maxWidth: "calc(100vw - 510px)",
-    });
-  }
+  // if (thin) {
+  //   Object.assign(args, {
+  //     minWidth: 60,
+  //     maxWidth: 60,
+  //   });
+  // } else if (left && right && wide) {
+  //   Object.assign(args, {
+  //     minWidth: "calc(100vw - 180px)",
+  //     maxWidth: "calc(100vw - 180px)",
+  //   });
+  // } else if ((left || right) && wide) {
+  //   Object.assign(args, {
+  //     minWidth: "calc(100vw - 510px)",
+  //     maxWidth: "calc(100vw - 510px)",
+  //   });
+  // }
 
   return {
     // outline: wide ? "" : "dotted 1px green",
@@ -150,7 +150,7 @@ const Editor = ({ applications: apps = {} }) => {
     setConnection,
     setPage, 
     duplicatePage,
-    dropPage,setTheme, dropTheme
+    dropPage,setTheme, dropTheme, setPageEvent
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -172,6 +172,8 @@ const Editor = ({ applications: apps = {} }) => {
   const [contentFilter, setContentFilter] = React.useState('');
 
   const { stateOpen, scriptOpen, connectOpen } = drawerState;
+  const [loaded, setLoaded] = React.useState(false);
+
 
   const {
     queryState = {},
@@ -217,7 +219,7 @@ const Editor = ({ applications: apps = {} }) => {
     setComponentName(appData.ID, queryState.page.ID, componentID, name);
   };
 
-  const handleStateChange = (stateID, label, value, type) => {
+  const handleStateChange = (stateID, label, value, type) => { 
     setPageState(appData.ID, queryState.page.ID, stateID, label, value, type);
   };
 
@@ -225,7 +227,10 @@ const Editor = ({ applications: apps = {} }) => {
     setPageScript(appData.ID, queryState.page.ID, scriptID, name, code);
   };
 
-  const handlePropChange = (props) => {
+  const handlePropChange = (props, state) => {
+    if (state) {
+      return setPageEvent(appData.ID, queryState.page.ID, state); //alert (JSON.stringify(state))
+    }
     setPageProps(appData.ID, queryState.page.ID, props);
   };
 
@@ -343,7 +348,16 @@ const Editor = ({ applications: apps = {} }) => {
     appendComponent(ok, componentID, options);
   };
 
-  const libraryKeys = Object.keys(Library).sort((a,b) => a > b ? 1 : -1)
+  const libraryKeys = Object.keys(Library).sort((a,b) => a > b ? 1 : -1);
+
+  let center_state = '';
+  if (collapsed.right && collapsed.left) {
+    center_state = '-both';
+  } else if (collapsed.right) {
+    center_state = '-right';
+  } else if (collapsed.left) {
+    center_state = '-left'
+  }
 
   return (
     <EditorStateContext.Provider value={{ appData }}>
@@ -365,7 +379,8 @@ const Editor = ({ applications: apps = {} }) => {
           </Box>
 
           <Stack>
-            <IconButton
+            {!!queryState.page && <>
+                        <IconButton
               color="inherit"
               sx={{ mt: 1 }}
               onClick={() => {
@@ -383,6 +398,8 @@ const Editor = ({ applications: apps = {} }) => {
             >
               <Code />
             </IconButton>
+            </>}
+
             <IconButton
               color="inherit"
               sx={{ mt: 1, mb: 4 }}
@@ -411,7 +428,7 @@ const Editor = ({ applications: apps = {} }) => {
 
               <Chip label={appData.Name} />
 
-              <Box>
+              <Flex nowrap>
                 <QuickMenu
                   small
                   caret
@@ -424,13 +441,13 @@ const Editor = ({ applications: apps = {} }) => {
                     action();
                   }}
                 />
-              </Box>
+              </Flex>
 
               <Addressbox value={`/${path.join("/")}`} />
 
               <FormControlLabel
                 sx={{ m: 1 }}
-                label="Show JSON"
+                label={<Text small>Show JSON</Text>}
                 control={
                   <Switch
                     checked={json}
@@ -453,6 +470,7 @@ const Editor = ({ applications: apps = {} }) => {
               </IconButton>
               <TextBtn
                 variant="contained"
+                endIcon={<Save />}
                 disabled={!dirty}
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
@@ -466,22 +484,24 @@ const Editor = ({ applications: apps = {} }) => {
           </Pane>
           <Pane
             item
+            side="left"
+            state={collapsed.left ? "-off" : ""}
             sx={{ borderRight: 1, borderColor: "divider" }}
             thin={collapsed.left ? 1 : 0}
           >
             <Stack sx={{ p: 1, height: 300 }}>
-              <Flex spacing={1}>
+              <Flex nowrap spacing={1}>
                 {!collapsed.left && (
                   <>
-                    <Typography variant="caption">
+                    <Text small>
                       <b>Page</b>
-                    </Typography>
+                    </Text>
                     <QuickMenu
                       small
                       caret
                       options={appData.pages.map((f) => f.PageName)}
                       title="Choose Page"
-                      label={queryState.page?.PageName || "non selected"}
+                      label={queryState.page?.PageName || "none selected"}
                       onChange={(p) => {
                         setQueryState((s) => ({
                           ...s,
@@ -534,9 +554,9 @@ const Editor = ({ applications: apps = {} }) => {
                   {!!queryState.page && (
                     <Flex spacing={1}>
                       <Flex fullWidth>
-                        <Typography variant="caption">
+                        <Text small>
                           <b>Content</b>
-                        </Typography>
+                        </Text>
 
                         <Spacer />
                         <QuickMenu
@@ -569,24 +589,30 @@ const Editor = ({ applications: apps = {} }) => {
               </>
             )}
           </Pane>
-          <Pane wide {...collapsed} item sx={{ p: 1 }}>
+          <Pane wide {...collapsed} item sx={{ p: 1 }} 
+       
+            state={center_state}
+            side="work">
             <Collapse in={json}>
             {!!json &&  <JsonView json={appData}/>}
               {/* <Json>{JSON.stringify(appData, 0, 2)}</Json> */}
             </Collapse>
 
-            <Collapse in={!json}>
+            {!!appData?.themes && <Collapse in={!json}>
               <ComponentTree
                 themes={appData.themes}
                 appContext={appData}
+                loaded={loaded}
+                setLoaded={setLoaded}
                 preview
                 selectedPage={queryState.page}
               />
-            </Collapse>
+            </Collapse>}
           </Pane>
           <Pane
             item
-            thin={collapsed.right ? 1 : 0}
+            side="right"
+            state={collapsed.right ? "-off" : ""}
             sx={{ borderLeft: 1, borderColor: "divider" }}
           >
             {!!queryState.page && (
@@ -672,7 +698,7 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
       size="small"
       disabled
       {...props}
-      sx={{ width: "calc(100vw - 660px)" }}
+      sx={{ width: "calc(100vw - 700px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}

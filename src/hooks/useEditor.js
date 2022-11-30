@@ -18,6 +18,13 @@ export const useEditor = (apps) => {
     app.setDirty(true)
   }
 
+  const setProgProps = async (appID, props) => {
+
+    editProg(appID, async (app) => {
+      Object.assign(app, { ...props });
+    })
+  }
+
   const setTheme = (appID, theme, name) => {
     editProg(appID, async (app) => {
        
@@ -300,10 +307,22 @@ export const useEditor = (apps) => {
     });
   }
 
+  const setPageEvent = async (appID, pageID, event) => {
+    editPage(appID, pageID, async (page) => {
+     if (!page.events) {
+      Object.assign(page, {events: []});
+     } 
+
+      page.events = page.events.find(f => f.ID === event.ID)
+        ? page.events.map((c) => c.ID === event.ID ? event : c)
+        : page.events.concat({...event, ID: uniqueId()});
+    });
+  }
+
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, 
-    createProg, setTheme, dropTheme};
+    createProg, setTheme, dropTheme, setPageEvent, setProgProps};
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography, Collapse, styled, Grid, Box, Stack } from '@mui/material';
 import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny } from '../../..';
+import Library from '../../../library';
 import { CheckCircle, Save, CheckCircleOutline } from "@mui/icons-material";  
 
 const Layout = styled(Box)(({ theme }) => ({
@@ -13,8 +14,12 @@ const ListTableComponentInput = ({
   header,
   value,
   handleChange,
-  resources 
+  resources ,
+  type,
+  component,
+  selectedPage
 }) => {  
+  
   const [terms, setTerms] = React.useState({});
   const [fields, setFields] = React.useState([]);
   const [open, setOpen] = React.useState(false);
@@ -54,16 +59,38 @@ const ListTableComponentInput = ({
     }))
        
   }
+  const offspring = selectedPage?.components?.find(f => f.componentID === component?.ID);
 
 
+  const cats = !offspring ? null : Library[offspring.ComponentType];
+  const bindableProps = !cats ? [] : cats.Settings?.categories.reduce((array, category) => {
+    const settings = category.settings.filter(f => f.bindable);
+    settings.map(f => array = array.concat({
+      title: `${offspring.ComponentName}.${f.label}`,
+      componentID: offspring.ID,
+      SettingName: f.label
+    }))
+    return array
+  }, [])
+
+// repeatertable
   const resource = resources.find(f => f.ID === state.resourceID);
 
   const colnames = Object.keys(state.bindings);
 
+ 
+
+  const componentBound = type === 'repeatertable' && !!bindableProps;
+  const bindableNames = bindableProps.map(f => f.title);
+  const getBindableByName = name => bindableProps.find(f => f.title === name)
 
  return (
-   <Layout data-testid="test-for-ListTableComponentInput">
-
+   <Layout data-testid="test-for-ListTableComponentInput"> 
+   
+{/* <pre>
+{JSON.stringify(bindableProps,0,2)}
+</pre> */}
+ 
       {header}
 
       <QuickSelect value={resource?.name} options={resources.map(f => f.name)} onChange={value => {
@@ -91,7 +118,7 @@ const ListTableComponentInput = ({
           return <>
           
           
-          <Grid item xs={5} key={col} >
+          <Grid item xs={4} key={col} >
               <Flex >
                 <Check on={active} />
                 <Text small onClick={() => addProp(col)}
@@ -102,9 +129,22 @@ const ListTableComponentInput = ({
               </Flex>
         
           </Grid>
-            <Grid item xs={7}>
+            <Grid item xs={8}> 
+              {!!componentBound && <QuickSelect 
+                label={`Bind ${col} to`} 
+                value={!state.bindings[col] ? '' : state.bindings[col].title}
+                onChange={e => {
+                  setState(s => ({
+                    ...s,
+                    bindings: {
+                      ...s.bindings,
+                      [col]: getBindableByName(e)
+                    }
+                  }))
+                }}
+                options={bindableProps.map(f => f.title)} />}
 
-            <TextInput 
+           {!componentBound && <TextInput 
             disabled={!active}
               value={state.bindings[col]}
              onChange={e => {
@@ -117,9 +157,10 @@ const ListTableComponentInput = ({
               }))
             }}
 
-            size="small" placeholder={`Label for ${col}`}/>
+            size="small" placeholder={`Label for ${col}`}/>}
 
             </Grid>
+ 
                 </> 
         })}
 

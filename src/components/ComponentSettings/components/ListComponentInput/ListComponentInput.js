@@ -60,16 +60,21 @@ const ListComponentInput = ({
     const maxID = getMax(listItems.map(f => f.ID)); 
     const items = []
     const rows = text.split(',').map((word, e) => { 
+      const props = type === 'imagelist' 
+        ? {src: word}
+        : {
+          text: word, 
+          value: word,
+          startIcon: null,
+          endIcon: null,
+          subtext: null
+        }
+
       return items.push({
         ID: isNaN(maxID) ? 1 : (maxID + 1 + e),
-        text: word, 
-        value: word,
-        startIcon: null,
-        endIcon: null,
-        subtext: null
+        ...props
       })
-    })
-
+    }) 
     const msg = listItems.concat(items) 
 
     setListItems(msg);
@@ -78,16 +83,19 @@ const ListComponentInput = ({
 
 
 
-
+  const instruction = {
+    title: type === 'imagelist' ? 'Add image' : 'Add list item',
+    label: type === 'imagelist' ? 'Enter image URL:' : 'Enter list item text:'
+  }
  return (
    <Box data-testid="test-for-ListComponentInput"> 
       <Flex>
         <Spacer />
 
-      <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add list item</TextBtn>
+      <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>{instruction.title}</TextBtn>
 
       </Flex>
-      <PopoverInput label="Enter list item text:" 
+      <PopoverInput label={instruction.label}
     onChange={value => {
       if (!value) return handleAliasClose();  
       addListItem(value)
@@ -107,13 +115,85 @@ const ListComponentInput = ({
  );
 }
 
-function ListOption ({ 
-  type,
-  text, subtext, ID , 
-  startIcon,
-      endIcon,
-      value,
-    expanded, onUpdate, onExpand, onDelete}) {
+const ImageOption = props => {
+  const { 
+    type,
+    text, 
+    subtext, 
+    src,
+    ID , 
+    startIcon,
+    endIcon,
+    value,
+    expanded, 
+    onUpdate, 
+    onExpand, 
+    onDelete,
+    optionValue,
+    handleTextChange
+    } = props;
+  return <>
+    <Flex sx={{p: 1, borderBottom: type == 'valuelist' ? 0 : 1, borderColor: 'divider'}} 
+        >
+          <Stack>
+
+          {expanded && type == 'valuelist' && <Text small>Image Source</Text>}
+          {expanded 
+            ?   <TextInput onChange={handleTextChange('src')} size="small" placeholder="Text" value={optionValue.src || optionValue.text} />
+          :  <Typography variant="caption"> {src?.substr(0,35)}...</Typography>}
+      
+
+            {/* <pre>{JSON.stringify(optionValue,0,2)}</pre> */}
+          </Stack>
+        
+
+         <Spacer />
+        <TinyButton onClick={() => {
+          if (expanded) {
+            return onUpdate(ID, optionValue);
+          }
+          onDelete(ID);
+        }} icon={expanded ? Save : Delete} />
+        <TinyButton onClick={() => onExpand(ID)} icon={Settings} />
+        </Flex>
+
+        <Collapse in={expanded}>
+          <Stack sx={{pl: 1}}>
+
+          <Text small>Image text</Text>
+          <TextInput sx={{mb: 1}} onChange={handleTextChange('text')} 
+                value={optionValue.text} size="small" placeholder="text" />
+  
+          </Stack>
+        </Collapse> 
+
+        <Collapse in={expanded}>
+          <Stack sx={{pl: 1}}> 
+           <Text small>Image subtext</Text>
+            <TextInput sx={{mb: 1}} onChange={handleTextChange('subtext')} 
+                value={optionValue.subtext} size="small" placeholder="subtext" />
+
+           </Stack>
+        </Collapse> 
+  </>
+}
+
+function ListOption (props) {
+  const { 
+    type,
+    text, 
+    subtext, 
+    ID , 
+    startIcon,
+    endIcon,
+    value,
+    expanded, 
+    onUpdate, 
+    onExpand, 
+    onDelete
+    
+    } = props;
+
   const [optionValue, setValue] = React.useState({
     text,
     subtext,
@@ -128,6 +208,18 @@ function ListOption ({
   const handlePropChange = f => e => {
     setValue(s => ({...s, [f]: e })) 
   } 
+
+  const imageProps = {
+    ...props,
+    handleTextChange,
+    handlePropChange,
+    optionValue
+  }
+
+  if (type === 'imagelist') {
+    return <ImageOption {...imageProps} />
+  }
+
   return <>
   <Flex sx={{p: 1, borderBottom: type == 'valuelist' ? 0 : 1, borderColor: 'divider'}} 
         >
@@ -165,10 +257,7 @@ function ListOption ({
           </Stack>
         </Collapse> 
         <Collapse in={expanded && type === 'valuelist'}>
-          <Stack sx={{pl: 1}}>
-           {/* <pre>
-           {JSON.stringify(optionValue,0,2)}
-           </pre> */}
+          <Stack sx={{pl: 1}}> 
            <Text small>Option value</Text>
             <TextInput sx={{mb: 1}} onChange={handleTextChange('value')} 
                 value={optionValue.value} size="small" placeholder="value" />

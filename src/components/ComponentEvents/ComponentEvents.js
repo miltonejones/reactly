@@ -41,7 +41,8 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
   const obj = resources.find(e => e.ID === action.target)
   switch(action.type) {
     case 'setState':
-      act = <>Set the value of "{action.target}" to <b>{action.value.toString()}</b></>
+      const label = action.value?.toString().split('|').join(' or ')
+      act = <>Set the value of "{action.target}" to <b>{label}</b></>
       break;
     case 'dataExec':
       act = <>Execute "{obj.name} - {obj.method}"</>
@@ -87,12 +88,24 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
 }
 
  
+const Events =  [
+  {
+    name: 'onPageLoad',
+    title: 'Page  loads',
+    description: 'Page  finishes loading.'
+  },  
+]
+
+
 const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, connections, resources }) => {
   const [open, setOpen] = React.useState(false)
   const [selectedEvent, setSelectedEvent] = React.useState(false)
   const [selectedHandler, setSelectedHandler] = React.useState(false)
   const [selectedType, setSelectedType] = React.useState(false)
-  const supportedEvents = Library [component.ComponentType].Events  ;
+  const supportedEvents = !component ? Events : Library [component.ComponentType].Events  ;
+
+  const eventOwner = !component ? selectedPage : component;
+  
 
   if (!supportedEvents) {
     return <Alert sx={{ m: 1 }}>This component has no configurable events.</Alert>
@@ -107,12 +120,12 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     event: selectedEvent
   }
 
-  const modalsExist = ['Dialog', 'Menu'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
+  const modalsExist = ['Dialog', 'Menu', 'Drawer'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
 
   const handleSave = state => {  
     setSelectedEvent(null); 
     setSelectedHandler(null); 
-    !!state && onChange && onChange(component.ID, state)
+    !!state && onChange && onChange(eventOwner.ID, state, !!component)
   }
 
   const options = [
@@ -155,7 +168,9 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
   
  return (
    <Layout>
-
+{/* <pre>
+  {JSON.stringify(eventOwner.events,0,2)}
+</pre> */}
     {/* panel header  */}
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
       <Spacer />
@@ -177,18 +192,18 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     </Collapse>
 
     {/* events that have handlers  */}
-    {!!component.events?.length && !selectedEvent &&  <>    
+    {!!eventOwner.events?.length && !selectedEvent &&  <>    
       <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
         <Typography variant="caption"> <b>Component Events</b></Typography>
       </Flex>
-      {component.events?.map(e => <HandlerCard 
+      {eventOwner.events?.map(e => <HandlerCard 
         selected={selectedHandler} 
         page={selectedPage}
         onSelect={(key, id) => {
         setSelectedEvent(key)
         setSelectedHandler(id)
         setSelectedType(null)
-      }} {...e} onDelete={(id) => onEventDelete(component.ID, id)} />)}
+      }} {...e} onDelete={(id) => onEventDelete(eventOwner.ID, id, !!component)} />)}
     </>} 
  
 
@@ -209,7 +224,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
  
 
       {!!selectedHandler && !!selectedEvent && 
-        component.events
+        eventOwner.events
           .filter(f => f.ID === selectedHandler)
           .map (e => {
             const Editor = forms[e.action.type];

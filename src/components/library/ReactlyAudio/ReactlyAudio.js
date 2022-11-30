@@ -47,7 +47,7 @@ const ReactlyAudioComponent = ({
     }, [])
   
   return (
-   <Box   > 
+   <Box sx={{width: 'fit-content'}} {...props} > 
     <audio {...args} src={props.src || args.src} ref={ref}> 
     </audio>
         {/* <pre>{JSON.stringify(args,0,2)}</pre>

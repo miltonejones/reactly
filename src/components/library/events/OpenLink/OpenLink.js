@@ -22,6 +22,7 @@ const OpenLink = ({ event , page, handleSave }) => {
 
 
 <Typography>Open Link:</Typography> 
+
     <QuickSelect options={pages.map(d => d.PageName)} value={target}
       onChange={value => setState(s => ({...s, target: pages.find(d => d.PageName === value).ID}))}
     />

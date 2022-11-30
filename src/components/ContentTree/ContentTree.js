@@ -79,7 +79,8 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, label, indent = 0, on
     <> 
       <ListItemButton sx={{ ml:indent , p: 0 }}
         onMouseEnter={() => setOver(true)}
-        onMouseLeave={() => setOver(false)}>
+        onMouseLeave={() => setOver(false)}
+        >
        <ListItemIcon sx={{minWidth: 24}}>
            <Tiny icon={Icon} />
         </ListItemIcon>

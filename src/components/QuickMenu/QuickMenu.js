@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, Divider, Typography, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
-import { AU, TinyButton, Flex, OptionSwitch } from '..';
+import { AU, TinyButton, Flex, OptionSwitch, Text } from '..';
 import { ExpandMore } from "@mui/icons-material";
  
  

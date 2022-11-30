@@ -21,9 +21,13 @@ const ReactlyButtonComponent = (props) => {
   !!End && Object.assign(icons, {endIcon: <End />})
  
  return (
+   <>
+   {/* [[props <pre> {JSON.stringify(props,0,2)}</pre> ]]
+  [[args <pre> {JSON.stringify(args,0,2)}</pre> ]] */}
    <ReactlyComponent component={Button} {...props} {...icons}>
-      {args.Label} 
+   {args.Label || props.Label} 
    </ReactlyComponent>
+   </>
  );
 } 
 

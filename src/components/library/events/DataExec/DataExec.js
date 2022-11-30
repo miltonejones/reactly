@@ -31,7 +31,7 @@ const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
 {/* [{target}][{state.target}] */}
       {!actionReset && !! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
         <QuickSelect 
-        options={page.state.map(f => f.Key)} 
+        options={page.state?.map(f => f.Key)} 
         label={`Set value for ${val.key}`}
         value={state.terms?.[val.key]}
         onChange={value => setState(s => ({...s, terms: {

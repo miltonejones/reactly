@@ -14,18 +14,22 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
   const initial = useTheme()
   const [selectedTheme, setSelectedTheme] = React.useState('');
   const [theme, setTheme] = React.useState(initial);
+  const [dirty, setDirty] = React.useState(false);
   const [on, setOn] = React.useState({
-    breakpoints: true
+    palette: true
   });
 
   const chooseTheme = name => {
+    if (!name) return;
     const selected = themes.find(f => f.name === name)
     setSelectedTheme(name);
     setTheme(selected ? selected : initial)
+    setDirty(false)
   }
  
   const recurse = (path, color, root ) => {
     const args = path.split('.')
+    setDirty(true)
     if (args.length === 1) {
       return  setTheme(t => ({
         ...t,
@@ -48,33 +52,29 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
         }
        }))
     }
- 
   }
 
  return (
    <Layout data-testid="test-for-ThemePanel">
 
 <Flex sx={{p: 1}}>
-  <Spacer />
-  <QuickMenu caret onChange={chooseTheme} value={selectedTheme} label={selectedTheme || 'Choose theme'} 
+  <Text small>Theme:</Text>
+  <QuickMenu caret small onChange={chooseTheme} value={selectedTheme} label={selectedTheme || 'Choose theme'} 
     options={themes.map(t => t.name).concat(['-', 'Default Theme'])} />
+  <Spacer />  
+  
+   <TextBtn 
+   endIcon={<Save />} variant="contained" 
+   onClick={() => {
+    onThemeChange(theme?.ID, theme?.name, theme);
+    setDirty(false)
+  }}
+   disabled={!dirty}
+   >save</TextBtn>
+   
 </Flex>
 
-<ThemeCollapse on={on.breakpoints} label="Breakpoints"
-  closeCollapse={val => setOn(s => ({...s, breakpoints: val}))}>
-
-{theme.breakpoints?.keys?.map(key => <Flex key={key} spacing={1} sx={{mt: 1}}>
- 
-<Box sx={{width: 40, textAlign:'right', pl: 2}}>
-<Text small>{key}</Text>
-</Box>
- <TextInput value={theme.breakpoints.values[key]} onChange={(e) => recurse('values.' + key, e.target.value, 'breakpoints')} size="small"/>
-</Flex>)}
-
-</ThemeCollapse>
-
-
-<ThemeCollapse on={on.palette} label="Palette"
+  <ThemeCollapse on={on.palette} label="Palette"
      closeCollapse={val => setOn(s => ({...s, palette: val}))}>
        <JsonTree onChange={(prop, val) => recurse(prop, val, 'palette')} edit json={theme.palette} />
    </ThemeCollapse>
@@ -90,6 +90,20 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
       <JsonTree onChange={(prop, val) => recurse(prop, val, 'transitions')}  edit json={theme.transitions} />
     </ThemeCollapse>
 
+  <ThemeCollapse on={on.breakpoints} label="Breakpoints"
+    closeCollapse={val => setOn(s => ({...s, breakpoints: val}))}>
+
+    {theme.breakpoints?.keys?.map(key => <Flex key={key} spacing={1} sx={{mt: 1}}>
+    
+    <Box sx={{width: 40, textAlign:'right', pl: 2}}>
+    <Text small>{key}</Text>
+    </Box>
+    <TextInput value={theme.breakpoints.values[key]} onChange={(e) => recurse('values.' + key, e.target.value, 'breakpoints')} size="small"/>
+    </Flex>)}
+
+  </ThemeCollapse>
+
+
     <ThemeCollapse on={on.shadows} label="Shadows"
       closeCollapse={val => setOn(s => ({...s, shadows: val}))}> 
       <Grid container spacing={2} sx={{m: 1 }}>
@@ -104,7 +118,13 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
 
     <Flex sx={{mt: 2}}> 
       <Spacer />
-      <TextBtn endIcon={<Save />} variant="contained" onClick={() => onThemeChange(theme?.ID, theme?.name, theme)}>save</TextBtn>
+      <TextBtn endIcon={<Save />} variant="contained" 
+        disabled={!dirty}
+        onClick={() => {
+         onThemeChange(theme?.ID, theme?.name, theme);
+         setDirty(false)
+       }}
+        >save</TextBtn>
     </Flex>
  
      {/* <pre>

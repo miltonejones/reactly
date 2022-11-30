@@ -1,14 +1,14 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
   Typography } from '@mui/material';
-// import Library, { Settings } from '../library';
+import Library from '../library';
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..';
 // import { getSettings } from '../library/util';
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect } from '..';
 import { TextBtn, TextInput } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
-import { ExpandMore, Close, Input } from "@mui/icons-material";
+import { ExpandMore, Save, Close, Input } from "@mui/icons-material";
 import { Text } from '../Control/Control';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
@@ -18,8 +18,9 @@ export const TabButton = styled(Tab)(({theme}) => ({
   margin: 0,
   padding: theme.spacing(1),
   height: 24,
-  minHeight: 24
-}))
+  minHeight: 24,
+  fontSize: '0.85rem', 
+}));
 
 const ComponentPanel = ({ 
     component, 
@@ -49,7 +50,9 @@ const ComponentPanel = ({
 
   const handleMove = (name) => {
     if (!name) return;
-    const target = selectedPage.components.find(f => f.ComponentName === name);
+    const [type, title] = name.split(':')
+    const target = selectedPage.components.find(f => f.ComponentName === title.trim());
+    // return alert (target.ID)
     if (target) {
       return onMove && onMove(component.ID, target.ID) 
     } 
@@ -62,6 +65,19 @@ const ComponentPanel = ({
   const onChange = !component && !!selectedPage 
     ? onPropChange
     : changes[value];
+
+  const selectedComponent = Library[component?.ComponentType];
+
+  const panelProps = {
+    onEventDelete:onEventDelete, 
+    component:component, 
+    selectedPage:selectedPage, 
+    onChange:onChange, 
+    onThemeChange:onThemeChange,
+    connections:connections,
+    resources:resources,
+    themes:themes,
+  }
   
   return <Stack>
      <Flex sx={{ m: 1}}>
@@ -71,7 +87,7 @@ const ComponentPanel = ({
 
 
         {!!others && !!component && <Box sx={{ml: 2}}>
-          <QuickMenu options={others.map(f => `${f.ComponentType}: ${f.ComponentName}`).concat(
+          <QuickMenu small options={others.map(f => `${f.ComponentType}: ${f.ComponentName}`).concat(
             !component.componentID 
               ? []
               : ['-', 'Move to root level']
@@ -91,24 +107,17 @@ const ComponentPanel = ({
       
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
-        <TabButton icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
-        <TabButton disabled={!component} icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
-        <TabButton disabled={!component} icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
+        <TabButton disabled={!selectedPage && !selectedComponent?.Settings} icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
+        <TabButton disabled={!component || !selectedComponent?.Styles} 
+          icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+        <TabButton  icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
         <TabButton icon={<Tiny icon={FormatColorFill}/>} iconPosition="start"  label="Theme"  />
       </Tabs>
     </Box>
 
-    {(!!component || value === 3) && <Panel 
-        onEventDelete={onEventDelete} 
-        component={component} 
-        selectedPage={selectedPage} 
-        onChange={onChange} 
-        onThemeChange={onThemeChange}
-        connections={connections}
-        resources={resources}
-        themes={themes}
-    />}
+    {(!!component || value === 3) && <Panel  {...panelProps} />}
     {!component && !!selectedPage &&  value === 0 && <PageSettings themes={themes} page={selectedPage} onChange={onChange} />}
+    {!component && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
 
@@ -141,7 +150,7 @@ function PageSettings({ page, themes = [], onChange }) {
 
       <Flex>
         <Spacer /> 
-        <TextBtn variant="contained" onClick={() => onChange(state)}>Save</TextBtn>
+        <TextBtn endIcon={<Save />} variant="contained" onClick={() => onChange(state)}>Save</TextBtn>
       </Flex>
     
   </Stack>

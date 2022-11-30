@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, List, Link, ListItemButton, Typography,
   ListItemIcon, ListItemText, ListItemSecondaryAction 
   } from "@mui/material";
-  import { Article, MoreVert } from "@mui/icons-material";
+  import { Article, MoreVert, Close, Delete } from "@mui/icons-material";
   import { QuickMenu, Tiny } from "..";
   
  
@@ -20,6 +20,7 @@ const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClic
 
 const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected, indent = 0}) => {
   const kids = trees.filter(t => t.pageID === tree.ID);
+  const [over, setOver] = React.useState(false);
   const options = [
     {
       name: 'Add child page',
@@ -38,10 +39,15 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
     }
   ]
 
+  const on = selected === tree.PageName; 
+
   return (
     <>
-      <ListItemButton sx={{ ml:indent , p: 0 }}>
-      <ListItemIcon sx={{minWidth: 24}}>
+      <ListItemButton sx={{ ml:indent , p: 0 }}
+        onMouseEnter={() => setOver(true)}
+        onMouseLeave={() => setOver(false)}
+        >
+        <ListItemIcon sx={{minWidth: 24}}>
            <Tiny icon={Article} />
         </ListItemIcon>
         <ListItemText 
@@ -55,6 +61,10 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
           sx={{ fontWeight: selected === tree.PageName ? 600 : 400, fontSize: '0.85rem' }}
             variant="body1">{tree.PageName}</Typography></>}/>
          {!!tree && <ListItemSecondaryAction>
+
+          {on && <Tiny onClick={() =>  onClick && onClick() }  icon={Close}  sx={{mr: 1}} />}
+          <Tiny hidden={!(on || over)} onClick={() => dropPage && dropPage(tree.ID)}  icon={Delete}  sx={{mr: 1}} />
+          
           <QuickMenu options={options.map(f => f.name)} 
           onChange={value => {
             const { action } = options.find(f => f.name === value);

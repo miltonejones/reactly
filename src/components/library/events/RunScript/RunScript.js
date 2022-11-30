@@ -10,12 +10,12 @@ const RunScript = ({ event = {}, page, handleSave }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'scriptRun' });
   const target = !event.action 
     ? null
-    : page.scripts.find(e => e.ID === event.action.target).name
+    : page.scripts?.find(e => e.ID === event.action.target).name
  return (
    <Layout data-testid="test-for-RunScript">
     <Text small>Run client script:</Text> 
-    <QuickSelect options={page.scripts.map(d => d.name)} value={target}
-      onChange={value => setState(s => ({...s, target: page.scripts.find(d => d.name === value).ID}))}
+    <QuickSelect options={page.scripts?.map(d => d.name)} value={target}
+      onChange={value => setState(s => ({...s, target: page.scripts?.find(d => d.name === value).ID}))}
     />
 
 

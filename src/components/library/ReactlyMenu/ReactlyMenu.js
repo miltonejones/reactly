@@ -11,9 +11,17 @@ const FauxMenu = styled(MenuList)(({ open }) => ({
   maxWidth: 300,
   display: !open ? 'none' : 'block'
 }))
+
+const ReactlyMenuItem = styled(MenuItem)(({ selected}) => ({
+  backgroundColor: selected ? 'yellow' : 'white',
+  '& .MuiTypography-root': {
+    fontWeight: selected ? 600 : 400
+  }
+}))
   
 const ReactlyComponentMenu = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { onMenuClick } = props;
 
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
@@ -32,7 +40,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
       ...pageModalState,
       [props.ID]: false
     } 
-    !!preview && setPageModalState(state)
+    setPageModalState(state)
    }
 
 
@@ -44,11 +52,18 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
      {...rest}
      component={open || !preview ? Menu : FauxMenu} 
      {...props} >
-
+ 
     {parsed?.map((item, i) => {
       const StartIcon = Icons[item.startIcon] ;
       const EndIcon = Icons[item.endIcon] ;
-      return <MenuItem key={i}>
+      return <ReactlyMenuItem onClick={e => {
+        onMenuClick && onMenuClick(e, {
+          index: i,
+          ...item
+        });
+        props.onChange && props.onChange( item.text )
+        handleClose()
+      }} key={i} selected={item.text === args.value || item.text === props.value}>
       {!!StartIcon && <ListItemIcon>
         <StartIcon fontSize="small" />
       </ListItemIcon>}
@@ -56,7 +71,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
       {!!EndIcon && <Typography variant="body2" color="text.secondary">
        <EndIcon />
       </Typography>}
-    </MenuItem>
+    </ReactlyMenuItem>
     })}
      
      {/* {JSON.stringify(parsed)} */}
@@ -77,18 +92,23 @@ const Settings = {
           title: 'Label',
           label: 'label' 
         }, 
-      ]
-    },
-    {
-      name: 'Appearance',
-      settings: [ 
         {
-          title: 'Variant',
-          label: 'variant',
-          types: [ ], 
-        } 
+          title: 'Value',
+          label: 'value' ,
+          bindable: 1
+        }, 
       ]
     },
+    // {
+    //   name: 'Appearance',
+    //   settings: [ 
+    //     {
+    //       title: 'Variant',
+    //       label: 'variant',
+    //       types: [ ], 
+    //     } 
+    //   ]
+    // },
     {
       name: 'Items', 
       always: true,
@@ -103,11 +123,20 @@ const Settings = {
   ]
 }
 
+const Events =  [
+  {
+    name: 'onMenuClick',
+    title: 'Menu item is clicked',
+    description: 'User clicks on a item in the menu.'
+  },  
+]
+
 
 const ReactlyMenu = {
   Icon: MenuOpen,
   Component: ReactlyComponentMenu,
   Settings,
+  Events,
   Styles: GenericStyles, 
   Defaults: { }
 }

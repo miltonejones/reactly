@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { useNavigate } from "react-router-dom"; 
+
+
 export const PageStateContext = React.createContext({});
 
 
@@ -32,6 +35,14 @@ export const eventTypes =  [
     description: 'When component delete icon is clicked'
   },
   {
+    name: 'onCardClick', 
+    description: 'User clicks on the card.'
+  }, 
+  {
+    name: 'onMenuClick', 
+    description: 'User clicks on the menu icon at the right of a card.'
+  }, 
+  {
     name: 'onItemClick',
     description: 'WHen user clicks a list item'
   },
@@ -40,6 +51,10 @@ export const eventTypes =  [
     description: 'User clicks on the icon at the right of a list item.'
  },
 
+ {
+  name: 'onImageLoad', 
+  description: 'Image, when present finishes loading.'
+},  
  {
   name: 'onPlayerStart', 
   description: 'Audio player playing event fires.'
@@ -56,6 +71,14 @@ export const eventTypes =  [
   name: 'onRowClick', 
   description: 'User clicks on a row in the list.'
 }, 
+{
+  name: 'onMenuClick', 
+  description: 'User clicks on a item in the menu.'
+},  
+{
+  name: 'onPageLoad', 
+  description: 'Page  finishes loading.'
+},
 {
   name: 'onCellClick', 
   description: 'User clicks on a cell in a row.'
@@ -80,9 +103,12 @@ export const usePageContext = () => {
           setPageModalState,
           selectedPage, 
           appContext, 
+          setQueryState,
+          preview
         } = React.useContext(PageStateContext);
 
 
+        const navigate = useNavigate();
 
   const executeComponentRequest = async (connections,  qs,  { connectionID, path, node, columns }) => {
     const connection = connections.find(f => f.ID === connectionID);
@@ -116,11 +142,41 @@ export const usePageContext = () => {
    
   }
 
+  const openPath = (path) => {
+    const targetPage = appContext.pages.find((f) => f.PagePath === path); 
+    if (targetPage) {
+      return openLink(targetPage.ID);
+    }
+    alert (`Invalid path ${path}`)
+  }
+
+  const openLink = (ID) => {
+    const targetPage = appContext.pages.find((f) => f.ID === ID); 
+    if (!preview) {
+      return navigate(`/apps/${appContext.path}/` + targetPage.PagePath)
+    }
+    
+    setQueryState((s) => ({
+      ...s,
+      page: targetPage,
+    }))
+  }
+
+  const stringToggle = (state, { target, value }) => {
+    if (value?.indexOf('|') < 0) {
+      return value;
+    }
+    const [trueProp, falseProp] = value.split('|');
+    return state[target] === trueProp ? falseProp : trueProp;
+  }
 
 
-  const handleComponentEvent = (event, eventProps) => {
-    const { component, name , options } = eventProps;
-    const triggers = component.events.filter( e => e.event === name);
+  const handleComponentEvent = (event, eventProps, events) => {
+    // alert (JSON.stringify(eventProps))
+    const { component, name , options, sources, connect , stateProps} = eventProps;
+    if (!(events || component?.events)) return;
+
+    const triggers = (events || component?.events).filter( e => e.event === name);
  
     triggers.map(trigger => { 
       switch(trigger.action.type) {
@@ -128,15 +184,17 @@ export const usePageContext = () => {
           setPageClientState(s => ({...s, 
             [trigger.action.target]: trigger.action.value === 'toggle' 
               ? !s[trigger.action.target]
-              : trigger.action.value }))
+              : stringToggle(s, trigger.action) }))
           break;
         case "modalOpen":  
-            const state = {
-              ...pageModalState,
-              [trigger.action.target]: trigger.action.open,
+             
+            setPageModalState(s => ({
+              ...s,
+              [trigger.action.target]:  trigger.action.open === 'toggle' 
+              ? !s[trigger.action.target]
+              : trigger.action.open ,
               anchorEl: event.currentTarget
-            } 
-            setPageModalState(state)
+            } ))
           break;
         case 'dataReset':
           
@@ -148,23 +206,46 @@ export const usePageContext = () => {
                  } : state));
 
           break;
-        case 'dataExec':
-          const resource = appContext.resources.find(f => f.ID === trigger.action.target);
-          const { target, action } = trigger.action; 
+        case 'openLink': 
+          const targetPage = appContext.pages.find((f) => f.ID === trigger.action.target); 
+          if (!preview) {
+            return navigate(`/apps/${appContext.path}/` + targetPage.PagePath)
+          }
+          
+          setQueryState((s) => ({
+            ...s,
+            page: targetPage,
+          }))
 
+          break;
+        case 'dataExec':
+          const resources = appContext?.resources || sources;
+          if (!resources) {
+            alert (JSON.stringify(sources))
+            return alert ('no resources were found to  meet this request.')
+          }
+          const resource = resources.find(f => f.ID === trigger.action.target);
+          const { target, action } = trigger.action; 
+ 
+          const stater = !pageClientState ? stateProps : pageClientState; 
           const qs = Object.keys(trigger.action.terms).map(term => {
-            const prop = pageClientState[trigger.action.terms[term]];
+            const prop = stater[trigger.action.terms[term]];
             return `${term}=${prop}`
           }).join('&');
 
-          executeComponentRequest(appContext.connections, qs, resource)
-            .then(records => { 
-              setPageResourceState(s => s.filter(e => e.resourceID !== trigger.action.target)
-                .concat({
-                  resourceID: resource.ID,
-                  name: resource.name,
-                  records
-                }))
+          executeComponentRequest(connect || appContext.connections, qs, resource)
+            .then(records => {  
+              const datum = {
+                resourceID: resource.ID,
+                name: resource.name,
+                records
+              }
+
+              if (!pageResourceState) { 
+                return setPageResourceState([datum])
+              }
+              setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
+                .concat(datum)) 
             })
            
           break;
@@ -186,7 +267,7 @@ export const usePageContext = () => {
                 state: pageClientState, 
                 setState: setPageClientState,
                 data: options,
-                api: { getRef, getRefByName }
+                api: { getRef, getRefByName, openLink, openPath }
               })
             } catch (ex) {
               alert (ex.message);
@@ -213,17 +294,15 @@ export const usePageContext = () => {
   }
 
   const attachEventHandlers = component => {
-
     const eventHandlers = eventTypes.map(e => e.name).reduce((handlers, eventName) => {
       const supported = component.events?.find( f => f.event === eventName);
       if (!supported) return handlers;
-
       handlers[eventName] = (e, options) => handleComponentEvent(e, {
         name: eventName ,
         component,
         pageClientState,
         options,
-        api: { getRef, getRefByName }
+        api: { getRef, getRefByName, openLink, openPath }
       });  
       return handlers;
     }, {});
@@ -232,7 +311,7 @@ export const usePageContext = () => {
     
     const bound = component.settings?.find(f => f.SettingName === 'bound' && !!f.SettingValue);
 
-     !!bound && console.log({bound, pageClientState})
+    !!bound && console.log({bound, pageClientState})
  
     if (bound && pageClientState) {
       const node = component.settings?.find(f => f.SettingName === 'target');
@@ -240,7 +319,7 @@ export const usePageContext = () => {
         const target = node.SettingValue;
         Object.assign(eventHandlers, {
           [bound.SettingValue]: pageClientState[target],
-          onChange: e => setPageClientState(s => ({...s, [target]: e.target.value}))
+          onChange: e => setPageClientState(s => ({...s, [target]: !e.target ? e : e.target.value}))
         })
       }
     } 
@@ -248,6 +327,9 @@ export const usePageContext = () => {
     return eventHandlers;
 
   }
+
+
+
 
   return {
     handleComponentEvent ,

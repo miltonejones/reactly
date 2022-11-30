@@ -21,6 +21,10 @@ import ReactlyAudio from './ReactlyAudio/ReactlyAudio';
 import ReactlySelect from './ReactlySelect/ReactlySelect';
 import ReactlyBadge from './ReactlyBadge/ReactlyBadge';
 import ReactlyCard from './ReactlyCard/ReactlyCard';
+import ReactlyRepeater from './ReactlyRepeater/ReactlyRepeater';
+import ReactlyInfoCard from './ReactlyInfoCard/ReactlyInfoCard';
+import ReactlyCarousel from './ReactlyCarousel/ReactlyCarousel';
+import ReactlyDrawer from './ReactlyDrawer/ReactlyDrawer';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -49,7 +53,11 @@ const Library = {
   AudioPlayer: ReactlyAudio,
   Select: ReactlySelect,
   Badge: ReactlyBadge,
-  Card: ReactlyCard
+  Card: ReactlyCard,
+  Repeater: ReactlyRepeater,
+  InfoCard: ReactlyInfoCard,
+  Carousel: ReactlyCarousel,
+  Drawer: ReactlyDrawer
 }
 
 export default Library;

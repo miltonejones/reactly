@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Link } from '@mui/material';
+import { styled, Box, Card, CardMedia, Link, Typography } from '@mui/material';
 import { AppRegistration, MoreVert, Edit, Add } from "@mui/icons-material"; 
 import { useEditor } from '../../../hooks/useEditor';
 import { Flex  } from "../..";
@@ -22,17 +22,27 @@ const Home = ({ appData }) => {
     <AppRegistration />
     <b>Reactly</b>
   </Flex>
+  <Typography sx={{m:2}} variant="h4">Choose an application to edit or click Create Application</Typography>
+  <Flex wrap baseline spacing={2} sx={{p: 2}}>
 
-  <Box sx={{p: 2}}>
-
-  {appData.map(app => <Box sx={{p: 1}} key={app.Name}>
+  {appData.map(app => <Card sx={{p:2,m:1, width: 300}}>
+    {!!app.Photo && <CardMedia 
+    
+    component="img"
+    height="194"
+    image={app.Photo}
+    alt={app.Name}
+      />}
+    <Flex sx={{p: 1}} key={app.Name}>
       <Link href={`/info/${app.path}`}>{app.Name}</Link>
-     </Box>)}
+     </Flex>
+     
+     </Card>)}
      <Flex sx={{p: 1}} onClick={create} >
      <Add /> 
        <Link >Create application...</Link>
      </Flex>
-</Box>
+</Flex>
    </Layout>
  );
 }

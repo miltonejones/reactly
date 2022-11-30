@@ -137,7 +137,8 @@ export const ComponentInputBody = (props) => {
     trueProp,
     selectedPage,
     helperText,
-    resources
+    resources,
+    multiline
   } = props;
 
   const node = css?.find(f => f.Key === label);
@@ -174,6 +175,8 @@ export const ComponentInputBody = (props) => {
     resources,
     value,
     type,
+    selectedPage,
+    component,
     bindableProps
   }
 
@@ -183,9 +186,11 @@ export const ComponentInputBody = (props) => {
     boolean: BooleanComponentInput,
     valuelist: ListComponentInput,
     menulist: ListComponentInput,
+    imagelist: ListComponentInput,
     listbuilder: ListComponentInput,
     listbinder: ListBinderComponentInput,
-    listtable: ListTableComponentInput
+    listtable: ListTableComponentInput,
+    repeatertable: ListTableComponentInput
   }
 
 
@@ -194,7 +199,7 @@ export const ComponentInputBody = (props) => {
     return <><CustomInput {...inputProps} /></> 
   } 
 
-  if (types && !customProp && !args[label + '-free']) {
+  if (types && !customProp ) {
 
     return <Stack>
       {header}
@@ -234,6 +239,8 @@ export const ComponentInputBody = (props) => {
   {header}
       <Flexible on={free}>
   <TextInput 
+  multiline={!!multiline}
+  rows={4}
     autoComplete="off"
     helperText={helperText}  
     onChange={e => handleChange(e.target.value)} 
@@ -297,12 +304,12 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
             <Spacer />
               <Box>
                 
-              <Switch  size="small"
-                checked={args[setting.label + '-edges']}
-                onChange={e => {
-                  onChange(component.ID, setting.label + '-edges', e.target.checked); 
-                }} 
-              />
+                <Switch  size="small"
+                  checked={args[setting.label + '-edges']}
+                  onChange={e => {
+                    onChange(component.ID, setting.label + '-edges', e.target.checked); 
+                  }} 
+                />
 
               </Box>
           </Flex>

@@ -93,7 +93,7 @@ export const getStyles = styles => {
       Object.assign(args, { [key]: prop })
       return;
     } 
-    console.log ({key, val: args[key]})
+    // console.log ({key, val: args[key]})
     // Object.assign(args, { [key]: null })
   }
   

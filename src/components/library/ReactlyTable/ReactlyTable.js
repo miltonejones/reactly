@@ -22,7 +22,8 @@ const truncate = (value, length) => {
   
 const ReactlyComponentTable = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(PageStateContext);
-  const { onRowClick, onCellClick, settings} = props;
+  const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
+ 
   const args = getSettings(settings);
   let obj = null, parsed = [];
 
@@ -41,13 +42,15 @@ const ReactlyComponentTable = ({ children, ...props }) => {
     }
   }
 
-  if (!parsed.length) {
-    return <Box sx={{m: 2}}>{args.emptyMessage}</Box>
+  if (!parsed.length && !componentEditing) {
+    return <>
+    {/* [<pre>{JSON.stringify(args,0,2)}</pre>]
+    [<pre>{JSON.stringify(props,0,2)}</pre>] */}
+    <Box sx={{m: 2}}>{args.emptyMessage}</Box></>
   }
 
  return (
   <> 
-{/* <pre>{JSON.stringify(args,0,2)}</pre> */}
    <ReactlyComponent component={Table} {...props}>
 
       <TableHead>

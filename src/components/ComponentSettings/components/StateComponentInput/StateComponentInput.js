@@ -19,7 +19,7 @@ const StateComponentInput = ({
   return <Stack>
     {header}
     <QuickSelect helperText={helperText} 
-        options={selectedPage.state.map(d => d.Key)}  
+        options={selectedPage.state?.map(d => d.Key)}  
         value={value} 
         onChange={handleChange}/>
   </Stack> 

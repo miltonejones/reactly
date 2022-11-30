@@ -13,7 +13,7 @@ import { useParams } from "react-router-dom";
 const Renderer = ({ applications: apps = {} }) => { 
   const { appname, pagename } = useParams();
   const { queryState = {}, setQueryState } = React.useContext(AppStateContext);
-
+  const [loaded, setLoaded] = React.useState(false)
   const applications = typeof apps === 'object'
     ? apps 
     : JSON.parse(apps)
@@ -45,14 +45,14 @@ const Renderer = ({ applications: apps = {} }) => {
 
  return (
    <>
-  <Breadcrumbs sx={{m: 2}} separator={<b>›</b>} aria-label="breadcrumb">
+  {/* <Breadcrumbs sx={{m: 2}} separator={<b>›</b>} aria-label="breadcrumb">
     {breadcrumbs.map((crumb, o) => crumb.href 
       ? <Link key={o} href={crumb.href}><Typography variant="body2">{crumb.text}</Typography></Link> 
       : <Typography key={o} sx={{ fontWeight: 600 }} variant="body2">{crumb.text}</Typography>)}
-  </Breadcrumbs>
+  </Breadcrumbs> */}
 
 
-  <ComponentTree appContext={appData} selectedPage={firstpage} />
+  <ComponentTree loaded={loaded} setLoaded={setLoaded} appContext={appData} selectedPage={firstpage} />
   
 </>
  );

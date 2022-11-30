@@ -1,11 +1,12 @@
 import React from 'react';
-import { styled, Box , Collapse, Tabs, Grid, Chip, IconButton, Typography, Divider} from '@mui/material';
+import { styled, Box , Collapse, Tabs, Grid, Chip, IconButton, Typography, Divider,Stack} from '@mui/material';
 import { useParams } from "react-router-dom";
-import { Flex, Spacer, TextBtn, Tiny, ConnectionDrawer, QuickMenu } from "../..";
-import { AppRegistration, MoreVert, Edit, Add } from "@mui/icons-material"; 
+import { Flex, Spacer, TextInput, TextBtn, Tiny, ConnectionDrawer, Text, QuickMenu } from "../..";
+import { AppRegistration, Save, MoreVert, Edit, Add } from "@mui/icons-material"; 
 import { List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { useConnectionEdit } from '../Editor/Editor';
 import { TabButton } from '../../ComponentPanel/ComponentPanel';
+import { useEditor } from '../../../hooks/useEditor';
 
 
 
@@ -36,6 +37,7 @@ const DetailList = ({ header, items = [], onConnect}) => {
 const Detail = ({ applications, onConnect }) => {
   const { appname } = useParams();
   const application = applications.find(f => f.path === appname);
+  const editor = useEditor(applications);
 
   const {
     handleResourceDelete,
@@ -43,7 +45,11 @@ const Detail = ({ applications, onConnect }) => {
     setConnection, 
     setResource 
   } = useConnectionEdit(applications);
-
+  
+  const [settings, setSettings] = React.useState({
+    Name: application.Name,
+    Photo: application.Photo
+  })
   const [open, setOpen] = React.useState(false)
   const [index, setIndex] = React.useState(0)
 
@@ -65,7 +71,8 @@ const Detail = ({ applications, onConnect }) => {
   const tabs = [
     `Connections (${application.connections.length})`,
     `Resources (${application.resources?.length})`,
-    `Pages (${application.pages.length})`
+    `Pages (${application.pages.length})`,
+    'Settings'
   ]
   
   const handleChange = (event, newValue) => {
@@ -93,41 +100,73 @@ const Detail = ({ applications, onConnect }) => {
 
           </Flex>
         </Grid>
-<Grid item>
+        <Grid item>
 
 
-<Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
+        <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
 
 
-      <Tabs onChange={handleChange} value={index} sx={{minHeight: 24, mt: 1, ml: 1, width: '90vw' }}   >
-        <TabButton label="All"/>
-       {tabs.map (tab =>  <TabButton label={tab} key={tab}  />) } 
-      </Tabs>
-    </Box>
+              <Tabs onChange={handleChange} value={index} sx={{minHeight: 24, mt: 1, ml: 1, width: '90vw' }}   >
+                <TabButton label="All"/>
+              {tabs.map (tab =>  <TabButton label={tab} key={tab}  />) } 
+              </Tabs>
+            </Box>
 
- 
-</Grid>
-        <Collapse in={!index || index === 1}>
+        
+        </Grid>
+
           <Grid sx={{pt: 2}} item>
+        <Collapse in={!index || index === 1}>
             <DetailList onConnect={() => setOpen(!open)} items={connections}  header={
               <>Connections <TextBtn onClick={() => setOpen(!open)} variant="outlined" endIcon={<Add />} sx={{ml: 1}} size="small">add</TextBtn></>
             }/>
-          </Grid>
         </Collapse>
-        <Collapse in={!index || index === 2}> 
+          </Grid>
+
           <Grid item>
+        <Collapse in={!index || index === 2}> 
             <DetailList onConnect={() => setOpen(!open)} items={resources}  header={
               <>Resources <TextBtn onClick={() => setOpen(!open)} variant="outlined" sx={{ml: 1}} size="small" endIcon={<Add />}>add</TextBtn></>
             }/>
-          </Grid>
         </Collapse>
-        <Collapse in={!index || index === 3}> 
+          </Grid>
+
           <Grid item>
+        <Collapse in={!index || index === 3}> 
             <DetailList items={pages} header={
               <>Pages <TextBtn sx={{ml: 1}} size="small" variant="outlined" endIcon={<Add />}>add</TextBtn></>
             }/>
-          </Grid>
         </Collapse>
+          </Grid>
+          <Grid item xs={12}>
+        <Collapse in={index === 4}> 
+         <Stack  sx={{p: 2, width: 400}}>
+            <Text small>
+              Application Name
+            </Text>
+            <TextInput 
+              value={settings.Name} 
+              size="small" onChange={e => setSettings({...settings, dirty: 1, Name: e.target.value})} 
+            />
+            <Text small>
+              Image
+            </Text>
+            <TextInput 
+              value={settings.Photo} 
+              size="small" onChange={e => setSettings({...settings, dirty: 1, Photo: e.target.value})} 
+            />
+            <Flex sx={{pt: 1}}>
+              <Spacer />
+              <TextBtn onClick={() => {
+                const { dirty, ...props } = settings;
+                editor.setProgProps(application.ID, props)
+                setSettings({ ...settings, dirty: !dirty });
+              }} endIcon={<Save />} variant="contained"
+              disabled={!settings.dirty}>Save</TextBtn>
+            </Flex>
+         </Stack>
+        </Collapse>
+          </Grid>
     </Grid>
   
       

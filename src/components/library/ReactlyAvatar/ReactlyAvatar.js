@@ -6,8 +6,11 @@ import { GenericStyles } from '../styles';
   
  
 const ReactlyAvatarComponent = ({ children, ...props}) => {
+  const { onImageLoad } = props;
   return (
-   <ReactlyComponent component={Avatar} {...props}> 
+   <ReactlyComponent component={Avatar} {...props} onLoad={() => onImageLoad && onImageLoad({
+    ...props
+   })}> 
      {children}
    </ReactlyComponent> 
   );
@@ -54,12 +57,21 @@ export const ReactlyAvatarSettings = {
   ]
 }
  
+const Events =  [
+  {
+    name: 'onImageLoad',
+    title: 'Avatar image loads',
+    description: 'Image, when present finishes loading.'
+  },  
+]
+
 
 const ReactlyAvatar = {
   Icon: AccountCircle,
   Component: ReactlyAvatarComponent ,
   Settings: ReactlyAvatarSettings,
   Styles: GenericStyles,
+  Events,
   Defaults: {
     children: 'MJ'
   }

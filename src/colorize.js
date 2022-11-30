@@ -32,7 +32,7 @@ function syntaxHighlight(json, css) {
 }
 
 const JsonView = ({ json }) => {
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = React.useState(1);
   const handleChange = (event, newValue) => {
     setIndex(newValue);
   };
