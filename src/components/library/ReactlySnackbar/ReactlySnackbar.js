@@ -3,10 +3,29 @@ import { Snackbar } from '@mui/material';
 import { GenericStyles } from '../styles'; 
 import { Icecream } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
+import { PageStateContext } from '../../../hooks/usePageContext';
   
 const ReactlyComponentSnackbar = ({ children, ...props }) => {
+  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { componentEditing, preview, ...rest } = props;
+  const open = Object.keys(pageModalState)
+    .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
+
+
+  const handleClose = () => {
+    const state = {
+      ...pageModalState,
+      [props.ID]: false
+    } 
+    setPageModalState(state)
+   }
+
  return (
-   <ReactlyComponent component={Snackbar} {...props}>
+   <ReactlyComponent component={Snackbar} {...props}
+   
+      onClose={handleClose}
+     open={open || componentEditing} 
+   >
       {children}
    </ReactlyComponent>
  );
@@ -21,21 +40,26 @@ const Settings = {
       always: true,
       settings: [  
         {
-          title: 'Label',
-          label: 'label' 
+          title: 'Message',
+          label: 'message' ,
+          bindable: 1
+        }, 
+        {
+          title: 'Vertical Origin',
+          label: 'vertical' ,
+          types: ['top', 'bottom']
+        }, 
+        {
+          title: 'Horizontal Origin',
+          label: 'horizontal' ,
+          types: ['left', 'right'], 
+        }, 
+        {
+          title: 'AutoHide Duration',
+          label: 'autoHideDuration' , 
         }, 
       ]
-    },
-    {
-      name: 'Appearance',
-      settings: [ 
-        {
-          title: 'Variant',
-          label: 'variant',
-          types: [ ], 
-        } 
-      ]
-    },
+    }, 
   ]
 }
 
@@ -45,7 +69,10 @@ const ReactlySnackbar = {
   Component: ReactlyComponentSnackbar,
   Settings,
   Styles: GenericStyles, 
-  Defaults: { }
+  allowChildren: !0,
+  Defaults: {
+  vertical: 'bottom',
+  horizontal: 'left' }
 }
  
 

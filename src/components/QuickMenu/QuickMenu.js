@@ -16,13 +16,15 @@ const QuickMenu = ({
   options, 
   input,
   icon: LabelIcon,
-  onChange 
+  onChange ,
+  onOpen
 }) => {
 
 const [anchorEl, setAnchorEl] = React.useState(null);
 const open = Boolean(anchorEl) || !!input;
 const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
+  onOpen && onOpen(event)
 };
 const handleClose = (value) => {  
   setAnchorEl(null);

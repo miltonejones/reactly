@@ -22,7 +22,7 @@ export const StateValue = ({ ID, Key, Value, Type, handleChange, ...props }) => 
     />
   }
   return <TextField {...props} value={Value} onChange={e => {
-    handleChange && handleChange(ID, Key, e.target.value, Type)
+    handleChange && handleChange(ID, Key, Type ===  'number' ? parseInt(e.target.value) : e.target.value, Type)
   }}  />
 }
  
@@ -77,7 +77,7 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
 
           <Stack>
             {/* <Typography>Type</Typography> */}
-            <QuickSelect options={['string', 'object', 'array', 'boolean']}
+            <QuickSelect options={['string', 'object', 'array', 'number', 'boolean']}
             label="Type"
                 value={item.Type || 'string'} onChange={value => {
                   handleChange && handleChange(item.ID, item.Key, item.Value, value)

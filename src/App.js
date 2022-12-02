@@ -28,6 +28,8 @@ import Modal, { useModal } from "./components/Modal/Modal";
 
 function App() {
   const appHistory = useAppHistory();
+  const [pageClientState, setPageClientState] = React.useState({});
+  const [pageResourceState, setPageResourceState] = React.useState([]);
   const [queryState, setQueryState] = React.useState({
     loaded: false,
     data: null,
@@ -46,7 +48,8 @@ function App() {
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
- 
+  
+
 
   const appData = appText === null || appText === 'null' 
     ? AppData 
@@ -67,7 +70,7 @@ function App() {
   
 
   const setAppData = data => store.setItem('page_db_items', JSON.stringify(data));
- 
+  const getPageResourceState = () => pageResourceState
 
   return (
     <AppStateContext.Provider
@@ -76,12 +79,18 @@ function App() {
         setAppData,
         queryState,
         setQueryState,
+        pageClientState, 
+        pageResourceState, 
+        getPageResourceState,
+        setPageResourceState,
+        setPageClientState,
         ...appHistory,  
         ...modal,
         menuPos,
         MenuComponent,
         PopComponent,
-        dirty, setDirty,
+        dirty, 
+        setDirty,
         createBreadcrumbs
       }}
     >

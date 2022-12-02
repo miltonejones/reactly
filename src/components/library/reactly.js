@@ -28,13 +28,10 @@ const ReactlyComponent = ({
   const args = getSettings(settings); 
   const style = getStyles(styles) ; 
 
-  const content = args.Label || children || args.children
-
+  
  return <> 
-{!!row && <>
 
-{/* [<pre> {JSON.stringify(args,0,2)}</pre>] */}
-</>}
+
  <Component {...args} {...props}  style={style} sx={{...props.sx, ...extra}}>
     {children || args.children}  
  </Component>

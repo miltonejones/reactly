@@ -1,4 +1,4 @@
-export const AppData = [
+exports.AppData = [
   {
     "Name": "Demo Application",
     "path": "demo-application",
@@ -70,9 +70,7 @@ export const AppData = [
                 "Key": "border-radius",
                 "Value": "Sm/0.5"
               }
-            ],
-            "boundProps": [],
-            "settings": []
+            ]
           },
           {
             "ComponentType": "Button",
@@ -114,8 +112,7 @@ export const AppData = [
                 "SettingName": "variant",
                 "SettingValue": "outlined"
               }
-            ],
-            "boundProps": []
+            ]
           },
           {
             "ComponentType": "Textbox",
@@ -161,13 +158,6 @@ export const AppData = [
               {
                 "SettingName": "disabled",
                 "SettingValue": false
-              }
-            ],
-            "boundProps": [
-              {
-                "attribute": "value",
-                "boundTo": "search_type",
-                "ID": "lb5jz6bo0tgv9m7k4dge"
               }
             ]
           },
@@ -229,14 +219,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 16,
-            "order": 250,
-            "boundProps": [
-              {
-                "attribute": "label",
-                "boundTo": "search_state",
-                "ID": "lb5jz6bp448is6si36g"
-              }
-            ]
+            "order": 250
           },
           {
             "ComponentType": "Avatar",
@@ -288,8 +271,7 @@ export const AppData = [
             "data": [],
             "ID": 17,
             "order": 400,
-            "componentID": 11,
-            "boundProps": []
+            "componentID": 11
           },
           {
             "ComponentType": "Paper",
@@ -324,8 +306,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 22,
-            "order": 800,
-            "boundProps": []
+            "order": 800
           },
           {
             "ComponentType": "Button",
@@ -357,8 +338,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 23,
-            "order": 900,
-            "boundProps": []
+            "order": 900
           },
           {
             "ComponentType": "Link",
@@ -392,8 +372,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 25,
-            "order": 1100,
-            "boundProps": []
+            "order": 1100
           },
           {
             "ComponentType": "Avatar",
@@ -411,8 +390,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 26,
-            "order": 150,
-            "boundProps": []
+            "order": 150
           },
           {
             "ComponentType": "Fab",
@@ -443,8 +421,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 27,
-            "order": 1200,
-            "boundProps": []
+            "order": 1200
           },
           {
             "ComponentType": "Chip",
@@ -534,14 +511,7 @@ export const AppData = [
             "data": [],
             "ID": 28,
             "order": 1300,
-            "componentID": 22,
-            "boundProps": [
-              {
-                "attribute": "icon",
-                "boundTo": "icon_name",
-                "ID": "lb5jz6bp7ey5uadia7j"
-              }
-            ]
+            "componentID": 22
           },
           {
             "ComponentType": "Avatar",
@@ -559,8 +529,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 30,
-            "order": 1400,
-            "boundProps": []
+            "order": 1400
           },
           {
             "ComponentType": "Avatar",
@@ -582,8 +551,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 33,
-            "order": 1600,
-            "boundProps": []
+            "order": 1600
           },
           {
             "ComponentType": "Box",
@@ -596,8 +564,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 34,
-            "order": 87,
-            "boundProps": []
+            "order": 87
           },
           {
             "ComponentType": "Typography",
@@ -628,8 +595,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 35,
-            "order": 1700,
-            "boundProps": []
+            "order": 1700
           },
           {
             "ComponentType": "Collapse",
@@ -656,14 +622,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 36,
-            "order": 1050,
-            "boundProps": [
-              {
-                "attribute": "in",
-                "boundTo": "collapsed",
-                "ID": "lb5jz6bp8yxe1sdlr46"
-              }
-            ]
+            "order": 1050
           },
           {
             "ComponentType": "List",
@@ -719,8 +678,7 @@ export const AppData = [
             "data": [],
             "ID": 38,
             "order": 450,
-            "componentID": 36,
-            "boundProps": []
+            "componentID": 36
           },
           {
             "ComponentType": "Typography",
@@ -751,8 +709,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 39,
-            "order": 1025,
-            "boundProps": []
+            "order": 1025
           },
           {
             "ComponentType": "Typography",
@@ -778,8 +735,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 40,
-            "order": 1800,
-            "boundProps": []
+            "order": 1800
           },
           {
             "ComponentType": "DataGrid",
@@ -806,8 +762,7 @@ export const AppData = [
             "data": [],
             "ID": 41,
             "order": 94,
-            "componentID": null,
-            "boundProps": []
+            "componentID": null
           },
           {
             "ComponentType": "Box",
@@ -820,8 +775,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 42,
-            "order": 150,
-            "boundProps": []
+            "order": 150
           },
           {
             "ComponentType": "Button",
@@ -843,8 +797,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 43,
-            "order": 1900,
-            "boundProps": []
+            "order": 1900
           },
           {
             "ComponentType": "IconButton",
@@ -857,8 +810,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 44,
-            "order": 2000,
-            "boundProps": []
+            "order": 2000
           },
           {
             "ComponentType": "Alert",
@@ -880,8 +832,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 45,
-            "order": 2100,
-            "boundProps": []
+            "order": 2100
           },
           {
             "ComponentType": "Box",
@@ -907,8 +858,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 48,
-            "order": 91,
-            "boundProps": []
+            "order": 91
           },
           {
             "ComponentType": "Textbox",
@@ -946,14 +896,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 49,
-            "order": 2400,
-            "boundProps": [
-              {
-                "attribute": "value",
-                "boundTo": "search_type",
-                "ID": "lb5jz6bp90ng7lgx2wd"
-              }
-            ]
+            "order": 2400
           },
           {
             "ComponentType": "Button",
@@ -987,8 +930,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 50,
-            "order": 2500,
-            "boundProps": []
+            "order": 2500
           }
         ],
         "state": [
@@ -1092,8 +1034,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 14,
-            "order": 600,
-            "boundProps": []
+            "order": 600
           },
           {
             "ComponentType": "Avatar",
@@ -1111,8 +1052,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 15,
-            "order": 700,
-            "boundProps": []
+            "order": 700
           },
           {
             "ComponentType": "Spacer",
@@ -1125,8 +1065,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 17,
-            "order": 900,
-            "boundProps": []
+            "order": 900
           },
           {
             "ComponentType": "Textbox",
@@ -1176,14 +1115,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 18,
-            "order": 1000,
-            "boundProps": [
-              {
-                "attribute": "value",
-                "boundTo": "search_param",
-                "ID": "lb5jz6bqh555wfgwjyh"
-              }
-            ]
+            "order": 1000
           },
           {
             "ComponentType": "Typography",
@@ -1209,8 +1141,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 19,
-            "order": 1100,
-            "boundProps": []
+            "order": 1100
           },
           {
             "ComponentType": "Button",
@@ -1248,8 +1179,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 20,
-            "order": 1200,
-            "boundProps": []
+            "order": 1200
           },
           {
             "ComponentType": "DataGrid",
@@ -1295,14 +1225,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 21,
-            "order": 1300,
-            "boundProps": [
-              {
-                "attribute": "selectedIndex",
-                "boundTo": "selected_row",
-                "ID": "lb5jz6bqiq3vpkbctfr"
-              }
-            ]
+            "order": 1300
           },
           {
             "ComponentType": "Dialog",
@@ -1328,8 +1251,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 22,
-            "order": 1400,
-            "boundProps": []
+            "order": 1400
           },
           {
             "ComponentType": "Box",
@@ -1376,8 +1298,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 23,
-            "order": 1500,
-            "boundProps": []
+            "order": 1500
           },
           {
             "ComponentType": "Button",
@@ -1408,8 +1329,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 24,
-            "order": 1600,
-            "boundProps": []
+            "order": 1600
           },
           {
             "ComponentType": "Button",
@@ -1453,8 +1373,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 25,
-            "order": 1700,
-            "boundProps": []
+            "order": 1700
           },
           {
             "ComponentType": "Menu",
@@ -1471,8 +1390,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 26,
-            "order": 1800,
-            "boundProps": []
+            "order": 1800
           },
           {
             "ComponentType": "Button",
@@ -1528,8 +1446,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 27,
-            "order": 1900,
-            "boundProps": []
+            "order": 1900
           },
           {
             "ComponentType": "AudioPlayer",
@@ -1566,14 +1483,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 28,
-            "order": 2000,
-            "boundProps": [
-              {
-                "attribute": "src",
-                "boundTo": "media_url",
-                "ID": "lb5jz6bqcueh8jlnhhl"
-              }
-            ]
+            "order": 2000
           },
           {
             "ComponentType": "List",
@@ -1607,8 +1517,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 29,
-            "order": 2100,
-            "boundProps": []
+            "order": 2100
           }
         ],
         "state": [
@@ -1758,8 +1667,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 1,
-            "order": 100,
-            "boundProps": []
+            "order": 100
           },
           {
             "ComponentType": "Textbox",
@@ -1805,14 +1713,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 2,
-            "order": 200,
-            "boundProps": [
-              {
-                "attribute": "value",
-                "boundTo": "search_param",
-                "ID": "lb5jz6bqd6j5xuppcvw"
-              }
-            ]
+            "order": 200
           },
           {
             "ComponentType": "Button",
@@ -1885,8 +1786,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 3,
-            "order": 300,
-            "boundProps": []
+            "order": 300
           },
           {
             "ComponentType": "DataGrid",
@@ -1950,14 +1850,7 @@ export const AppData = [
             "data": [],
             "ID": 4,
             "order": 400,
-            "componentID": 18,
-            "boundProps": [
-              {
-                "attribute": "selectedIndex",
-                "boundTo": "selected_index",
-                "ID": "lb5jz6br91ksretc8si"
-              }
-            ]
+            "componentID": 18
           },
           {
             "ComponentType": "AudioPlayer",
@@ -1986,14 +1879,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 5,
-            "order": 500,
-            "boundProps": [
-              {
-                "attribute": "src",
-                "boundTo": "player_url",
-                "ID": "lb5jz6brm5513ogccu"
-              }
-            ]
+            "order": 500
           },
           {
             "ComponentType": "Button",
@@ -2046,8 +1932,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 6,
-            "order": 600,
-            "boundProps": []
+            "order": 600
           },
           {
             "ComponentType": "Repeater",
@@ -2099,14 +1984,7 @@ export const AppData = [
             "data": [],
             "ID": 9,
             "order": 350,
-            "componentID": 17,
-            "boundProps": [
-              {
-                "attribute": "selectedIndex",
-                "boundTo": "selected_index",
-                "ID": "lb5jz6brl954os6vegp"
-              }
-            ]
+            "componentID": 17
           },
           {
             "ComponentType": "InfoCard",
@@ -2178,8 +2056,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 13,
-            "order": 1200,
-            "boundProps": []
+            "order": 1200
           },
           {
             "ComponentType": "Avatar",
@@ -2253,8 +2130,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 14,
-            "order": 150,
-            "boundProps": []
+            "order": 150
           },
           {
             "ComponentType": "Typography",
@@ -2289,8 +2165,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 15,
-            "order": 175,
-            "boundProps": []
+            "order": 175
           },
           {
             "ComponentType": "Spacer",
@@ -2303,8 +2178,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 16,
-            "order": 187,
-            "boundProps": []
+            "order": 187
           },
           {
             "ComponentType": "Collapse",
@@ -2330,14 +2204,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 17,
-            "order": 1300,
-            "boundProps": [
-              {
-                "attribute": "in",
-                "boundTo": "repeater_expanded",
-                "ID": "lb5jz6brouxuwlt4879"
-              }
-            ]
+            "order": 1300
           },
           {
             "ComponentType": "Collapse",
@@ -2363,14 +2230,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 18,
-            "order": 1400,
-            "boundProps": [
-              {
-                "attribute": "in",
-                "boundTo": "grid_expanded",
-                "ID": "lb5jz6brra874o5kwg"
-              }
-            ]
+            "order": 1400
           },
           {
             "ComponentType": "IconButton",
@@ -2406,8 +2266,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 21,
-            "order": 1700,
-            "boundProps": []
+            "order": 1700
           },
           {
             "ComponentType": "Menu",
@@ -2441,14 +2300,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 22,
-            "order": 1800,
-            "boundProps": [
-              {
-                "attribute": "value",
-                "boundTo": "menu_value",
-                "ID": "lb5jz6brhh9d7vnqj74"
-              }
-            ]
+            "order": 1800
           },
           {
             "ComponentType": "Carousel",
@@ -2466,8 +2318,7 @@ export const AppData = [
             "data": [],
             "ID": 23,
             "order": 1250,
-            "componentID": 24,
-            "boundProps": []
+            "componentID": 24
           },
           {
             "ComponentType": "Collapse",
@@ -2493,14 +2344,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 24,
-            "order": 550,
-            "boundProps": [
-              {
-                "attribute": "in",
-                "boundTo": "carousel_expanded",
-                "ID": "lb5jz6bsi407pcygtt"
-              }
-            ]
+            "order": 550
           },
           {
             "ComponentType": "IconButton",
@@ -2549,14 +2393,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 25,
-            "order": 1900,
-            "boundProps": [
-              {
-                "attribute": "icon",
-                "boundTo": "collapse_icon",
-                "ID": "lb5jz6bs0u44tbp6dl4q"
-              }
-            ]
+            "order": 1900
           },
           {
             "ComponentType": "Collapse",
@@ -2596,14 +2433,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 26,
-            "order": 575,
-            "boundProps": [
-              {
-                "attribute": "in",
-                "boundTo": "show_reset",
-                "ID": "lb5jz6bskhho86tyw5"
-              }
-            ]
+            "order": 575
           },
           {
             "ComponentType": "Drawer",
@@ -2654,14 +2484,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 27,
-            "order": 2000,
-            "boundProps": [
-              {
-                "attribute": false,
-                "boundTo": "NO TARGET FOR THIS FIELD",
-                "ID": "lb5jz6bsy5kldpbt8l"
-              }
-            ]
+            "order": 2000
           },
           {
             "ComponentType": "Box",
@@ -2724,8 +2547,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 30,
-            "order": 2300,
-            "boundProps": []
+            "order": 2300
           },
           {
             "ComponentType": "IconButton",
@@ -2753,8 +2575,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 31,
-            "order": 125,
-            "boundProps": []
+            "order": 125
           },
           {
             "ComponentType": "IconButton",
@@ -2785,8 +2606,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 32,
-            "order": 2400,
-            "boundProps": []
+            "order": 2400
           },
           {
             "ComponentType": "Typography",
@@ -2821,8 +2641,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 33,
-            "order": 2350,
-            "boundProps": []
+            "order": 2350
           },
           {
             "ComponentType": "Spacer",
@@ -2835,8 +2654,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 34,
-            "order": 2375,
-            "boundProps": []
+            "order": 2375
           },
           {
             "ComponentType": "List",
@@ -2871,8 +2689,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 35,
-            "order": 2500,
-            "boundProps": []
+            "order": 2500
           },
           {
             "ComponentType": "Avatar",
@@ -2894,8 +2711,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 36,
-            "order": 2325,
-            "boundProps": []
+            "order": 2325
           }
         ],
         "ID": 3,
@@ -3067,8 +2883,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 1,
-            "order": 100,
-            "boundProps": []
+            "order": 100
           },
           {
             "ComponentType": "Box",
@@ -3123,8 +2938,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 2,
-            "order": 200,
-            "boundProps": []
+            "order": 200
           },
           {
             "ComponentType": "Textbox",
@@ -3154,8 +2968,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 3,
-            "order": 300,
-            "boundProps": []
+            "order": 300
           },
           {
             "ComponentType": "Textbox",
@@ -3185,8 +2998,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 4,
-            "order": 400,
-            "boundProps": []
+            "order": 400
           },
           {
             "ComponentType": "Textbox",
@@ -3216,8 +3028,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 5,
-            "order": 500,
-            "boundProps": []
+            "order": 500
           },
           {
             "ComponentType": "Textbox",
@@ -3247,8 +3058,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 6,
-            "order": 600,
-            "boundProps": []
+            "order": 600
           },
           {
             "ComponentType": "Box",
@@ -3271,8 +3081,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 7,
-            "order": 700,
-            "boundProps": []
+            "order": 700
           },
           {
             "ComponentType": "Spacer",
@@ -3285,8 +3094,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 8,
-            "order": 800,
-            "boundProps": []
+            "order": 800
           },
           {
             "ComponentType": "Button",
@@ -3327,8 +3135,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 9,
-            "order": 900,
-            "boundProps": []
+            "order": 900
           },
           {
             "ComponentType": "Button",
@@ -3363,8 +3170,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 10,
-            "order": 850,
-            "boundProps": []
+            "order": 850
           },
           {
             "ComponentType": "Card",
@@ -3391,8 +3197,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 11,
-            "order": 1000,
-            "boundProps": []
+            "order": 1000
           },
           {
             "ComponentType": "Typography",
@@ -3418,8 +3223,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 12,
-            "order": 150,
-            "boundProps": []
+            "order": 150
           },
           {
             "ComponentType": "Select",
@@ -3462,8 +3266,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 13,
-            "order": 650,
-            "boundProps": []
+            "order": 650
           },
           {
             "ComponentType": "Textbox",
@@ -3493,8 +3296,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 14,
-            "order": 675,
-            "boundProps": []
+            "order": 675
           },
           {
             "ComponentType": "Button",
@@ -3534,8 +3336,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 15,
-            "order": 687,
-            "boundProps": []
+            "order": 687
           },
           {
             "ComponentType": "Menu",
@@ -3552,8 +3353,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 16,
-            "order": 1100,
-            "boundProps": []
+            "order": 1100
           },
           {
             "ComponentType": "DataGrid",
@@ -3621,14 +3421,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 17,
-            "order": 1200,
-            "boundProps": [
-              {
-                "attribute": "selectedIndex",
-                "boundTo": "grid_index",
-                "ID": "lb5jz6bs0xp2qgccjatg"
-              }
-            ]
+            "order": 1200
           },
           {
             "ComponentType": "Pagination",
@@ -3684,14 +3477,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 21,
-            "order": 1150,
-            "boundProps": [
-              {
-                "attribute": "page",
-                "boundTo": "search_id",
-                "ID": "lb5jz6bsa6p7d2fdkqf"
-              }
-            ]
+            "order": 1150
           },
           {
             "ComponentType": "AudioPlayer",
@@ -3720,14 +3506,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 22,
-            "order": 1300,
-            "boundProps": [
-              {
-                "attribute": "src",
-                "boundTo": "media_url",
-                "ID": "lb5jz6bsyk9pqay8f7"
-              }
-            ]
+            "order": 1300
           }
         ],
         "ID": 4,
@@ -3853,6 +3632,7 @@ export const AppData = [
           "albumName",
           "FileKey"
         ],
+
         "events": [
           {
             "ID": 1,
@@ -3860,9 +3640,11 @@ export const AppData = [
             "action": {
               "type": "scriptRun",
               "target": 1
-            }
-          }
+            },
+          }, 
         ],
+
+
         "values": [
           {
             "key": "sortby"
@@ -4759,8 +4541,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 1,
-            "order": 100,
-            "boundProps": []
+            "order": 100
           },
           {
             "ComponentType": "Avatar",
@@ -4778,8 +4559,7 @@ export const AppData = [
             "scripts": [],
             "data": [],
             "ID": 2,
-            "order": 200,
-            "boundProps": []
+            "order": 200
           }
         ],
         "ID": 1

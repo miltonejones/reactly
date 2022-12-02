@@ -3,6 +3,7 @@ import { Avatar } from '@mui/material';
 import { AccountCircle } from "@mui/icons-material";
 import ReactlyComponent from '../reactly';
 import { GenericStyles } from '../styles';
+import ReactlyButton from '../ReactlyButton/ReactlyButton';
   
  
 const ReactlyAvatarComponent = ({ children, ...props}) => {
@@ -63,6 +64,7 @@ const Events =  [
     title: 'Avatar image loads',
     description: 'Image, when present finishes loading.'
   },  
+  ...ReactlyButton.Events
 ]
 
 

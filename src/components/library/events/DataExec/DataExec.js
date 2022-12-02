@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Typography } from '@mui/material'; 
+import { styled, Box, Divider, Typography , Stack} from '@mui/material'; 
 import { QuickSelect, Flex, Text, Spacer, TextBtn } from '../../..';
  
 const Layout = styled(Box)(({ theme }) => ({
@@ -8,6 +8,7 @@ const Layout = styled(Box)(({ theme }) => ({
  
 const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
   const [state, setState ] = React.useState({ ...event.action, type: selectedType });
+  
   
   const actionReset = selectedType === 'dataReset';
   const actionDesc = actionReset
@@ -25,19 +26,33 @@ const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
 
 
 <Text small>{actionDesc} Resource:</Text> 
-    <QuickSelect options={resources.map(d => d.name)} value={resource?.name}
+    <QuickSelect  options={resources.map(d => d.name)} value={resource?.name}
       onChange={value => setState(s => ({...s, target: resources.find(d => d.name === value).ID}))}
     />
+
+    <Divider sx={{mt:2, mb:1}}/>
+    <Stack>
+
+    <Text sx={{  ml: 1 }} small active>Set request values</Text>
+    <Flex>
+    <Typography sx={{ mb: 2, ml: 1 }}  variant="caption">Use options.<i>property</i> to use value from the component.</Typography>
+    </Flex>
+    </Stack>
+
 {/* [{target}][{state.target}] */}
       {!actionReset && !! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
         <QuickSelect 
+        free
         options={page.state?.map(f => f.Key)} 
         label={`Set value for ${val.key}`}
         value={state.terms?.[val.key]}
-        onChange={value => setState(s => ({...s, terms: {
-          ...s.terms,
-          [val.key]: value
-        }}))}
+        onChange={value => {
+          alert(value)
+          setState(s => ({...s, terms: {
+            ...s.terms,
+            [val.key]: value
+          }}))
+        }}
       />
       </Box>)}
 

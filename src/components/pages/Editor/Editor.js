@@ -181,8 +181,11 @@ const Editor = ({ applications: apps = {} }) => {
     setAppData,
     CreateComponent,
     Shout,
+    Alert,
     Confirm,
     Prompt,
+    pageClientState, 
+    setPageClientState,
     dirty,
     setDirty,
   } = React.useContext(AppStateContext);
@@ -207,6 +210,7 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handleSettingsChange = (componentID, label, value) => {
+  // alert(JSON.stringify({label, value}, 0, 2))
     setComponentProp(appData.ID, queryState.page.ID, componentID, label, value);
   };
   const handleNameChange = async (componentID, old) => {
@@ -276,6 +280,12 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: collapsed.right ? "Show Settings Panel" : "Hide Settings Panel",
       action: () => setCollapsed((s) => ({ ...s, right: !s.right })),
+    },
+    {
+      name: "Show client state",
+      action: () => Alert(<Json>
+        {JSON.stringify(pageClientState, 0, 2)}
+      </Json>)
     },
   ]; 
 
@@ -600,6 +610,8 @@ const Editor = ({ applications: apps = {} }) => {
 
             {!!appData?.themes && <Collapse in={!json}>
               <ComponentTree
+              pageClientState={pageClientState}
+              setPageClientState={setPageClientState}
                 themes={appData.themes}
                 appContext={appData}
                 loaded={loaded}

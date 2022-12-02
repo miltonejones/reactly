@@ -78,10 +78,10 @@ const ConnectionNode = ({
       </Flex> 
     </Text>
 
-    <Text small onClick={() => connectionClick('new')}>
+    {/* <Text small onClick={() => connectionClick('new')}>
       <Tiny icon={Add} /> 
       <Link>Add connection</Link>
-    </Text>
+    </Text> */}
   </>
 }
 
@@ -166,7 +166,7 @@ const ResourceForm = ({ dirty, resource, terms, setTerms, onPreview, onTermDrop,
         endIcon={<Save />}
                 onClick={resourceCommit} >Save</TextBtn>
         <TextBtn variant="contained"  size="small"
-                onClick={onPreview} color="warning">Test</TextBtn>
+                onClick={() => onPreview(format)} color="warning">Test</TextBtn>
       </Flex>
 
       <Divider  sx={{mb: 2, mt: 1}}/>
@@ -265,12 +265,18 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
  
 
   
-  const previewConnectionRequest = async () => {
+  const previewConnectionRequest = async (format) => {
     const connection = connections.find(f => f.ID === connectionID);
     const url = new URL(path, connection.root);
-    const qs = Object.keys(terms).map(t => `${t}=${terms[t]}`).join('&');
-    const endpoint = `${url}?${qs}`;
+    
+    const slash = format === 'rest' ? '/' : '?'
+    const qs = format === 'rest'
+      ? Object.keys(terms).map(t => `${terms[t]}`).join('/')
+      : Object.keys(terms).map(t => `${t}=${terms[t]}`).join('&');
 
+
+    const endpoint = `${url}${slash}${qs}`;
+    // return alert(endpoint)
 
     const response = await fetch(endpoint); 
     const json = await response.json();

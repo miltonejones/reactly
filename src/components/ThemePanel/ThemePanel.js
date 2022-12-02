@@ -82,7 +82,9 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
 
    <ThemeCollapse on={on.typo} label="Typography"
       closeCollapse={val => setOn(s => ({...s, typo: val}))}>
-      <JsonTree onChange={(prop, val) => recurse(prop, val, 'typography')}  edit json={theme.typography} />
+      <JsonTree options={{
+        textTransform: ['capitalize', 'uppercase']
+      }} onChange={(prop, val) => recurse(prop, val, 'typography')}  edit json={theme.typography} />
     </ThemeCollapse>
  
     <ThemeCollapse on={on.transitions} label="Transitions"

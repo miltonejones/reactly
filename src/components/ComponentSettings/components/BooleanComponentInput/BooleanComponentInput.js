@@ -7,14 +7,20 @@ const BooleanComponentInput = ({
   trueProp,
   header,
   value,
-  handleChange
+  handleChange,
+  binding,
+  bindingValue,
 }) => {
-  const checked = !!trueProp 
+  const checked = (!!trueProp 
   ? value === trueProp 
-  : value
+  : value) || !!bindingValue
 
   return <Flex onClick={() => handleChange(!checked)}>
-    {header}
+    {header} 
+    {/* [[{binding?.toString()}]]
+    <pre>
+    [[{JSON.stringify(bindingValue,0,2)}]]
+    </pre> */}
   <Spacer />
     <Box> 
       <Switch  size="small" checked={checked} /> 

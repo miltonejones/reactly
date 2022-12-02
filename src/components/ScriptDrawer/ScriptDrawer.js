@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField,
-  Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
-import {  Flex, Spacer, TextBtn , TextBox} from '..';
+  Divider, Typography, Stack, Grid, Card, Switch, Alert } from '@mui/material';
+import {  Flex, Spacer, TextBtn , Text, TextBox} from '..';
 import { Close, Add, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
  
@@ -25,7 +25,19 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
 
   const [selected, setSelected] = React.useState({})
   const [dirty, setDirty] = React.useState(false)
+  const [error, setError] = React.useState('')
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const { ID, name, code } = selected;
+
+  const setCode = text => {
+     try {
+       eval(text);
+       setError('')
+     } catch (ex) {
+       setError(ex.message)
+     }
+       setSelected(s => ({...s, code: text }))
+  }
 
   const handleAliasOpen = event => {
     setAnchorEl(event.currentTarget)
@@ -34,8 +46,6 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
   const handleAliasClose = event => {
     setAnchorEl(null)
   } 
-
-  const { ID, name, code } = selected;
 
  return (
 
@@ -76,11 +86,12 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
           fullWidth
           rows={10}
           onChange={e => {
-            setSelected(s => ({...s, code: e.target.value }))
+            setCode(e.target.value)
             setDirty(true);
             }} />}
 
         <Flex>
+       
           <Spacer />
           <TextBtn onClick={() => {
           setSelected( {code: ''} )
@@ -97,6 +108,7 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
           save script
         </TextBtn>
         </Flex>
+        {!!error && <Alert severity="error">{error}</Alert>}
       </Grid>
 
     </Grid>
@@ -107,8 +119,7 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
    <PopoverInput label="Add a client script" 
     onChange={value => {
       if (!value) return handleAliasClose();  
-      const scr = `// script "${value}"
-function ${camelize(value)} (page, options) {
+      const scr = `function ${camelize(value)} (page, options) {
   const { state, setState } = options; 
   // add your code here
 }

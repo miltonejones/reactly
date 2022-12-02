@@ -9,7 +9,7 @@ const Layout = styled(Box)(({ theme }) => ({
 const ModalOpen = ({ event = {}, page, handleSave }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'modalOpen' });
 
-  const modals = ['Dialog', 'Menu', 'Drawer', 'Collapse'].reduce((output, key) => {
+  const modals = ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar'].reduce((output, key) => {
     output = output.concat (page.components.filter(f => f.ComponentType === key));
     return output;
   }, [])

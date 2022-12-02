@@ -36,6 +36,7 @@ const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter }) => {
         .map(c => <Contents 
           filter={filter}
           onCreate={onCreate} 
+          key={c.ID}
           onNameChange={onNameChange}
           onSelect={(component, on) => {
             setQueryState(s => ({...s, selectedComponent:on ? null :  component}));
@@ -108,9 +109,10 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, label, indent = 0, on
           parentID={tree.ID} 
           selectedComponent={selectedComponent} 
           onNameChange={onNameChange}
-          onSelect={onSelect} trees={trees} indent={indent + 3.5} key={c.ComponentName} tree={c} /> )}</>}
+          onSelect={onSelect} trees={trees} indent={indent + 3.5} key={c.ID} tree={c} /> )}</>}
  
-      {tree?.children && <Contents label={<Link onClick={() => onCreate(tree.ID)}>Add component</Link>} indent={indent + 3.5} />} 
+      {tree?.children && <Contents 
+        label={<Link onClick={() => onCreate(tree.ID)}>Add component</Link>} indent={indent + 3.5} />} 
        </>
   );
 };

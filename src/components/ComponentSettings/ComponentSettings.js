@@ -83,28 +83,45 @@ const attempt = value => {
 }
 
 export const ComponentInput = props => {
-    const { bindable, label, component, title,  args = {} } = props;
+    const { bindable, label, component, title, onChange, value, args = {} } = props;
 
+    const isBound = component.boundProps?.find(prop => prop.attribute === label);
       
     const bindProps = {
       ...props,
       title: `Bind ${title} to client state`,
       label: 'bound',
       type: 'boolean',
-      trueProp: label
+      binding: label,
+      bindingValue: isBound,
+      trueProp: label,
+      onChange: (ignore, value) => {   
+        onChange( label, { attribute: value } )
+      }
     }
+ 
 
-    const inputProps = args.bound === label
+    const inputProps = isBound
       ? {
           ...props,
           title: <>Bind <b>{component.ComponentName}.{label}</b> to client state variable:</>,
           label: 'target',
-          type: 'state' 
+          binding: label,
+          bindingValue: isBound.boundTo,
+          type: 'state' ,
+          onChange: (attribute, boundTo) => {  
+            onChange( 'boundTo', {boundTo, attribute} )
+          }
         }
       : props;
             
 
     return <>
+   {/* {!!isBound && <>
+    [[<pre>
+      {JSON.stringify(isBound,0,2)}
+      </pre>]]
+   </>} */}
       <ComponentInputBody {...inputProps} /> 
       {!!bindable && <Box sx={{mb: 2}}><ComponentInputBody {...bindProps} /></Box>}
     </>
@@ -124,6 +141,8 @@ export const ComponentInputBody = (props) => {
     types, 
     title, 
     type,
+    binding,
+    bindingValue,
     component,
     getOptionLabel, 
     image,  
@@ -145,14 +164,18 @@ export const ComponentInputBody = (props) => {
   const initialProp = !node ? args[label] : node.Value;
   const customProp = args[label + '-custom'];
   const colorProp = label.indexOf('color') > -1;
-  const [value, setValue] = React.useState(initialProp);
+  const [value, setValue] = React.useState(!!binding ? bindingValue : initialProp);
 
-  const handleChange = prop => {   
+  const handleChange = (prop, binding) => {   
     const inputProp = type === 'boolean' && !!trueProp && prop 
       ? trueProp
       : prop;
 
     setValue(inputProp);
+      if (binding) { 
+        return onChange(binding, inputProp)
+      }
+
     onChange && onChange(label, typeof inputProp === 'object'
       ? JSON.stringify(inputProp)
       : inputProp)
@@ -196,7 +219,9 @@ export const ComponentInputBody = (props) => {
 
   const CustomInput = customInputs[type];
   if (CustomInput) {
-    return <><CustomInput {...inputProps} /></> 
+    return <>
+    {/* [{bindingValue}] */}
+    <CustomInput {...inputProps} /></> 
   } 
 
   if (types && !customProp ) {
@@ -404,7 +429,6 @@ export const ComponentCollapse = ({
 
     <Collapse in={on || active}>
       <ComponentPanelSettings 
-
         resources={resources}
         args={args}
         css={css}

@@ -22,9 +22,13 @@ const ReactlyTextboxComponent = (props) => {
 
  
  return (
-  <ReactlyComponent component={TextField} {...props} InputProps={adornment} >
-     {args.Label}
-  </ReactlyComponent>
+<> 
+<ReactlyComponent component={TextField} {...props}
+   
+   InputProps={adornment} >
+      {args.Label}
+   </ReactlyComponent>
+</>
  );
 }
 

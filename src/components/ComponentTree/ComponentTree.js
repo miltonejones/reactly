@@ -54,49 +54,31 @@ const ComponentTree = ({
   setLoaded,
   appContext,
   themes = [],
+  setPageClientState,
+  pageClientState
 }) => {
   const componentTree = selectedPage?.components;
   const {
     queryState = {},
     setQueryState,
     createBreadcrumbs,
+    pageResourceState, 
+    // getPageClientState,
+    getPageResourceState,
+    setPageResourceState,
   } = React.useContext(AppStateContext);
   const { selectedComponent = {} } = queryState;
 
   const stateProps = !selectedPage?.state
     ? null
     : objectReduce(selectedPage.state);
-  const [pageClientState, setPageClientState] = React.useState(stateProps);
-  const [pageResourceState, setPageResourceState] = React.useState([]);
+  // const [pageClientState, setPageClientState] = React.useState(stateProps);
+  // const [pageResourceState, setPageResourceState] = React.useState([]);
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
   const [loadCount, setLoadCount] = React.useState(0);
 
-  const { handleComponentEvent } = usePageContext();
-  // const [loaded, setLoaded] = React.useState(false)
-  // React.useEffect(() => {
-  //   if (loaded) return;
-  //   if (!!appContext?.resources &&
-  //     !!selectedPage &&
-  //     !!pageClientState) {
-
-  //       setLoaded(true); 
-  //       setTimeout(() => {
-
-  //         handleComponentEvent(
-  //           {},
-  //           {
-  //             name: "onPageLoad",
-  //             options: [],
-  //             sources: appContext.resources,
-  //             connect: appContext.connections,
-  //             stateProps
-  //           },
-  //           selectedPage?.events
-  //         );
-  //       }, 7999)
-  //     }  
-  // }, [appContext,pageClientState, selectedPage, handleComponentEvent, loaded]);
+  const { handleComponentEvent } = usePageContext(); 
 
   const defaultTheme = useTheme();
   React.useEffect(() => {
@@ -104,10 +86,15 @@ const ComponentTree = ({
     //  if (loaded) return;
   if (!!pageClientState && Object.keys(pageClientState).length) return;
     // // // alert (JSON.stringify(stateProps))
-    // // alert (JSON.stringify({...pageClientState, ...stateProps}))
-    setPageClientState(stateProps);
+    // // alert (JSON.stringify({...pageClientState, ...stateProps}))   
+    !!stateProps && setPageClientState(s => ({...s, ...stateProps}));
     setLoaded(true);
   }, [stateProps, loaded, pageClientState]);
+
+   const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
+
+  // const getPageResourceState = () => pageResourceState
+
 
   let path;
   if (selectedPage) {
@@ -125,15 +112,17 @@ const ComponentTree = ({
   const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
 
   const pageTheme = createTheme(theme);
-
-  console.log ({stateProps})
+ 
   
   return (
     <PageStateContext.Provider
       value={{
         pageClientState,
+        getPageClientState,
+        getPageResourceState,
         setPageClientState,
         pageResourceState,
+        getPageResourceState,
         setPageResourceState,
         pageModalState,
         setPageModalState,
@@ -154,7 +143,9 @@ const ComponentTree = ({
           </title>
         </Helmet>
       )}
- 
+ {/* <Json>
+  {JSON.stringify(pageClientState,0,2)}
+ </Json> */}
       <ThemeProvider theme={pageTheme}>
         {components.sort(componentOrder).map((c) => (
           <RenderComponent
@@ -189,9 +180,9 @@ const RenderComponent = ({
       <Preview
         on={on}
         component={Component}
+        preview={preview}
         {...component}
         {...eventMap}
-        preview={preview}
       >
         {!!kids.length && (
           <>

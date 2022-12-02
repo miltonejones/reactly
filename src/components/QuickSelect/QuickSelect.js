@@ -16,6 +16,7 @@ export const QuickSelect = ({
   onChange ,
   helperText,
   small,
+  free,
   limit = 20,
   ...props
 }) => {
@@ -43,6 +44,7 @@ export const QuickSelect = ({
     options={['--None--'].concat(selections)}
     onChange={handleChange} 
     {...props}
+     freeSolo={free}
     sx={{...props.sx, mr: 1, minWidth: small ? 120 : 220}}
     renderInput={(params) => <TextInput {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
  />

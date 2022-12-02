@@ -26,15 +26,20 @@ const StateValue = ({ Value, Type, handleChange, ...props }) => {
       <Spacer />
       {pills.map(p => <Pill 
       onClick={() => handleChange(p.value)}
-      selected={p.value === Value} key={p.name}>
+      selected={p.value === Value || (!p.value && !Value)} key={p.name}>
         <Typography sx={{fontWeight: p.value === Value ? 600 : 400}} variant="caption">{p.name}</Typography>
         
         </Pill>)}
     </Flex> 
   }
+ 
+
+  const helperText =  `Use "|" to toggle between 2 values`;
+
+
   return <Stack>
   <Typography>to</Typography>
-    <TextField size="small" label="enter value" {...props} value={Value} onChange={e => {
+    <TextField helperText={helperText} size="small" label="enter value" {...props} value={Value} onChange={e => {
     handleChange && handleChange(e.target.value)
   }}  /></Stack>
 }

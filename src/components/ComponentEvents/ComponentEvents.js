@@ -120,7 +120,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     event: selectedEvent
   }
 
-  const modalsExist = ['Dialog', 'Menu', 'Drawer'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
+  const modalsExist = ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
 
   const handleSave = state => {  
     setSelectedEvent(null); 

@@ -14,7 +14,7 @@ const ReactlyAudioComponent = ({
 
 }) => { 
   const { pageRefState, setPageRefState, } = React.useContext(PageStateContext);
-  const { onPlayerStart, onPlayerStop, onPlayerEnded  } = props;
+  const { onPlayerStart, onPlayerStop, onProgress, onPlayerPaused, onPlayerEnded  } = props;
     const ref = React.useRef(null)
 
     const args = getSettings(settings); 
@@ -32,15 +32,27 @@ const ReactlyAudioComponent = ({
       });
 
       ref.current.addEventListener('play', () => {
-        onPlayerStart (1)
+        // alert ('Firing play')
+        onPlayerStart && onPlayerStart (ref.current)
       })
 
       ref.current.addEventListener('ended', () => {
-        onPlayerEnded (2)
+        // alert ('Firing end')
+        onPlayerEnded && onPlayerEnded (ref.current, {
+          ...args
+        })
       })
 
       ref.current.addEventListener('pause', () => {
-        onPlayerStop (3)
+        onPlayerStop && onPlayerStop (ref.current)
+      })
+
+      ref.current.addEventListener('timeupdate', () => {
+        onProgress && onProgress (ref.current, {
+          currentTime: ref.current.currentTime,
+          duration: ref.current.duration,
+          progress: ref.current.currentTime / ref.current.duration
+        })
       })
 
       
@@ -100,6 +112,16 @@ const Events =  [
     name: 'onPlayerEnded',
     title: 'Audio track ended',
     description: 'Audio player track reaches its end.'
+  }, 
+  {
+    name: 'onPlayerPaused',
+    title: 'Audio track paused',
+    description: 'Audio player track is paused.'
+  }, 
+  {
+    name: 'onProgress',
+    title: 'Audio position changes',
+    description: 'Audio player track position changes.'
   }, 
 ]
 

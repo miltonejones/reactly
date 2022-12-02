@@ -25,6 +25,10 @@ import ReactlyRepeater from './ReactlyRepeater/ReactlyRepeater';
 import ReactlyInfoCard from './ReactlyInfoCard/ReactlyInfoCard';
 import ReactlyCarousel from './ReactlyCarousel/ReactlyCarousel';
 import ReactlyDrawer from './ReactlyDrawer/ReactlyDrawer';
+import ReactlyPagination from './ReactlyPagination/ReactlyPagination';
+import ReactlyLinearProgress from './ReactlyLinearProgress/ReactlyLinearProgress';
+import ReactlyCircularProgress from './ReactlyCircularProgress/ReactlyCircularProgress';
+import ReactlySnackbar from './ReactlySnackbar/ReactlySnackbar';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -57,7 +61,11 @@ const Library = {
   Repeater: ReactlyRepeater,
   InfoCard: ReactlyInfoCard,
   Carousel: ReactlyCarousel,
-  Drawer: ReactlyDrawer
+  Drawer: ReactlyDrawer,
+  Pagination: ReactlyPagination,
+  LinearProgress: ReactlyLinearProgress,
+  CircularProgress: ReactlyCircularProgress,
+  Snackbar: ReactlySnackbar
 }
 
 export default Library;

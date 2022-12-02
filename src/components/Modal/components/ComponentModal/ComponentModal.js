@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box , Stack, Card, TextField} from '@mui/material';
 import Library from '../../../library'
-import { Flex } from '../../..'
+import { Flex, Text } from '../../..'
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1),
@@ -40,9 +40,10 @@ const ComponentModal = ({ onChange, components = [] }) => {
       const Icon = Library[icon].Icon;
       return <Card 
         onClick={() => select(icon)} sx={{cursor: 'pointer', p: 2, ml: 1,  mt: 1, 
-            minWidth: 120, outline: selected === icon ? 'solid 2px red' : ''}} key={icon}>
-        <Flex>
-            <Icon /> {icon}
+            minWidth: 120, maxWidth: 120, overflow: 'hidden', 
+            outline: selected === icon ? 'solid 2px red' : ''}} key={icon}>
+        <Flex sx={{maxWidth: 100, overflow: 'hidden'}}>
+            <Icon /> <Text small>{icon}</Text>
         </Flex>
     </Card>
     })}

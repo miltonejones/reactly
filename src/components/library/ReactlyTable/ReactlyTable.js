@@ -5,6 +5,7 @@ import { GenericStyles } from '../styles';
 import { GridOn } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
+import { Flex } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
 
 const truncate = (value, length) => {
@@ -25,13 +26,13 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
  
   const args = getSettings(settings);
-  let obj = null, parsed = [];
+  let obj = {}, parsed = [], resource;
 
 
   if (args.bindings)  {
     obj = JSON.parse(args.bindings); 
     const id = obj.resourceID;
-    const resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
+    resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
     if (resource) {
       parsed = resource.records.map(record => {
         return Object.keys(obj.bindings).reduce((items, res) => {
@@ -43,9 +44,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   }
 
   if (!parsed.length && !componentEditing) {
-    return <>
-    {/* [<pre>{JSON.stringify(args,0,2)}</pre>]
-    [<pre>{JSON.stringify(props,0,2)}</pre>] */}
+    return <> 
     <Box sx={{m: 2}}>{args.emptyMessage}</Box></>
   }
 
@@ -53,12 +52,12 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   <> 
    <ReactlyComponent component={Table} {...props}>
 
-      <TableHead>
+      {!!obj.bindings && <TableHead>
         <TableRow>
-          {Object.values(obj.bindings).map( t => <TableCell key={t}>{t}</TableCell>)} 
+          {Object.values(obj?.bindings).map( t => <TableCell key={t}>{t}</TableCell>)} 
         </TableRow>
       </TableHead>
-
+}
 
       <TableBody>
         {parsed.map((row, i) => (
@@ -66,7 +65,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
             onClick={e => {
               onRowClick && onRowClick(e, {
                 row: i, 
-                ...row
+                ...resource.records[i]
               })
             }}
             key={i} 
@@ -77,11 +76,11 @@ const ReactlyComponentTable = ({ children, ...props }) => {
                 onCellClick && onCellClick(e, {
                   row: i,
                   cell: k,
-                  ...row
+                  ...resource.records[i]
                 })
               }}
               key={k} component="th" scope="row">
-              {truncate(cell, args.truncate)}
+              <Flex nowrap={args.nowrap}>{truncate(cell, args.truncate)}</Flex>
             </TableCell> )}
             
           </TableRow>
@@ -149,6 +148,11 @@ const Settings = {
         {
           title: 'Truncate Cell Text',
           label: 'truncate' 
+        } ,
+        {
+          title: 'Disable text wrap',
+          label: 'nowrap' ,
+          type:  'boolean'
         } 
       ]
     },

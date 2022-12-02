@@ -141,6 +141,36 @@ export const GenericStyles =  {
       ]
     },
     {
+      name: 'Position',
+      styles: [
+        { 
+          title: 'position',
+          label: 'position',
+          types: ['relative', 'absolute', 'fixed'], 
+        },
+        { 
+          label: 'top',
+          title: 'top',
+          xs: 3
+        },
+        { 
+          label: 'left',
+          title: 'left',
+          xs: 3
+        },
+        { 
+          label: 'bottom',
+          title: 'bottom',
+          xs: 3
+        },
+        { 
+          label: 'right',
+          title: 'right',
+          xs: 3
+        },
+      ]
+    },
+    {
       name: 'Padding',
       styles: [
         { 

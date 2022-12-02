@@ -120,9 +120,8 @@ export const useEditor = (apps) => {
 
   const duplicatePage = async(appID, pageID) => {
     editProg(appID, async (app) => {
-      const existing = app.pages.find((c) => c.ID === pageID);
-      const maxID = getMax(app.pages.map(f => f.ID)); 
-      app.pages = app.pages.concat({ ...existing, ID: maxID + 1
+      const existing = app.pages.find((c) => c.ID === pageID); 
+      app.pages = app.pages.concat({ ...existing, appID, ID: uniqueId()
           , PageName: existing.PageName + ' (copy)'
           , PagePath: existing.PagePath + '-copy'}) 
     })
@@ -130,10 +129,9 @@ export const useEditor = (apps) => {
    
   const setPage = async(appID, page, pageID) => {
     editProg(appID, async (app) => {
-      const existing = app.pages.find((c) => c.ID === page.ID);
-      const maxID = getMax(app.pages.map(f => f.ID)); 
+      const existing = app.pages.find((c) => c.ID === page.ID); 
       app.pages = !existing 
-        ? app.pages.concat({ ...page, ID: maxID + 1})
+        ? app.pages.concat({ ...page, appID, ID: uniqueId()})
         : app.pages.filter(f => f.ID === page.ID ? {...page, pageID} : f)
     })
   }
@@ -225,8 +223,8 @@ export const useEditor = (apps) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
         Key: key,
-        Value: value,
-        Type: type
+        Value: value || "",
+        Type: type || "string"
       }
 
       if (!page.state) {
@@ -234,11 +232,10 @@ export const useEditor = (apps) => {
       }
  
 
-      const maxID = getMax(page.state.map(f => f.ID));
- 
-      page.state = page.state.find(f => f.ID === stateID)
+      Object.assign(page, { state: page.state.find(f => f.ID === stateID)
         ? page.state.map((c) => c.ID === stateID ? {...setting, ID: stateID} : c)
-        : page.state.concat({...setting, ID: maxID + 1});
+        : page.state.concat({...setting, ID: uniqueId() }) }) 
+   
     });
   }
 
@@ -248,9 +245,37 @@ export const useEditor = (apps) => {
     });
   }
 
+  const setComponentBinding = async(appID, pageID, componentID, binding, key) => {
 
+    editComponent(appID, pageID, componentID, async (component) => {
+ 
+
+      if (!component.boundProps) {
+        Object.assign(component, {boundProps: []})
+      }
+ 
+      // if boundTo is false, remove the binding
+      if (!binding.attribute) {
+        return component.boundProps = component.boundProps.filter(f => f.attribute !== key)
+      }
+
+      // alert (JSON.stringify(binding,0,2))
+
+      component.boundProps = component.boundProps.find(f => f.attribute === binding.attribute)
+        ? component.boundProps.map((c) => c.attribute === binding.attribute ? binding : c)
+        : component.boundProps.concat({ ...binding, ID: uniqueId() });
+    });
+
+  }
   
   const setComponentProp = async (appID, pageID, componentID, key, value) => {
+ 
+
+    if (value.hasOwnProperty('attribute')) {
+      return setComponentBinding(appID, pageID, componentID, value, key)
+    }
+ 
+
     editComponent(appID, pageID, componentID, async (component) => {
       const setting = {
         SettingName: key,
