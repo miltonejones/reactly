@@ -360,6 +360,28 @@ export const useEditor = (apps) => {
     });
   }
 
+  const drillComponent = (page, component, out = []) => {
+    const children = page.components.filter(f => f.componentID === component.ID);
+
+    console.log ({i: children.length, p: page.components, id: component.ID})
+
+    if (children.length) {
+      return out.concat([component, children.map(child => drillComponent(page, child, out)) ]);
+    }
+
+
+    return out; //out.concat()
+    // return out;
+    
+  }
+
+  const setComponentCustomName = async (appID, pageID, componentID, ComponentCustomName) => {
+    editComponent(appID, pageID, componentID, async (component, page) => {
+      console.log (drillComponent(page, component) )
+      // Object.assign(component, { ComponentCustomName }) ;
+    });
+  }
+
   const setComponentParent = async (appID, pageID, childID, componentID) => {
     editComponent(appID, pageID, childID, async (component) => { 
       Object.assign(component, { componentID }) ;
@@ -409,6 +431,6 @@ export const useEditor = (apps) => {
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
-    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, 
+    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, setComponentCustomName,
     createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  setResourceEvent, dropResourceEvent };
 }

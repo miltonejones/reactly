@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField, Link,
   Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
 import { Tiny, PopoverInput, Flex, Text, Spacer, TextBtn ,QuickSelect, QuickMenu, TextBox, PillMenu} from '..';
-import { Close, Add, Biotech, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
+import { Close, RecentActors, Add, Code, Biotech, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
 import { Json } from '../../colorize'; 
 import { useEditor } from '../../hooks/useEditor';
 import ComponentEvents from '../ComponentEvents/ComponentEvents';
@@ -226,7 +226,7 @@ const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
 
 const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) => {
   if (!nodes || !resource) {
-    return <>No results to display</>
+    return <i />
   } 
 
   const dot = path.join('.');
@@ -250,7 +250,11 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
         return <><Text small onClick={() => { 
               onAddProp(node, dot);
             }}  sx={{ml: indent}} key={node}
-          > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node}  </Text> 
+          > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node} </Text> 
+
+            {typeof nodes[node] === 'object' &&  <ConnectionTree resource={resource} fields={fields} onAddProp={onAddProp}  
+                path={path.concat(node)} nodes={nodes[node]} indent={indent + 4} /> }
+
         </>
       })}
   </>
@@ -258,7 +262,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
 }
  
  
-const ConnectionDrawer = ({ open, setResource, dropResource, 
+const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     resources = [], connections = [], appID, handleDrop, selectedPage,
     setConnection, dropConnection, handleClose, handleChange ,
     onEventChange, onEventDelete}) => {
@@ -401,6 +405,30 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
         </Typography>
          <TextBtn endIcon={<Add />} onClick={() => setSelectedConnectionByID('new')}>add</TextBtn>
         <Spacer />
+
+        <IconButton disabled>
+        <AutoStories />
+      </IconButton>
+
+            <IconButton
+              color="inherit" 
+              onClick={() => { 
+                handleSwitch({ scriptOpen: 1, connectOpen: false})
+              }}
+            >
+              <Code />
+            </IconButton>
+
+
+        <IconButton
+              color="inherit" 
+              onClick={() => {
+                handleSwitch({ connectOpen: false, stateOpen: 1})
+              }}
+            >
+              <RecentActors />
+            </IconButton>
+
         <IconButton  onClick={handleClose}>
           <Close />
         </IconButton>

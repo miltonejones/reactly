@@ -1,6 +1,6 @@
 import React from 'react';
 import { Typography } from '@mui/material'; 
-import { GenericStyles } from '../styles'; 
+import { GenericStyles, colorProps } from '../styles'; 
 import { FormatColorText } from "@mui/icons-material";
 import ReactlyComponent from '../reactly'; 
 import ReactlyButton from '../ReactlyButton/ReactlyButton';
@@ -71,7 +71,21 @@ const ReactlyTypography = {
   Icon: FormatColorText,
   Component: ReactlyTypographyComponent,
   Settings: ReactlyTypographySettings,
-  Styles: GenericStyles, 
+  Styles: {
+    categories: [
+      ...GenericStyles.categories,
+      {
+        name: 'Color',
+        styles: [
+          {
+            title: 'Color',
+            label: 'color',
+            ...colorProps
+          }
+        ]
+      }
+    ]
+  }, 
   Events: ReactlyButton.Events,
   Defaults: {
     Label: 'Typography text',

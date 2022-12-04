@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField,
   Divider, Typography, Stack, Grid, Card, Switch, Alert } from '@mui/material';
 import {  Flex, Spacer, TextBtn , Text, TextBox} from '..';
-import { Close, Add, Code, Delete, Save } from "@mui/icons-material"; 
+import { Close, Add, AutoStories, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
  
 const Layout = styled(Box)(({ theme }) => ({
@@ -21,7 +21,7 @@ const Bar = styled(Box)(({ theme, active }) => ({
   cursor: 'pointer'
 }));
  
-const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChange }) => {
+const ScriptDrawer = ({ open, scripts = [], handleSwitch, handleDrop, handleClose, handleChange }) => {
 
   const [selected, setSelected] = React.useState({})
   const [dirty, setDirty] = React.useState(false)
@@ -57,6 +57,25 @@ const ScriptDrawer = ({ open, scripts = [], handleDrop, handleClose, handleChang
       </Typography>
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
       <Spacer />
+      <IconButton
+              color="inherit" 
+              onClick={() => {
+                handleSwitch({ connectOpen: 1, scriptOpen: false})
+              }}
+            >
+              <AutoStories />
+            </IconButton>
+      <IconButton disabled>
+        <Code />
+      </IconButton>
+        <IconButton
+              color="inherit" 
+              onClick={() => {
+                handleSwitch({ scriptOpen: false, stateOpen: 1})
+              }}
+            >
+              <RecentActors />
+            </IconButton>
       <IconButton  onClick={handleClose}>
         <Close />
       </IconButton>

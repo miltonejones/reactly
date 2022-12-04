@@ -108,7 +108,7 @@ export const getStyles = styles => {
     // Object.assign(args, { [key]: null })
   }
   
-  ['border-color', 'background-color'].map(type => transformKey(type, colorTransform));
+  ['border-color', 'background-color', 'color'].map(type => transformKey(type, colorTransform));
   transformKey('border-width', paddingTransform)
   //  if (args['border-width']) {
   //   Object.assign(args, {'border-width': paddingTransform(args['border-width'])})

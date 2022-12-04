@@ -142,6 +142,18 @@ export const usePageContext = () => {
 
   const navigate = useNavigate();
 
+  const drillPath = (object, path) => {
+    const arr = path.split('.');
+    const first = arr.shift(); 
+    const node = object[first] 
+  
+    if (arr.length) {
+      return drillPath(node, arr.join('.'))
+    }
+  
+    return node;
+  }
+  
   const executeComponentRequest = async (connections,  qs, res, slash = '?') => {
     const  { events, connectionID, path, node, columns } = res;
     const connection = connections.find(f => f.ID === connectionID);
@@ -165,7 +177,7 @@ export const usePageContext = () => {
     const response = await fetch(endpoint); 
     const json = await response.json();
 
-    const rows = !node ? json : json[node];
+    const rows = !node ? json : drillPath(json, node);
 
     const collated = rows.map(row => columns.reduce((items, res) => { 
       items[res] = row[res]
@@ -354,16 +366,25 @@ export const usePageContext = () => {
             return navigate(`/apps/${appContext.path}/` + targetPage.PagePath)
           }
 
+          
+
           const params = {}
           !!trigger.action.params && Object.keys(trigger.action.params).map(key => {
-            Object.assign(params, {[key]: pageClientState[ trigger.action.params[key] ]})
+            const triggerKey = trigger.action.params[key];
+            let triggerProp = pageClientState[ triggerKey ];
+            if (triggerKey.indexOf('.') > 0) {
+              const [t, optionKey] = triggerKey.split('.') ;
+              triggerProp = options[optionKey];
+            }
+            Object.assign(params, {[key]: triggerProp })
           })
-          
+           
           
           setQueryState((s) => ({
             ...s,
             page: targetPage,
-            params 
+            params ,
+            pageLoaded: false
           }))
 
           break;

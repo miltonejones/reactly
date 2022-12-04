@@ -32,7 +32,7 @@ const filterProp = filter => f =>  !filter ||
 f.ComponentName.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
 f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
 
-const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, quickComponent }) => {
+const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, onCustomName, quickComponent }) => {
   const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
   if (!tree) return <i />
@@ -45,6 +45,7 @@ const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, quickCompon
         .sort(componentOrder)
         .map(c => <Contents 
           filter={filter}
+          onCustomName={onCustomName}
           quickComponent={quickComponent}
           onCreate={onCreate} 
           key={c.ID}
@@ -57,7 +58,9 @@ const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, quickCompon
   );
 };
 
-const Contents = ({ filter, tree, parentID, onDrop, trees, quickComponent, label, indent = 0, onNameChange, onCreate, onSelect, selectedComponent }) => { 
+const Contents = ({ filter, tree, parentID, onDrop, trees, 
+  onCustomName, quickComponent, label, indent = 0, onNameChange, 
+  onCreate, onSelect, selectedComponent }) => { 
   const kids = !!label ? [] : trees.filter(t => t.componentID === tree.ID);
   const on = !!label ? null : selectedComponent?.ID === tree.ID;
   const [over, setOver] = React.useState(false);
@@ -69,6 +72,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, quickComponent, label
       : nodes.concat(node));
 
   }
+  
   const options = [
     {
       name: 'Rename',
@@ -81,6 +85,10 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, quickComponent, label
     {
       name: 'Add Component after',
       action: () => onCreate(parentID, { after: !0, order: tree.order})
+    },  
+    {
+      name: 'Save as Custom Component...',
+      action: () => onCustomName(tree.ID)
     },  
     {
       name: '-', 
@@ -137,6 +145,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees, quickComponent, label
             filter={filter}
             onCreate={onCreate} 
             onDrop={onDrop} 
+            onCustomName={onCustomName}
             parentID={tree.ID} 
             selectedComponent={selectedComponent} 
             onNameChange={onNameChange}

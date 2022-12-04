@@ -16,6 +16,7 @@ import {
   ListTableComponentInput
 } from './components' 
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
+import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
 
 const ColorInput = ({ title, color, onChange }) => {
   const [hue, setHue] = React.useState(color)
@@ -217,7 +218,8 @@ export const ComponentInputBody = (props) => {
     listbinder: ListBinderComponentInput,
     listtable: ListTableComponentInput,
     tablecolumn: ListTableComponentInput,
-    repeatertable: ListTableComponentInput
+    repeatertable: ListTableComponentInput,
+    shadow: ShadowComponentInput
   }
 
 

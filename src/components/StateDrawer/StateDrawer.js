@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Box, IconButton, Drawer,  
  Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
 import {  Flex, Spacer, TextBtn, QuickSelect, SearchBox, TextInput } from '..';
-import { Close, Add, Delete } from "@mui/icons-material"; 
+import { Close, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
 import { objectReduce } from '../library/util';
@@ -26,7 +26,7 @@ export const StateValue = ({ ID, Key, Value, Type, handleChange, ...props }) => 
   }}  />
 }
  
-const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop }) => {
+const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange, handleDrop }) => {
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const args = {
@@ -65,6 +65,27 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
       </Typography>
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
       <Spacer />
+
+      <IconButton
+              color="inherit" 
+              onClick={() => {
+                handleSwitch({ connectOpen: 1, stateOpen: false})
+              }}
+            >
+              <AutoStories />
+            </IconButton>
+            <IconButton
+              color="inherit" 
+              onClick={() => { 
+                handleSwitch({ scriptOpen: 1, stateOpen: false})
+              }}
+            >
+              <Code />
+            </IconButton>
+
+      <IconButton disabled>
+        <RecentActors />
+      </IconButton>
       <IconButton  onClick={handleClose}>
         <Close />
       </IconButton>

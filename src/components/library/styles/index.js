@@ -197,6 +197,13 @@ export const GenericStyles =  {
   ]
 }
 
+export const colorProps = { 
+  types: StandardColors,
+  renderOption: colorOption,
+  getOptionLabel: getOptionColor,
+  color: !0
+};
+
 export const ColorStyles =  {
   categories: [ 
     {
@@ -249,6 +256,16 @@ export const ColorStyles =  {
           renderOption: colorOption,
           getOptionLabel : getOptionColor,
           color: !0
+        }
+      ]
+    },
+    {
+      name: 'Shadow',
+      styles: [
+        {
+          title: '',
+          label: 'box-shadow', 
+          type: 'shadow'
         }
       ]
     }

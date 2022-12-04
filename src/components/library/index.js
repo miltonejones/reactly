@@ -36,6 +36,7 @@ import ReactlyTabs from './ReactlyTabs/ReactlyTabs';
 import ReactlyTab from './ReactlyTab/ReactlyTab';
 import ReactlyPopover from './ReactlyPopover/ReactlyPopover';
 import ReactlySlider from './ReactlySlider/ReactlySlider';
+import ReactlyImage from './ReactlyImage/ReactlyImage';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -79,7 +80,8 @@ const Library = {
   Tabs: ReactlyTabs,
   Tab: ReactlyTab,
   Popover: ReactlyPopover,
-  Slider: ReactlySlider
+  Slider: ReactlySlider,
+  Image: ReactlyImage
 }
 
 export default Library;

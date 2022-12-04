@@ -57,10 +57,14 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   }
 
   const isSelected = (row, i) => {
-    if (args.use_id) {
-      return resource.records[i][args.selectedColumn].toString() === props.selectedID.toString()
+    try {
+      if (args.use_id) {
+        return resource.records[i][args.selectedColumn].toString() === props.selectedID.toString()
+      }
+      return props.selectedIndex?.toString() === i.toString();
+    } catch (e) {
+      return false;
     }
-    return props.selectedIndex?.toString() === i.toString();
   }
 
  return (
@@ -83,6 +87,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
           <TableRow
             onClick={e => {
               onRowClick && onRowClick(e, {
+                ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                 row: i, 
                 ...resource.records[i]
               })
@@ -93,6 +98,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
             sx={{fontWeight: isSelected(row, i) ? 500 : 400}}
               onClick={e => {
                 onCellClick && onCellClick(e, {
+                  ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                   row: i,
                   cell: k,
                   ...resource.records[i]
@@ -202,13 +208,13 @@ const Events =  [
     name: 'onRowClick',
     title: 'List row is clicked',
     description: 'User clicks on a row in the list.',
-    emits: ['row']
+    emits: ['row', 'ID']
   }, 
   {
     name: 'onCellClick',
     title: 'List cell is clicked',
     description: 'User clicks on a cell in a row.',
-    emits: ['row', 'cell']
+    emits: ['row', 'cell', 'ID']
   }, 
 ]
 

@@ -128,8 +128,8 @@ const ReactlyAudioComponent = ({
    <Box sx={{width: 'fit-content'}} {...props} > 
     <audio {...args} src={src} ref={ref}> 
     </audio> 
-        <pre>{JSON.stringify(props.selectedIndex,0,2)}</pre>
-       <pre>{JSON.stringify(src,0,2)}</pre>
+        {/* <pre>{JSON.stringify(props.selectedIndex,0,2)}</pre>
+       <pre>{JSON.stringify(src,0,2)}</pre> */}
       {/* <pre>{JSON.stringify(pageResourceState,0,2)}</pre> */}
    </Box> 
   );

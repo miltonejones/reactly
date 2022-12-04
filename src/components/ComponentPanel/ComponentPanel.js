@@ -2,13 +2,13 @@ import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
   Typography, Divider } from '@mui/material';
 import Library from '../library';
-import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..';
-// import { getSettings } from '../library/util';
+import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect } from '..';
 import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material";
+import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { Text } from '../Control/Control';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
@@ -128,6 +128,7 @@ const ComponentPanel = ({
 
 
 function PageSettings({ page, themes = [], onChange }) {
+  const { queryState } = React.useContext(AppStateContext);
   const [param, setParam] = React.useState(''); 
   const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state
@@ -149,8 +150,10 @@ function PageSettings({ page, themes = [], onChange }) {
          }}
          />
 
+
+    <Box sx={{pt: 2}}>
       <Text small>Add page parameters</Text>
-       <Flex>
+       <Flex sx={{pt: 1, pb: 1}}>
         <TextInput size="small" 
         placeholder="Type parameter name"
           value={param}
@@ -176,14 +179,15 @@ function PageSettings({ page, themes = [], onChange }) {
           setParam('')
          }} >Add</TextBtn>
        </Flex>
-<Divider textAlign="left">Page parameters</Divider>
-         {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex key={paramKey}>
+      <Divider textAlign="left"><Text small>Page parameters</Text></Divider>
+         {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex sx={{pt: 1}} key={paramKey}>
 
-          <Text sx={{width: 80}} small>{paramKey}</Text>
+          <Text sx={{width: 80, fontWeight: 600}} small>{paramKey}</Text>
 
           <TextInput 
             size="small"
             value={state.parameters[paramKey]}
+            helperText={!(queryState.params && queryState.params[paramKey]) ? '' : `Set by caller to "${queryState.params[paramKey]}"`}
             onChange={e => {
               setState(s => ({
                 ...s,
@@ -207,6 +211,9 @@ function PageSettings({ page, themes = [], onChange }) {
             />
 
          </Flex>)}
+
+
+</Box>
 
 
       <Flex sx={{pt: 4}}>

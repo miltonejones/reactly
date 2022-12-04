@@ -14,13 +14,13 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
   const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
   
   const args = getSettings(settings);
-  let obj = null, dataRows = [];
+  let obj = null, dataRows = [], resource;
 
 
   if (args.bindings)  {
     obj = JSON.parse(args.bindings); 
     const id = obj.resourceID;
-    const resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
+    resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
     if (resource) {
       dataRows = resource.records.map(record => {
         return Object.keys(obj.bindings).reduce((items, res) => {
@@ -42,7 +42,8 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
         value={{ 
           row,
           index: i,
-          selectedIndex: props.selectedIndex || args.selectedIndex
+          selectedIndex: props.selectedIndex || args.selectedIndex,
+          ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
          }}
       >
      {children} 
@@ -67,8 +68,26 @@ const Settings = {
         {
           title: 'Selected index',
           label: 'selectedIndex' ,
-          bindable: !0 
+          bindable: !0  ,
+          when: p => !p.use_id
         },  
+        {
+          title: 'Selected ID',
+          label: 'selectedID'  ,
+          bindable:  !0  ,
+          when: p => p.use_id
+        } ,
+        {
+          title: 'ID Column',
+          label: 'selectedColumn' ,
+          type: 'tablecolumn'  ,
+          when: p => p.use_id
+        } ,
+        {
+          title: 'Select by ID',
+          label: 'use_id'  ,
+          type: 'boolean'
+        } ,
       ]
     },  
   ]

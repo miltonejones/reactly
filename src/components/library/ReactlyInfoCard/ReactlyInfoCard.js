@@ -11,7 +11,7 @@ import { RepeaterContext } from '../../../hooks/AppStateContext';
 const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings = [], ...props }) => {
 
 
-  const { row, index, selectedIndex } = React.useContext(RepeaterContext);
+  const { row, index, selectedIndex, ID } = React.useContext(RepeaterContext);
 
   if (row) {
     Object.keys(row).map(item => {
@@ -63,7 +63,8 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
         onCardClick && onCardClick(e, {
           ...row,
           index, 
-          selectedIndex
+          selectedIndex,
+          ID
         })
       }}
         component="img"
@@ -73,7 +74,7 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
       />}
 
 
-{footer}
+      {footer}
 
       {!!args.description && <CardContent>
         <Typography variant="body2" color="text.secondary">
@@ -178,7 +179,10 @@ const Events =  [
   {
     name: 'onCardClick',
     title: 'Card is clicked',
-    description: 'User clicks on the card.'
+    description: 'User clicks on the card.',
+    emits: ['index', 
+    'ID',
+      'selectedIndex']
   }, 
   {
     name: 'onMenuClick',

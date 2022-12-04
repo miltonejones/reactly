@@ -6,7 +6,7 @@ import {
   ThemeProvider,
   styled,
   Box,
-  Alert,
+  Alert,Avatar
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
@@ -85,7 +85,7 @@ const ComponentTree = ({
   const [pageRefState, setPageRefState] = React.useState({});
 
 
-  const [loadCount, setLoadCount] = React.useState(0);
+  const [pageLoaded, setPageLoaded] = React.useState(0);
 
   const { handleComponentEvent } = usePageContext(); 
 
@@ -98,6 +98,11 @@ const ComponentTree = ({
    const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
 
   // const getPageResourceState = () => pageResourceState
+
+  const loadPage = () => { 
+    !!stateProps && setPageClientState(s => stateProps); 
+    setQueryState(qs => ({...qs, pageLoaded: true})) 
+  }
 
 
   let path;
@@ -116,6 +121,9 @@ const ComponentTree = ({
   const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
   const pageTheme = createTheme(theme);
  
+  if (!queryState.pageLoaded) {
+    return <Avatar onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
+  }
   
   return (
     <ThemeProvider theme={pageTheme}>
@@ -154,7 +162,8 @@ const ComponentTree = ({
           </Helmet>
         )}
 
-          {components.sort(componentOrder).map((c) => (
+
+        {components.sort(componentOrder).map((c) => (
             <RenderComponent
               selectedComponent={selectedComponent}
               preview={preview}

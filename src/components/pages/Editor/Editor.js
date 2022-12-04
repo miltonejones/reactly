@@ -188,7 +188,7 @@ const Editor = ({ applications: apps = {} }) => {
     duplicatePage,
     dropPage,setTheme, dropTheme, setPageEvent,
     setResourceEvent, dropResourceEvent,
-    setParameter, dropParameter,
+    setParameter, dropParameter,setComponentCustomName
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -342,6 +342,12 @@ const Editor = ({ applications: apps = {} }) => {
     setComponentParent(appData.ID, queryState.page.ID, componentID, parentID);
   };
 
+  const handleCustomName = async (componentID) => {
+    const customName = await Prompt('Enter name for custom component', 'Name component');
+    if (!customName) return 
+    setComponentCustomName(appData.ID, queryState.page.ID, componentID, customName);
+  }
+
   const createPage = async (pageID) => {
     const PageName = await Prompt('Enter a name for your page', 'Create Page');
     if (!PageName) return;
@@ -466,6 +472,7 @@ const Editor = ({ applications: apps = {} }) => {
       setQueryState((s) => ({
         ...s,
         page: appData.pages.find((f) => f.PageName === name),
+        pageLoaded: false
       }))
     }
   />;
@@ -474,6 +481,7 @@ const Editor = ({ applications: apps = {} }) => {
     filter={contentFilter}
     onDrop={handleDropComponent}
     onNameChange={handleNameChange}
+    onCustomName={handleCustomName}
     quickComponent={quickComponent}
     onCreate={(type, options) => createComponent(type, options)}
     tree={queryState.page?.components}
@@ -779,6 +787,7 @@ const Editor = ({ applications: apps = {} }) => {
         scripts={queryState.page?.scripts}
         handleDrop={handleDropScript}
         handleChange={handleScriptChange}
+        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         open={scriptOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, scriptOpen: false }));
@@ -792,6 +801,7 @@ const Editor = ({ applications: apps = {} }) => {
         dropConnection={handleConnectionDelete}
         setResource={setResource}
         setConnection={setConnection}
+        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         connections={appData.connections}
         resources={appData.resources}
         onEventChange={handleEventChange}
@@ -805,6 +815,7 @@ const Editor = ({ applications: apps = {} }) => {
       <StateDrawer
         handleDrop={handleStateDrop}
         handleChange={handleStateChange}
+        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         state={queryState.page?.state}
         open={stateOpen}
         handleClose={() => {
