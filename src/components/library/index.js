@@ -29,6 +29,13 @@ import ReactlyPagination from './ReactlyPagination/ReactlyPagination';
 import ReactlyLinearProgress from './ReactlyLinearProgress/ReactlyLinearProgress';
 import ReactlyCircularProgress from './ReactlyCircularProgress/ReactlyCircularProgress';
 import ReactlySnackbar from './ReactlySnackbar/ReactlySnackbar';
+import ReactlyToggleButtonGroup from './ReactlyToggleButtonGroup/ReactlyToggleButtonGroup';
+import ReactlyToggleButton from './ReactlyToggleButton/ReactlyToggleButton';
+import ReactlyDivider from './ReactlyDivider/ReactlyDivider';
+import ReactlyTabs from './ReactlyTabs/ReactlyTabs';
+import ReactlyTab from './ReactlyTab/ReactlyTab';
+import ReactlyPopover from './ReactlyPopover/ReactlyPopover';
+import ReactlySlider from './ReactlySlider/ReactlySlider';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -65,7 +72,14 @@ const Library = {
   Pagination: ReactlyPagination,
   LinearProgress: ReactlyLinearProgress,
   CircularProgress: ReactlyCircularProgress,
-  Snackbar: ReactlySnackbar
+  Snackbar: ReactlySnackbar,
+  ToggleButtons: ReactlyToggleButtonGroup,
+  ToggleButton: ReactlyToggleButton,
+  Divider: ReactlyDivider,
+  Tabs: ReactlyTabs,
+  Tab: ReactlyTab,
+  Popover: ReactlyPopover,
+  Slider: ReactlySlider
 }
 
 export default Library;

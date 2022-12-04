@@ -23,7 +23,8 @@ const ReactlyTypographySettings = {
       settings: [  
         {
           title: 'Label',
-          label: 'children' 
+          label: 'children' ,
+          type: 'chip'
         }, 
       ]
     },

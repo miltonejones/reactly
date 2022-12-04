@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, styled } from '@mui/material'; 
+import { Box, Chip, styled } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { ViewCarousel } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -8,15 +8,7 @@ import './ReactlyCarousel.css'
   
  
 
-
-// const images = [
-//   'https://is5-ssl.mzstatic.com/image/thumb/Features124/v4/de/a7/0a/dea70a03-c5f6-9dd4-faa9-4ab51610fd57/mzl.nrobskfq.jpg/1200x630cw.png',
-//   'https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg',
-//   'https://is1-ssl.mzstatic.com/image/thumb/Music/v4/fb/a6/3b/fba63b0a-7aae-8f51-6a5c-aeab720396c6/source/1200x630sr.jpg',
-//   'https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg',
-//   'https://is3-ssl.mzstatic.com/image/thumb/Music49/v4/fb/41/06/fb4106b8-6546-b9ce-a31e-55eefa6157f7/source/1200x630sr.jpg',
-//   'https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg', 
-// ]
+ 
 
 const ReactlyComponentCarousel = ({ children, ...props }) => {
   const [index , setIndex] = React.useState(0)
@@ -32,6 +24,7 @@ const ReactlyComponentCarousel = ({ children, ...props }) => {
       : args?.images;
   const images = carouselImages.map(f => f.src);
  return (
+ 
   <><ReactlyComponent component={Box} {...props} sx={{
     height: 360, 
     border: 1, 
@@ -41,13 +34,21 @@ const ReactlyComponentCarousel = ({ children, ...props }) => {
     borderColor: 'divider'
     }}>
  
+{props.componentEditing && <Box sx={{
+  position: 'absolute',
+  top: 10,
+  left: 10,
+  zIndex: 40
+ }}>
 
-      <Carousel imageList={images} loaded={loaded} setLoaded={setLoaded} onClick={setIndex} />
+<Chip color="success" label={<><em>Preview Mode</em> index: {index % carouselImages.length} --- speed: {args.speed}</>} />
+
+
+ </Box>}
+
+      <Carousel speed={args.speed} imageList={carouselImages} loaded={loaded} setLoaded={setLoaded} onClick={setIndex} />
    </ReactlyComponent>
-   
-{/* [ <pre>
-  {JSON.stringify(JSON.parse(args?.images),0,2)}
- </pre>] */}
+   {/* {JSON.stringify(props)} */}
    </> 
  );
 }
@@ -57,7 +58,7 @@ const css = (o) =>
     .filter((f) => !!o[f])
     .join(" ");
 
-const Carousel = ({ imageList, onClick, loaded, setLoaded }) => {
+const Carousel = ({ imageList, onClick, loaded, setLoaded, speed = 10 }) => {
   const load = React.useRef(0);
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const [running, setRunning] = React.useState(false);
@@ -84,7 +85,7 @@ const Carousel = ({ imageList, onClick, loaded, setLoaded }) => {
       !!timer1 && clearTimeout(timer1);
       timer2 = setTimeout(() => { 
         enactSlide(stateSetters, setCurrent, index);
-      }, 5999);
+      }, speed * 999);
     };
     stateSetters.map((f) => f(true));
     !!timer2 && clearTimeout(timer2);
@@ -110,18 +111,18 @@ const Carousel = ({ imageList, onClick, loaded, setLoaded }) => {
     <Box className={css({ running, runnable })}> 
       <Box
           className="carousel-show scroll-head">
-            {/* <Box className="text">
-              carousel text here
-            </Box> */}
+            <Box className="text">
+              {showPic.text} 
+            </Box>
         <img
-          src={showPic}
+          src={showPic.src}
           alt="{Title}"
         />
       </Box>
       <Box
           className="carousel-hide scroll-head">
         <img
-          src={hidePic}
+          src={hidePic.src}
           alt="{Title}"
         />
       </Box>

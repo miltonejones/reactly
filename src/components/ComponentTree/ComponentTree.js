@@ -54,18 +54,24 @@ const ComponentTree = ({
   setLoaded,
   appContext,
   themes = [],
+
+
+  pageClientState, 
   setPageClientState,
-  pageClientState
+  
+  pageResourceState, 
+  getPageResourceState,
+  setPageResourceState,
+
+   
+
 }) => {
   const componentTree = selectedPage?.components;
   const {
     queryState = {},
     setQueryState,
-    createBreadcrumbs,
-    pageResourceState, 
-    // getPageClientState,
-    getPageResourceState,
-    setPageResourceState,
+    createBreadcrumbs, 
+
   } = React.useContext(AppStateContext);
   const { selectedComponent = {} } = queryState;
 
@@ -74,21 +80,19 @@ const ComponentTree = ({
     : objectReduce(selectedPage.state);
   // const [pageClientState, setPageClientState] = React.useState(stateProps);
   // const [pageResourceState, setPageResourceState] = React.useState([]);
+
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
+
+
   const [loadCount, setLoadCount] = React.useState(0);
 
   const { handleComponentEvent } = usePageContext(); 
 
   const defaultTheme = useTheme();
-  React.useEffect(() => {
-    // // if (!stateProps) return
-    //  if (loaded) return;
-  if (!!pageClientState && Object.keys(pageClientState).length) return;
-    // // // alert (JSON.stringify(stateProps))
-    // // alert (JSON.stringify({...pageClientState, ...stateProps}))   
-    !!stateProps && setPageClientState(s => ({...s, ...stateProps}));
-    setLoaded(true);
+  React.useEffect(() => { 
+  if (!!pageClientState && Object.keys(pageClientState).length) return; 
+    !!stateProps && setPageClientState(s => ({...s, ...stateProps})); 
   }, [stateProps, loaded, pageClientState]);
 
    const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
@@ -107,57 +111,60 @@ const ComponentTree = ({
   // components with no parents
   const components = componentTree.filter((f) => !f.componentID);
 
+  // setting themes
   const selectedTheme = themes.find((f) => f.name === selectedPage?.ThemeName);
-
   const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
-
   const pageTheme = createTheme(theme);
  
   
   return (
-    <PageStateContext.Provider
-      value={{
-        pageClientState,
-        getPageClientState,
-        getPageResourceState,
-        setPageClientState,
-        pageResourceState,
-        getPageResourceState,
-        setPageResourceState,
-        pageModalState,
-        setPageModalState,
-        pageRefState,
-        setPageRefState,
-        selectedPage,
-        appContext,
-        setQueryState,
-        queryState,
-        preview
-      }}
-    >
-      {/* document title  */}
-      {path && (
-        <Helmet>
-          <title>
-            Reactly |{preview ? " Editor | " : ""} {path.join(" | ")}
-          </title>
-        </Helmet>
-      )}
- {/* <Json>
-  {JSON.stringify(pageClientState,0,2)}
- </Json> */}
-      <ThemeProvider theme={pageTheme}>
-        {components.sort(componentOrder).map((c) => (
-          <RenderComponent
-            selectedComponent={selectedComponent}
-            preview={preview}
-            key={c.ComponentName}
-            component={c}
-            trees={componentTree}
-          />
-        ))}
-      </ThemeProvider>
-    </PageStateContext.Provider>
+    <ThemeProvider theme={pageTheme}>
+      <PageStateContext.Provider
+        value={{
+
+          // "persistent" state values
+          pageModalState,
+          setPageModalState,
+
+          pageRefState,
+          setPageRefState,
+
+          pageClientState,
+          getPageClientState,
+          setPageClientState,
+
+          getPageResourceState,
+          pageResourceState, 
+          setPageResourceState,
+
+
+          selectedPage,
+          appContext,
+          setQueryState,
+          queryState,
+          preview
+        }}
+      >
+        {/* document title  */}
+        {path && (
+          <Helmet>
+            <title>
+              Reactly |{preview ? " Editor | " : ""} {path.join(" | ")}
+            </title>
+          </Helmet>
+        )}
+
+          {components.sort(componentOrder).map((c) => (
+            <RenderComponent
+              selectedComponent={selectedComponent}
+              preview={preview}
+              key={c.ComponentName}
+              component={c}
+              trees={componentTree}
+            />
+          ))}
+      </PageStateContext.Provider>
+    </ThemeProvider>
   );
 };
 

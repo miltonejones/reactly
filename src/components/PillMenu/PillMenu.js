@@ -20,7 +20,7 @@ const PillMenu = ( { options = [], value, image, onChange }) => {
      {options.map(o => <Pill selected={o === value} onClick={() => onChange && onChange(o)} key={o}>
       {image 
         ? <Tooltip title={o}><img alt={o} src={`/icon/${o}.png`} /></Tooltip>
-        : <Typography sx={{fontWeight: o === value ? 600 : 400}} variant="caption">{o}</Typography>}
+        : <Typography sx={{fontWeight: o.toString() === value?.toString() ? 600 : 400}} variant="caption">{o.toString()}</Typography>}
      </Pill>)}
    </Flex>
  );

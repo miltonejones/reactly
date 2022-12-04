@@ -2,9 +2,10 @@ import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField, Link,
   Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
 import { Tiny, PopoverInput, Flex, Text, Spacer, TextBtn ,QuickSelect, QuickMenu, TextBox, PillMenu} from '..';
-import { Close, Add, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
+import { Close, Add, Biotech, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
 import { Json } from '../../colorize'; 
 import { useEditor } from '../../hooks/useEditor';
+import ComponentEvents from '../ComponentEvents/ComponentEvents';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -116,7 +117,7 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
   </>
 }
 
-const ResourceForm = ({ dirty, resource, terms, setTerms, onPreview, onTermDrop, onTermAdd, onChange, resourceCommit }) => {
+const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, onTermDrop, onTermAdd, onChange, resourceCommit }) => {
   const { ID, connectionID, name, path, format, method, values, columns, node } = resource;
   const handleChange = key => e => onChange(key, !e.target ? e : e.target.value);
 
@@ -165,8 +166,14 @@ const ResourceForm = ({ dirty, resource, terms, setTerms, onPreview, onTermDrop,
         <TextBtn disabled={!dirty} variant="contained" size="small"
         endIcon={<Save />}
                 onClick={resourceCommit} >Save</TextBtn>
-        <TextBtn variant="contained"  size="small"
-                onClick={() => onPreview(format)} color="warning">Test</TextBtn>
+        <TextBtn variant={!! answer ? "outlined" : "contained"}  size="small"
+          endIcon={!!answer ? <Close /> : <Biotech />}
+                onClick={() => {
+                  if(!!answer) {
+                    return setAnswer(null)
+                  }
+                  onPreview(format)
+                }} color="warning">{!!answer ? "Clear" : "Test"}</TextBtn>
       </Flex>
 
       <Divider  sx={{mb: 2, mt: 1}}/>
@@ -252,8 +259,9 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
  
  
 const ConnectionDrawer = ({ open, setResource, dropResource, 
-    resources = [], connections = [], appID, handleDrop, 
-    setConnection, dropConnection, handleClose, handleChange }) => {
+    resources = [], connections = [], appID, handleDrop, selectedPage,
+    setConnection, dropConnection, handleClose, handleChange ,
+    onEventChange, onEventDelete}) => {
   // const { setResource } = useEditor()
   const [selected, setSelected] = React.useState({})
   const [selectedConnection, setSelectedConnection] = React.useState({})
@@ -339,10 +347,10 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
     setDirty(false);
   }
 
-  const handleAddQueryTerm = key => {
+  const handleAddQueryTerm = term => {
     setSelected(resource => ({
       ...resource,
-      values: resource.values.concat({ key })
+      values: resource.values.concat(term.split(',').map(key => ({ key })))
     }))
     setDirty(true);
   }
@@ -371,6 +379,19 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
     setDirty(true);
   }
 
+  const Events =  [
+    {
+      name: 'dataLoaded', 
+      title: 'data loads',
+      description: 'Data finishes loading.'
+    }, 
+    {
+      name: 'loadStarted', 
+      title: 'data starts loading',
+      description: 'Data starts loading.'
+    }, 
+  ]
+  
  return (
   <Drawer open={open} anchor="bottom"> 
     <Layout data-testid="previewConnectionRequest-for-ConnectionDrawer">
@@ -426,6 +447,8 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
         {!!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <ResourceForm 
               dirty={dirty}
+              answer={answer}
+              setAnswer={setAnswer}
             resource={selected} 
             resourceCommit={handleResourceCommit}
             onChange={handleSelectedResourceChange}
@@ -456,6 +479,35 @@ const ConnectionDrawer = ({ open, setResource, dropResource,
               <Spacer />
               <Tiny onClick={() => addProp(col, selected.node)} icon={Delete} />
             </Text>)}
+          </Box>
+        </Grid>} 
+
+        {!answer && !!selected && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+          <Typography sx={{pl: 1}} variant="caption"><b>Events</b></Typography>
+          <Divider  sx={{mb: 2}}/>
+          <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
+            <ComponentEvents 
+            onChange={(id, event) => {
+              onEventChange(id, event, 'connection')
+            }}
+            onEventDelete={(componentID, eventID) => {
+              onEventDelete(componentID, eventID, 'connection')
+            }}
+            selectedPage={selectedPage}
+            component={selected}
+            addedEvents={Events}
+            connections={connections}
+            resources={resources}
+
+            />
+
+{/* selectedPage, 
+    component, 
+    onEventDelete, 
+    onChange, 
+    addedEvents,
+    connections, 
+    resources */}
           </Box>
         </Grid>} 
 

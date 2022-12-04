@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box, IconButton, Drawer, TextField,
- Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
-import {  Flex, Spacer, TextBtn, QuickSelect } from '..';
+import { styled, Box, IconButton, Drawer,  
+ Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
+import {  Flex, Spacer, TextBtn, QuickSelect, SearchBox, TextInput } from '..';
 import { Close, Add, Delete } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
@@ -21,12 +21,14 @@ export const StateValue = ({ ID, Key, Value, Type, handleChange, ...props }) => 
       }} 
     />
   }
-  return <TextField {...props} value={Value} onChange={e => {
+  return <TextInput {...props} value={Value} onChange={e => {
     handleChange && handleChange(ID, Key, Type ===  'number' ? parseInt(e.target.value) : e.target.value, Type)
   }}  />
 }
  
 const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop }) => {
+  const [page, setPage] = React.useState(1);
+  const [filter, setFilter] = React.useState('');
   const args = {
     size: 'small',
     autoComplete: 'off',
@@ -43,7 +45,15 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
   } 
 
 
-  const props = objectReduce(state)
+  const props = objectReduce(state);
+
+  const filtered = state
+    .filter(f => !filter || f.Key.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+  const pageCount = Math.ceil(filtered?.length / 5);
+  const startSlice = (page - 1) * 5;
+  const visible = filtered.slice(startSlice, startSlice + 5)
+
+
  return (
    <Drawer open={open} anchor="bottom"
  
@@ -64,13 +74,21 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
     <Grid container sx={{mt: 2}}>
 
     <Grid item xs={6}>
+      <Flex sx={{ mb: 1 }}>
+        {pageCount > 1 && <Pagination count={pageCount} color="primary" variant="rounded" 
+          sx={{mb: 2}} page={page} onChange={(e, p) => setPage(p)}/>}
+        <Spacer />
+        <SearchBox 
+          onChange={e => setFilter(e.target.value)}
+          onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>
+      </Flex>
         
-        {state.map(item => <Flex sx={{mb: 1}}>
+        {visible.map(item => <Flex sx={{mb: 1}}>
 
           {/* state property name  */}
           <Stack>
             {/* <Typography>Key</Typography> */}
-            <TextField {...args} value={item.Key}  label="Key" onChange={e => {
+            <TextInput {...args} value={item.Key}  label="Key" onChange={e => {
               handleChange && handleChange(item.ID, e.target.value, item.Value, item.Type)
             }} />
           </Stack>  
@@ -99,6 +117,8 @@ const StateDrawer = ({open, state = [], handleClose, handleChange, handleDrop })
         </Flex>)}
 
       </Grid>
+
+
       <Grid item xs={6}>
         <Card sx={{p: 2, m: 1, minHeight: '25vh'}}>
             <Json>

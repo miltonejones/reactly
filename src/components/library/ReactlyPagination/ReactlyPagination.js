@@ -7,13 +7,12 @@ import { getSettings } from '../util';
   
 const ReactlyComponentPagination = ({ children, ...props }) => {
   const args = getSettings(props.settings);
- return (<>
- {/* <pre>
-  {JSON.stringify(args,0,2)}
-  {props.onChange?.toString()}
- </pre> */}
+  if (args.hideone && props.count === 1) {
+    return <i />
+  }
+ return (<> 
    <ReactlyComponent component={Pagination} {...props} page={parseInt(props.page)} 
-      onChange={(e, page) => props.onPageChange && props.onPageChange(e, {page})}/>
+      onChange={(e, page) => props.onPageChange && props.onPageChange(e, { page })}/>
  </>
  );
 }
@@ -23,7 +22,8 @@ export const Events =  [
   {
     name: 'onPageChange',
     title: 'Button is clicked',
-    description: 'Page value changes'
+    description: 'Page value changes',
+    emits: ['page']
   }
 ]
 
@@ -66,6 +66,11 @@ const Settings = {
           title: 'Default Page',
           label: 'defaultPage',
           bindable: 1 
+        }, 
+        {
+          title: 'Hide if only one page',
+          label: 'hideone',
+          type: 'boolean' 
         }, 
         {
           title: 'hide Next Button',

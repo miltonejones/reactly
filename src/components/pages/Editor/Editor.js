@@ -45,6 +45,8 @@ import {
   AppRegistration,
   RecentActors,
   Code,
+  Article,
+  Newspaper
 } from "@mui/icons-material";
 import {
   AppStateContext,
@@ -56,6 +58,7 @@ import { Json } from "../../../colorize";
 import Library from "../../library";
 import { TextInput } from "../..";
 import { JsonView } from "../../../colorize";
+import { ChipBox } from "../..";
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
@@ -127,6 +130,39 @@ export const useConnectionEdit = (apps) => {
   };
 };
 
+export const useResourceEdit = (apps) => {
+  const { appname } = useParams();
+  const {
+    applications,
+    setComponentEvent,
+    dropComponentEvent, 
+  } = useEditor(apps);
+  const { Confirm, queryState } = React.useContext(AppStateContext);
+
+  const appData = applications.find((f) => f.path === appname);
+
+  const handleEventChange = (componentID, event) => {
+    setComponentEvent(appData.ID, queryState.page.ID, componentID, event);
+  };
+
+  const handledEventDelete = async (componentID, eventID) => {
+    const ok = await Confirm(
+      "Are you sure you want to delete this event?",
+      "Confirm delete"
+    );
+    if (!ok) return;
+    dropComponentEvent(appData.ID, queryState.page.ID, componentID, eventID);
+  };
+
+  return {
+    handleEventChange,
+    handledEventDelete,
+    setComponentEvent,
+    dropComponentEvent, 
+  };
+
+}
+
 const Editor = ({ applications: apps = {} }) => {
   const { appname } = useParams();
   const {
@@ -150,7 +186,9 @@ const Editor = ({ applications: apps = {} }) => {
     setConnection,
     setPage, 
     duplicatePage,
-    dropPage,setTheme, dropTheme, setPageEvent
+    dropPage,setTheme, dropTheme, setPageEvent,
+    setResourceEvent, dropResourceEvent,
+    setParameter, dropParameter,
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -184,12 +222,43 @@ const Editor = ({ applications: apps = {} }) => {
     Alert,
     Confirm,
     Prompt,
+
     pageClientState, 
     setPageClientState,
+    
+    pageResourceState, 
+    getPageResourceState,
+    setPageResourceState,
+ 
+
+
     dirty,
     setDirty,
   } = React.useContext(AppStateContext);
 
+  const [popoverContent,  setPopoverContent] = React.useState(null)
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const componentTreeProps = {
+
+    pageClientState, 
+    setPageClientState,
+    
+    pageResourceState, 
+    getPageResourceState,
+    setPageResourceState,
+ 
+  }
+
+  const handlePopoverClick = (content) => (event) => {
+    setPopoverContent(content)
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null); 
+  };
   if (!applications.find) {
     return <>error</>;
   }
@@ -224,7 +293,8 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handleStateChange = (stateID, label, value, type) => { 
-    setPageState(appData.ID, queryState.page.ID, stateID, label, value, type);
+    label?.split(',').map(e => setPageState(appData.ID, queryState.page.ID, stateID, e, value, type))
+    ;
   };
 
   const handleScriptChange = (scriptID, name, code) => {
@@ -238,8 +308,24 @@ const Editor = ({ applications: apps = {} }) => {
     setPageProps(appData.ID, queryState.page.ID, props);
   };
 
-  const handleEventChange = (componentID, event) => {
-    setComponentEvent(appData.ID, queryState.page.ID, componentID, event);
+  const handleEventChange = (componentID, event, type) => {
+    const command = type === 'connection' 
+      ? setResourceEvent
+      : setComponentEvent
+      // alert (command.toString())
+      command(appData.ID, queryState.page.ID, componentID, event);
+  };
+
+  const handledEventDelete = async (componentID, eventID, type) => {
+    const command = type === 'connection' 
+      ? dropResourceEvent
+      : dropComponentEvent
+    const ok = await Confirm(
+      "Are you sure you want to delete this event?",
+      "Confirm delete"
+    );
+    if (!ok) return;
+    command(appData.ID, queryState.page.ID, componentID, eventID);
   };
 
   const handleThemeChange = async (themeID, themeName, theme) => {
@@ -282,9 +368,18 @@ const Editor = ({ applications: apps = {} }) => {
       action: () => setCollapsed((s) => ({ ...s, right: !s.right })),
     },
     {
+      name: "-",
+    },
+    {
       name: "Show client state",
       action: () => Alert(<Json>
         {JSON.stringify(pageClientState, 0, 2)}
+      </Json>)
+    },
+    {
+      name: "Show resource state",
+      action: () => Alert(<Json>
+        {JSON.stringify(pageResourceState, 0, 2)}
       </Json>)
     },
   ]; 
@@ -316,16 +411,7 @@ const Editor = ({ applications: apps = {} }) => {
     dropComponent(appData.ID, queryState.page.ID, componentID);
   };
 
-  const handledEventDelete = async (componentID, eventID) => {
-    const ok = await Confirm(
-      "Are you sure you want to delete this event?",
-      "Confirm delete"
-    );
-    if (!ok) return;
-    dropComponentEvent(appData.ID, queryState.page.ID, componentID, eventID);
-  };
-
-  const quickComponent = async (selected) => {
+  const quickComponent = async (selected, componentID) => {
     const max =
       queryState.page.components.filter((f) => f.ComponentType === selected)
         .length + 1;
@@ -333,7 +419,7 @@ const Editor = ({ applications: apps = {} }) => {
     return appendComponent({
       selected,
       name,
-    });
+    }, componentID);
   };
 
   const appendComponent = (ok, componentID, options) => {
@@ -349,7 +435,8 @@ const Editor = ({ applications: apps = {} }) => {
       scripts: [],
       data: [],
     };
-    addComponent(appData.ID, queryState.page.ID, component, options);
+   const res = addComponent(appData.ID, queryState.page.ID, component, options);
+  //  alert (JSON.stringify(res))
   };
 
   const createComponent = async (componentID, options) => {
@@ -369,9 +456,33 @@ const Editor = ({ applications: apps = {} }) => {
     center_state = '-left'
   }
 
+  const pageTree =  <PageTree
+    tree={appData.pages}
+    selected={queryState.page?.PageName}
+    setPage={createPage}
+    dropPage={handlePageDelete}
+    duplicatePage={id => duplicatePage(appData.ID, id)}
+    onClick={(name) =>
+      setQueryState((s) => ({
+        ...s,
+        page: appData.pages.find((f) => f.PageName === name),
+      }))
+    }
+  />;
+
+  const contentTree =  <ContentTree
+    filter={contentFilter}
+    onDrop={handleDropComponent}
+    onNameChange={handleNameChange}
+    quickComponent={quickComponent}
+    onCreate={(type, options) => createComponent(type, options)}
+    tree={queryState.page?.components}
+  />
+
   return (
     <EditorStateContext.Provider value={{ appData }}>
-      <Flex baseline fullWidth>
+
+      <Flex spacing={0} baseline fullWidth>
         <Stack
           sx={{
             justifyContent: "space-between",
@@ -421,7 +532,7 @@ const Editor = ({ applications: apps = {} }) => {
             </IconButton>
           </Stack>
         </Stack>
-        <Grid container>
+        <Grid container >
           <Pane
             short
             item
@@ -499,7 +610,7 @@ const Editor = ({ applications: apps = {} }) => {
             sx={{ borderRight: 1, borderColor: "divider" }}
             thin={collapsed.left ? 1 : 0}
           >
-            <Stack sx={{ p: 1, height: 300 }}>
+            <Stack sx={{ p: collapsed.left ? 0 : 1, height: 300 }}>
               <Flex nowrap spacing={1}>
                 {!collapsed.left && (
                   <>
@@ -525,32 +636,50 @@ const Editor = ({ applications: apps = {} }) => {
                   </>
                 )}
 
-                <RotateButton
-                  deg={collapsed.left ? 270 : 90}
-                  onClick={() =>
-                    setCollapsed((s) => ({ ...s, left: !collapsed.left }))
-                  }
-                >
-                  {collapsed.left ? <ExpandMore /> : <Close />}
-                </RotateButton>
+  <Popover 
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handlePopoverClose} 
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+    >
+     <Box sx={{width: 300, p: 2}}>
+      {popoverContent}
+     </Box>
+
+    </Popover>
+  
+               <Stack>
+                  <RotateButton
+                    deg={collapsed.left ? 270 : 90}
+                    onClick={() =>
+                      setCollapsed((s) => ({ ...s, left: !collapsed.left }))
+                    }
+                  >
+                    {collapsed.left ? <ExpandMore /> : <Close />}
+                  </RotateButton>
+                  
+                  {collapsed.left && <>
+                  <RotateButton 
+                    onClick={handlePopoverClick(pageTree)}
+                  >
+                    <Article />
+                  </RotateButton>
+                  <RotateButton 
+                    onClick={handlePopoverClick(contentTree)}
+                  >
+                    <Newspaper />
+                  </RotateButton>
+                  </>}
+               </Stack>
               </Flex>
 
               {!collapsed.left && (
                 <>
                   <Box sx={{ border: "solid 1px gray", height: 240, p: 1 }}>
-                    <PageTree
-                      tree={appData.pages}
-                      selected={queryState.page?.PageName}
-                      setPage={createPage}
-                      dropPage={handlePageDelete}
-                      duplicatePage={id => duplicatePage(appData.ID, id)}
-                      onClick={(name) =>
-                        setQueryState((s) => ({
-                          ...s,
-                          page: appData.pages.find((f) => f.PageName === name),
-                        }))
-                      }
-                    />
+                   {pageTree}
                   </Box>
                 </>
               )}
@@ -585,13 +714,7 @@ const Editor = ({ applications: apps = {} }) => {
                   
                   <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
                       sx={{mb: 1}} value={contentFilter} />
-                  <ContentTree
-                    filter={contentFilter}
-                    onDrop={handleDropComponent}
-                    onNameChange={handleNameChange}
-                    onCreate={(type, options) => createComponent(type, options)}
-                    tree={queryState.page?.components}
-                  />
+                  {contentTree}
                   </>
                     
                   }
@@ -607,19 +730,20 @@ const Editor = ({ applications: apps = {} }) => {
             {!!json &&  <JsonView json={appData}/>}
               {/* <Json>{JSON.stringify(appData, 0, 2)}</Json> */}
             </Collapse>
-
-            {!!appData?.themes && <Collapse in={!json}>
+ 
+            <Collapse in={!json}>
               <ComponentTree
-              pageClientState={pageClientState}
-              setPageClientState={setPageClientState}
-                themes={appData.themes}
+                 
+                {...componentTreeProps}
+
+                themes={appData?.themes || []}
                 appContext={appData}
                 loaded={loaded}
                 setLoaded={setLoaded}
                 preview
                 selectedPage={queryState.page}
               />
-            </Collapse>}
+            </Collapse>
           </Pane>
           <Pane
             item
@@ -663,12 +787,15 @@ const Editor = ({ applications: apps = {} }) => {
 
       <ConnectionDrawer
         appID={appData.ID}
+        selectedPage={queryState.page}
         dropResource={handleResourceDelete}
         dropConnection={handleConnectionDelete}
         setResource={setResource}
         setConnection={setConnection}
         connections={appData.connections}
         resources={appData.resources}
+        onEventChange={handleEventChange}
+        onEventDelete={handledEventDelete}
         open={connectOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, connectOpen: false }));

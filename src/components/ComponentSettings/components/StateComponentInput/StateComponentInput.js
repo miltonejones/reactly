@@ -1,10 +1,11 @@
 import React from 'react';
-import { Alert, Stack } from '@mui/material';
-import { QuickSelect } from '../../..';
+import { Alert, Stack, IconButton } from '@mui/material';
+import { QuickSelect, QuickMenu } from '../../..';
 import {
   AppStateContext, 
 } from "../../../../hooks/AppStateContext";
 import { useEditor } from "../../../../hooks/useEditor";
+import { MoreVert } from "@mui/icons-material";
   
 const NEW_STATE_TEXT = 'New state variable...'
  
@@ -14,7 +15,8 @@ const StateComponentInput = ({
   value,
   header,
   binding,
-  handleChange
+  handleChange,
+  menu, 
 }) => {
 
   const { 
@@ -29,16 +31,26 @@ const StateComponentInput = ({
     handleChange(value, binding)
   }, [binding, handleChange])
 
-  if (!selectedPage.state) {
+  
+  if (!selectedPage.state && !selectedPage.parameters) {
     return <Alert>No state vars are available</Alert>
   }
 
+  const Component = menu ? QuickMenu : QuickSelect;
+
+  const options = !selectedPage.state ? [] : selectedPage.state.map(d => d.Key);
+  !!selectedPage.parameters && Object.keys(selectedPage.parameters).map(paramKey => {
+    return options.push(`parameters.${paramKey}`);
+  })
   return <Stack>
     {header}
    {/* (( {JSON.stringify(value)})) */}
-    <QuickSelect helperText={helperText} 
-        options={selectedPage.state?.map(d => d.Key)}  
+    <Component helperText={helperText} 
+        options={options}  
         value={value} 
+        label={!menu ? '' : <IconButton>
+          <MoreVert />
+        </IconButton>}
         onChange={onChange}/>
       
   </Stack> 

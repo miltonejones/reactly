@@ -28,6 +28,7 @@ import Modal, { useModal } from "./components/Modal/Modal";
 
 function App() {
   const appHistory = useAppHistory();
+
   const [pageClientState, setPageClientState] = React.useState({});
   const [pageResourceState, setPageResourceState] = React.useState([]);
   const [queryState, setQueryState] = React.useState({
@@ -40,7 +41,9 @@ function App() {
     menu_pos: "bottom",
     use_menus: "1",
     page_db_items: JSON.stringify(AppData),
+    page_resource_state: '[]'
   });
+ 
 
   const menuPos = store.getItem("menu_pos");
   const useMenus = store.getItem("use_menus");
@@ -48,28 +51,25 @@ function App() {
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
-  
-
 
   const appData = appText === null || appText === 'null' 
     ? AppData 
     : JSON.parse(appText);
 
- 
-    const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
-      if (!pages) return items.concat('huh');
-      const selectedPage  = pages.find(f => f.ID === node.pageID);
-  
-      if (selectedPage) {
-        return createBreadcrumbs(pages, selectedPage).concat(node.PageName);
-      }
-  
-      return items.concat(node.PageName); //.concat(node.PageName)
-    } , [ appData ])
+  const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
+    if (!pages) return items.concat('huh');
+    const selectedPage  = pages.find(f => f.ID === node.pageID);
+
+    if (selectedPage) {
+      return createBreadcrumbs(pages, selectedPage).concat(node.PageName);
+    }
+
+    return items.concat(node.PageName); //.concat(node.PageName)
+  } , [ appData ])
    
   
 
-  const setAppData = data => store.setItem('page_db_items', JSON.stringify(data));
+  const setAppData = data => store.setItem('page_db_items', JSON.stringify(data)); 
   const getPageResourceState = () => pageResourceState
 
   return (
@@ -79,11 +79,18 @@ function App() {
         setAppData,
         queryState,
         setQueryState,
+
+
+        // "persistent" state values 
+
         pageClientState, 
+        setPageClientState,
+        
         pageResourceState, 
         getPageResourceState,
         setPageResourceState,
-        setPageClientState,
+
+
         ...appHistory,  
         ...modal,
         menuPos,

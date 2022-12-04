@@ -56,10 +56,10 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       break;
     case 'modalOpen':
       const dialogName = page.components.find(e => e.ID === action.target)
-      act = <>{action.open ? 'Open' : 'Close'} modal <b>{dialogName?.ComponentName}</b></>
+      act = <>{action.open ? 'Open' : 'Close'} component <b>{dialogName?.ComponentName}</b></>
       break;
     case 'scriptRun':
-      const scr = page.scripts.find(f => f.ID === action.target);
+      const scr = page.scripts && page.scripts.find(f => f.ID === action.target);
       if (scr) {
         act = <>Run script "{scr.name}"</>
       } else {
@@ -97,13 +97,22 @@ const Events =  [
 ]
 
 
-const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, connections, resources }) => {
+const ComponentEvents = ({ 
+    selectedPage, 
+    component, 
+    onEventDelete, 
+    onChange, 
+    addedEvents,
+    connections, 
+    resources }) => {
   const [open, setOpen] = React.useState(false)
   const [selectedEvent, setSelectedEvent] = React.useState(false)
   const [selectedHandler, setSelectedHandler] = React.useState(false)
-  const [selectedType, setSelectedType] = React.useState(false)
-  const supportedEvents = !component ? Events : Library [component.ComponentType].Events  ;
+  const [selectedType, setSelectedType] = React.useState(false);
 
+  
+  const defaultEvents = !addedEvents ? Events : addedEvents;
+  const supportedEvents = !!addedEvents || !component ? defaultEvents : Library [component.ComponentType].Events  ;
   const eventOwner = !component ? selectedPage : component;
   
 
@@ -120,7 +129,8 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     event: selectedEvent
   }
 
-  const modalsExist = ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar'].some(type => selectedPage.components.find(f => f.ComponentType === type)) 
+  const modalsExist = !!selectedPage.components && ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar', 'Popover']
+      .some(type => selectedPage.components.find(f => f.ComponentType === type)) 
 
   const handleSave = state => {  
     setSelectedEvent(null); 
@@ -164,7 +174,8 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     
   }
 
-  const EventEditor = forms[selectedType]
+  const EventEditor = forms[selectedType];
+  const supportedEvent = supportedEvents?.find(n => n.name === selectedEvent);
   
  return (
    <Layout>
@@ -194,7 +205,7 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
     {/* events that have handlers  */}
     {!!eventOwner.events?.length && !selectedEvent &&  <>    
       <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
-        <Typography variant="caption"> <b>Component Events</b></Typography>
+        <Typography variant="caption"> <b>Active Events</b></Typography>
       </Flex>
       {eventOwner.events?.map(e => <HandlerCard 
         selected={selectedHandler} 
@@ -218,10 +229,13 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
             resources={resources}
             handleSave={handleSave}
             event={freshEvent} 
+            selectedEvent={supportedEvent}
             page={selectedPage} 
             selectedType={selectedType}
             /></>}
  
+ 
+
 
       {!!selectedHandler && !!selectedEvent && 
         eventOwner.events
@@ -229,11 +243,15 @@ const ComponentEvents = ({ selectedPage, component, onEventDelete, onChange, con
           .map (e => {
             const Editor = forms[e.action.type];
             if (!Editor) return <>could not render editor {e.type}</>
-            return <Editor
+            return <>
+          
+            <Editor
               resources={resources}
+              selectedEvent={supportedEvent}
               handleSave={handleSave}
               selectedType={e.action.type}
               event={e} key={e.action.type} page={selectedPage} />
+            </>
           }) }
  
    

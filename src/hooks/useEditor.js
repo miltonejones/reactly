@@ -18,6 +18,67 @@ export const useEditor = (apps) => {
     app.setDirty(true)
   }
 
+  const editProg = async (ID, edit) => {
+    const app = findProg(ID);
+    const res = await edit(app);
+    updateProg(app);
+    return res;
+  };
+
+  const editPage = async (appID, pageID, edit) => {
+    const res = editProg(appID, async (app) => {
+      const page = app.pages.find((c) => c.ID === pageID);
+      await edit(page, app);
+      app.pages = app.pages.map((c) => c.ID === pageID ? page : c);
+      return page;
+    });
+    return res;
+  };
+
+  const editResource = async (appID, resourceID, edit) => {
+    const res = editProg(appID, async (app) => {
+      const resource = app.resources.find((c) => c.ID === resourceID);
+      await edit(resource, app);
+      app.resources = app.resources.map((c) => c.ID === resourceID ? resource : c);
+      return resource;
+    });
+    return res;
+  };
+
+  const editComponent = async (appID, pageID, componentID, edit) => {
+    const res = editPage(appID, pageID, async (page, app) => {
+      const component = page.components.find((c) => c.ID === componentID);
+      await edit(component, page, app);
+      page.components = page.components.map((c) => c.ID === componentID ? component : c);
+      return component;
+    });
+    return res;
+  };
+
+
+  const setParameter = async (appID, pageID, param) => {
+    const res = editPage(appID, pageID, async (page, app) => {
+       
+      if (!page.parameters ) {
+        Object.assign(page, { parameters: []});
+      }
+
+      page.parameters  = page.parameters .filter(f => f.name === param)
+       .concat({name: param, ID: uniqueId()});
+      return page;
+    });
+    return res;
+  }
+
+  const dropParameter = async(appID, pageID, ID) => { 
+    const res = editPage(appID, pageID, async (page, app) => {
+      page.parameters  = page.parameters.filter(f => f.ID !== ID) 
+      return page;
+    });
+    return res; 
+  }
+
+
   const setProgProps = async (appID, props) => {
 
     editProg(appID, async (app) => {
@@ -60,12 +121,6 @@ export const useEditor = (apps) => {
     app.setDirty(true)
   };
 
-  const editProg = async (ID, edit) => {
-    const app = findProg(ID);
-    await edit(app);
-    updateProg(app);
-  };
-
   const dropResource = async(appID, ID) => { 
     editProg(appID, async (app) => {
       app.resources = app.resources.filter(f => f.ID !== ID) 
@@ -80,6 +135,26 @@ export const useEditor = (apps) => {
         ? app.resources.map((c) => c.ID === resource.ID ? {...resource, ID: resource.ID} : c)
         : app.resources.concat({...resource, ID: maxID + 1});
     })
+  }
+
+  const setResourceEvent = async (appID, pageID, resourceID, event) => {
+    editResource(appID, resourceID, async (resource) => {
+
+      if (!resource.events) {
+        Object.assign(resource, {events: []})
+      }
+      // alert (JSON.stringify({resource, event}))
+      
+      resource.events = resource.events.find(f => f.ID === event.ID)
+        ? resource.events.map((c) => c.ID === event.ID ? event : c)
+        : resource.events.concat({...event, ID: uniqueId()});
+    });
+  }
+
+  const dropResourceEvent = async (appID, pageID, resourceID, eventID) => {
+    editResource(appID, resourceID, async (resource) => {
+      Object.assign(resource, { events: resource.events.filter(f => f.ID !== eventID)   }) ; 
+    }); 
   }
 
   const dropConnection = async(appID, ID) => { 
@@ -97,14 +172,6 @@ export const useEditor = (apps) => {
         : app.connections.concat({...connection, ID: maxID + 1});
     })
   }
-
-  const editPage = async (appID, pageID, edit) => {
-    editProg(appID, async (app) => {
-      const page = app.pages.find((c) => c.ID === pageID);
-      await edit(page, app);
-      app.pages = app.pages.map((c) => c.ID === pageID ? page : c);
-    });
-  };
 
   const dropComponent = async (appID, pageID, componentID) => {
     editPage(appID, pageID, async (page) => {
@@ -139,15 +206,14 @@ export const useEditor = (apps) => {
   const addComponent = async (appID, pageID, component, options) => {
     const { order, after, before } = options ?? {}
     
-    editPage(appID, pageID, async (page, app) => { 
+    const res = editPage(appID, pageID, async (page, app) => { 
       const settings = Library[component.ComponentType].Defaults;
   
 
-
-      const maxID = getMax(page.components.map(f => f.ID)); 
+ 
       let maxOrder = getMax(page.components.map(f => f.order));
 
-      const box = {...component, ID: maxID + 1, order: maxOrder + 100}
+      const box = {...component, ID: uniqueId(), order: maxOrder + 100}
       
       if (after) {
         const nextID = page.components.find(f => f.order > order);
@@ -174,18 +240,13 @@ export const useEditor = (apps) => {
         }) 
       }
       
-      page.components = page.components.concat(box)
+      page.components = page.components.concat(box);
+
+      return box;
     });
+    return res;
   };
   
-  const editComponent = async (appID, pageID, componentID, edit) => {
-    editPage(appID, pageID, async (page, app) => {
-      const component = page.components.find((c) => c.ID === componentID);
-      await edit(component, page, app);
-      page.components = page.components.map((c) => c.ID === componentID ? component : c);
-    });
-  };
-
   const setPageProps = async (appID, pageID, props) => { 
     editPage(appID, pageID, async (page, app) => {
       Object.assign(page, props) 
@@ -349,5 +410,5 @@ export const useEditor = (apps) => {
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, 
-    createProg, setTheme, dropTheme, setPageEvent, setProgProps};
+    createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  setResourceEvent, dropResourceEvent };
 }

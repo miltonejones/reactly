@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
   IconButton, 
+  Chip,
   InputAdornment,  
   styled } from "@mui/material";
 import Tooltip from "@mui/material/Tooltip"; 
@@ -213,6 +214,62 @@ export const RotateExpand = styled(ExpandMore)(({ deg = 0 }) => ({
   transform: `rotate(${deg}deg)`
 }));
 
+const ChipWord = ({label, onDelete, ...props}) => {
+  const regex = /\{([^}]+)\}/g;
+  const chipped = regex.exec(label);
+  if (chipped) {
+    return <Chip size="small" {...props} label={chipped[1]} 
+    variant="outlined"
+      deleteIcon={<Close />} 
+      onDelete={() => onDelete(label)}
+      onClick={() => onDelete(label)}
+      />
+  }
+  return <Box {...props}>{label}</Box>
+}
+
+
+export const ChipBox = ({onChange, value = '', ...props})  => {
+  const ref = React.useRef(null)
+  const [content, setContent] = React.useState(value);
+  const [chips, setChips] = React.useState(true)
+
+  const deleteWord = (word) => {
+    const trimmed = content.replace(word, '');
+    setContent(trimmed);
+    onChange && onChange({ target: { value: trimmed }});
+  } 
+  
+
+  const startAdornment = !chips || typeof content !== 'string' ? null : <InputAdornment position="start">
+    {content?.split(' ').map(word => <ChipWord 
+      onClick={() => {
+        setChips(false);
+        !!ref.current && ref.current.focus()
+      }}
+      onDelete={deleteWord} label={word} sx={{mr: 1}}>[{word}]</ChipWord>)}
+  </InputAdornment>
+
+
+  const handleChange = event => {
+    setContent(event.target.value);
+    onChange && onChange(event)
+  }
+
+  return <TextField 
+    autoFocus={!chips}
+    size="small"
+    {...props} 
+    onFocus={() => setChips(false)}
+    onBlur={() => setChips(true)}
+    value={chips ? '' : content}
+    label={chips ? '' : props.label}
+    placeholder=""
+    InputProps={{startAdornment}}
+    onChange={handleChange}
+    sx={{maxWidth: 400, overflow: 'hidden'}}
+  />
+}
 
 export const SearchBox = ({value, onChange, onClose, startIcon = true, ...props}) => {
   const startAdornment = !startIcon ? null  : <InputAdornment position="start">

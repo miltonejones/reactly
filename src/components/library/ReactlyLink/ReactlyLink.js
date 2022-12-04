@@ -3,6 +3,7 @@ import { Link } from '@mui/material';
 import { GenericStyles } from '../styles'; 
 import { InsertLink } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
+import ReactlyButton from '../ReactlyButton/ReactlyButton';
   
 const ReactlyComponentLink = ({ children, ...props }) => {
  return (
@@ -74,6 +75,7 @@ const ReactlyLink = {
   Icon: InsertLink,
   Component: ReactlyComponentLink,
   Settings,
+  Events: ReactlyButton.Events,
   Styles: GenericStyles, 
   Defaults: {
     Label: 'Link',

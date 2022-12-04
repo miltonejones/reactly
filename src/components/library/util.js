@@ -1,4 +1,15 @@
+import Library from ".";
 
+export const getPropertyOptions = (page, event) => {
+  const options = !page?.state ? [] : page.state.map(d => d.Key);
+  !!page?.parameters && Object.keys(page.parameters).map(paramKey => {
+    return options.push(`parameters.${paramKey}`);
+  })
+  !!event?.emits && event.emits.map(paramKey => {
+    return options.push(`event.${paramKey}`);
+  })
+  return options;
+}
 
 const gridTransform = (value) => {
   const fr = [];
@@ -82,9 +93,9 @@ export const getStyles = styles => {
   //   Object.assign(args, {'margin': paddingTransform(args['margin'])})
   //  }
    
-  //  if (args['border-radius']) {
-  //   Object.assign(args, {'border-radius': paddingTransform(args['border-radius'])})
-  //  }
+   if (args['border-radius']) {
+    Object.assign(args, {'border-radius': paddingTransform(args['border-radius'])})
+   }
 
   const transformKey = (key, fn) => {
     if (args.hasOwnProperty(key)) {
@@ -120,3 +131,24 @@ export const getMax = array => array.reduce((count, res) => {
 
 
 export const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);
+
+function findMatches(regex, str, matches = []) { 
+  const res = regex.exec(str)  
+  res && matches.push(res) && findMatches(regex, str, matches)
+  return matches
+}
+
+export const fixText = (str, options, parameters) => {
+  const test = /\{([^}]+)\}/g
+  let out = str;
+
+  findMatches(test, str).map(match => {
+    let prop;  
+    if (match[1].indexOf('parameters.') === 0) {
+      const [name, key] = match[1].split('.');
+      prop = parameters[key];
+    } else prop = options[match[1]]
+    return out = out.replace(match[0], prop)
+  }) 
+  return out;
+}

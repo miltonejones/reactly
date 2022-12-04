@@ -24,7 +24,7 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
       ...pageModalState,
       [props.ID]: false
     } 
-    !!preview && setPageModalState(state)
+    setPageModalState(state)
    }
    const extra = { 
      '& .MuiPaper-root': {

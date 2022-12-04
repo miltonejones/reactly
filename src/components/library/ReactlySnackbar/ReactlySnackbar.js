@@ -4,6 +4,7 @@ import { GenericStyles } from '../styles';
 import { Icecream } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
+import { getSettings } from '../util';
   
 const ReactlyComponentSnackbar = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
@@ -11,8 +12,14 @@ const ReactlyComponentSnackbar = ({ children, ...props }) => {
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
+  const args = getSettings(props.settings);
 
-  const handleClose = () => {
+  const { vertical, horizontal } = args;
+
+  const handleClose = (event, reason) => {
+
+  // alert (JSON.stringify({...args, reason}))
+    
     const state = {
       ...pageModalState,
       [props.ID]: false
@@ -21,13 +28,18 @@ const ReactlyComponentSnackbar = ({ children, ...props }) => {
    }
 
  return (
+  <>
    <ReactlyComponent component={Snackbar} {...props}
-   
-      onClose={handleClose}
-     open={open || componentEditing} 
-   >
-      {children}
-   </ReactlyComponent>
+    anchorOrigin={{ vertical, horizontal }}
+    onClose={handleClose}
+    open={open || componentEditing} 
+>
+   {children}
+</ReactlyComponent>
+  {/* <pre>
+    {JSON.stringify(args,0,2)}
+  </pre> */}
+  </>
  );
 }
 
@@ -42,7 +54,8 @@ const Settings = {
         {
           title: 'Message',
           label: 'message' ,
-          bindable: 1
+          bindable: 1,
+          type: 'chip'
         }, 
         {
           title: 'Vertical Origin',
@@ -57,6 +70,7 @@ const Settings = {
         {
           title: 'AutoHide Duration',
           label: 'autoHideDuration' , 
+          helperText: 'Time in milliseconds'
         }, 
       ]
     }, 

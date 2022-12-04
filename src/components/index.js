@@ -16,7 +16,7 @@ import StateDrawer from "./StateDrawer/StateDrawer";
 import ScriptDrawer from "./ScriptDrawer/ScriptDrawer";
 import PageTree from './PageTree/PageTree'
 
-import { Flex, Tiny, TextInput, AU, Tooltag, PopoverTextBox, PopoverInput, 
+import { Flex, Tiny, TextInput, AU, ChipBox, Tooltag, PopoverTextBox, PopoverInput, 
     RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton,
     useClipboard, Area, SearchBox, TextBox, Text } from './Control/Control';
 
@@ -25,6 +25,7 @@ const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'd
 export {
   AU,
   Area,
+  ChipBox,
   TabButton,
   ConnectionModal,
   MenuDrawer, 

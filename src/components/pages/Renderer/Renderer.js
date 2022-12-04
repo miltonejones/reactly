@@ -12,7 +12,12 @@ import { useParams } from "react-router-dom";
  
 const Renderer = ({ applications: apps = {} }) => { 
   const { appname, pagename } = useParams();
-  const { queryState = {}, setQueryState } = React.useContext(AppStateContext);
+  const { queryState = {}, setQueryState ,
+
+  pageClientState,  
+  setPageClientState,
+
+} = React.useContext(AppStateContext);
   const [loaded, setLoaded] = React.useState(false)
   const applications = typeof apps === 'object'
     ? apps 
@@ -52,7 +57,11 @@ const Renderer = ({ applications: apps = {} }) => {
   </Breadcrumbs> */}
 
 
-  <ComponentTree loaded={loaded} setLoaded={setLoaded} appContext={appData} selectedPage={firstpage} />
+  <ComponentTree loaded={loaded} 
+  
+  pageClientState={pageClientState}
+  setPageClientState={setPageClientState}
+  setLoaded={setLoaded} appContext={appData} selectedPage={firstpage} />
   
 </>
  );

@@ -32,6 +32,7 @@ export const ReactlyAvatarSettings = {
         {
           title: 'Image Source',
           label: 'src', 
+          bindable: 1
         },
         {
           title: 'Image Title',

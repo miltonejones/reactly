@@ -78,7 +78,7 @@ export const ReactlyTextboxSettings = {
           title: 'Label',
           label: 'label',
           start: 'Textbox',  
-          bindable: !0,
+          bindable: !0
         },
 
       
@@ -92,6 +92,7 @@ export const ReactlyTextboxSettings = {
           label: 'value',
           start: 'Textbox',
           bindable: !0, 
+          type: 'chip'
         }, 
     
       ]

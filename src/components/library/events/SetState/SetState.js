@@ -48,17 +48,26 @@ const SetState = ({ event = {}, page, handleSave }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'setState' });
   const { target, value } = state;
 
+  const { parameters } = page;
+
+  if (!page.state && !parameters) {
+    return <>Page has no state variables</>
+  }
+
   const handled = !(page.state && event.action) 
     ? {}
     : page.state.find(f => f.Key === target);
 
-  const selectedState = page.state.find(f => f.Key === target);
+  const selectedState = page.state?.find(f => f.Key === target);
+  const options = !page.state ? [] : page.state.map(d => d.Key);
  return (
   <>
   <Card sx={{p: 1, mt: 2, mb: 2}}>
    <Stack sx={{mt: 2}} spacing={2} data-testid="test-for-SetState"> 
       <Typography>Set the value of</Typography>
-     <QuickSelect options={page.state.map(d => d.Key)} value={target} 
+
+
+     <QuickSelect options={options} value={target} 
             onChange={value => setState(s => ({...s, target: value}))}/>
       
  

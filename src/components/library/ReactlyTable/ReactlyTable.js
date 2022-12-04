@@ -7,6 +7,7 @@ import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
 import { Flex } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
+import { usePageResourceState } from '../../../hooks/usePageResourceState';
 
 const truncate = (value, length) => {
   try {
@@ -25,42 +26,60 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(PageStateContext);
   const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
  
+
+
   const args = getSettings(settings);
-  let obj = {}, parsed = [], resource;
+  const  {
+    bindingObject,
+    resource,
+    dataRows
+  } = usePageResourceState(settings);
+  // let obj = {}, parsed = [];//, resource;
 
 
-  if (args.bindings)  {
-    obj = JSON.parse(args.bindings); 
-    const id = obj.resourceID;
-    resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
-    if (resource) {
-      parsed = resource.records.map(record => {
-        return Object.keys(obj.bindings).reduce((items, res) => {
-          items[obj.bindings[res]] = record[ res ]
-          return items;
-        }, {})
-      })
-    }
-  }
+  // if (args.bindings)  {
+  //   obj = JSON.parse(args.bindings); 
+  //   const id = obj.resourceID;
+  //   resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
+  //   if (resource) {
+  //     parsed = resource.records.map(record => {
+  //       return Object.keys(obj.bindings).reduce((items, res) => {
+  //         items[obj.bindings[res]] = record[ res ]
+  //         return items;
+  //       }, {})
+  //     })
+  //   }
+  // }
 
-  if (!parsed.length && !componentEditing) {
+  if (!dataRows.length && !componentEditing) {
     return <> 
     <Box sx={{m: 2}}>{args.emptyMessage}</Box></>
   }
 
+  const isSelected = (row, i) => {
+    if (args.use_id) {
+      return resource.records[i][args.selectedColumn].toString() === props.selectedID.toString()
+    }
+    return props.selectedIndex?.toString() === i.toString();
+  }
+
  return (
   <> 
+  {/* <pre>
+  {JSON.stringify(args,0,2)}
+  {JSON.stringify(props,0,2)}
+  </pre> */}
    <ReactlyComponent component={Table} {...props}>
 
-      {!!obj.bindings && <TableHead>
+      {!!bindingObject.bindings && <TableHead>
         <TableRow>
-          {Object.values(obj?.bindings).map( t => <TableCell key={t}>{t}</TableCell>)} 
+          {Object.values(bindingObject?.bindings).map( t => <TableCell key={t}>{t}</TableCell>)} 
         </TableRow>
       </TableHead>
 }
 
       <TableBody>
-        {parsed.map((row, i) => (
+        {dataRows.map((row, i) => (
           <TableRow
             onClick={e => {
               onRowClick && onRowClick(e, {
@@ -71,7 +90,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
             key={i} 
           >
             {Object.values(row).map((cell, k) => <TableCell 
-            sx={{fontWeight: props.selectedIndex?.toString() === i.toString() ? 600 : 400}}
+            sx={{fontWeight: isSelected(row, i) ? 500 : 400}}
               onClick={e => {
                 onCellClick && onCellClick(e, {
                   row: i,
@@ -103,7 +122,8 @@ const Settings = {
       settings: [ 
         {
           title: 'Message to display when empty',
-          label: 'emptyMessage'
+          label: 'emptyMessage',
+          type: 'chip'
         }, 
       ]
     },
@@ -143,7 +163,25 @@ const Settings = {
         {
           title: 'Selected Row',
           label: 'selectedIndex',
-          bindable:  !0
+          bindable:  !0  ,
+          when: p => !p.use_id
+        } ,
+        {
+          title: 'Selected ID',
+          label: 'selectedID'  ,
+          bindable:  !0  ,
+          when: p => p.use_id
+        } ,
+        {
+          title: 'ID Column',
+          label: 'selectedColumn' ,
+          type: 'tablecolumn'  ,
+          when: p => p.use_id
+        } ,
+        {
+          title: 'Select by ID',
+          label: 'use_id'  ,
+          type: 'boolean'
         } ,
         {
           title: 'Truncate Cell Text',
@@ -163,12 +201,14 @@ const Events =  [
   {
     name: 'onRowClick',
     title: 'List row is clicked',
-    description: 'User clicks on a row in the list.'
+    description: 'User clicks on a row in the list.',
+    emits: ['row']
   }, 
   {
     name: 'onCellClick',
     title: 'List cell is clicked',
-    description: 'User clicks on a cell in a row.'
+    description: 'User clicks on a cell in a row.',
+    emits: ['row', 'cell']
   }, 
 ]
 

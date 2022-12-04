@@ -1,12 +1,18 @@
 import * as React from 'react';
 import { useNavigate } from "react-router-dom"; 
+import { fixText } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
+import moment from 'moment';
 
 
 export const PageStateContext = React.createContext({});
 
 
 export const eventTypes =  [
+  {
+    name: 'onSliderChange', 
+    description: 'User clicks the slider.'
+  },
   {
     name: 'onClick',
     description: 'When component is clicked'
@@ -51,6 +57,10 @@ export const eventTypes =  [
     name: 'onMenuClick', 
     description: 'User clicks on the menu icon at the right of a card.'
   }, 
+  {
+    name: 'onButtonClick', 
+    description:  'User clicks on a button in the group.'
+  },
   {
     name: 'onPageChange', 
     description: 'Page value changes'
@@ -98,46 +108,60 @@ export const eventTypes =  [
 }, 
 {
   name: 'dataLoaded', 
-  description: 'User clicks on a cell in a row.'
+  description: 'Data finishes loading.'
+}, 
+{
+  name: 'loadStarted', 
+  description: 'Data starts loading.'
 }, 
 ];
- 
-/**
- * 
- * 
-
- */
-
+  
 
 export const usePageContext = () => { 
-  const { pageClientState, 
-          setPageClientState,
-          // pageResourceState, 
-          // setPageResourceState,
-          // getPageResourceState,
-          pageRefState, 
-          setPageRefState,
-          pageModalState, 
-          setPageModalState,
-          selectedPage, 
-          appContext, 
-          setQueryState,
-          getPageClientState,
-          preview
-        } = React.useContext(PageStateContext);
- const {
+  const { 
+    pageClientState, 
+    setPageClientState, 
+    pageRefState, 
+    setPageRefState,
+    pageModalState, 
+    setPageModalState,
+    selectedPage, 
+    appContext, 
+    setQueryState,
+    getPageClientState,
+    preview,
     pageResourceState, 
     setPageResourceState,
     getPageResourceState,
- }  = React.useContext(AppStateContext);
+  } = React.useContext(PageStateContext);
 
-        const navigate = useNavigate();
+ const {
+    Alert,
+    queryState
+ } = React.useContext(AppStateContext);
 
-  const executeComponentRequest = async (connections,  qs,  { events, connectionID, path, node, columns }, slash = '?') => {
+  const navigate = useNavigate();
+
+  const executeComponentRequest = async (connections,  qs, res, slash = '?') => {
+    const  { events, connectionID, path, node, columns } = res;
     const connection = connections.find(f => f.ID === connectionID);
     const url = new URL(path, connection.root); 
-    const endpoint = `${url}${slash}${qs}`;
-    
+    const endpoint = `${url}${slash}${qs}`; 
+
+    if (events) {
+      events.filter(e => e.event === 'loadStarted').map(e => { 
+        handleComponentEvent({}, {
+          name: e.event,
+          options: {
+            url,
+            endpoint
+          }, 
+        }, events)
+      }) 
+    }
+
+
+
     const response = await fetch(endpoint); 
     const json = await response.json();
 
@@ -148,16 +172,17 @@ export const usePageContext = () => {
       return items
     }, {})); 
 
+
     if (events) {
-      events.map(e => { 
+      events.filter(e => e.event === 'dataLoaded').map(e => { 
         handleComponentEvent({}, {
           name: e.event,
-          options: json,
-          label: 'hello??'
+          options: json, 
         }, events)
       }) 
     }
 
+    
     return collated ;
   }
 
@@ -173,7 +198,7 @@ export const usePageContext = () => {
       // call the client function
       action(selectedPage, opts)
     } catch (ex) {
-      alert (ex.message);
+      Alert (ex.message);
     }
   }
 
@@ -208,10 +233,19 @@ export const usePageContext = () => {
     if (targetPage) {
       return openLink(targetPage.ID);
     }
-    alert (`Invalid path ${path}`)
+    Alert (`Invalid path ${path}`)
   }, [appContext, openLink])
 
   const stringToggle = (state, { target, value }, options) => {
+    const regex = /\{([^}]+)\}/g;
+    const literal = regex.exec(value);
+    if (literal) {
+      alert (JSON.stringify(literal))
+      return literal[1];
+    }
+    if (!value) {
+      return ''
+    }
     if (value?.indexOf('.') > 0) {
       const [key, prop] = value.split('.'); 
       return options[prop]
@@ -223,6 +257,42 @@ export const usePageContext = () => {
     return state[target] === trueProp ? falseProp : trueProp;
   }
 
+  const getRef = React.useCallback((ID) => {
+    return pageRefState[ID]
+  }, [pageRefState])
+
+
+  const execRefByName = React.useCallback((name, fn) => {
+    setPageRefState(refState => {
+      const component = selectedPage.components.find(f => f.ComponentName === name);
+      if (component) {
+        const ref = refState[component.ID]
+        fn(ref);
+      } else {
+        Alert ('Could not find component ' + name);
+        console.log ({ refState })
+      }
+      return refState;
+    });
+    
+  }, [selectedPage])
+
+
+  const getRefByName = React.useCallback((name) => {
+    const component = selectedPage.components.find(f => f.ComponentName === name);
+    if (component) {
+      return getRef(component.ID)
+    }
+    Alert ('Could not find component ' + name)
+  }, [selectedPage, getRef])
+
+  const execResourceByName =  (name, fn) => { 
+    setPageResourceState(resourceState => { 
+      const state = resourceState.find(e => e.name === name); 
+      fn(state);
+      return resourceState;
+    }) 
+  } 
 
   const getResourceByName =  (name) => {
     const state = getPageResourceState()
@@ -239,27 +309,18 @@ export const usePageContext = () => {
   // }
 
 
-  const getRef = React.useCallback((ID) => {
-    return pageRefState[ID]
- }, [pageRefState])
-
-  const getRefByName = React.useCallback((name) => {
-    const component = selectedPage.components.find(f => f.ComponentName === name);
-    if (component) {
-      return getRef(component.ID)
-    }
-    alert ('Could not find component ' + name)
-  }, [selectedPage, getRef])
-
   const handleComponentEvent = (event, eventProps, events) => {
     const { component, name , label, options, sources, connect , stateProps } = eventProps;
-    
-    // alert((!(events || component?.events)).toString())
+     
     if (!(events || component?.events)) return;
 
     const triggers = (events || component?.events).filter( e => e.event === name);
+
+    console.log ('executing "%s" script', name);
  
     triggers.map((trigger, index) => { 
+      trigger.event !== 'onProgress' && console.log ('%s, triggering "%s" script', index, trigger.action.type, trigger);
+
       switch(trigger.action.type) {
         case "setState":  
           setPageClientState(s => ({...s, 
@@ -267,14 +328,13 @@ export const usePageContext = () => {
               ? !s[trigger.action.target]
               : stringToggle(s, trigger.action, options) }))
           break;
-        case "modalOpen":  
-             
+        case "modalOpen":   
             setPageModalState(s => ({
               ...s,
               [trigger.action.target]:  trigger.action.open === 'toggle' 
               ? !s[trigger.action.target]
               : trigger.action.open ,
-              anchorEl: event.currentTarget
+              anchorEl: event?.currentTarget
             } ))
           break;
         case 'dataReset':
@@ -288,22 +348,30 @@ export const usePageContext = () => {
 
           break;
         case 'openLink': 
+     //      return Alert (<pre>{JSON.stringify(trigger,0,2)}</pre>)
           const targetPage = appContext.pages.find((f) => f.ID === trigger.action.target); 
           if (!preview) {
             return navigate(`/apps/${appContext.path}/` + targetPage.PagePath)
           }
+
+          const params = {}
+          !!trigger.action.params && Object.keys(trigger.action.params).map(key => {
+            Object.assign(params, {[key]: pageClientState[ trigger.action.params[key] ]})
+          })
+          
           
           setQueryState((s) => ({
             ...s,
             page: targetPage,
+            params 
           }))
 
           break;
         case 'dataExec':
           const resources = appContext?.resources || sources;
           if (!resources) {
-            alert (JSON.stringify(sources))
-            return alert ('no resources were found to  meet this request.')
+            Alert (JSON.stringify(sources))
+            return Alert ('no resources were found to  meet this request.')
           }
           const resource = resources.find(f => f.ID === trigger.action.target);
           const { target, action } = trigger.action; 
@@ -311,20 +379,45 @@ export const usePageContext = () => {
           const stater = !pageClientState ? stateProps : pageClientState; 
           
           const slash = resource.format === 'rest' ? '/' : '&';
-          const qs = Object.keys(trigger.action.terms).map(term => {
 
-            let prop = stater[trigger.action.terms[term]];
-            if (trigger.action.terms[term].indexOf('.') > 0) {
-              const [p, datum] = trigger.action.terms[term].split('.');
+          const validate = Object.keys(trigger.action.terms).filter(term => {
+            return !stater[trigger.action.terms[term]];
+          });
+
+          if (validate.length) {
+            console.log ({ stater, validate })
+            // return Alert (`Could not complete request because 
+            // the fields ${validate.join(' and ')} is/are missing`)
+          }
+          
+
+          const qs = Object.keys(trigger.action.terms).map(term => {
+            const propKey = trigger.action.terms[term];
+
+            const regex = /\{([^}]+)\}/g;
+            const literal = regex.exec(propKey);
+
+            let prop = stater[propKey]; 
+
+            if (literal) {
+              prop = literal[1]
+            } else if (propKey.indexOf('parameters.') === 0) {
+              const [name, key] = propKey.split('.');
+              prop = !queryState.params 
+                ? selectedPage.parameters[key]
+                : queryState.params[key];
+            }  else if (propKey.indexOf('.') > 0) {
+              const [p, datum] = propKey.split('.');
               prop = options[datum];
             }
+            
             return resource.format === 'rest' ? prop : `${term}=${prop}`
           }).join(slash);
 
  
- 
 
-          executeComponentRequest(connect || appContext.connections, qs, resource, resource.format === 'rest' 
+          executeComponentRequest(connect || appContext.connections, 
+            qs, resource, resource.format === 'rest' 
             ? '/'
             : '?')
             .then(records => {  
@@ -343,16 +436,28 @@ export const usePageContext = () => {
            
           break;
         case "scriptRun":  
-      
+        
+          const status = {...getPageResourceState()}; 
           const scr = selectedPage.scripts
             .find(f => f.ID === trigger.action.target);
 
           const opts = {
             state: getPageClientState(), 
             setState: setPageClientState,
+            status,
             data: options,
-            api: { getRef, getRefByName, openLink, openPath,
-              getResourceByName 
+            api: { 
+              getRef, 
+              getRefByName, 
+              openLink, 
+              openPath,
+              getPageResourceState,
+              pageResourceState,
+              Alert,
+              getResourceByName ,
+              execResourceByName,
+              execRefByName,
+              moment
             }
           }
           // console.log ({opts, index})
@@ -361,7 +466,7 @@ export const usePageContext = () => {
               return  ${scr.code}
             }`, opts)
           } 
-          alert ('Could not find script') 
+          Alert ('Could not find script') 
           break;
         default:
           // do nothing
@@ -379,6 +484,7 @@ export const usePageContext = () => {
       if (!supported) return handlers;
  
       handlers[eventName] = (function(state){ return (e, options) => { 
+        console.log ('%s calling %s', component.ComponentName || component.name, eventName);
         return handleComponentEvent(e, {
           name: eventName ,
           component,
@@ -392,7 +498,7 @@ export const usePageContext = () => {
       }})(pageClientState)
       return handlers;
     }, {});
-  
+   
     if (boundProps) {
 
       // get current state at the time the component renders
@@ -400,15 +506,12 @@ export const usePageContext = () => {
       boundProps.map(boundProp => {
         const { attribute, boundTo } = boundProp;    
   
-    
         if (attribute && clientState ) { 
 
-
-        //  ['label','value'].some(f => attribute === f) && console.log ('%s.%s', component.ComponentName, attribute)
-
+          const attributeProp = fixText(pageClientState[boundTo], clientState, queryState.params || selectedPage?.parameters)
           Object.assign(eventHandlers, {
             // set current component value to client state
-            [attribute]: pageClientState[boundTo],
+            [attribute]: attributeProp,
           });
 
           if (attribute === 'value') {

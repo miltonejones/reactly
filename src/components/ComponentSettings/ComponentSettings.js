@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, 
     Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material';
 import Library from '../library';
-import { QuickSelect, Flex, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add, MoreVert } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
@@ -15,6 +15,7 @@ import {
   ListBinderComponentInput,
   ListTableComponentInput
 } from './components' 
+import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 
 const ColorInput = ({ title, color, onChange }) => {
   const [hue, setHue] = React.useState(color)
@@ -76,7 +77,7 @@ const attempt = value => {
       ? JSON.parse(value)
       : value;
     if (!prop) return ''
-    return prop.value;
+    return prop.value || prop;
   } catch (ex) {
     return value;
   }
@@ -117,11 +118,9 @@ export const ComponentInput = props => {
             
 
     return <>
-   {/* {!!isBound && <>
-    [[<pre>
-      {JSON.stringify(isBound,0,2)}
-      </pre>]]
-   </>} */}
+<pre>
+      {/* {JSON.stringify(value,0,2)} */}
+      </pre>
       <ComponentInputBody {...inputProps} /> 
       {!!bindable && <Box sx={{mb: 2}}><ComponentInputBody {...bindProps} /></Box>}
     </>
@@ -161,25 +160,28 @@ export const ComponentInputBody = (props) => {
   } = props;
 
   const node = css?.find(f => f.Key === label);
-  const initialProp = !node ? args[label] : node.Value;
+  const initialProp = !node?.Value ? args[label] : node.Value;
   const customProp = args[label + '-custom'];
   const colorProp = label.indexOf('color') > -1;
   const [value, setValue] = React.useState(!!binding ? bindingValue : initialProp);
 
-  const handleChange = (prop, binding) => {   
-    const inputProp = type === 'boolean' && !!trueProp && prop 
-      ? trueProp
-      : prop;
+  const handleChange = React.useCallback((prop, binding) => {   
+      const inputProp = type === 'boolean' && !!trueProp && prop 
+        ? trueProp
+        : prop;
 
-    setValue(inputProp);
+      setValue(inputProp);
+
       if (binding) { 
         return onChange(binding, inputProp)
       }
 
-    onChange && onChange(label, typeof inputProp === 'object'
-      ? JSON.stringify(inputProp)
-      : inputProp)
-  }
+      onChange && onChange(label, typeof inputProp === 'object'
+        ? JSON.stringify(inputProp)
+        : inputProp)
+    }
+  , [type, trueProp, onChange, label]);
+
 
   if (when && !when(args)) {
     return <></>
@@ -206,6 +208,7 @@ export const ComponentInputBody = (props) => {
   const customInputs = {
     state: StateComponentInput,
     pill: PillComponentInput,
+    icon: IconComponentInput,
     boolean: BooleanComponentInput,
     valuelist: ListComponentInput,
     menulist: ListComponentInput,
@@ -213,6 +216,7 @@ export const ComponentInputBody = (props) => {
     listbuilder: ListComponentInput,
     listbinder: ListBinderComponentInput,
     listtable: ListTableComponentInput,
+    tablecolumn: ListTableComponentInput,
     repeatertable: ListTableComponentInput
   }
 
@@ -220,7 +224,6 @@ export const ComponentInputBody = (props) => {
   const CustomInput = customInputs[type];
   if (CustomInput) {
     return <>
-    {/* [{bindingValue}] */}
     <CustomInput {...inputProps} /></> 
   } 
 
@@ -260,10 +263,15 @@ export const ComponentInputBody = (props) => {
     </Stack>
   }
 
+  const chip = type === 'chip' ;
+  const Component = type === 'chip' 
+    ? ChipBox
+    : TextInput;
+
   return <Stack>
-  {header}
-      <Flexible on={free}>
-  <TextInput 
+  {header} 
+      <Flexible on={free || chip}>
+  <Component 
   multiline={!!multiline}
   rows={4}
     autoComplete="off"
@@ -273,6 +281,12 @@ export const ComponentInputBody = (props) => {
     value={attempt(value)} 
     placeholder={title}
   />
+
+  {!!chip && <StateComponentInput menu {...inputProps}
+    handleChange={val => handleChange(`${attempt(value)} {${val}} `)}
+    header={<i />}/>}
+
+
      {!!free && <CustomSwitch args={args} label={label} onChange={onChange}/>} 
       </Flexible>
 </Stack>

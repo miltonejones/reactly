@@ -1,14 +1,14 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
-  Typography } from '@mui/material';
+  Typography, Divider } from '@mui/material';
 import Library from '../library';
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..';
 // import { getSettings } from '../library/util';
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect } from '..';
-import { TextBtn, TextInput } from '..';
+import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
-import { ExpandMore, Save, Close, Input } from "@mui/icons-material";
+import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material";
 import { Text } from '../Control/Control';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
@@ -128,7 +128,8 @@ const ComponentPanel = ({
 
 
 function PageSettings({ page, themes = [], onChange }) {
-  const [state, setState] = React.useState(page);
+  const [param, setParam] = React.useState(''); 
+  const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state
   return <Stack spacing={1} sx={{p: 1}}>
     <Text small>Page Name</Text>
@@ -148,7 +149,67 @@ function PageSettings({ page, themes = [], onChange }) {
          }}
          />
 
-      <Flex>
+      <Text small>Add page parameters</Text>
+       <Flex>
+        <TextInput size="small" 
+        placeholder="Type parameter name"
+          value={param}
+          onChange={e => setParam(e.target.value)}
+        />
+        <TextBtn endIcon={<Add />}  
+         onClick={() => {
+          const added ={
+            [param]: ''
+          }
+          setState(s => {
+            const updated = {
+              ...s, 
+              parameters: !s.parameters 
+                ? added
+                : {
+                  ...s.parameters,
+                  ...added
+                }
+            }; 
+            return updated
+          });
+          setParam('')
+         }} >Add</TextBtn>
+       </Flex>
+<Divider textAlign="left">Page parameters</Divider>
+         {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex key={paramKey}>
+
+          <Text sx={{width: 80}} small>{paramKey}</Text>
+
+          <TextInput 
+            size="small"
+            value={state.parameters[paramKey]}
+            onChange={e => {
+              setState(s => ({
+                ...s,
+                parameters: {
+                  ...s.parameters,
+                  [paramKey]: e.target.value
+                }
+              }))
+            }}
+            />
+
+            <TinyButton icon={Delete}
+                onClick={e => {
+                  setState(s => {
+                    const obj = {...s};
+                    delete obj.parameters[paramKey] 
+                    alert (JSON.stringify(obj.parameters))
+                    return obj;
+                  })
+                }}
+            />
+
+         </Flex>)}
+
+
+      <Flex sx={{pt: 4}}>
         <Spacer /> 
         <TextBtn endIcon={<Save />} variant="contained" onClick={() => onChange(state)}>Save</TextBtn>
       </Flex>

@@ -6,7 +6,7 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
+const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEvent }) => {
   const [state, setState ] = React.useState({ ...event.action, type: selectedType });
   
   
@@ -20,6 +20,14 @@ const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
     : resources.find(e => e.ID === state.target).name
 
   const resource = resources.find(e => e.ID === state.target);
+
+  const options = !page.state ? [] : page.state.map(d => d.Key);
+  !!page.parameters && Object.keys(page.parameters).map(paramKey => {
+    return options.push(`parameters.${paramKey}`);
+  })
+  !!selectedEvent?.emits && selectedEvent.emits.map(paramKey => {
+    return options.push(`event.${paramKey}`);
+  })
 
  return (
    <Layout data-testid="test-for-DataExec">
@@ -43,11 +51,10 @@ const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
       {!actionReset && !! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
         <QuickSelect 
         free
-        options={page.state?.map(f => f.Key)} 
+        options={options} 
         label={`Set value for ${val.key}`}
         value={state.terms?.[val.key]}
-        onChange={value => {
-          alert(value)
+        onChange={value => { 
           setState(s => ({...s, terms: {
             ...s.terms,
             [val.key]: value
@@ -65,8 +72,8 @@ const DataExec = ({ event, resources, page, handleSave, selectedType }) => {
           action: state
         })}>Save</TextBtn>
       </Flex>
-      
-{/* <pre>{JSON.stringify(resource,0,2)}</pre> 
+     [ <pre>{JSON.stringify(selectedEvent,0,2)}</pre> ]
+{/*
       <pre>{JSON.stringify(state,0,2)}</pre>  */}
    </Layout>
  );

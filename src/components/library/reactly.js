@@ -1,7 +1,8 @@
 import React from 'react';
 import { Paper, styled } from '@mui/material'; 
-import { getStyles, getSettings } from './util';
-import { RepeaterContext } from '../../hooks/AppStateContext';
+import { getStyles, getSettings , fixText} from './util';
+import { RepeaterContext, AppStateContext } from '../../hooks/AppStateContext'; 
+import { PageStateContext } from '../../hooks/usePageContext';
 
 
 const ReactlyComponent = ({ 
@@ -13,7 +14,11 @@ const ReactlyComponent = ({
   ...props 
 }) => {
 
+  const { queryState = {} } = React.useContext(AppStateContext);
   const { row } = React.useContext(RepeaterContext);
+  const { 
+    pageClientState,  
+  } = React.useContext(PageStateContext);
 
   if (row) {
     Object.keys(row).map(item => {
@@ -27,15 +32,22 @@ const ReactlyComponent = ({
 
   const args = getSettings(settings); 
   const style = getStyles(styles) ; 
-
+  const fixed = Object.keys(args)
+    .map(arg => {
+      const val = fixText(args[arg], pageClientState, queryState.params || queryState.page?.parameters);
+      return {
+        arg,
+        val: val || 'arg'
+      }
+    })
+    .reduce((items, prop) => {
+      items[prop.arg] = prop.val || 'what now??'
+      return items
+    }, {})
   
- return <> 
-
-
- <Component {...args} {...props}  style={style} sx={{...props.sx, ...extra}}>
-    {children || args.children}  
+ return  <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}>
+    {children || fixed.children}  
  </Component>
- </>
 } 
 
 export const Faux = styled(Paper)(( {open} ) => ({ 

@@ -5,10 +5,11 @@ import { Lens } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { Icons, renderIconOption } from '../icons';
 import { getSettings } from '../util';
+import ReactlyButton from '../ReactlyButton/ReactlyButton';
   
 const ReactlyComponentFab = ({ children, ...props }) => {
   const args = getSettings(props.settings);
-  const Icon = Icons[args.icon] || Lens;
+  const Icon = Icons[props.icon || args.icon] || Lens;
  return (
    <ReactlyComponent component={Fab} {...props}>
     <Icon />
@@ -27,7 +28,8 @@ const Settings = {
           title: 'Icon',
           label: 'icon' ,
           types: Object.keys(Icons),
-          renderOption: renderIconOption
+          renderOption: renderIconOption,
+          bindable: 1
         }, 
         {
           title: 'Href',
@@ -75,6 +77,7 @@ const ReactlyFab = {
   Icon: Lens,
   Component: ReactlyComponentFab,
   Settings,
+  Events: ReactlyButton.Events,
   Styles: GenericStyles, 
   Defaults: { }
 }

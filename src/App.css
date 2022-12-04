@@ -1,14 +1,15 @@
 body {
   --left-width: 320px;
-  --left-off-width: 60px;
+  --left-off-width: 40px;
   --right-width: 380px;
-  --right-off-width: 60px;
+  --right-off-width: 40px;
   --work-width: calc(100vw - 760px);
-  --work-right-width: calc(100vw - 440px);
-  --work-left-width: calc(100vw - 500px);
-  --work-both-width: calc(100vw - 180px);
+  --work-right-width: calc(100vw - 420px);
+  --work-left-width: calc(100vw - 480px);
+  --work-both-width: calc(100vw - 140px);
   --header-large-height: 320px;
   --scroll-offset: 0;
+ 
 }
 
 .App {

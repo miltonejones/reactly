@@ -12,9 +12,11 @@ const renderOption = (props, option) => {
  
  
 const IconComponentInput = ({ label, value, onChange, ...props}) => {
+  // return <>[{JSON.stringify(label)}]</>
  return (
    <Box {...props}> 
-    <QuickSelect value={value} options={Object.keys(Icons)} onChange={onChange} label={label} renderOption={renderOption}/>
+    <QuickSelect 
+      value={JSON.stringify(value)} options={Object.keys(Icons)} onChange={onChange} label={label} renderOption={renderOption}/>
    </Box>
  );
 }

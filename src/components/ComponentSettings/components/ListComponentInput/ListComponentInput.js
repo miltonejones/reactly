@@ -52,7 +52,8 @@ const ListComponentInput = ({
   const updateListItemText = (ID, value) => {
     const msg = listItems.map(f => f.ID === ID ? {...f, ...value} : f);
     setListItems(msg);
-    handleChange(msg)
+    handleChange(msg);
+    expand(ID)
   }
 
   const addListItem = (text) => {
@@ -84,8 +85,8 @@ const ListComponentInput = ({
 
 
   const instruction = {
-    title: type === 'imagelist' ? 'Add image' : 'Add list item',
-    label: type === 'imagelist' ? 'Enter image URL:' : 'Enter list item text:'
+    title: type === 'imagelist' ? 'Add' : 'Add list item',
+    label: type === 'imagelist' ? 'Enter URL:' : 'Enter list item text:'
   }
  return (
    <Box data-testid="test-for-ListComponentInput"> 
@@ -103,9 +104,10 @@ const ListComponentInput = ({
     }} anchorEl={anchorEl} setAnchorEl={setAnchorEl}/>
 
      <Stack sx={{borderBottom: 1, borderColor: 'divider'}}>
-      {listItems.map(f => <ListOption {...f} 
+      {listItems.map((f, i) => <ListOption {...f} 
       onExpand={expand}
       expanded={expanded.indexOf(f.ID) > -1}
+      index={i}
       onDelete={dropListItem} 
       onUpdate={updateListItemText}
       type={type}
@@ -130,17 +132,19 @@ const ImageOption = props => {
     onExpand, 
     onDelete,
     optionValue,
+    index,
     handleTextChange
     } = props;
   return <>
     <Flex sx={{p: 1, borderBottom: type == 'valuelist' ? 0 : 1, borderColor: 'divider'}} 
         >
-          <Stack>
-
+        
+          <Stack> 
           {expanded && type == 'valuelist' && <Text small>Image Source</Text>}
           {expanded 
-            ?   <TextInput onChange={handleTextChange('src')} size="small" placeholder="Text" value={optionValue.src || optionValue.text} />
-          :  <Typography variant="caption"> {src?.substr(0,35)}...</Typography>}
+            ?   <TextInput onChange={handleTextChange('src')} size="small" 
+            placeholder="Text" value={optionValue.src} />
+          :  <><Typography variant="caption">{index}.  {src?.substr(0,40)}...</Typography></>}
       
 
             {/* <pre>{JSON.stringify(optionValue,0,2)}</pre> */}
@@ -190,7 +194,8 @@ function ListOption (props) {
     expanded, 
     onUpdate, 
     onExpand, 
-    onDelete
+    onDelete,
+    src
     
     } = props;
 
@@ -199,7 +204,8 @@ function ListOption (props) {
     subtext,
     startIcon,
     endIcon,
-    value
+    value,
+    src
   });
 
   const handleTextChange = f => e => {

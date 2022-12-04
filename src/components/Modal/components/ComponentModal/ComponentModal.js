@@ -36,6 +36,7 @@ const ComponentModal = ({ onChange, components = [] }) => {
 
     {Object.keys(Library)
     .sort((a,b) => a > b ? 1 : -1)
+    .filter(f => !Library[f].hidden)
     .map(icon => {
       const Icon = Library[icon].Icon;
       return <Card 
