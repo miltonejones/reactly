@@ -127,9 +127,10 @@ const ReactlyAudioComponent = ({
   return (
    <Box sx={{width: 'fit-content'}} {...props} > 
     <audio {...args} src={src} ref={ref}> 
-    </audio> 
+    </audio>
+         {/* <pre>{JSON.stringify(src,0,2)}</pre>  */}
         {/* <pre>{JSON.stringify(props.selectedIndex,0,2)}</pre>
-       <pre>{JSON.stringify(src,0,2)}</pre> */}
+   */}
       {/* <pre>{JSON.stringify(pageResourceState,0,2)}</pre> */}
    </Box> 
   );
@@ -157,11 +158,6 @@ const Settings = {
           label: 'controls',
           type: 'boolean' 
         },  
-        {
-          title: 'Selected Track',
-          label: 'selectedIndex',
-          bindable:  !0
-        } ,
       ]
     }, 
 
@@ -176,9 +172,15 @@ const Settings = {
       ]
     }, 
 
+    
     {
       name: 'Playlist',  
       settings: [  
+        {
+          title: 'Selected Track',
+          label: 'selectedIndex',
+          bindable:  !0
+        } ,
         {
           title: 'Audio Base URL',
           label: 'url',  

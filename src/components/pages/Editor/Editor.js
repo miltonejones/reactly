@@ -31,13 +31,17 @@ import {
   PageTree,
   ComponentTree,
   ConnectionDrawer,
-  SearchBox, Text
+  PopoverPrompt,
+  SearchBox, 
+  LibraryTree,
+  Text
 } from "../..";
 import {
   ExpandMore,
   Close,
   Launch,
   Save,
+  CopyAll,
   Sync,
   Add,
   Home,
@@ -142,7 +146,7 @@ export const useResourceEdit = (apps) => {
   const appData = applications.find((f) => f.path === appname);
 
   const handleEventChange = (componentID, event) => {
-    setComponentEvent(appData.ID, queryState.page.ID, componentID, event);
+    setComponentEvent(appData.ID, queryState.page?.ID, componentID, event);
   };
 
   const handledEventDelete = async (componentID, eventID) => {
@@ -151,7 +155,7 @@ export const useResourceEdit = (apps) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropComponentEvent(appData.ID, queryState.page.ID, componentID, eventID);
+    dropComponentEvent(appData.ID, queryState.page?.ID, componentID, eventID);
   };
 
   return {
@@ -207,6 +211,7 @@ const Editor = ({ applications: apps = {} }) => {
   });
 
   const [json, setJSON] = React.useState(false);
+  const [showLib, setShowLib] = React.useState(false);
   const [contentFilter, setContentFilter] = React.useState('');
 
   const { stateOpen, scriptOpen, connectOpen } = drawerState;
@@ -236,9 +241,18 @@ const Editor = ({ applications: apps = {} }) => {
     setDirty,
   } = React.useContext(AppStateContext);
 
-  const [popoverContent,  setPopoverContent] = React.useState(null)
+  const [popoverContent,  setPopoverContent] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  const handlePopoverClick = (content) => (event) => {
+    setPopoverContent(content)
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null); 
+  };
 
   const componentTreeProps = {
 
@@ -251,18 +265,12 @@ const Editor = ({ applications: apps = {} }) => {
  
   }
 
-  const handlePopoverClick = (content) => (event) => {
-    setPopoverContent(content)
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handlePopoverClose = () => {
-    setAnchorEl(null); 
-  };
   if (!applications.find) {
     return <>error</>;
   }
   const appData = applications.find((f) => f.path === appname);
+
+  const componentParent = queryState.page || appData;
 
   const path = ["apps", appData.path].concat(
     !queryState.page?.PagePath ? [] : queryState.page.PagePath
@@ -271,7 +279,7 @@ const Editor = ({ applications: apps = {} }) => {
   const handleStyleChange = (componentID, label, value) => {
     setComponentStyle(
       appData.ID,
-      queryState.page.ID,
+      queryState.page?.ID,
       componentID,
       label,
       value
@@ -280,7 +288,7 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleSettingsChange = (componentID, label, value) => {
   // alert(JSON.stringify({label, value}, 0, 2))
-    setComponentProp(appData.ID, queryState.page.ID, componentID, label, value);
+    setComponentProp(appData.ID, queryState.page?.ID, componentID, label, value);
   };
   const handleNameChange = async (componentID, old) => {
     const name = await Prompt(
@@ -289,23 +297,39 @@ const Editor = ({ applications: apps = {} }) => {
       old
     );
     if (!name) return;
-    setComponentName(appData.ID, queryState.page.ID, componentID, name);
+    setComponentName(appData.ID, queryState.page?.ID, componentID, name);
   };
 
   const handleStateChange = (stateID, label, value, type) => { 
-    label?.split(',').map(e => setPageState(appData.ID, queryState.page.ID, stateID, e, value, type))
+    const update =  {}
+ 
+    label?.split(',').map(key => {
+      setPageState(appData.ID, queryState.page?.ID, stateID, key, value, type, pg => {
+        setQueryState(s => ({
+          ...s,
+          page: pg
+        }))
+      });
+      Object.assign(update, {[key]: value});
+    })
+    setPageClientState(s => ({
+      ...s, 
+      ...update
+    }))
     ;
   };
 
-  const handleScriptChange = (scriptID, name, code) => {
-    setPageScript(appData.ID, queryState.page.ID, scriptID, name, code);
+  const handleScriptChange = async (scriptID, name, code, fn) => {
+    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script');
+    if (!scriptName) return;
+    setPageScript(appData.ID, queryState.page?.ID, scriptID, scriptName, code, fn);
   };
 
   const handlePropChange = (props, state) => {
     if (state) {
-      return setPageEvent(appData.ID, queryState.page.ID, state); //alert (JSON.stringify(state))
+      return setPageEvent(appData.ID, queryState.page?.ID, state); //alert (JSON.stringify(state))
     }
-    setPageProps(appData.ID, queryState.page.ID, props);
+    setPageProps(appData.ID, queryState.page?.ID, props);
   };
 
   const handleEventChange = (componentID, event, type) => {
@@ -313,7 +337,7 @@ const Editor = ({ applications: apps = {} }) => {
       ? setResourceEvent
       : setComponentEvent
       // alert (command.toString())
-      command(appData.ID, queryState.page.ID, componentID, event);
+      command(appData.ID, queryState.page?.ID, componentID, event);
   };
 
   const handledEventDelete = async (componentID, eventID, type) => {
@@ -325,7 +349,7 @@ const Editor = ({ applications: apps = {} }) => {
       "Confirm delete"
     );
     if (!ok) return;
-    command(appData.ID, queryState.page.ID, componentID, eventID);
+    command(appData.ID, queryState.page?.ID, componentID, eventID);
   };
 
   const handleThemeChange = async (themeID, themeName, theme) => {
@@ -335,21 +359,21 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handleStateDrop = (stateID) => {
-    dropPageState(appData.ID, queryState.page.ID, stateID);
+    dropPageState(appData.ID, queryState.page?.ID, stateID);
   };
 
   const handleMove = (componentID, parentID) => {
-    setComponentParent(appData.ID, queryState.page.ID, componentID, parentID);
+    setComponentParent(appData.ID, queryState.page?.ID, componentID, parentID);
   };
 
   const handleCustomName = async (componentID) => {
     const customName = await Prompt('Enter name for custom component', 'Name component');
     if (!customName) return 
-    setComponentCustomName(appData.ID, queryState.page.ID, componentID, customName);
+    setComponentCustomName(appData.ID, queryState.page?.ID, componentID, customName);
   }
 
-  const createPage = async (pageID) => {
-    const PageName = await Prompt('Enter a name for your page', 'Create Page');
+  const createPage = async (pageID, pageName) => {
+    const PageName = pageName || await Prompt('Enter a name for your page', 'Create Page');
     if (!PageName) return;
     const page = {
       PageName,
@@ -357,14 +381,16 @@ const Editor = ({ applications: apps = {} }) => {
       pageID,
       components: [],
     }
-    setPage(appData.ID, page);
+    setPage(appData.ID, page, pg => { 
+      setQueryState((s) => ({
+        ...s,
+        page: pg,
+        pageLoaded: false
+      }))
+    });
   }
 
   const menuOptions = [
-    {
-      name: "Show Components",
-      action: CreateComponent,
-    },
     {
       name: collapsed.left ? "Show Navigation Panel" : "Hide Navigation Panel",
       action: () => setCollapsed((s) => ({ ...s, left: !s.left })),
@@ -372,9 +398,16 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: collapsed.right ? "Show Settings Panel" : "Hide Settings Panel",
       action: () => setCollapsed((s) => ({ ...s, right: !s.right })),
-    },
+    }, 
     {
       name: "-",
+    },
+    {
+      name: `${showLib ? 'Hide' : 'Show'} Library`,
+      action: () => {
+        setShowLib(!showLib);
+        setCollapsed((s) => ({ ...s, left: !showLib, right: !showLib }))
+      },
     },
     {
       name: "Show client state",
@@ -396,7 +429,7 @@ const Editor = ({ applications: apps = {} }) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropPageScript(appData.ID, queryState.page.ID, scriptID);
+    dropPageScript(appData.ID, queryState.page?.ID, scriptID);
   };
 
   const handlePageDelete = async (pageID) => {
@@ -410,16 +443,16 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleDropComponent = async (componentID) => {
     const ok = await Confirm(
-      "Are you sure you want to delete this component?",
+      "Are you sure you want to delete this component?" + componentID,
       "Confirm delete"
     );
     if (!ok) return;
-    dropComponent(appData.ID, queryState.page.ID, componentID);
+    dropComponent(appData.ID, queryState.page?.ID, componentID);
   };
 
   const quickComponent = async (selected, componentID) => {
     const max =
-      queryState.page.components.filter((f) => f.ComponentType === selected)
+      (componentParent.components || []).filter((f) => f.ComponentType === selected)
         .length + 1;
     const name = `${selected}-${max}`;
     return appendComponent({
@@ -441,12 +474,14 @@ const Editor = ({ applications: apps = {} }) => {
       scripts: [],
       data: [],
     };
-   const res = addComponent(appData.ID, queryState.page.ID, component, options);
-  //  alert (JSON.stringify(res))
+   const res = addComponent(appData.ID, queryState.page?.ID, component, {...options, 
+    fn: (comp) => {
+      setQueryState(s => ({...s, selectedComponent: comp}));
+    }}); 
   };
 
   const createComponent = async (componentID, options) => {
-    const ok = await CreateComponent(queryState.page.components);
+    const ok = await CreateComponent(componentParent.components);
     if (!ok) return;
     appendComponent(ok, componentID, options);
   };
@@ -484,7 +519,7 @@ const Editor = ({ applications: apps = {} }) => {
     onCustomName={handleCustomName}
     quickComponent={quickComponent}
     onCreate={(type, options) => createComponent(type, options)}
-    tree={queryState.page?.components}
+    tree={componentParent?.components}
   />
 
   return (
@@ -508,7 +543,7 @@ const Editor = ({ applications: apps = {} }) => {
           </Box>
 
           <Stack>
-            {!!queryState.page && <>
+            {!!componentParent && <>
                         <IconButton
               color="inherit"
               sx={{ mt: 1 }}
@@ -572,7 +607,11 @@ const Editor = ({ applications: apps = {} }) => {
                 />
               </Flex>
 
-              <Addressbox value={`/${path.join("/")}`} />
+              <Addressbox value={`/${path.join("/")}`}  
+                queryState={queryState}
+                setQueryState={setQueryState}
+                selectedPage={queryState.page}
+              />
 
               <FormControlLabel
                 sx={{ m: 1 }}
@@ -585,6 +624,18 @@ const Editor = ({ applications: apps = {} }) => {
                   />
                 }
               />
+              <TextBtn
+                variant="contained"
+                endIcon={<CopyAll />}
+                disabled={!dirty}
+                sx={{ cursor: !copied ? "pointer !important" : "progress" }}
+                onClick={() => {
+                  copy(JSON.stringify(applications, 0, 2));
+                  setDirty(false);
+                }}
+              >
+                Copy
+              </TextBtn>
               <IconButton
                 sx={{ border: 1, borderColor: "divider" }}
                 size="small"
@@ -597,18 +648,6 @@ const Editor = ({ applications: apps = {} }) => {
               >
                 <Sync />
               </IconButton>
-              <TextBtn
-                variant="contained"
-                endIcon={<Save />}
-                disabled={!dirty}
-                sx={{ cursor: !copied ? "pointer !important" : "progress" }}
-                onClick={() => {
-                  copy(JSON.stringify(applications, 0, 2));
-                  setDirty(false);
-                }}
-              >
-                Save
-              </TextBtn>
             </Flex>
           </Pane>
           <Pane
@@ -639,8 +678,10 @@ const Editor = ({ applications: apps = {} }) => {
                       }}
                     />
 
-                    <Spacer />
-                    <TextBtn endIcon={<Add />} onClick={() => createPage()}>Create</TextBtn>
+                    <Spacer /> 
+                    <PopoverPrompt 
+                    onChange={(value) => !!value && createPage(null, value)}
+                      label="Enter a name for your page" endIcon={<Add />} >Create</PopoverPrompt>
                   </>
                 )}
 
@@ -698,7 +739,7 @@ const Editor = ({ applications: apps = {} }) => {
                 <Divider />
 
                 <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
-                  {!!queryState.page && (
+                  {!!componentParent && (
                     <Flex spacing={1}>
                       <Flex fullWidth>
                         <Text small>
@@ -718,7 +759,7 @@ const Editor = ({ applications: apps = {} }) => {
                       </Flex>
                     </Flex>
                   )}
-                  {!!queryState.page?.components && <>
+                  {!!componentParent?.components && <>
                   
                   <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
                       sx={{mb: 1}} value={contentFilter} />
@@ -734,12 +775,16 @@ const Editor = ({ applications: apps = {} }) => {
        
             state={center_state}
             side="work">
-            <Collapse in={json}>
-            {!!json &&  <JsonView json={appData}/>}
-              {/* <Json>{JSON.stringify(appData, 0, 2)}</Json> */}
+
+            <Collapse in={showLib && !json}>
+             {!!showLib && <LibraryTree />}
+            </Collapse>
+
+            <Collapse in={json && !showLib}>
+              {!!json &&  <JsonView json={appData}/>} 
             </Collapse>
  
-            <Collapse in={!json}>
+            <Collapse in={!json && !showLib}>
               <ComponentTree
                  
                 {...componentTreeProps}
@@ -750,6 +795,7 @@ const Editor = ({ applications: apps = {} }) => {
                 setLoaded={setLoaded}
                 preview
                 selectedPage={queryState.page}
+
               />
             </Collapse>
           </Pane>
@@ -759,7 +805,7 @@ const Editor = ({ applications: apps = {} }) => {
             state={collapsed.right ? "-off" : ""}
             sx={{ borderLeft: 1, borderColor: "divider" }}
           >
-            {!!queryState.page && (
+            {!!componentParent && (
               <ComponentPanel
                 onCollapse={() =>
                   setCollapsed((s) => ({ ...s, right: !collapsed.right }))
@@ -767,6 +813,7 @@ const Editor = ({ applications: apps = {} }) => {
                 connections={appData.connections}
                 resources={appData.resources}
                 themes={appData.themes}
+                application={appData}
                 onMove={handleMove}
                 collapsed={collapsed.right}
                 selectedPage={queryState.page}
@@ -784,7 +831,8 @@ const Editor = ({ applications: apps = {} }) => {
       </Flex>
 
       <ScriptDrawer
-        scripts={queryState.page?.scripts}
+        scripts={componentParent?.scripts}
+        application={appData}
         handleDrop={handleDropScript}
         handleChange={handleScriptChange}
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
@@ -816,7 +864,7 @@ const Editor = ({ applications: apps = {} }) => {
         handleDrop={handleStateDrop}
         handleChange={handleStateChange}
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
-        state={queryState.page?.state}
+        state={componentParent?.state}
         open={stateOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, stateOpen: false }));
@@ -826,7 +874,33 @@ const Editor = ({ applications: apps = {} }) => {
   );
 };
 
-export const Addressbox = ({ value, onChange, onClose, ...props }) => {
+export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState, selectedPage, ...props }) => { 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handlePopoverClick =  (event) => {  
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => { 
+    setAnchorEl(null); 
+  };
+
+  const handleButtonClick = (event) => {
+    if (selectedPage.parameters && 
+        Object.keys(selectedPage.parameters).length) {
+      return handlePopoverClick(event);
+    }
+    window.open(value)
+  }
+
+
+  const openPage = () => {
+    const path = [value, Object.values(selectedPage?.parameters).join('/')].join('/'); 
+    window.open(path)
+    handlePopoverClose ()
+  }
+
   const startAdornment = <InputAdornment position="start">URL</InputAdornment>;
 
   const adornment = {
@@ -834,7 +908,7 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
     endAdornment: (
       <InputAdornment
         sx={{ cursor: "pointer" }}
-        onClick={() => window.open(value)}
+        onClick={handleButtonClick}
         position="end"
       >
         <Launch />
@@ -844,7 +918,9 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
   };
 
   return (
-    <TextField
+   <>
+ 
+   <TextField
       size="small"
       disabled
       {...props}
@@ -855,6 +931,53 @@ export const Addressbox = ({ value, onChange, onClose, ...props }) => {
       InputProps={adornment}
       autoFocus
     />
+    
+  {!!selectedPage?.parameters && <Popover 
+      open={open}
+      anchorEl={anchorEl}
+      onClose={handlePopoverClose} 
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+    >
+     <Box sx={{width: 300, p: 2}}>
+      <Text small><b>Set page parameters</b></Text>
+     </Box>
+      <Divider />
+     <Box sx={{width: 300, p: 2}}>
+      {Object.keys(selectedPage?.parameters).map(param => <Flex sx={{mt: 1}}>
+        {param} <TextInput 
+            size="small"
+            onChange={e => {
+              setQueryState(s => ({
+                ...s,
+                page: {
+                  ...s.page,
+                  parameters: {
+                    ...s.page.parameters,
+                    [param]: e.target.value 
+                  }
+                }
+              }))
+            }}
+            value={selectedPage?.parameters[param]} />
+      </Flex>)}
+
+      <Flex sx={{mt: 1}}>
+        <Spacer />
+        <TextBtn
+          onClick={openPage}
+          variant="outlined"
+          startIcon={<Launch />}
+        >Open</TextBtn>
+      </Flex>
+     </Box>
+
+    </Popover>}
+
+    
+    </> 
   );
 };
 

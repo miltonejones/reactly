@@ -128,10 +128,7 @@ const ThemePanel = ({ onThemeChange, themes = [] }) => {
        }}
         >save</TextBtn>
     </Flex>
- 
-     {/* <pre>
-      {JSON.stringify(theme.shadows,0,2)}
-      </pre> */}
+  
    </Layout>
  );
 }

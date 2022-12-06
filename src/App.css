@@ -12,6 +12,19 @@ body {
  
 }
 
+.javascript {
+  font-size: 0.95rem;
+  line-height: 1.2;
+  height: 300px;
+  transition: all 0.2s linear;
+  overflow: scroll;
+  border: solid 1px gray;
+}
+
+.javascript.big {
+  height: 75vh;
+}
+
 .App {
   text-align: center;
 }
@@ -23,7 +36,7 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+    animation: App-logo-spin infinite 2s linear;
   }
 }
 

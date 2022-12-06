@@ -146,8 +146,7 @@ const ImageOption = props => {
             placeholder="Text" value={optionValue.src} />
           :  <><Typography variant="caption">{index}.  {src?.substr(0,40)}...</Typography></>}
       
-
-            {/* <pre>{JSON.stringify(optionValue,0,2)}</pre> */}
+ 
           </Stack>
         
 

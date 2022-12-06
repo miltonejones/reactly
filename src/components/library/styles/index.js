@@ -171,6 +171,15 @@ export const GenericStyles =  {
       ]
     },
     {
+      name: 'Cursor',
+      styles: [
+        { 
+          label: 'cursor',
+          types: ['pointer', 'default', 'progress'], 
+        }
+      ]
+    },
+    {
       name: 'Padding',
       styles: [
         { 
@@ -191,6 +200,26 @@ export const GenericStyles =  {
           renderOption,
           edges: !0,
           free: !0
+        }
+      ]
+    },
+    {
+      name: 'White Space',
+      styles: [
+        { 
+          title: 'white-space',
+          label: 'white-space',
+          types: ['nowrap', 'break-space', 'pre', 'pre-line', 'pre-wrap', 'inherit']  
+        },
+        { 
+          title: 'text-overflow',
+          label: 'text-overflow',
+          types: ['clip', 'ellipsis', 'inherit']  
+        },
+        { 
+          title: 'overflow',
+          label: 'overflow',
+          types: ['auto', 'hidden', 'overlay', 'scroll' ]  
         }
       ]
     },
@@ -348,6 +377,7 @@ export const LayoutStyles = {
         {
           title: 'Rows',
           label: 'grid-template-rows',   
+          types: [1,2,3,4,5,6,7,8,9,10,11,12],
           when: e => e.display === 'grid',
           render: (value) => {
             const fr = [];
@@ -355,15 +385,14 @@ export const LayoutStyles = {
               fr.push('1fr');
             }
             return fr.join(' ')
-          },
-          xs: 6
+          }, 
         },
 
         {
           title: 'Columns',
           label: 'grid-template-columns',   
-          when: e => e.display === 'grid',
-          xs: 6
+          when: e => e.display === 'grid', 
+          types: [1,2,3,4,5,6,7,8,9,10,11,12], 
         },
 
         {

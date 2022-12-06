@@ -16,9 +16,7 @@ const ReactlyComponentChip = ({ children, ...props }) => {
 
  return (
   <>
- <pre>
  
- </pre>
    <ReactlyComponent component={Chip} {...props} {...icons} >
       {children}
    </ReactlyComponent>
@@ -31,7 +29,7 @@ export const Events =  [
   {
     name: 'onClick',
     title: 'Component is clicked',
-    description: 'User clicks on component or focuses and presses SPAACE.'
+    description: 'User clicks on component or focuses and presses SPACE.'
   },
   {
     name: 'onDelete',

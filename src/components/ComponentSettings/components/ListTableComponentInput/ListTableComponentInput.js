@@ -137,14 +137,7 @@ const ListTableComponentInput = ({
  return (
    <Layout data-testid="test-for-ListTableComponentInput"> 
    
-{/* <pre>
-{JSON.stringify(test,0,2)}
-</pre>
-  */}
-{/* <pre>
-{JSON.stringify(colnames,0,2)}
-{JSON.stringify(state.bindings,0,2)}
-</pre> */}
+ 
  
       {header}
 

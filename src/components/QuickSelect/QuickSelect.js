@@ -29,6 +29,10 @@ export const QuickSelect = ({
     setFilterText('')
   };
 
+  if (!(options && options.filter)) {
+    return <>{ options}</>
+  }
+
   const selections = options
   .filter(f => !filterText || f.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
 
@@ -45,7 +49,7 @@ export const QuickSelect = ({
     onChange={handleChange} 
     {...props}
      freeSolo={free}
-    sx={{...props.sx, mr: 1, minWidth: small ? 120 : 220}}
+    sx={{...props.sx, mr: 1, minWidth: small ? 120 : 'inherit'}}
     renderInput={(params) => <TextInput {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
  />
   </>

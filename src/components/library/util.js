@@ -146,9 +146,40 @@ export const fixText = (str, options, parameters) => {
     let prop;  
     if (match[1].indexOf('parameters.') === 0) {
       const [name, key] = match[1].split('.');
-      prop = parameters[key];
+      prop = !parameters ? 'unknown' : parameters[key];
     } else prop = options[match[1]]
     return out = out.replace(match[0], prop)
   }) 
   return out;
+}
+
+
+export const getParams = (state, page, route) => { 
+  const params = {};
+  const vals = route['*'];
+
+  // console.log ({state, route}, page?.parameters)
+
+  if (vals && page?.parameters) {
+
+    const ps = vals.split('/')
+    Object.keys(page.parameters).map((p, i) =>{
+      params[p] = ps[i]
+      // console.log ({p})
+    } )
+  
+    if (params) { 
+      return params;
+    }
+  
+  }
+ 
+  if (state.params) { 
+    return state.params;
+  }
+ 
+  return {}; //page.parameters
+
+
+  
 }

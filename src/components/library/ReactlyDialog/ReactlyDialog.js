@@ -39,10 +39,7 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
         open={open || componentEditing || childOpen} 
         {...rest}
         >
-      {children}
-      {/* <pre>  
-      {JSON.stringify(props,0,2)}
-      </pre> */}
+      {children} 
    </ReactlyComponent>
  );
 }

@@ -3,6 +3,7 @@ import { styled, Box, Typography, Divider } from '@mui/material';
 import { EditorStateContext } from '../../../../hooks/AppStateContext';
 import { QuickSelect, Flex, Spacer, TextBtn } from '../../..';
 import { getPropertyOptions } from '../../util';
+import { JsonModal } from '../../../../colorize';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -10,7 +11,7 @@ const Layout = styled(Box)(({ theme }) => ({
  
 const OpenLink = ({ event , page, handleSave, selectedEvent }) => {
   const { appData  } = React.useContext(EditorStateContext);
-  const [state, setState ] = React.useState({ ...event.action, type: 'openLink', params: {} });
+  const [state, setState ] = React.useState({ ...event.action, type: 'openLink' });
 
   const { pages } = appData;
   const target = !event.action 
@@ -38,7 +39,7 @@ const OpenLink = ({ event , page, handleSave, selectedEvent }) => {
 
 
 
-<Typography>Open Link:</Typography> 
+<Typography> <JsonModal json={state} sx={{mr: 1}}/>Open Link:</Typography>
 
     <QuickSelect options={pages.map(d => d.PageName)} value={found?.PageName} 
       onChange={value => setState(s => ({
@@ -65,10 +66,7 @@ const OpenLink = ({ event , page, handleSave, selectedEvent }) => {
     </Box>) }
     </> }
 
-
-<pre>
-[{JSON.stringify(state,0,2)}]
-</pre>
+ 
 
     <Flex sx={{mt: 2}}>
         <Spacer />

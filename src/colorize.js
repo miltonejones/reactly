@@ -1,11 +1,23 @@
 import React from "react";
 import { SketchPicker } from 'react-color';
-import { Text, TinyButton, TabButton, Flex, QuickMenu } from './components';
+import { Text, TinyButton, TabButton, Flex, QuickMenu, Tooltag } from './components';
 import { Collapse, Tabs, Divider, Box, Link, Popover } from '@mui/material';
+import Modal, { useModal } from "./components/Modal/Modal";
 import {
-  Add, Remove , RadioButtonUnchecked
+  Add, Remove , RadioButtonUnchecked, Info
 } from "@mui/icons-material";
 import { TextInput } from "./components";
+
+
+export const JsonModal = ({ json, ...props }) => {
+  const modal = useModal();
+  return <>
+  <Tooltag component={TinyButton} title="View JSON" {...props} icon={Info} onClick={() => modal.Alert(
+  <JsonView json={json} initial={0}/>, 'JSON view')} />
+  <Modal {...modal.modalProps}/>
+  </>
+}
+
 
 const Icon = ({ on }) => <TinyButton icon={on ? Remove : Add}  deg={!on ? 0 : 180} />
 
@@ -31,8 +43,8 @@ function syntaxHighlight(json, css) {
   }).replace(css ? /"/g : '', '');
 }
 
-const JsonView = ({ json }) => {
-  const [index, setIndex] = React.useState(1);
+const JsonView = ({ json, initial = 1 }) => {
+  const [index, setIndex] = React.useState(initial);
   const handleChange = (event, newValue) => {
     setIndex(newValue);
   };
@@ -83,6 +95,7 @@ const JsonTree = ({onChange, ...props}) => {
   };
 
   const handleChange = (color) => {
+    if (!color) return;
     setHue(color);
     onChange && onChange(dots, color);
   }
@@ -133,7 +146,7 @@ const JsonLinkorOptions = (props) => {
   return <JsonLink {...props}>{children}</JsonLink>
 }
 
-const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, indent = 0, handlePopoverClick }) => {
+const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, indent = 2, handlePopoverClick }) => {
 
 
   const [expanded, setExpanded] = React.useState([])

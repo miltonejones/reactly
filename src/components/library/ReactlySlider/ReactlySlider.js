@@ -6,9 +6,7 @@ import ReactlyComponent from '../reactly';
   
 const ReactlyComponentSlider = ({ children, onSliderChange, ...props }) => {
  return (<>
- {/* <pre>
-  {JSON.stringify(props,0,2)}
- </pre> */}
+ 
  <ReactlyComponent component={Slider} {...props}
     onChange={(e, value) => {
       onSliderChange && onSliderChange(e, {

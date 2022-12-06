@@ -14,14 +14,12 @@ const ChildComponent = ({ component, children  }) => {
   const { attachEventHandlers } = usePageContext();
   const eventMap = attachEventHandlers(component);
 
-  return <> 
-   <Component 
+  return   <Component 
     {...component}
     {...eventMap}
     >
       {children}
-  </Component>
-  </>
+  </Component> 
 }
 
 
@@ -30,11 +28,8 @@ const ReactlyComponentToggleButtonGroup = ({ children, onButtonClick, ...props }
   const { page } = queryState;
   const offspring = page?.components?.filter(f => f.componentID === props.ID)
  return (
-  <>
-{/* <pre>
-  {JSON.stringify(offspring, 0, 2)}
-</pre>
- {props.onClick?.toString()} */}
+  
+ 
    <ReactlyComponent component={ToggleButtonGroup} {...props} onChange={(e, n )=> {
     alert (n)
     onButtonClick && onButtonClick(e, {
@@ -43,7 +38,7 @@ const ReactlyComponentToggleButtonGroup = ({ children, onButtonClick, ...props }
    }}>
       {offspring?.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
    </ReactlyComponent>
-  </>
+ 
  );
 }
 

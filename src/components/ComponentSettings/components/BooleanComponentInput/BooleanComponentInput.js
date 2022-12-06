@@ -17,10 +17,7 @@ const BooleanComponentInput = ({
 
   return <Flex onClick={() => handleChange(!checked)}>
     {header} 
-    {/* [[{binding?.toString()}]]
-    <pre>
-    [[{JSON.stringify(bindingValue,0,2)}]]
-    </pre> */}
+ 
   <Spacer />
     <Box> 
       <Switch  size="small" checked={checked} /> 

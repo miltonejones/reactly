@@ -1,4 +1,4 @@
-export const AppData = [
+export const AppData =[
   {
     "Name": "Demo Application",
     "path": "demo-application",
@@ -2459,7 +2459,7 @@ export const AppData = [
             "settings": [
               {
                 "SettingName": "images",
-                "SettingValue": "[{\"ID\":1,\"text\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg\",\"value\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg\",\"src\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":2,\"text\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/b8/bc/bb/b8bcbbf6-7f86-1329-e302-f195388a3483/source/1200x630sr.jpg\",\"value\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/b8/bc/bb/b8bcbbf6-7f86-1329-e302-f195388a3483/source/1200x630sr.jpg\",\"src\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/b8/bc/bb/b8bcbbf6-7f86-1329-e302-f195388a3483/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":3,\"text\":\"https://is1-ssl.mzstatic.com/image/thumb/Music/v4/eb/5f/86/eb5f86d4-0ec7-3330-2e51-d6017f0ce4ba/source/1200x630sr.jpg\",\"value\":\"https://is1-ssl.mzstatic.com/image/thumb/Music/v4/eb/5f/86/eb5f86d4-0ec7-3330-2e51-d6017f0ce4ba/source/1200x630sr.jpg\",\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music/v4/eb/5f/86/eb5f86d4-0ec7-3330-2e51-d6017f0ce4ba/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":4,\"text\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg\",\"value\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg\",\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":5,\"text\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg\",\"value\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg\",\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":6,\"text\":\"https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg\",\"value\":\"https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg\",\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":7,\"src\":\"https://is4-ssl.mzstatic.com/image/thumb/Music114/v4/f7/e7/f2/f7e7f25a-1e4d-7a10-cdc8-f5a2f0ac31d6/pr_source.png/1200x630cw.png\"},{\"ID\":8,\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music6/v4/cb/c5/f8/cbc5f8fc-fd7f-fda1-0416-fd4672cd924d/source/1200x630sr.jpg\"},{\"ID\":9,\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music4/v4/2e/d8/02/2ed8027a-7f78-4d2c-41e7-c18a85ea46f0/source/1200x630sr.jpg\"},{\"ID\":10,\"src\":\"https://is4-ssl.mzstatic.com/image/thumb/Music111/v4/cb/44/9a/cb449aab-5d52-2201-edf4-0a6486b04126/source/1200x630cw.png\"}]"
+                "SettingValue": "[{\"ID\":1,\"text\":\"Babymetal\",\"value\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg\",\"src\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":2,\"text\":\"James Brown\",\"value\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/b8/bc/bb/b8bcbbf6-7f86-1329-e302-f195388a3483/source/1200x630sr.jpg\",\"src\":\"https://is5-ssl.mzstatic.com/image/thumb/Music/v4/b8/bc/bb/b8bcbbf6-7f86-1329-e302-f195388a3483/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":3,\"text\":\"Peter Gabriel\",\"value\":\"https://is1-ssl.mzstatic.com/image/thumb/Music/v4/eb/5f/86/eb5f86d4-0ec7-3330-2e51-d6017f0ce4ba/source/1200x630sr.jpg\",\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music/v4/eb/5f/86/eb5f86d4-0ec7-3330-2e51-d6017f0ce4ba/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":4,\"text\":\"Sade\",\"value\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg\",\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/9b/b6/ac/9bb6ac34-2ed4-e3d6-b32d-3c1b3e111c19/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":5,\"text\":\"Pat Benatar\",\"value\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg\",\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music/v4/29/c2/eb/29c2ebac-dd71-447c-1fcc-d179d4a06815/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":6,\"text\":\"Parliament\",\"value\":\"https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg\",\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music71/v4/19/60/91/19609166-bd55-fdc3-b121-a1cdb6e7aea8/source/1200x630sr.jpg\",\"startIcon\":null,\"endIcon\":null,\"subtext\":null},{\"ID\":7,\"src\":\"https://is4-ssl.mzstatic.com/image/thumb/Music114/v4/f7/e7/f2/f7e7f25a-1e4d-7a10-cdc8-f5a2f0ac31d6/pr_source.png/1200x630cw.png\"},{\"ID\":8,\"src\":\"https://is2-ssl.mzstatic.com/image/thumb/Music6/v4/cb/c5/f8/cbc5f8fc-fd7f-fda1-0416-fd4672cd924d/source/1200x630sr.jpg\",\"text\":\"Tupac\"},{\"ID\":9,\"src\":\"https://is1-ssl.mzstatic.com/image/thumb/Music4/v4/2e/d8/02/2ed8027a-7f78-4d2c-41e7-c18a85ea46f0/source/1200x630sr.jpg\",\"text\":\"Eminem\"},{\"ID\":10,\"src\":\"https://is4-ssl.mzstatic.com/image/thumb/Music111/v4/cb/44/9a/cb449aab-5d52-2201-edf4-0a6486b04126/source/1200x630cw.png\",\"text\":\"Joyner Lucas\"}]"
               }
             ],
             "scripts": [],
@@ -2896,6 +2896,120 @@ export const AppData = [
             "ID": 36,
             "order": 2325,
             "boundProps": []
+          },
+          {
+            "ComponentType": "ToggleButtons",
+            "ComponentName": "ToggleButtons-1",
+            "componentID": 1,
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 10
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              },
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              },
+              {
+                "SettingName": "orientation",
+                "SettingValue": "horizontal"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "grid"
+              },
+              {
+                "SettingName": "exclusive",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "fullWidth",
+                "SettingValue": false
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7o9wvxhymk70muvsn",
+            "order": 2600,
+            "boundProps": [
+              {
+                "boundTo": "menu_value",
+                "attribute": "value"
+              }
+            ]
+          },
+          {
+            "ComponentType": "ToggleButton",
+            "ComponentName": "ToggleButton-1",
+            "componentID": "lb7o9wvxhymk70muvsn",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "use_icon",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "icon",
+                "SettingValue": "FormatListBulleted"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "View as list"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7ooofzx4p4015huz8",
+            "order": 2700
+          },
+          {
+            "ComponentType": "ToggleButton",
+            "ComponentName": "ToggleButton-2",
+            "componentID": "lb7o9wvxhymk70muvsn",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "use_icon",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "icon",
+                "SettingValue": "TableView"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "View as grid"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7oosb4iadtwc8f73",
+            "order": 2800
           }
         ],
         "ID": 3,
@@ -2997,6 +3111,16 @@ export const AppData = [
             "name": "sidebar navigate",
             "code": "function sidebarNavigate (page, options) {\n  const { state, setState, data, api } = options;  \n  const paths = ['boombot', 'advanced-search','library']\n  api.openPath(paths[data.row]);\n}\n",
             "ID": 8
+          },
+          {
+            "name": "test data",
+            "code": "function testData (page, options) {\n  const { state, setState , api, data} = options; \n  api.Alert(JSON.stringify(data));\n}\n",
+            "ID": 9
+          },
+          {
+            "name": "button group click",
+            "code": "function buttonGroupClick (page, options) {\n  const { state, setState } = options; \n  console.log ({options})\n}\n",
+            "ID": 10
           }
         ],
         "ThemeName": "plain",
@@ -3803,9 +3927,489 @@ export const AppData = [
         "PagePath": "advanced-search",
         "appID": 1,
         "pageID": 3,
-        "components": [],
+        "components": [
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "DataGrid-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onRowClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 1
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":2,\"bindings\":{\"Title\":\"Title\",\"discNumber\":\"Disc\",\"Genre\":\"Genre\",\"trackNumber\":\"Track\",\"artistName\":\"Artist\"}}"
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "55"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": 2,
+            "order": 200,
+            "boundProps": [
+              {
+                "boundTo": "selected_index",
+                "attribute": "selectedIndex"
+              }
+            ]
+          },
+          {
+            "ComponentType": "AudioPlayer",
+            "ComponentName": "aux",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onProgress",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 2
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "modalOpen",
+                  "target": 5,
+                  "open": true
+                },
+                "ID": 2
+              },
+              {
+                "event": "onPlayerStop",
+                "action": {
+                  "type": "modalOpen",
+                  "target": 5,
+                  "open": false
+                },
+                "ID": 3
+              },
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 4
+                },
+                "ID": 4
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "controls",
+                "SettingValue": false
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": 3,
+            "order": 300,
+            "boundProps": [
+              {
+                "boundTo": "player_url",
+                "attribute": "src"
+              }
+            ]
+          },
+          {
+            "ComponentType": "LinearProgress",
+            "ComponentName": "LinearProgress-1",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "variant",
+                "SettingValue": "determinate"
+              },
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": 4,
+            "order": 150,
+            "boundProps": [
+              {
+                "boundTo": "player_progress",
+                "attribute": "value"
+              }
+            ],
+            "componentID": 5
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "Collapse-1",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": 5,
+            "order": 125
+          },
+          {
+            "ComponentType": "Pagination",
+            "ComponentName": "Pagination-1",
+            "state": [],
+            "styles": [
+              {
+                "Key": "margin-free",
+                "Value": false
+              },
+              {
+                "Key": "margin-edges",
+                "Value": true
+              },
+              {
+                "Key": "margin-top",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "sortby": "search_sort",
+                    "direction": "search_direction",
+                    "id": "data.page",
+                    "type": "search_type"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "setState",
+                  "target": "current_page",
+                  "value": "data.page"
+                },
+                "ID": 2
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "count",
+                "SettingValue": 10
+              },
+              {
+                "SettingName": "defaultPage",
+                "SettingValue": 1
+              },
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              },
+              {
+                "SettingName": "shape",
+                "SettingValue": "rounded"
+              },
+              {
+                "SettingName": "showFirstButton",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "showLastButton",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": 6,
+            "order": 175,
+            "boundProps": [
+              {
+                "boundTo": "current_page",
+                "attribute": "page"
+              },
+              {
+                "boundTo": "page_count",
+                "attribute": "count"
+              }
+            ],
+            "componentID": "lb76c3i5uq7anhmfk5h"
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "padding",
+                "Value": "Xxs/0.125"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb755kcl796naf42rux",
+            "order": 50
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "componentID": "lb755kcl796naf42rux",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "sortby": "search_sort",
+                    "direction": "search_direction",
+                    "id": "search_page",
+                    "type": "search_type"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb755ycc796xl0y328",
+            "order": 400
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-1",
+            "componentID": "lb755kcl796naf42rux",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h6"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Boombot"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb758s7ajtafqv3jbll",
+            "order": 500
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-2",
+            "componentID": "lb76c3i5uq7anhmfk5h",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "body1"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "{row_count} found, page {current_page} "
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb766r7hy09272rfh3f",
+            "order": 187
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-2",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "justify-content",
+                "Value": "flex-start"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb76c3i5uq7anhmfk5h",
+            "order": 163
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-1",
+            "componentID": "lb76c3i5uq7anhmfk5h",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb76d4qorst4uh5et5",
+            "order": 187
+          }
+        ],
         "ID": 5,
-        "state": []
+        "state": [
+          {
+            "Key": "search_sort",
+            "Value": "ID",
+            "Type": "string",
+            "ID": "lb72vynfxio2kf2gimp"
+          },
+          {
+            "Key": "search_direction",
+            "Value": "DESC",
+            "Type": "string",
+            "ID": "lb72w5060pewievs1sx"
+          },
+          {
+            "Key": "search_page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lb72wiheclyx4ccvhe"
+          },
+          {
+            "Key": "search_type",
+            "Value": "music",
+            "Type": "string",
+            "ID": "lb72x7lrcb4sy6h1kwa"
+          },
+          {
+            "Key": "selected_index",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb733f0dmre30iwtzc"
+          },
+          {
+            "Key": "player_url",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7341qvacux1wo8wve"
+          },
+          {
+            "Key": "player_progress",
+            "Value": 10,
+            "Type": "number",
+            "ID": "lb73i5mwrsczemuxero"
+          },
+          {
+            "Key": "page_count",
+            "Value": 10,
+            "Type": "number",
+            "ID": "lb74bmemg0vr077gxbl"
+          },
+          {
+            "Key": "current_page",
+            "Value": 1,
+            "Type": "number",
+            "ID": "lb7697to0ovfrfyfo2k"
+          },
+          {
+            "Key": "row_count",
+            "Value": "",
+            "Type": "number",
+            "ID": "lb769k14p2bg76foj4"
+          },
+          {
+            "Key": "json",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb76jmzjjpu9qv6yegl"
+          }
+        ],
+        "scripts": [
+          {
+            "name": "on list click",
+            "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  setState(value => ({...value, \n    selected_index: data.row,\n    player_url: \"https://s3.amazonaws.com/box.import/\" + data.FileKey\n  }));\n\n\n  setTimeout (() => {\n    const player = api.getRefByName('aux');  \n    !!player && player.play();\n  }, 888)\n\n  const { selected_index, json } = state;\n  if (!json) return api.Alert('No JSON!');\n  const { records }  = json;\n  const row = data.row + 1\n  api.Alert (JSON.stringify (records[row]));\n}\n",
+            "ID": 1
+          },
+          {
+            "name": "set progress",
+            "code": "function setProgress (page, options) {\n  const { state, setState, data } = options; \n  !!data?.progress && setState(s => ({...s, player_progress: data.progress * 100}))\n  // add your code here\n  // console.log({options})\n}\n",
+            "ID": 2
+          },
+          {
+            "name": "data is loaded",
+            "code": "function dataIsLoaded (page, options) {\n  const { state, setState, data } = options; \n  !!data?.count && setState(s => ({...s, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     json: data\n  }))\n console.log({data})\n}\n",
+            "ID": 3
+          },
+          {
+            "name": "on play ended",
+            "code": "function onPlayEnded (page, options) {\n  const { state , setState, data, api } = options; \nconsole.log ({ state })\n}\n",
+            "ID": 4
+          }
+        ]
       },
       {
         "PageName": "Library",
@@ -3837,7 +4441,8 @@ export const AppData = [
           {
             "key": "term"
           }
-        ]
+        ],
+        "events": []
       },
       {
         "connectionID": 2,
@@ -3855,12 +4460,12 @@ export const AppData = [
         ],
         "events": [
           {
-            "ID": 1,
             "event": "dataLoaded",
             "action": {
               "type": "scriptRun",
-              "target": 1
-            }
+              "target": 3
+            },
+            "ID": "lb74azqxvl4sfzet9eq"
           }
         ],
         "values": [
@@ -4682,8 +5287,8 @@ export const AppData = [
             "letterSpacing": "0.01071em"
           },
           "button": {
-            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
-            "fontWeight": 500,
+            "fontFamily": "\"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": "600",
             "fontSize": "0.875rem",
             "lineHeight": 1.75,
             "letterSpacing": "0.02857em",
@@ -4749,20 +5354,6 @@ export const AppData = [
         "appID": 2,
         "components": [
           {
-            "ComponentType": "Box",
-            "ComponentName": "Box-1",
-            "children": true,
-            "state": [],
-            "styles": [],
-            "events": [],
-            "settings": [],
-            "scripts": [],
-            "data": [],
-            "ID": 1,
-            "order": 100,
-            "boundProps": []
-          },
-          {
             "ComponentType": "Avatar",
             "ComponentName": "Avatar-1",
             "componentID": 1,
@@ -4780,27 +5371,4078 @@ export const AppData = [
             "ID": 2,
             "order": 200,
             "boundProps": []
+          },
+          {
+            "ComponentType": "IconButton",
+            "ComponentName": "IconButton-1",
+            "componentID": 1,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7q8kmkafric7r9l5q",
+            "order": 300
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "toolbar",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "gap",
+                "Value": "12px"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "padding",
+                "Value": "Xs/0.25"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7q8s3pdym60yxgnkf",
+            "order": 400,
+            "ComponentCustomName": "Searchbar"
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-2",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 1,
+                  "terms": {
+                    "sortby": "search_sort",
+                    "direction": "search_direction",
+                    "id": "search_page",
+                    "type": "search_type"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7q8xk8oxx51961onf",
+            "order": 500
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-1",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h6"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Boombot"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7q9sn1517tvo4gg58",
+            "order": 600
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-1",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7qj0yhsg5s97unmti",
+            "order": 700
+          },
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "all",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onCellClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 1
+                },
+                "ID": 2
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":1,\"bindings\":{\"Title\":\"Title\",\"trackNumber\":\"Track\",\"Genre\":\"Genre\",\"albumName\":\"Album\",\"artistName\":\"Artist\"}}"
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "50"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "stickyHeader",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "use_id",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "selectedColumn",
+                "SettingValue": "ID"
+              },
+              {
+                "SettingName": "selectedID",
+                "SettingValue": "2"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7qjamnseh8l6iww88",
+            "order": 900,
+            "boundProps": [
+              {
+                "boundTo": "selected_index",
+                "attribute": "selectedIndex"
+              },
+              {
+                "boundTo": "selected_id",
+                "attribute": "selectedID"
+              }
+            ],
+            "componentID": "lb8nsoqfjgzig8q4gy"
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "waiting",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7rfc2edas9zl7iul",
+            "order": 850
+          },
+          {
+            "ComponentType": "LinearProgress",
+            "ComponentName": "LinearProgress-1",
+            "componentID": "lb7rfc2edas9zl7iul",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "value",
+                "SettingValue": ""
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7rfhwteeohgurdlwb",
+            "order": 1000,
+            "boundProps": []
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "all pages",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "margin",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7rh4y6h5tz23gv2qh",
+            "order": 875,
+            "componentID": "lb8nsoqfjgzig8q4gy"
+          },
+          {
+            "ComponentType": "Pagination",
+            "ComponentName": "Pagination-1",
+            "componentID": "lb7rh4y6h5tz23gv2qh",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "dataExec",
+                  "target": 1,
+                  "terms": {
+                    "sortby": "search_sort",
+                    "direction": "search_direction",
+                    "id": "data.page",
+                    "type": "search_type"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "setState",
+                  "target": "current_page",
+                  "value": "data.page"
+                },
+                "ID": 2
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "setState",
+                  "target": "search_page",
+                  "value": "data.page"
+                },
+                "ID": 3
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "count",
+                "SettingValue": 10
+              },
+              {
+                "SettingName": "defaultPage",
+                "SettingValue": 1
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7rh9lq74tm4b1ibkj",
+            "order": 1100,
+            "boundProps": [
+              {
+                "boundTo": "search_page",
+                "attribute": "page"
+              },
+              {
+                "boundTo": "page_count",
+                "attribute": "count"
+              }
+            ]
+          },
+          {
+            "ComponentType": "AudioPlayer",
+            "ComponentName": "aux",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "setState",
+                  "target": "play_button_icon",
+                  "value": "PauseCircle"
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPlayerStop",
+                "action": {
+                  "type": "setState",
+                  "target": "play_button_icon",
+                  "value": "PlayCircle"
+                },
+                "ID": 2
+              },
+              {
+                "event": "onProgress",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 4
+                },
+                "ID": 3
+              },
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb7u6v4s2vyu5wf2bp9",
+                  "open": true
+                },
+                "ID": 4
+              },
+              {
+                "event": "onPlayerStop",
+                "action": {
+                  "type": "modalOpen",
+                  "open": false,
+                  "target": "lb7u6v4s2vyu5wf2bp9"
+                },
+                "ID": 5
+              },
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb7vz6nyjkfjhqg5xvs",
+                  "open": true
+                },
+                "ID": 6
+              },
+              {
+                "event": "onPlayerStop",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb7vz6nyjkfjhqg5xvs",
+                  "open": false
+                },
+                "ID": 7
+              },
+              {
+                "event": "onPlayerEnded",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 5
+                },
+                "ID": 8
+              },
+              {
+                "event": "onPlayerStart",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb8j0h0w97fajll8j7i",
+                  "open": true
+                },
+                "ID": 9
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":1,\"bindings\":{\"FileKey\":\"FileKey\"}}"
+              },
+              {
+                "SettingName": "url",
+                "SettingValue": "https://s3.amazonaws.com/box.import"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7rlyxy2k6ftwoyfra",
+            "order": 1200,
+            "boundProps": [
+              {
+                "boundTo": "player_url",
+                "attribute": "src"
+              },
+              {
+                "boundTo": "selected_index",
+                "attribute": "selectedIndex"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-2",
+            "componentID": "lb7rh4y6h5tz23gv2qh",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "caption"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {row_count}  tracks in your library"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7tj0g7n6p8upd6i5f",
+            "order": 1300
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-2",
+            "componentID": "lb7rh4y6h5tz23gv2qh",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7tkaydl29tr1dm337",
+            "order": 1250
+          },
+          {
+            "ComponentType": "IconButton",
+            "ComponentName": "IconButton-2",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 3
+                },
+                "ID": 1
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb8l70yli7umajuzfzd",
+                  "open": true
+                },
+                "ID": 2
+              }
+            ],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7tq87j32e9ebtchdy",
+            "order": 1400,
+            "boundProps": [
+              {
+                "boundTo": "play_button_icon",
+                "attribute": "icon"
+              }
+            ]
+          },
+          {
+            "ComponentType": "LinearProgress",
+            "ComponentName": "aux_prog",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "variant",
+                "SettingValue": "determinate"
+              },
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7u0n39qmkgyuwdy8",
+            "order": 775,
+            "boundProps": [
+              {
+                "boundTo": "player_progress",
+                "attribute": "value"
+              }
+            ],
+            "componentID": "lb7vz6nyjkfjhqg5xvs"
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "playhead",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7u6v4s2vyu5wf2bp9",
+            "order": 813
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-3",
+            "componentID": "lb7u6v4s2vyu5wf2bp9",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "grid"
+              },
+              {
+                "Key": "align-items",
+                "Value": "end"
+              },
+              {
+                "Key": "grid-template-columns",
+                "Value": "1"
+              },
+              {
+                "Key": "justify-content",
+                "Value": "space-between"
+              },
+              {
+                "Key": "grid-template-rows",
+                "Value": "1"
+              },
+              {
+                "Key": "gap",
+                "Value": "4px"
+              },
+              {
+                "Key": "gap-free",
+                "Value": true
+              },
+              {
+                "Key": "border-width",
+                "Value": "Xxs/0.125"
+              },
+              {
+                "Key": "border-style",
+                "Value": "solid"
+              },
+              {
+                "Key": "border-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "border-radius",
+                "Value": "Md/0.75"
+              },
+              {
+                "Key": "margin",
+                "Value": "Md/0.75"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Tertiary\",\"value\":\"rgb(228,230,234)\"}"
+              },
+              {
+                "Key": "padding",
+                "Value": "Sm/0.5"
+              },
+              {
+                "Key": "justify-items",
+                "Value": "stretch"
+              },
+              {
+                "Key": "padding-edges",
+                "Value": true
+              },
+              {
+                "Key": "padding-top",
+                "Value": "Sm/0.5"
+              },
+              {
+                "Key": "padding-bottom",
+                "Value": "Sm/0.5"
+              },
+              {
+                "Key": "padding-right",
+                "Value": "Md/0.75"
+              },
+              {
+                "Key": "padding-left",
+                "Value": "Md/0.75"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7u8pjot70fpzusi2",
+            "order": 1500
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-3",
+            "componentID": "lb7ukjcjcudltp2ifem",
+            "state": [],
+            "styles": [
+              {
+                "Key": "padding-edges",
+                "Value": true
+              },
+              {
+                "Key": "padding-right",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "caption"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "{player_progress_formatted}  / {player_duration} "
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7u9wjmv25yns2ohvi",
+            "order": 1600
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-4",
+            "componentID": "lb7u8pjot70fpzusi2",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7ukjcjcudltp2ifem",
+            "order": 1700
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-3",
+            "componentID": "lb7ukjcjcudltp2ifem",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7ul1l2c1ho6pzl8zi",
+            "order": 1550
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-4",
+            "componentID": "lb7uvw8rcu8vwwi4njf",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "subtitle2"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {track_name} "
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7unjgvjgx7ez6gdzr",
+            "order": 1525
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-3",
+            "componentID": "lb7ukjcjcudltp2ifem",
+            "state": [],
+            "styles": [
+              {
+                "Key": "width",
+                "Value": "60px"
+              },
+              {
+                "Key": "height",
+                "Value": "60px"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "rounded"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7usjd155gzg3a4gkh",
+            "order": 1513,
+            "boundProps": [
+              {
+                "boundTo": "album_image",
+                "attribute": "src"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "info",
+            "componentID": "lb7ukjcjcudltp2ifem",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "flex-direction",
+                "Value": "column"
+              },
+              {
+                "Key": "align-items",
+                "Value": "flex-start"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7uvw8rcu8vwwi4njf",
+            "order": 1538
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-5",
+            "componentID": "lb7uvw8rcu8vwwi4njf",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "openLink",
+                  "params": {
+                    "artistname": "artist_name"
+                  },
+                  "target": "lb8ze9w2fnicvqn2hed"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "caption"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {artist_name} "
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7uwjj739gyg54k8wf",
+            "order": 1800
+          },
+          {
+            "ComponentType": "CircularProgress",
+            "ComponentName": "CircularProgress-1",
+            "componentID": "lb7v94pe2sesmw1jqxn",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "thickness",
+                "SettingValue": 3.6
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": 40
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": 0
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7v8pcngg37byf9qrh",
+            "order": 1900
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "progress",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7vz6nyjkfjhqg5xvs",
+            "order": 794
+          },
+          {
+            "ComponentType": "Fab",
+            "ComponentName": "Fab-1",
+            "componentID": "lb7ukjcjcudltp2ifem",
+            "state": [],
+            "styles": [
+              {
+                "Key": "padding-edges",
+                "Value": false
+              },
+              {
+                "Key": "padding-right",
+                "Value": "null"
+              },
+              {
+                "Key": "margin-edges",
+                "Value": true
+              },
+              {
+                "Key": "margin-right",
+                "Value": "Md/0.75"
+              }
+            ],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 3
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb7w3ydw5m7yluh7dnh",
+            "order": 2100,
+            "boundProps": [
+              {
+                "boundTo": "play_button_icon",
+                "attribute": "icon"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-6",
+            "componentID": "lb8ir48ccen5y3kdazm",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "caption"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {row_count} tracks found"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8irw88omomz6svmi",
+            "order": 2200
+          },
+          {
+            "ComponentType": "Snackbar",
+            "ComponentName": "Snackbar-1",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "vertical",
+                "SettingValue": "top"
+              },
+              {
+                "SettingName": "horizontal",
+                "SettingValue": "left"
+              },
+              {
+                "SettingName": "autoHideDuration",
+                "SettingValue": "5000"
+              },
+              {
+                "SettingName": "message",
+                "SettingValue": "{track_name}: {artist_name}"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8j0h0w97fajll8j7i",
+            "order": 2300,
+            "boundProps": []
+          },
+          {
+            "ComponentType": "Tab",
+            "ComponentName": "Tab-1",
+            "componentID": "lb8k49wqcf0ype0q2cr",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Tab one"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "1"
+              },
+              {
+                "SettingName": "icon",
+                "SettingValue": "AccessTimeFilled"
+              },
+              {
+                "SettingName": "iconPosition",
+                "SettingValue": "start"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8k4grmiglgeftevtq",
+            "order": 2400
+          },
+          {
+            "ComponentType": "Tab",
+            "ComponentName": "Tab-2",
+            "componentID": "lb8k49wqcf0ype0q2cr",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Tab 2"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "2"
+              },
+              {
+                "SettingName": "icon",
+                "SettingValue": "Accessible"
+              },
+              {
+                "SettingName": "iconPosition",
+                "SettingValue": "start"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8k901r3e6ra62yf4",
+            "order": 2500
+          },
+          {
+            "ComponentType": "Textbox",
+            "ComponentName": "search",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onEnterPress",
+                "action": {
+                  "type": "openLink",
+                  "target": "lbb3z5v12nx08l94bhs",
+                  "params": {
+                    "param": "search_param"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onChange",
+                "action": {
+                  "type": "setState",
+                  "target": "button_on",
+                  "value": true
+                },
+                "ID": 2
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Search for music"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "outlined"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "Textbox component"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8lv1jqzzfjqrb4q1k",
+            "order": 1350,
+            "boundProps": [
+              {
+                "boundTo": "search_param",
+                "attribute": "value"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Button",
+            "ComponentName": "Button-1",
+            "componentID": "lb7q8s3pdym60yxgnkf",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "openLink",
+                  "target": "lbb3z5v12nx08l94bhs",
+                  "params": {
+                    "param": "search_param"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Search"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "contained"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8lw93wiy5xxawfihq",
+            "order": 1375,
+            "boundProps": [
+              {
+                "boundTo": "button_on",
+                "attribute": "disabled"
+              }
+            ]
+          },
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "search grid",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onRowClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 1
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":2,\"bindings\":{\"Title\":\"Title\",\"Genre\":\"Genre\",\"trackTime\":\"time\",\"artistName\":\"artist\",\"albumName\":\"album\"}}"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "55"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8lxvx2i2g9uqwkqk",
+            "order": 894,
+            "boundProps": [
+              {
+                "boundTo": "selected_index",
+                "attribute": "selectedIndex"
+              }
+            ],
+            "componentID": "lb8nvaqnoogfgfrpzd"
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "show all",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8nsoqfjgzig8q4gy",
+            "order": 885
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "show search",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8nvaqnoogfgfrpzd",
+            "order": 2600
+          },
+          {
+            "ComponentType": "Pagination",
+            "ComponentName": "Pagination-2",
+            "componentID": "lb8ogvvt8i3i5352oce",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "page": "event.page",
+                    "type": "search_type",
+                    "param": "search_param"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "setState",
+                  "target": "search_page",
+                  "value": "data.page"
+                },
+                "ID": 2
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "count",
+                "SettingValue": 10
+              },
+              {
+                "SettingName": "defaultPage",
+                "SettingValue": 1
+              },
+              {
+                "SettingName": "showFirstButton",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "showLastButton",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "hideone",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8o7nd9ke9isyoh988",
+            "order": 890,
+            "boundProps": [
+              {
+                "boundTo": "page_count",
+                "attribute": "count"
+              },
+              {
+                "boundTo": "search_page",
+                "attribute": "page"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-6",
+            "componentID": "lb8nvaqnoogfgfrpzd",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "margin",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8ogvvt8i3i5352oce",
+            "order": 892
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-4",
+            "componentID": "lb8ogvvt8i3i5352oce",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8oim0k466winhes4q",
+            "order": 2650
+          },
+          {
+            "ComponentType": "Link",
+            "ComponentName": "Link-2",
+            "componentID": "lb8ogvvt8i3i5352oce",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "dataExec",
+                  "target": 1,
+                  "terms": {
+                    "sortby": "search_sort",
+                    "direction": "search_direction",
+                    "id": "{1}",
+                    "type": "search_type"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "setState",
+                  "target": "search_param"
+                },
+                "ID": 2
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "setState",
+                  "target": "search_page",
+                  "value": "1"
+                },
+                "ID": 3
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Link"
+              },
+              {
+                "SettingName": "underline",
+                "SettingValue": "hover"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Back to librarry"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8opromq2s7bm2y1hq",
+            "order": 2800
+          },
+          {
+            "ComponentType": "IconButton",
+            "ComponentName": "IconButton-3",
+            "componentID": "lb8ogvvt8i3i5352oce",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "icon",
+                "SettingValue": "ChevronRight"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb8puuz74ke0lfsgy3r",
+            "order": 2900
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-4",
+            "componentID": "lbb71cvlyiravfxqiw",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb71sbw02ab0zhx55xm",
+            "order": 2900,
+            "boundProps": [
+              {
+                "boundTo": "album_image",
+                "attribute": "src"
+              }
+            ]
           }
         ],
-        "ID": 1
+        "ID": 1,
+        "state": [
+          {
+            "Key": "search_sort",
+            "Value": "ID",
+            "Type": "string",
+            "ID": "lb7qhz76f3xcp5bgwji"
+          },
+          {
+            "Key": "search_direction",
+            "Value": "DESC",
+            "Type": "string",
+            "ID": "lb7qi69xhows6g3l2g"
+          },
+          {
+            "Key": "search_page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lb7qibrmnf0x7myveip"
+          },
+          {
+            "Key": "search_type",
+            "Value": "music",
+            "Type": "string",
+            "ID": "lb7qihcjdvwauxocj76"
+          },
+          {
+            "Key": "current_page",
+            "Value": 1,
+            "Type": "number",
+            "ID": "lb7ri9sjt4sgr40h8sp"
+          },
+          {
+            "Key": "player_url",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7rmd3psi1ghg9xguc"
+          },
+          {
+            "Key": "selected_index",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7rp8zkb5oaccsj84w"
+          },
+          {
+            "Key": "page_count",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7tg6foq10cu44b5q"
+          },
+          {
+            "Key": "row_count",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7tg6fodvypicm6pgb"
+          },
+          {
+            "Key": "records",
+            "Value": "",
+            "Type": "object",
+            "ID": "lb7tg6foednfm2okjg"
+          },
+          {
+            "Key": "play_button_icon",
+            "Value": "PlayCircle",
+            "Type": "string",
+            "ID": "lb7tqugdxto1zkjp7v7"
+          },
+          {
+            "Key": "player_progress",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7tz2q29udv9ibis9i"
+          },
+          {
+            "Key": "player_duration",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7ugvptt85vqz8ugsd"
+          },
+          {
+            "Key": "track_name",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7umbphl24dot8wkg"
+          },
+          {
+            "Key": "album_image",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7urbu5tyl7mmjkaih"
+          },
+          {
+            "Key": "artist_name",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7ux8fl5pa3551fgfp"
+          },
+          {
+            "Key": "player_progress_formatted",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb7vmmhs77vr6ba07cu"
+          },
+          {
+            "Key": "tab_index",
+            "Value": "0",
+            "Type": "string",
+            "ID": "lb8km0n97j0iplkitf"
+          },
+          {
+            "Key": "search_param",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb8lqt7orutqx6o5y8"
+          },
+          {
+            "Key": "selected_id",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb8wo5lnjlltjis478"
+          },
+          {
+            "Key": "button_on",
+            "Value": "",
+            "Type": "boolean",
+            "ID": "lbb4fdnkc0l8bvql0sl"
+          }
+        ],
+        "scripts": [
+          {
+            "name": "Handle list click",
+            "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  setState(value => ({...value, \n    selected_index: data.row,\n    selected_id: data.ID,\n    player_url: \"https://s3.amazonaws.com/box.import/\" + data.FileKey,\n    track_name: data.Title,\n    album_image: data.albumImage,\n    artist_name: data.artistName\n  }));\n\nconsole.log({data})\n  setTimeout (() => {\n    api.execRefByName('aux', player => {\n      !!player && player.play();\n    }) \n  }, 888)\n \n}\n",
+            "ID": 1
+          },
+          {
+            "name": "Handle data loaded",
+            "code": "function handleDataLoaded (page, options) {\n  const { state, setState, data } = options; \n  !!data?.count && setState(s => ({...s, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     records: data.records\n  }))\n}\n",
+            "ID": 2
+          },
+          {
+            "name": "Handle play click",
+            "code": "function handlePlayClick (page, options) {\n  const { state, setState, api } = options; \n  const player = api.getRefByName('aux');  \n  if (!player) return api.Alert('No player!'); \n  if (player.paused) return player.play()\n  player.pause(); \n}\n",
+            "ID": 3
+          },
+          {
+            "name": "Set player progress",
+            "code": "function setPlayerProgress (page, options) {\n  const { state, setState, data, api } = options; \n  if (!data?.progress) return;\n  const formatted = api.moment.utc(data.duration*1000).format('mm:ss');\n  const progress = api.moment.utc(data.currentTime * 1000).format('mm:ss');\n\n  !!data?.progress && setState(s => ({...s, \n     player_progress: Math.round(data.progress * 100),\n     player_progress_formatted: progress,\n     player_duration:  formatted \n})) \n}\n",
+            "ID": 4
+          },
+          {
+            "name": "handle end track",
+            "code": "function handleEndTrack (page, options) {\n  const { state, setState, api } = options; \n  console.log(options)\n  setState(value => {\n    const { records } = value;\n    const selected_index = value.selected_index - (-1);\n    const next_record = records[selected_index];\n    const selected_id = next_record.ID;\n    const player_url = \"https://s3.amazonaws.com/box.import/\" + next_record.FileKey;\n    console.log({ value });\n    return {\n      ...value, \n      selected_index ,\n      selected_id,\n      player_url\n    }\n  });\n\n  const player = api.execRefByName('aux', player => {\n  // player.pause()\n     setTimeout (() => { \n        !!player && player.play();\n     }, 888)\n  }); \n}\n",
+            "ID": 5
+          },
+          {
+            "name": "handle slider change",
+            "code": "function handleSliderChange (page, options) {\n  const { state, setState , data} = options; \n\n  setState(s => {\n    console.log({ my: s})\n    return s;\n  })\n  console.log({options})\n}\n",
+            "ID": 6
+          }
+        ],
+        "ThemeName": "plain",
+        "parameters": {}
+      },
+      {
+        "PageName": "Artist Search",
+        "PagePath": "artist-search",
+        "pageID": 1,
+        "components": [
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "DataGrid-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onRowClick",
+                "action": {
+                  "type": "openLink",
+                  "params": {
+                    "artist_id": "event.ID"
+                  },
+                  "target": "lb97fg4snqudtrhx1ut"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":3,\"bindings\":{\"Name\":\"Name\",\"Thumbnail\":\"Thumbnail\"}}"
+              },
+              {
+                "SettingName": "use_id",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "selectedColumn",
+                "SettingValue": "ID"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb916vigg81ofvo7swd",
+            "order": 300
+          },
+          {
+            "ComponentType": "InfoCard",
+            "ComponentName": "InfoCard-1",
+            "componentID": "lb919jkwhgf29jm8ire",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "1"
+              },
+              {
+                "SettingName": "subtext",
+                "SettingValue": ""
+              },
+              {
+                "SettingName": "description",
+                "SettingValue": ""
+              },
+              {
+                "SettingName": "use_image",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "image",
+                "SettingValue": "4"
+              },
+              {
+                "SettingName": "below_image",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb919nuuds78atd62eg",
+            "order": 500
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 3,
+                  "terms": {
+                    "page": "page",
+                    "type": "type",
+                    "param": "parameters.artistname"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb95gpxdbyqoig9hpso",
+            "order": 50,
+            "componentID": "lb9dsgw47k27tpzdb6v"
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-1",
+            "state": [],
+            "styles": [
+              {
+                "Key": "margin-edges",
+                "Value": true
+              },
+              {
+                "Key": "margin-top",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "subtitle2"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Search results for \"{parameters.artistname}\""
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dqdxlyv36qtwjx8",
+            "order": 250
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "padding",
+                "Value": "Xs/0.25"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dsgw47k27tpzdb6v",
+            "order": 25
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-2",
+            "componentID": "lb9dsgw47k27tpzdb6v",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h6"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Boombot"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dt3xeag9zis1kwnd",
+            "order": 600
+          }
+        ],
+        "appID": 2,
+        "ID": "lb8ze9w2fnicvqn2hed",
+        "parameters": {
+          "artistname": "bob"
+        },
+        "scripts": [],
+        "state": [
+          {
+            "Key": "page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lb90wlizhv5183cspz"
+          },
+          {
+            "Key": "type",
+            "Value": "artist",
+            "Type": "string",
+            "ID": "lb90wlj08odnqb5erfb"
+          }
+        ]
+      },
+      {
+        "PageName": "Artists",
+        "PagePath": "artists",
+        "pageID": 1,
+        "components": [
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "DataGrid-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onRowClick",
+                "action": {
+                  "type": "openLink",
+                  "params": {
+                    "artist_id": "event.ID"
+                  },
+                  "target": "lb97fg4snqudtrhx1ut"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":5,\"bindings\":{\"Name\":\"Name\",\"Thumbnail\":\"Thumbnail\",\"TrackCount\":\"TrackCount\"}}"
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "55"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "use_id",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "selectedColumn",
+                "SettingValue": "ID"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9796t9rhznxvven6b",
+            "order": 100,
+            "componentID": "lb9epf3ke7316uwh929"
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 5,
+                  "terms": {
+                    "sort": "sort",
+                    "direction": "direction",
+                    "page": "page",
+                    "type": "type"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb99lnmxxd955lndnn",
+            "order": 25,
+            "componentID": "lb9dflx1w8us3zu0jaj"
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "padding",
+                "Value": "Xs/0.25"
+              },
+              {
+                "Key": "margin",
+                "Value": "null"
+              },
+              {
+                "Key": "margin-edges",
+                "Value": true
+              },
+              {
+                "Key": "margin-bottom",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dflx1w8us3zu0jaj",
+            "order": 13
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-1",
+            "componentID": "lb9dflx1w8us3zu0jaj",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h6"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Boombot"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dftbvptjaemr4pp",
+            "order": 200
+          },
+          {
+            "ComponentType": "Pagination",
+            "ComponentName": "Pagination-1",
+            "state": [],
+            "styles": [
+              {
+                "Key": "margin",
+                "Value": "Sm/0.5"
+              }
+            ],
+            "events": [
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "dataExec",
+                  "target": 5,
+                  "terms": {
+                    "sort": "sort",
+                    "direction": "direction",
+                    "page": "event.page",
+                    "type": "type"
+                  }
+                },
+                "ID": 1
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "setState",
+                  "target": "page",
+                  "value": "event.page"
+                },
+                "ID": 2
+              },
+              {
+                "event": "onPageChange",
+                "action": {
+                  "type": "dataExec",
+                  "target": 5,
+                  "terms": {
+                    "sort": "sort",
+                    "direction": "direction",
+                    "page": "event.page",
+                    "type": "type"
+                  }
+                },
+                "ID": 3
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "count",
+                "SettingValue": 10
+              },
+              {
+                "SettingName": "defaultPage",
+                "SettingValue": 1
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "outlined"
+              },
+              {
+                "SettingName": "color",
+                "SettingValue": "secondary"
+              },
+              {
+                "SettingName": "shape",
+                "SettingValue": "rounded"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dhs4qzxaylft2dgo",
+            "order": 63,
+            "boundProps": [
+              {
+                "boundTo": "page",
+                "attribute": "page"
+              },
+              {
+                "boundTo": "page_count",
+                "attribute": "count"
+              }
+            ],
+            "componentID": "lb9elsmucmrti62a2nl"
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-1",
+            "componentID": "lb9dflx1w8us3zu0jaj",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dlo0vp6nx69bjt8",
+            "order": 300
+          },
+          {
+            "ComponentType": "Textbox",
+            "ComponentName": "Textbox-1",
+            "componentID": "lb9dflx1w8us3zu0jaj",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onEnterPress",
+                "action": {
+                  "type": "openLink",
+                  "target": "lb8ze9w2fnicvqn2hed",
+                  "params": {
+                    "artistname": "artist_search"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Artist search"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "outlined"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "Textbox component"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dlvvnvzd6a6i4dm",
+            "order": 400,
+            "boundProps": [
+              {
+                "boundTo": "artist_search",
+                "attribute": "value"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Button",
+            "ComponentName": "Button-1",
+            "componentID": "lb9dflx1w8us3zu0jaj",
+            "state": [],
+            "styles": [
+              {
+                "Key": "top",
+                "Value": ""
+              }
+            ],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "openLink",
+                  "params": {
+                    "artistname": "artist_search"
+                  },
+                  "target": "lb8ze9w2fnicvqn2hed"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Search"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "contained"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9dn5vngxxhl1qpkzm",
+            "order": 500
+          },
+          {
+            "ComponentType": "Repeater",
+            "ComponentName": "Repeater-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "grid"
+              },
+              {
+                "Key": "grid-template-columns",
+                "Value": 5
+              },
+              {
+                "Key": "gap",
+                "Value": "4px"
+              },
+              {
+                "Key": "grid-template-rows",
+                "Value": "null"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":5,\"bindings\":{\"Name\":{\"title\":\"InfoCard-1.label\",\"componentID\":\"lb9e3e7c73iquscy98b\",\"SettingName\":\"label\"},\"Thumbnail\":{\"title\":\"InfoCard-1.image\",\"componentID\":\"lb9e3e7c73iquscy98b\",\"SettingName\":\"image\"}}}"
+              },
+              {
+                "SettingName": "use_id",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "selectedColumn",
+                "SettingValue": "ID"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9e396iqhuz8k4x5",
+            "order": 82,
+            "componentID": "lb9eoqqucwwl01uxz7f"
+          },
+          {
+            "ComponentType": "InfoCard",
+            "ComponentName": "InfoCard-1",
+            "componentID": "lb9e396iqhuz8k4x5",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onCardClick",
+                "action": {
+                  "type": "openLink",
+                  "params": {
+                    "artist_id": "event.ID"
+                  },
+                  "target": "lb97fg4snqudtrhx1ut"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "x"
+              },
+              {
+                "SettingName": "use_image",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "image",
+                "SettingValue": "y"
+              },
+              {
+                "SettingName": "below_image",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9e3e7c73iquscy98b",
+            "order": 600
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-2",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9elsmucmrti62a2nl",
+            "order": 44
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-2",
+            "componentID": "lb9elsmucmrti62a2nl",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9emeh8twuozn7knxj",
+            "order": 700
+          },
+          {
+            "ComponentType": "Link",
+            "ComponentName": "Link-1",
+            "componentID": "lb9etp7lk3ghb7m1sg",
+            "state": [],
+            "styles": [
+              {
+                "Key": "white-space",
+                "Value": "nowrap"
+              },
+              {
+                "Key": "text-overflow",
+                "Value": "ellipsis"
+              },
+              {
+                "Key": "overflow",
+                "Value": "hidden"
+              },
+              {
+                "Key": "cursor",
+                "Value": "pointer"
+              }
+            ],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb9epf3ke7316uwh929",
+                  "open": true
+                },
+                "ID": 1
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb9eoqqucwwl01uxz7f",
+                  "open": false
+                },
+                "ID": 2
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "open": true,
+                  "target": "lb9euevu4jxc2xjyu6"
+                },
+                "ID": 3
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb9etp7lk3ghb7m1sg",
+                  "open": false
+                },
+                "ID": 4
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Link"
+              },
+              {
+                "SettingName": "underline",
+                "SettingValue": "hover"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "View as list"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9eo16omr21o8x2q8i",
+            "order": 800
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "grid",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9eoqqucwwl01uxz7f",
+            "order": 73
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "Collapse-2",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9epf3ke7316uwh929",
+            "order": 91
+          },
+          {
+            "ComponentType": "Link",
+            "ComponentName": "Link-2",
+            "componentID": "lb9euevu4jxc2xjyu6",
+            "state": [],
+            "styles": [
+              {
+                "Key": "margin-edges",
+                "Value": true
+              },
+              {
+                "Key": "margin-left",
+                "Value": "Lg/1"
+              },
+              {
+                "Key": "white-space",
+                "Value": "nowrap"
+              },
+              {
+                "Key": "text-overflow",
+                "Value": "ellipsis"
+              },
+              {
+                "Key": "overflow",
+                "Value": "hidden"
+              },
+              {
+                "Key": "cursor",
+                "Value": "pointer"
+              }
+            ],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb9eoqqucwwl01uxz7f",
+                  "open": true
+                },
+                "ID": 1
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "open": false,
+                  "target": "lb9epf3ke7316uwh929"
+                },
+                "ID": 2
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "target": "lb9etp7lk3ghb7m1sg",
+                  "open": true
+                },
+                "ID": 3
+              },
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "modalOpen",
+                  "open": false,
+                  "target": "lb9euevu4jxc2xjyu6"
+                },
+                "ID": 4
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Link"
+              },
+              {
+                "SettingName": "underline",
+                "SettingValue": "hover"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "View as grid"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9er68cz6o934k3ban",
+            "order": 900
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "listbtn",
+            "componentID": "lb9elsmucmrti62a2nl",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "orientation",
+                "SettingValue": "horizontal"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9etp7lk3ghb7m1sg",
+            "order": 1000
+          },
+          {
+            "ComponentType": "Collapse",
+            "ComponentName": "gridbtn",
+            "componentID": "lb9elsmucmrti62a2nl",
+            "children": true,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "orientation",
+                "SettingValue": "horizontal"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9euevu4jxc2xjyu6",
+            "order": 1100
+          },
+          {
+            "ComponentType": "Carousel",
+            "ComponentName": "Carousel-1",
+            "state": [],
+            "styles": [
+              {
+                "Key": "cursor",
+                "Value": "pointer"
+              }
+            ],
+            "events": [
+              {
+                "event": "onCarouselClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": "lbbac22auz9kyw42w7q"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "speed",
+                "SettingValue": 10
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbba7q7ctfovqjxh02s",
+            "order": 35,
+            "boundProps": [
+              {
+                "boundTo": "image_list",
+                "attribute": "images"
+              }
+            ]
+          }
+        ],
+        "appID": 2,
+        "ID": "lb96vttztfceczevxjd",
+        "state": [
+          {
+            "Key": "sort",
+            "Value": "Name",
+            "Type": "string",
+            "ID": "lb97bd8eub9i59za1y"
+          },
+          {
+            "Key": "direction",
+            "Value": "ASC",
+            "Type": "string",
+            "ID": "lb97bd8fgr6kygtd329"
+          },
+          {
+            "Key": "page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lb97bd8ffh8o3gpi11b"
+          },
+          {
+            "Key": "type",
+            "Value": "artist",
+            "Type": "string",
+            "ID": "lb97bd8fn456il7kf5"
+          },
+          {
+            "Key": "artist_search",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb9dmilne951igr3weg"
+          },
+          {
+            "Key": "page_count",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb9zyou6gfggomwxm1e"
+          },
+          {
+            "Key": "row_count",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb9zyou6x4dkx40rcp"
+          },
+          {
+            "Key": "image_list",
+            "Value": "",
+            "Type": "string",
+            "ID": "lbb9aonqlv8s4ys44lb"
+          },
+          {
+            "Key": "records",
+            "Value": "",
+            "Type": "array",
+            "ID": "lbbai9e1jjeeikulrsr"
+          }
+        ],
+        "ThemeName": "plain",
+        "scripts": [
+          {
+            "name": "data loaded",
+            "code": "function handleDataLoaded (page, options) {\n  const { state, setState, data } = options; \n  !!data?.count && setState(s => ({...s, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     records: data.records\n  }))\n}\n",
+            "ID": "lb9zx6gyprgdnqkbjia"
+          },
+          {
+            "name": "populate images",
+            "code": "function setImageList (page, options) {\n  const { state, setState, data } = options; \n  const image_list = data.records\n  .filter(f => !!f.TrackCount)\n  .map(i => ({\n    src: i.imageLg,\n    text: i.Name,\n    subtext: `${i.TrackCount} tracks in your library`\n  })).filter(f => !!f.src )\n  console.log(data)\n  setState(s => ({...s, image_list}));\n}\n",
+            "ID": "lbb9bir3f3k9yoawpz"
+          },
+          {
+            "name": "carousel_click",
+            "code": "function carousel_click (page, options) {\n  const { state, setState, data , api} = options; \n  console.log ({options});\n  setState(s => {\n    console.log ('************',s.records);\n    const q = s.records?.find(e => e.imageLg === data.src)\n    alert(q.ID)\n    api.openPath('artist', {\n       artist_id: 'event.key'\n    }, {key: q.ID})\n    return s;\n  })\n}\n",
+            "ID": "lbbac22auz9kyw42w7q"
+          }
+        ]
+      },
+      {
+        "PageName": "Artist",
+        "PagePath": "artist",
+        "pageID": "lb96vttztfceczevxjd",
+        "components": [
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "DataGrid-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onRowClick",
+                "action": {
+                  "type": "scriptRun",
+                  "target": 1
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":6,\"bindings\":{\"Title\":\"Title\",\"Genre\":\"Genre\",\"trackTime\":\"trackTime\",\"albumName\":\"albumName\",\"trackNumber\":\"trackNumber\"}}"
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "50"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "use_id",
+                "SettingValue": true
+              },
+              {
+                "SettingName": "selectedColumn",
+                "SettingValue": "ID"
+              },
+              {
+                "SettingName": "row-color",
+                "SettingValue": "secondary"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb97foqka19544aqer8",
+            "order": 223,
+            "boundProps": [
+              {
+                "boundTo": "selected_id",
+                "attribute": "selectedID"
+              }
+            ],
+            "componentID": "lba5auvwyz03ugpfi58"
+          },
+          {
+            "ComponentType": "AudioPlayer",
+            "ComponentName": "aux2",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onPlayerEnded",
+                "action": {
+                  "type": "scriptRun",
+                  "target": "lb9z7am8qe57w35jkxa"
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "controls",
+                "SettingValue": false
+              },
+              {
+                "SettingName": "autoplay",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb98sr287lm6agi4fri",
+            "order": 200,
+            "boundProps": [
+              {
+                "boundTo": "player_url",
+                "attribute": "src"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 6,
+                  "terms": {
+                    "fields": "fields",
+                    "direction": "direction",
+                    "page": "page",
+                    "type": "type",
+                    "id": "parameters.artist_id"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb993db05mj6d8y7zea",
+            "order": 25,
+            "componentID": "lb9ddn97kouxbwngl4s"
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "padding",
+                "Value": "Xs/0.25"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9ddn97kouxbwngl4s",
+            "order": 44
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-1",
+            "componentID": "lb9ddn97kouxbwngl4s",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h6"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": "Boombot"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9ddvvc6z0sl4r4ajj",
+            "order": 300
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "caption",
+            "componentID": "lb9f68hq2ney8nzi0zv",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "position",
+                "Value": "absolute"
+              },
+              {
+                "Key": "top",
+                "Value": "200px"
+              },
+              {
+                "Key": "left",
+                "Value": "60px"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9f715vea9agq3m8wt",
+            "order": 400
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-2",
+            "componentID": "lb9f715vea9agq3m8wt",
+            "state": [],
+            "styles": [
+              {
+                "Key": "color",
+                "Value": "{\"name\":\"Background - Primary\",\"value\":\"rgb(255,255,255)\"}"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "h3"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {artist_name} "
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9f7e5h26aic2ra6s3",
+            "order": 500
+          },
+          {
+            "ComponentType": "Typography",
+            "ComponentName": "Typography-3",
+            "componentID": "lb9f715vea9agq3m8wt",
+            "state": [],
+            "styles": [
+              {
+                "Key": "color",
+                "Value": "{\"name\":\"Background - Primary\",\"value\":\"rgb(255,255,255)\"}"
+              }
+            ],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Typography text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "body1"
+              },
+              {
+                "SettingName": "children",
+                "SettingValue": " {track_count} tracks in your library"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lb9fo51mg09pb73tt9o",
+            "order": 600
+          },
+          {
+            "ComponentType": "ScrollCouple",
+            "ComponentName": "ScrollCouple-1",
+            "children": 1,
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lba5auvwyz03ugpfi58",
+            "order": 700
+          },
+          {
+            "ComponentType": "Image",
+            "ComponentName": "Image-2",
+            "componentID": "lba5auvwyz03ugpfi58",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb1ocn8fwmsfa0gdv8",
+            "order": 54,
+            "boundProps": [
+              {
+                "boundTo": "image_large",
+                "attribute": "src"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Textbox",
+            "ComponentName": "Textbox-1",
+            "componentID": "lb9ddn97kouxbwngl4s",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onEnterPress",
+                "action": {
+                  "type": "openLink",
+                  "target": "lb8ze9w2fnicvqn2hed",
+                  "params": {
+                    "artistname": "artist_param"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Enter some text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "outlined"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "Textbox component"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbbbroounbexo548qfi",
+            "order": 700,
+            "boundProps": [
+              {
+                "boundTo": "artist_param",
+                "attribute": "value"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-1",
+            "componentID": "lb9ddn97kouxbwngl4s",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lbbbsm6xfkcaynuwp9r",
+            "order": 650
+          },
+          {
+            "ComponentType": "Button",
+            "ComponentName": "Button-1",
+            "componentID": "lb9ddn97kouxbwngl4s",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "openLink",
+                  "target": "lb8ze9w2fnicvqn2hed",
+                  "params": {
+                    "artistname": "artist_param"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Search"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "contained"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbbbxq4sexcflfq9o86",
+            "order": 800
+          }
+        ],
+        "appID": 2,
+        "ID": "lb97fg4snqudtrhx1ut",
+        "parameters": {
+          "artist_id": "151"
+        },
+        "state": [
+          {
+            "Key": "fields",
+            "Value": "albumFk, discNumber, trackNumber",
+            "Type": "string",
+            "ID": "lb98p7conhqai60fn8"
+          },
+          {
+            "Key": "direction",
+            "Value": "ASC",
+            "Type": "string",
+            "ID": "lb98p7coyv1n0hg8ch"
+          },
+          {
+            "Key": "page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lb98p7co5jkom7vabzh"
+          },
+          {
+            "Key": "type",
+            "Value": "artist",
+            "Type": "string",
+            "ID": "lb98p7cp4f7ka8km2ao"
+          },
+          {
+            "Key": "id",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98p7cplg0lej9tetd"
+          },
+          {
+            "Key": "selected_index",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbga3q37cbplhg7"
+          },
+          {
+            "Key": "selected_id",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbga1lojjn2lh3r"
+          },
+          {
+            "Key": "player_url",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbgbcrkz1l8bq4r"
+          },
+          {
+            "Key": "track_name",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbgbv2kjcu9z94d"
+          },
+          {
+            "Key": "album_image",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbgb0m5wp6w91b9"
+          },
+          {
+            "Key": "artist_name",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb98vbgcs1yx4jfw0zk"
+          },
+          {
+            "Key": "image_large",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb9a6qti5s0xkqr468s"
+          },
+          {
+            "Key": "track_count",
+            "Value": "",
+            "Type": "string",
+            "ID": "lb9fl6cvppb9fonnd5f"
+          },
+          {
+            "Key": "artist_param",
+            "Value": "",
+            "Type": "string",
+            "ID": "lbbbz67u3xxj6pdz5e9"
+          }
+        ],
+        "scripts": [
+          {
+            "name": "on list click",
+            "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  setState(value => ({...value, \n    selected_index: data.row,\n    selected_id: data.ID,\n    player_url: \"https://s3.amazonaws.com/box.import/\" + data.FileKey,\n    track_name: data.Title,\n    album_image: data.albumImage,\n    artist_name: data.artistName\n  }));\n\nconsole.log({data})\n  setTimeout (() => {\n    api.execRefByName('aux2', player => {\n      !!player && player.play();\n    }) \n  }, 888)\n \n}\n",
+            "ID": 1
+          },
+          {
+            "name": "data loaded",
+            "code": "function onDataLoaded (page, { data, setState }) {\n   if (data.row?.length) {\n      \n      const info = data.row[0];\n      if (!info) return;\n      const { imageLg, Name: artist_name, TrackCount: track_count } = info;\n      setState(old => ({\n         ...old,\n         image_large: imageLg,\n         artist_name,\n         track_count, \n         records: data.related.records\n      }))\n   }\n \n}",
+            "ID": "lb9z73gls96mf0d0z8j"
+          },
+          {
+            "name": "play end",
+            "code": "function handleEndTrack (page, options) {\n  const { state, setState, api } = options; \n  console.log(options)\n  setState(value => {\n    const { records } = value;\n    const selected_index = value.selected_index - (-1);\n    const next_record = records[selected_index];\n    const selected_id = next_record.ID;\n    const player_url = \"https://s3.amazonaws.com/box.import/\" + next_record.FileKey;\n    console.log({ value });\n    return {\n      ...value, \n      selected_index ,\n      selected_id,\n      player_url\n    }\n  });\n\n  const player = api.execRefByName('aux2', player => {\n  // player.pause()\n     setTimeout (() => { \n        !!player && player.play();\n     }, 888)\n  }); \n}",
+            "ID": "lb9z7am8qe57w35jkxa"
+          }
+        ],
+        "ThemeName": "plain"
+      },
+      {
+        "PageName": "Music Search",
+        "PagePath": "music-search",
+        "pageID": 1,
+        "components": [
+          {
+            "ComponentType": "DataGrid",
+            "ComponentName": "DataGrid-1",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [
+              {
+                "SettingName": "emptyMessage",
+                "SettingValue": "No records to display."
+              },
+              {
+                "SettingName": "bindings",
+                "SettingValue": "{\"resourceID\":2,\"bindings\":{\"Title\":\"Title\",\"Genre\":\"Genre\",\"trackNumber\":\"trackNumber\",\"trackTime\":\"trackTime\",\"artistName\":\"artistName\",\"albumName\":\"albumName\"}}"
+              },
+              {
+                "SettingName": "truncate",
+                "SettingValue": "55"
+              },
+              {
+                "SettingName": "nowrap",
+                "SettingValue": true
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb414rgzg253mdjrlb",
+            "order": 100
+          },
+          {
+            "ComponentType": "Avatar",
+            "ComponentName": "Avatar-1",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onImageLoad",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "page": "page",
+                    "type": "type",
+                    "param": "parameters.param"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "children",
+                "SettingValue": "MJ"
+              },
+              {
+                "SettingName": "src",
+                "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb47mmv0d0jd1dr9dv",
+            "order": 50,
+            "componentID": "lbb4j0982qyq5h5fvik"
+          },
+          {
+            "ComponentType": "Box",
+            "ComponentName": "Box-1",
+            "children": true,
+            "state": [],
+            "styles": [
+              {
+                "Key": "display",
+                "Value": "flex"
+              },
+              {
+                "Key": "align-items",
+                "Value": "center"
+              },
+              {
+                "Key": "gap",
+                "Value": "8px"
+              },
+              {
+                "Key": "padding",
+                "Value": "Xs/0.25"
+              },
+              {
+                "Key": "background-color",
+                "Value": "{\"name\":\"Background - Secondary\",\"value\":\"rgb(246,246,248)\"}"
+              }
+            ],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb4j0982qyq5h5fvik",
+            "order": 75
+          },
+          {
+            "ComponentType": "Textbox",
+            "ComponentName": "Textbox-1",
+            "componentID": "lbb4j0982qyq5h5fvik",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onEnterPress",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "page": "page",
+                    "type": "type",
+                    "param": "param_text"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "label",
+                "SettingValue": "Enter some text"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "outlined"
+              },
+              {
+                "SettingName": "value",
+                "SettingValue": "Textbox component"
+              },
+              {
+                "SettingName": "size",
+                "SettingValue": "small"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb4kgqa3b752r68xmi",
+            "order": 200,
+            "boundProps": [
+              {
+                "boundTo": "param_text",
+                "attribute": "value"
+              }
+            ]
+          },
+          {
+            "ComponentType": "Spacer",
+            "ComponentName": "Spacer-1",
+            "componentID": "lbb4j0982qyq5h5fvik",
+            "state": [],
+            "styles": [],
+            "events": [],
+            "settings": [],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb4kqn7fsla0li5mla",
+            "order": 150
+          },
+          {
+            "ComponentType": "Button",
+            "ComponentName": "Button-1",
+            "componentID": "lbb4j0982qyq5h5fvik",
+            "state": [],
+            "styles": [],
+            "events": [
+              {
+                "event": "onClick",
+                "action": {
+                  "type": "dataExec",
+                  "target": 2,
+                  "terms": {
+                    "page": "page",
+                    "type": "type",
+                    "param": "param_text"
+                  }
+                },
+                "ID": 1
+              }
+            ],
+            "settings": [
+              {
+                "SettingName": "Label",
+                "SettingValue": "Search"
+              },
+              {
+                "SettingName": "variant",
+                "SettingValue": "contained"
+              },
+              {
+                "SettingName": "end",
+                "SettingValue": "Search"
+              }
+            ],
+            "scripts": [],
+            "data": [],
+            "ID": "lbb4ndf5f2svm0s5b67",
+            "order": 300
+          }
+        ],
+        "appID": 2,
+        "ID": "lbb3z5v12nx08l94bhs",
+        "state": [
+          {
+            "Key": "page",
+            "Value": "1",
+            "Type": "string",
+            "ID": "lbb42psd29njw36ezke"
+          },
+          {
+            "Key": "type",
+            "Value": "music",
+            "Type": "string",
+            "ID": "lbb42vjvmw4gu1sg4u"
+          },
+          {
+            "Key": "param_text",
+            "Value": "",
+            "Type": "string",
+            "ID": "lbb4lnc42hoxljy5q2w"
+          }
+        ],
+        "parameters": {
+          "param": "love"
+        },
+        "ThemeName": "plain"
       }
     ],
     "connections": [
       {
-        "name": "New Connection",
+        "name": "iTunes Search API",
         "type": "rest",
-        "root": "dsfs",
+        "root": "https://itunes.apple.com",
         "ID": 1
+      },
+      {
+        "name": "Sky Tunes API",
+        "type": "rest",
+        "root": "https://u8m0btl997.execute-api.us-east-1.amazonaws.com",
+        "ID": 2
       }
     ],
-    "resources": []
-  },
-  {
-    "Name": "new application test",
-    "path": "new-application-test",
-    "ID": 2,
-    "pages": [],
-    "connections": [],
-    "resources": []
+    "resources": [
+      {
+        "connectionID": 2,
+        "name": "Load all tracks",
+        "method": "GET",
+        "columns": [
+          "Title",
+          "FileKey",
+          "albumImage",
+          "artistName",
+          "albumName",
+          "Genre",
+          "trackNumber",
+          "discNumber",
+          "ID"
+        ],
+        "values": [
+          {
+            "key": "sortby"
+          },
+          {
+            "key": "direction"
+          },
+          {
+            "key": "id"
+          },
+          {
+            "key": "type"
+          }
+        ],
+        "path": "/request",
+        "format": "rest",
+        "ID": 1,
+        "node": "records",
+        "events": [
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb7rfc2edas9zl7iul",
+              "open": false
+            },
+            "ID": "lb7rgebdupm3omtgd6"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": 2
+            },
+            "ID": "lb7th1qyvr707w2b28"
+          },
+          {
+            "event": "loadStarted",
+            "action": {
+              "type": "modalOpen",
+              "open": true,
+              "target": "lb7rfc2edas9zl7iul"
+            },
+            "ID": "lb7u416hyz13k0vp5i8"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb8nsoqfjgzig8q4gy",
+              "open": true
+            },
+            "ID": "lb8nwbn6g5la5uhjblo"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb8nvaqnoogfgfrpzd",
+              "open": false
+            },
+            "ID": "lb8nwlziouo0ugaei4"
+          }
+        ]
+      },
+      {
+        "connectionID": 2,
+        "name": "Music Search",
+        "method": "GET",
+        "columns": [
+          "FileKey",
+          "Title",
+          "albumImage",
+          "Genre",
+          "discNumber",
+          "trackTime",
+          "trackNumber",
+          "artistName",
+          "albumName"
+        ],
+        "values": [
+          {
+            "key": "page"
+          },
+          {
+            "key": "type"
+          },
+          {
+            "key": "param"
+          }
+        ],
+        "path": "/search",
+        "format": "rest",
+        "node": "records",
+        "ID": 2,
+        "events": [
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "open": true,
+              "target": "lb8nvaqnoogfgfrpzd"
+            },
+            "ID": "lb8nxdvc9x0dr88fnap"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "open": false,
+              "target": "lb8nsoqfjgzig8q4gy"
+            },
+            "ID": "lb8nxkcotv7bhcqkk0e"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "open": false,
+              "target": "lb7rfc2edas9zl7iul"
+            },
+            "ID": "lb8o173dy4ko7y9i8es"
+          },
+          {
+            "event": "loadStarted",
+            "action": {
+              "type": "modalOpen",
+              "open": true,
+              "target": "lb7rfc2edas9zl7iul"
+            },
+            "ID": "lb8o1frs4dgdvq25qh"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": 2
+            },
+            "ID": "lb8o9vfttoqwk55vru"
+          }
+        ]
+      },
+      {
+        "connectionID": 2,
+        "name": "Artist Search",
+        "method": "GET",
+        "columns": [
+          "ID",
+          "Name",
+          "Thumbnail",
+          "imageLg",
+          "TrackCount"
+        ],
+        "values": [
+          {
+            "key": "page",
+            "value": "1"
+          },
+          {
+            "key": "type",
+            "value": "artist"
+          },
+          {
+            "key": "param",
+            "value": "zaz"
+          }
+        ],
+        "ID": 3,
+        "format": "rest",
+        "path": "/search",
+        "node": "records"
+      },
+      {
+        "connectionID": 2,
+        "name": "Artist List",
+        "method": "GET",
+        "columns": [
+          "Name",
+          "ID",
+          "Thumbnail",
+          "imageLg",
+          "TrackCount"
+        ],
+        "values": [
+          {
+            "key": "sort",
+            "value": "Name"
+          },
+          {
+            "key": "direction",
+            "value": "ASC"
+          },
+          {
+            "key": "page",
+            "value": "1"
+          },
+          {
+            "key": "type",
+            "value": "artist"
+          }
+        ],
+        "path": "/request",
+        "format": "rest",
+        "ID": 5,
+        "node": "records",
+        "events": [
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb9eoqqucwwl01uxz7f",
+              "open": true
+            },
+            "ID": "lb9evbua1mfbj4i3hmg"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb9etp7lk3ghb7m1sg",
+              "open": true
+            },
+            "ID": "lb9evkz2356iacxaqqb"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "open": false,
+              "target": "lb9euevu4jxc2xjyu6"
+            },
+            "ID": "lb9ezcbu17nmfhgz8ulj"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "modalOpen",
+              "target": "lb9epf3ke7316uwh929",
+              "open": false
+            },
+            "ID": "lb9f08f7vf26us66jzi"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": "lb9zx6gyprgdnqkbjia"
+            },
+            "ID": "lb9zzv3tcvk1jpyx9j"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": "lbb8hm0r7eoypplz4c6"
+            },
+            "ID": "lbb8k90cwk54qswp8mr"
+          },
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": "lbb9bir3f3k9yoawpz"
+            },
+            "ID": "lbb9cbc4fvi0kdngz3p"
+          }
+        ]
+      },
+      {
+        "connectionID": 2,
+        "name": "Artist Detail",
+        "method": "GET",
+        "columns": [
+          "Title",
+          "FileKey",
+          "albumImage",
+          "Genre",
+          "discNumber",
+          "trackTime",
+          "artistName",
+          "trackNumber",
+          "albumName",
+          "ID"
+        ],
+        "values": [
+          {
+            "key": "fields",
+            "value": "albumFk, discNumber, trackNumber"
+          },
+          {
+            "key": "direction",
+            "value": "ASC"
+          },
+          {
+            "key": "page",
+            "value": "1"
+          },
+          {
+            "key": "type",
+            "value": "artist"
+          },
+          {
+            "key": "id",
+            "value": "151"
+          }
+        ],
+        "path": "/request",
+        "ID": 6,
+        "format": "rest",
+        "node": "related.records",
+        "events": [
+          {
+            "event": "dataLoaded",
+            "action": {
+              "type": "scriptRun",
+              "target": "lb9z73gls96mf0d0z8j"
+            },
+            "ID": "lb9z8emerpi90yki9qt"
+          }
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "breakpoints": {
+          "keys": [
+            "xs",
+            "sm",
+            "md",
+            "lg",
+            "xl"
+          ],
+          "values": {
+            "xs": 0,
+            "sm": 600,
+            "md": 900,
+            "lg": 1200,
+            "xl": 1536
+          },
+          "unit": "px"
+        },
+        "direction": "ltr",
+        "components": {},
+        "palette": {
+          "mode": "light",
+          "common": {
+            "black": "#000",
+            "white": "#fff"
+          },
+          "primary": {
+            "main": "#1976d2",
+            "light": "#42a5f5",
+            "dark": "#1565c0",
+            "contrastText": "#fff"
+          },
+          "secondary": {
+            "main": "#9c27b0",
+            "light": "#ba68c8",
+            "dark": "#7b1fa2",
+            "contrastText": "#fff"
+          },
+          "error": {
+            "main": "#d32f2f",
+            "light": "#ef5350",
+            "dark": "#c62828",
+            "contrastText": "#fff"
+          },
+          "warning": {
+            "main": "#ed6c02",
+            "light": "#ff9800",
+            "dark": "#e65100",
+            "contrastText": "#fff"
+          },
+          "info": {
+            "main": "#0288d1",
+            "light": "#03a9f4",
+            "dark": "#01579b",
+            "contrastText": "#fff"
+          },
+          "success": {
+            "main": "#2e7d32",
+            "light": "#4caf50",
+            "dark": "#1b5e20",
+            "contrastText": "#fff"
+          },
+          "grey": {
+            "50": "#fafafa",
+            "100": "#f5f5f5",
+            "200": "#eeeeee",
+            "300": "#e0e0e0",
+            "400": "#bdbdbd",
+            "500": "#9e9e9e",
+            "600": "#757575",
+            "700": "#616161",
+            "800": "#424242",
+            "900": "#212121",
+            "A100": "#f5f5f5",
+            "A200": "#eeeeee",
+            "A400": "#bdbdbd",
+            "A700": "#616161"
+          },
+          "contrastThreshold": 3,
+          "tonalOffset": 0.2,
+          "text": {
+            "primary": "rgba(0, 0, 0, 0.87)",
+            "secondary": "rgba(0, 0, 0, 0.6)",
+            "disabled": "rgba(0, 0, 0, 0.38)"
+          },
+          "divider": "rgba(0, 0, 0, 0.12)",
+          "background": {
+            "paper": "#fff",
+            "default": "#fff"
+          },
+          "action": {
+            "active": "rgba(0, 0, 0, 0.54)",
+            "hover": "rgba(0, 0, 0, 0.04)",
+            "hoverOpacity": 0.04,
+            "selected": "rgba(0, 0, 0, 0.08)",
+            "selectedOpacity": 0.08,
+            "disabled": "rgba(0, 0, 0, 0.26)",
+            "disabledBackground": "rgba(0, 0, 0, 0.12)",
+            "disabledOpacity": 0.38,
+            "focus": "rgba(0, 0, 0, 0.12)",
+            "focusOpacity": 0.12,
+            "activatedOpacity": 0.12
+          }
+        },
+        "shape": {
+          "borderRadius": 4
+        },
+        "mixins": {
+          "toolbar": {
+            "minHeight": 56,
+            "@media (min-width:0px)": {
+              "@media (orientation: landscape)": {
+                "minHeight": 48
+              }
+            },
+            "@media (min-width:600px)": {
+              "minHeight": 64
+            }
+          }
+        },
+        "shadows": [
+          "none",
+          "0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12)",
+          "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)",
+          "0px 3px 3px -2px rgba(0,0,0,0.2),0px 3px 4px 0px rgba(0,0,0,0.14),0px 1px 8px 0px rgba(0,0,0,0.12)",
+          "0px 2px 4px -1px rgba(0,0,0,0.2),0px 4px 5px 0px rgba(0,0,0,0.14),0px 1px 10px 0px rgba(0,0,0,0.12)",
+          "0px 3px 5px -1px rgba(0,0,0,0.2),0px 5px 8px 0px rgba(0,0,0,0.14),0px 1px 14px 0px rgba(0,0,0,0.12)",
+          "0px 3px 5px -1px rgba(0,0,0,0.2),0px 6px 10px 0px rgba(0,0,0,0.14),0px 1px 18px 0px rgba(0,0,0,0.12)",
+          "0px 4px 5px -2px rgba(0,0,0,0.2),0px 7px 10px 1px rgba(0,0,0,0.14),0px 2px 16px 1px rgba(0,0,0,0.12)",
+          "0px 5px 5px -3px rgba(0,0,0,0.2),0px 8px 10px 1px rgba(0,0,0,0.14),0px 3px 14px 2px rgba(0,0,0,0.12)",
+          "0px 5px 6px -3px rgba(0,0,0,0.2),0px 9px 12px 1px rgba(0,0,0,0.14),0px 3px 16px 2px rgba(0,0,0,0.12)",
+          "0px 6px 6px -3px rgba(0,0,0,0.2),0px 10px 14px 1px rgba(0,0,0,0.14),0px 4px 18px 3px rgba(0,0,0,0.12)",
+          "0px 6px 7px -4px rgba(0,0,0,0.2),0px 11px 15px 1px rgba(0,0,0,0.14),0px 4px 20px 3px rgba(0,0,0,0.12)",
+          "0px 7px 8px -4px rgba(0,0,0,0.2),0px 12px 17px 2px rgba(0,0,0,0.14),0px 5px 22px 4px rgba(0,0,0,0.12)",
+          "0px 7px 8px -4px rgba(0,0,0,0.2),0px 13px 19px 2px rgba(0,0,0,0.14),0px 5px 24px 4px rgba(0,0,0,0.12)",
+          "0px 7px 9px -4px rgba(0,0,0,0.2),0px 14px 21px 2px rgba(0,0,0,0.14),0px 5px 26px 4px rgba(0,0,0,0.12)",
+          "0px 8px 9px -5px rgba(0,0,0,0.2),0px 15px 22px 2px rgba(0,0,0,0.14),0px 6px 28px 5px rgba(0,0,0,0.12)",
+          "0px 8px 10px -5px rgba(0,0,0,0.2),0px 16px 24px 2px rgba(0,0,0,0.14),0px 6px 30px 5px rgba(0,0,0,0.12)",
+          "0px 8px 11px -5px rgba(0,0,0,0.2),0px 17px 26px 2px rgba(0,0,0,0.14),0px 6px 32px 5px rgba(0,0,0,0.12)",
+          "0px 9px 11px -5px rgba(0,0,0,0.2),0px 18px 28px 2px rgba(0,0,0,0.14),0px 7px 34px 6px rgba(0,0,0,0.12)",
+          "0px 9px 12px -6px rgba(0,0,0,0.2),0px 19px 29px 2px rgba(0,0,0,0.14),0px 7px 36px 6px rgba(0,0,0,0.12)",
+          "0px 10px 13px -6px rgba(0,0,0,0.2),0px 20px 31px 3px rgba(0,0,0,0.14),0px 8px 38px 7px rgba(0,0,0,0.12)",
+          "0px 10px 13px -6px rgba(0,0,0,0.2),0px 21px 33px 3px rgba(0,0,0,0.14),0px 8px 40px 7px rgba(0,0,0,0.12)",
+          "0px 10px 14px -6px rgba(0,0,0,0.2),0px 22px 35px 3px rgba(0,0,0,0.14),0px 8px 42px 7px rgba(0,0,0,0.12)",
+          "0px 11px 14px -7px rgba(0,0,0,0.2),0px 23px 36px 3px rgba(0,0,0,0.14),0px 9px 44px 8px rgba(0,0,0,0.12)",
+          "0px 11px 15px -7px rgba(0,0,0,0.2),0px 24px 38px 3px rgba(0,0,0,0.14),0px 9px 46px 8px rgba(0,0,0,0.12)"
+        ],
+        "typography": {
+          "htmlFontSize": 16,
+          "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+          "fontSize": 14,
+          "fontWeightLight": 300,
+          "fontWeightRegular": 400,
+          "fontWeightMedium": 500,
+          "fontWeightBold": 700,
+          "h1": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 300,
+            "fontSize": "6rem",
+            "lineHeight": 1.167,
+            "letterSpacing": "-0.01562em"
+          },
+          "h2": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 300,
+            "fontSize": "3.75rem",
+            "lineHeight": 1.2,
+            "letterSpacing": "-0.00833em"
+          },
+          "h3": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "3rem",
+            "lineHeight": 1.167,
+            "letterSpacing": "0em"
+          },
+          "h4": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "2.125rem",
+            "lineHeight": 1.235,
+            "letterSpacing": "0.00735em"
+          },
+          "h5": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "1.5rem",
+            "lineHeight": 1.334,
+            "letterSpacing": "0em"
+          },
+          "h6": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 500,
+            "fontSize": "1.25rem",
+            "lineHeight": 1.6,
+            "letterSpacing": "0.0075em"
+          },
+          "subtitle1": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "1rem",
+            "lineHeight": 1.75,
+            "letterSpacing": "0.00938em"
+          },
+          "subtitle2": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 500,
+            "fontSize": "0.875rem",
+            "lineHeight": 1.57,
+            "letterSpacing": "0.00714em"
+          },
+          "body1": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "1rem",
+            "lineHeight": 1.5,
+            "letterSpacing": "0.00938em"
+          },
+          "body2": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "0.875rem",
+            "lineHeight": 1.43,
+            "letterSpacing": "0.01071em"
+          },
+          "button": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 500,
+            "fontSize": "0.875rem",
+            "lineHeight": 1.75,
+            "letterSpacing": "0.02857em",
+            "textTransform": "capitalize"
+          },
+          "caption": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "0.75rem",
+            "lineHeight": 1.66,
+            "letterSpacing": "0.03333em"
+          },
+          "overline": {
+            "fontFamily": "\"Roboto\", \"Helvetica\", \"Arial\", sans-serif",
+            "fontWeight": 400,
+            "fontSize": "0.75rem",
+            "lineHeight": 2.66,
+            "letterSpacing": "0.08333em",
+            "textTransform": "uppercase"
+          }
+        },
+        "transitions": {
+          "easing": {
+            "easeInOut": "cubic-bezier(0.4, 0, 0.2, 1)",
+            "easeOut": "cubic-bezier(0.0, 0, 0.2, 1)",
+            "easeIn": "cubic-bezier(0.4, 0, 1, 1)",
+            "sharp": "cubic-bezier(0.4, 0, 0.6, 1)"
+          },
+          "duration": {
+            "shortest": 150,
+            "shorter": 200,
+            "short": 250,
+            "standard": 300,
+            "complex": 375,
+            "enteringScreen": 225,
+            "leavingScreen": 195
+          }
+        },
+        "zIndex": {
+          "mobileStepper": 1000,
+          "fab": 1050,
+          "speedDial": 1050,
+          "appBar": 1100,
+          "drawer": 1200,
+          "modal": 1300,
+          "snackbar": 1400,
+          "tooltip": 1500
+        },
+        "name": "plain",
+        "ID": "lb8o2lss0t9v67cvab9j"
+      }
+    ],
+    "components": [
+      {
+        "ComponentType": "Button",
+        "ComponentName": "Button-1",
+        "state": [],
+        "styles": [],
+        "events": [],
+        "settings": [
+          {
+            "SettingName": "Label",
+            "SettingValue": "Button"
+          },
+          {
+            "SettingName": "variant",
+            "SettingValue": "contained"
+          }
+        ],
+        "scripts": [],
+        "data": [],
+        "ID": "lbb6894h2cq4pgp2spw",
+        "order": 0
+      }
+    ],
+    "Photo": "https://www.sky-tunes.com/assets/icon-72x72.png"
   }
 ]

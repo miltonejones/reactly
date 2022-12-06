@@ -51,14 +51,15 @@
 
 .scroll-head .text { 
   position: absolute;
-  top: 450px;
-  left: 50px;
+  top: 360px;
+  left: 30px;
   font-size: 2.5rem;
   color: white;
   opacity: 1;
-  transition: opacity 0.4s linear;
+  transition: all 0.4s linear;
 }
 
 .running .scroll-head .text {  
   opacity: 0;
+  left: -300px;
 }

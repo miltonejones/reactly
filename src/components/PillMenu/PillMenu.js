@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Box, Typography, Tooltip } from '@mui/material';
-import { Flex } from "..";
+import { Text, Flex } from "..";
  
 export const Pill = styled(Box)(({ theme, square , round, selected, backgroundColor = 'white' }) => ({
  padding: square || round ? 0 : theme.spacing(0.5, 1),
@@ -20,7 +20,7 @@ const PillMenu = ( { options = [], value, image, onChange }) => {
      {options.map(o => <Pill selected={o === value} onClick={() => onChange && onChange(o)} key={o}>
       {image 
         ? <Tooltip title={o}><img alt={o} src={`/icon/${o}.png`} /></Tooltip>
-        : <Typography sx={{fontWeight: o.toString() === value?.toString() ? 600 : 400}} variant="caption">{o.toString()}</Typography>}
+        : <Text small sx={{fontWeight: o.toString() === value?.toString() ? 600 : 400}}>{o.toString()}</Text>}
      </Pill>)}
    </Flex>
  );

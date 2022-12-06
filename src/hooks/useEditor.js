@@ -194,21 +194,30 @@ export const useEditor = (apps) => {
     })
   }
    
-  const setPage = async(appID, page, pageID) => {
+  const setPage = async(appID, page, pageID, fn) => {
     editProg(appID, async (app) => {
       const existing = app.pages.find((c) => c.ID === page.ID); 
+
+      const createdPage = existing ? {...page, pageID} : { ...page, appID, ID: uniqueId()}
+
       app.pages = !existing 
-        ? app.pages.concat({ ...page, appID, ID: uniqueId()})
-        : app.pages.filter(f => f.ID === page.ID ? {...page, pageID} : f)
+        ? app.pages.concat(createdPage)
+        : app.pages.filter(f => f.ID === page.ID ? createdPage : f);
+
+      fn && fn (createdPage)
     })
   }
    
   const addComponent = async (appID, pageID, component, options) => {
-    const { order, after, before } = options ?? {}
+    const { order, after, before, fn } = options ?? {}
+    
     
     const res = editPage(appID, pageID, async (page, app) => { 
       const settings = Library[component.ComponentType].Defaults;
   
+      if (!app.components) {
+        Object.assign(app, {components: []})
+      }
 
  
       let maxOrder = getMax(page.components.map(f => f.order));
@@ -242,6 +251,8 @@ export const useEditor = (apps) => {
       
       page.components = page.components.concat(box);
 
+      fn && fn(box)
+
       return box;
     });
     return res;
@@ -261,7 +272,7 @@ export const useEditor = (apps) => {
   }
 
   
-  const setPageScript = async (appID, pageID, scriptID, name, code) => {
+  const setPageScript = async (appID, pageID, scriptID, name, code, fn) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
         name, code
@@ -269,18 +280,23 @@ export const useEditor = (apps) => {
       
       if (!page.scripts) {
         Object.assign(page, { scripts: []});
-      }
+      } 
 
-      const maxID = getMax(page.scripts.map(f => f.ID));
-      // alert (JSON.stringify({setting, maxID}))
+      const scriptExists = page.scripts.find(f => f.ID === scriptID);
+      const createdScript = scriptExists ? {...setting, ID: scriptID} : {...setting, ID: uniqueId()}
  
-      page.scripts = page.scripts.find(f => f.ID === scriptID)
-        ? page.scripts.map((c) => c.ID === scriptID ? {...setting, ID: scriptID} : c)
-        : page.scripts.concat({...setting, ID: maxID + 1});
+      page.scripts = scriptExists
+        ? page.scripts.map((c) => c.ID === scriptID ? createdScript : c)
+        : page.scripts.concat(createdScript);
+      
+      fn && fn (createdScript)
     });
   }
 
-  const setPageState = async (appID, pageID, stateID, key, value, type) => {
+  const setPageState = async (appID, pageID, stateID, key, value, type, fn) => {
+    
+    if (!key) return;
+
     editPage(appID, pageID, async (page) => {
       const setting = {
         Key: key,
@@ -291,12 +307,16 @@ export const useEditor = (apps) => {
       if (!page.state) {
         Object.assign(page, {state: []})
       }
- 
+//  alert (JSON.stringify({stateID, setting}))
+//  alert (JSON.stringify({key, stateID, val: page.state[key]}))
 
       Object.assign(page, { state: page.state.find(f => f.ID === stateID)
         ? page.state.map((c) => c.ID === stateID ? {...setting, ID: stateID} : c)
-        : page.state.concat({...setting, ID: uniqueId() }) }) 
-   
+        : page.state.concat({...setting, ID: uniqueId() }) })
+        
+      fn && fn(page)
+  // app.Alert (<pre>{JSON.stringify(page.state,0,2)}</pre>)
+//  alert (JSON.stringify({key, val: page.state[key]}))
     });
   }
 

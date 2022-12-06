@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter, Routes, Route, } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route,useParams } from "react-router-dom"; 
 import "./App.css";
 import {
   Popover,
@@ -26,8 +26,20 @@ import { useLocalStorage } from "./hooks/useLocalStorage";
 import Modal, { useModal } from "./components/Modal/Modal";
  
 
+function ChildRoute({ pages, path, appData })  {
+  const routes = pages
+    .filter(f => !!f.parameters).reduce((items, pg) => {
+      const path = Object.keys(pg.parameters).map(e => `:${e}`).join('/')
+      items.push([`/apps/${path}/${pg.path}`, path].join('/'))
+      return items;
+  }, []);
+
+  return routes.map(path => <Route path={path} element={<Renderer applications={appData} />} />  ) 
+}
+
 function App() {
   const appHistory = useAppHistory();
+  const { appname } = useParams()
 
   const [pageClientState, setPageClientState] = React.useState({});
   const [pageResourceState, setPageResourceState] = React.useState([]);
@@ -71,6 +83,20 @@ function App() {
 
   const setAppData = data => store.setItem('page_db_items', JSON.stringify(data)); 
   const getPageResourceState = () => pageResourceState
+  let routes = []
+
+
+  if (queryState.path) {
+     routes = queryState.pages
+      .filter(f => !!f.parameters).reduce((items, pg) => {
+        const path = Object.keys(pg.parameters).map(e => `:${e}`).join('/')
+        items.push([`/apps/${queryState.path}/:pagename`, path].join('/'))
+        return items;
+    }, []);
+
+    
+ 
+  }
 
   return (
     <AppStateContext.Provider
@@ -100,15 +126,23 @@ function App() {
         setDirty,
         createBreadcrumbs
       }}
-    >
-     
+    > 
+
       <BrowserRouter>
         <Routes>
+ 
+
           <Route path="/" element={<Home appData={appData} />} />  
           <Route path="/edit/:appname" element={<Editor applications={appData} />} />  
           <Route path="/info/:appname" element={<Detail applications={appData} />} />  
           <Route path="/apps/:appname" element={<Renderer applications={appData} />} />  
-          <Route path="/apps/:appname/:pagename" element={<Renderer applications={appData} />} />  
+
+
+ 
+   
+          
+          <Route path="/apps/:appname/:pagename" element={<Renderer applications={appData} />} /> 
+          <Route path="/apps/:appname/:pagename/*" element={<Renderer applications={appData} />} />  
         </Routes>
       </BrowserRouter>
       <Modal {...modal.modalProps}/>

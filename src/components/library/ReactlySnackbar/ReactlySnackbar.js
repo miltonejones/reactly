@@ -36,9 +36,7 @@ const ReactlyComponentSnackbar = ({ children, ...props }) => {
 >
    {children}
 </ReactlyComponent>
-  {/* <pre>
-    {JSON.stringify(args,0,2)}
-  </pre> */}
+  
   </>
  );
 }

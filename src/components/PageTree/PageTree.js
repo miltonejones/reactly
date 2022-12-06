@@ -50,8 +50,7 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
         <ListItemIcon sx={{minWidth: 24}}>
            <Tiny icon={Article} />
         </ListItemIcon>
-        <ListItemText 
-        sx={{ pl: 0}}
+        <ListItemText  
           onClick={() => {
             onClick && onClick(null);
             setTimeout(() => {
@@ -76,7 +75,7 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
       {!!kids && <>{kids.map(c => <Pages 
             dropPage={dropPage}
             setPage={setPage} selected={selected}  onClick={onClick} 
-            indent={indent + 3.5} 
+            indent={indent + 3} 
             key={c.PageName} 
             duplicatePage={duplicatePage}
             trees={trees} 

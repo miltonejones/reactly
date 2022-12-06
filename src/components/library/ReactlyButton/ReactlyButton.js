@@ -21,9 +21,7 @@ const ReactlyButtonComponent = (props) => {
   !!End && Object.assign(icons, {endIcon: <End />})
  
  return (
-   <>
-   {/* [[props <pre> {JSON.stringify(props,0,2)}</pre> ]]
-  [[args <pre> {JSON.stringify(args,0,2)}</pre> ]] */}
+   <> 
    <ReactlyComponent component={Button} {...props} {...icons}>
    {args.Label || props.Label} 
    </ReactlyComponent>
@@ -59,8 +57,8 @@ export const ReactlyButtonStyles = {
 export const ReactlyButtonEvents =  [
   {
     name: 'onClick',
-    title: 'Button is clicked',
-    description: 'User clicks on component or focuses and presses SPAACE.'
+    title: 'Component is clicked',
+    description: 'User clicks on component or focuses and presses SPACE.'
   }
 ]
 
@@ -80,7 +78,7 @@ export const ReactlyButtonSettings = {
         {
           title: 'Disabled',
           label: 'disabled',
-          start: false,
+          bindable: true,
           type: 'boolean'
         },
       ]

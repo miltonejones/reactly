@@ -14,11 +14,12 @@ import PillMenu, { Pill } from "./PillMenu/PillMenu";
 import ConnectionDrawer from "./ConnectionDrawer/ConnectionDrawer";
 import StateDrawer from "./StateDrawer/StateDrawer";
 import ScriptDrawer from "./ScriptDrawer/ScriptDrawer";
+import LibraryTree from "./LibraryTree/LibraryTree";
 import PageTree from './PageTree/PageTree'
 
 import { Flex, Tiny, TextInput, AU, ChipBox, Tooltag, PopoverTextBox, PopoverInput, 
     RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton,
-    useClipboard, Area, SearchBox, TextBox, Text } from './Control/Control';
+    useClipboard, Area, SearchBox, TextBox, Text, PopoverPrompt } from './Control/Control';
 
 const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'datetime', 'image', 'audio', 'video'];
 
@@ -27,7 +28,9 @@ export {
   Area,
   ChipBox,
   TabButton,
+  LibraryTree,
   ConnectionModal,
+  PopoverPrompt,
   MenuDrawer, 
   SearchBox,
   Tiny,

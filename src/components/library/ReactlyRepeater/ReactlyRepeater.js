@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Box } from '@mui/material'; 
+import {  Box, Card } from '@mui/material'; 
 import { GenericStyles, LayoutStyles } from '../styles'; 
 import { Loop } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -46,7 +46,15 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
           ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
          }}
       >
+        {/* <Card sx={{width: 200, height: 200, overflow: 'auto'}}>
+       <pre>
+       {JSON.stringify(row,0,2)}
+       </pre>
+        </Card> */}
+        <Box sx={{width: '100%' }}>
      {children} 
+
+        </Box>
       </RepeaterContext.Provider>)}
    </ReactlyComponent> 
   
@@ -99,8 +107,7 @@ const ReactlyRepeater = {
   Settings,
   Styles: {
     categories: [ 
-      ...GenericStyles.categories,
-      ...LayoutStyles.categories
+      ...LayoutStyles.categories, 
     ]
   }, 
   allowChildren: !0,

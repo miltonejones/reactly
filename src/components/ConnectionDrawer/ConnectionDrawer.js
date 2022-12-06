@@ -6,6 +6,7 @@ import { Close, RecentActors, Add, Code, Biotech, DatasetLinked, AutoStories, De
 import { Json } from '../../colorize'; 
 import { useEditor } from '../../hooks/useEditor';
 import ComponentEvents from '../ComponentEvents/ComponentEvents';
+import { JsonModal } from '../../colorize';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -117,7 +118,8 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
   </>
 }
 
-const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, onTermDrop, onTermAdd, onChange, resourceCommit }) => {
+const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
+    onTermDrop, onTermAdd, onChange, setDirty, resourceCommit }) => {
   const { ID, connectionID, name, path, format, method, values, columns, node } = resource;
   const handleChange = key => e => onChange(key, !e.target ? e : e.target.value);
 
@@ -134,6 +136,8 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
 
 
   return <>
+
+<JsonModal json={resource} />
       <Typography sx={{pl: 1}} variant="caption"><b>Configure Resource</b></Typography>
       <Divider  sx={{mb: 2}}/>
       <Box sx={{mr: 2, ml: 2}}>
@@ -159,6 +163,7 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
       
 
       <Flex sx={{pl: 1, pr: 1, mt: 2}}>
+        <JsonModal json={values} />
         <Typography 
             variant="caption"><b>Values</b></Typography>
         <TextBtn onClick={handleAliasOpen}  endIcon={<Add />}>add</TextBtn>
@@ -181,6 +186,7 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
       <Grid sx={{ml: 1}} container spacing={2}>
         
         <Grid item xs={2}>
+        <JsonModal json={terms} />
           <Typography variant="caption"><b>Key</b></Typography>
         </Grid>
 
@@ -196,10 +202,11 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
               {prop.key}
             </Grid>
             <Grid item xs={8}>
-              <TextField label={`Enter ${prop.key} value`}  value={terms[prop.key]} 
+              <TextField placeholder={`Enter ${prop.key} value`}  value={terms[prop.key]} 
               autoComplete="off"
                 onChange={e => {
-                  setTerms(s => ({...s, [prop.key]: e.target.value}))
+                  setTerms(s => ({...s, [prop.key]: e.target.value}));
+                  setDirty(true)
                 }}
               size="small" />
             </Grid>
@@ -337,6 +344,14 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
           values: []
         })
       }
+
+      const initialTerms = res.values?.reduce((item, val) => {
+         item[val.key] = val.value;
+         return item;
+      }, {})
+      // alert (JSON.stringify(initialTerms))
+      setTerms(initialTerms);
+
       return setSelected(res || {})
     }
     setSelected({})
@@ -347,7 +362,17 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
   }
 
   const handleResourceCommit = () => { 
-    setResource(appID, selected)
+    const committed = {
+      ...selected,
+      values: selected?.values.map(val => ({
+        ...val,
+        value: terms[val.key]
+      }))
+    }
+    // alert (JSON.stringify(selected.values,0,2))
+    // alert (JSON.stringify(committed,0,2))
+    // return alert (JSON.stringify(terms,0,2))
+    setResource(appID, committed)
     setDirty(false);
   }
 
@@ -407,7 +432,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         <Spacer />
 
         <IconButton disabled>
-        <AutoStories />
+        <AutoStories                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  />
       </IconButton>
 
             <IconButton
@@ -434,12 +459,13 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         </IconButton>
       </Flex>
       <Divider />
-    
-
+     
     <Grid container sx={{height: 400}}>
       
       <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
-        <Typography sx={{pl: 1}} variant="caption"><b>Connections</b></Typography>
+          <JsonModal json={connections} />
+        <Typography sx={{pl: 1}} variant="caption">
+          <b>Connections</b></Typography>
         <Divider  sx={{mb: 2}}/>
 
         {connections.map (connection => <ConnectionNode 
@@ -460,9 +486,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
               dirty={dirty}
               {...connection} />)}
 
-             {/* <Box sx={{maxHeight: 240, overflow: 'auto'}}>
-             <pre>{JSON.stringify(selectedConnection,0,2)}</pre>
-             </Box> */}
+             
       </Grid>
 
       {!!selectedConnection?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
@@ -474,6 +498,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
         {!!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <ResourceForm 
+          setDirty={setDirty}
               dirty={dirty}
               answer={answer}
               setAnswer={setAnswer}
@@ -510,7 +535,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
           </Box>
         </Grid>} 
 
-        {!answer && !!selected && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+        {!answer && !!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Events</b></Typography>
           <Divider  sx={{mb: 2}}/>
           <Box sx={{height: 400, overflow: 'auto', pl: 2}}>

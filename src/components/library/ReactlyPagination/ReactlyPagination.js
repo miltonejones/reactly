@@ -21,7 +21,7 @@ const ReactlyComponentPagination = ({ children, ...props }) => {
 export const Events =  [
   {
     name: 'onPageChange',
-    title: 'Button is clicked',
+    title: 'Component is clicked',
     description: 'Page value changes',
     emits: ['page']
   }

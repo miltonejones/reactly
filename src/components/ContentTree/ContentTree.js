@@ -98,8 +98,13 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
       action: () =>  onDrop (tree.ID)
     }
   ]
+  let allowedChildren;
+  try {
 
-  const allowedChildren = !tree ? null : Library[tree.ComponentType].allowedChildren;
+    allowedChildren = !tree ? null : Library[tree.ComponentType].allowedChildren;
+  } catch (ex) {
+    console.log ({ ex })
+  }
 
   const baseIcon = expanded ? Remove : Add;
   const ExpandIcon = !!kids.length ? baseIcon : RadioButtonUnchecked;

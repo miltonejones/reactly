@@ -447,7 +447,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1033,7 +1033,7 @@
       },
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1508,7 +1508,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1798,7 +1798,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -2048,7 +2048,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -2300,7 +2300,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -2560,7 +2560,7 @@
             },
             {
               "title": "Delete Icon",
-              "label": "deleteIcon",
+              "label": "deleteIcon", 
               "types": "ICON_TYPES",
               "renderOption": "FN-renderOption",
               "helperText": "Requires onDelete event to be handled."
@@ -3450,185 +3450,7 @@
     "Icon": {
       "type": {},
       "compare": null
-    },
-    "Styles": {
-      "categories": [
-        {
-          "name": "Dimensions",
-          "styles": [
-            {
-              "title": "Width",
-              "label": "width",
-              "xs": 6
-            },
-            {
-              "title": "Height",
-              "label": "height",
-              "xs": 6
-            },
-            {
-              "title": "Minimum Width",
-              "label": "min-width",
-              "xs": 6
-            },
-            {
-              "title": "Minimum Height",
-              "label": "min-heignt",
-              "xs": 6
-            },
-            {
-              "title": "Maximum Width",
-              "label": "max-width",
-              "xs": 6
-            },
-            {
-              "title": "Maximum Height",
-              "label": "max-heignt",
-              "xs": 6
-            }
-          ]
-        },
-        {
-          "name": "Position",
-          "styles": [
-            {
-              "title": "position",
-              "label": "position",
-              "types": [
-                "relative",
-                "absolute",
-                "fixed"
-              ]
-            },
-            {
-              "label": "top",
-              "title": "top",
-              "xs": 3
-            },
-            {
-              "label": "left",
-              "title": "left",
-              "xs": 3
-            },
-            {
-              "label": "bottom",
-              "title": "bottom",
-              "xs": 3
-            },
-            {
-              "label": "right",
-              "title": "right",
-              "xs": 3
-            }
-          ]
-        },
-        {
-          "name": "Cursor",
-          "styles": [
-            {
-              "label": "cursor",
-              "types": [
-                "pointer",
-                "default",
-                "progress"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Padding",
-          "styles": [
-            {
-              "label": "padding",
-              "types": [
-                "Xxs/0.125",
-                "Xs/0.25",
-                "Sm/0.5",
-                "Md/0.75",
-                "Lg/1",
-                "Xl/1.5",
-                "Xxl/2",
-                "3xl/2.5"
-              ],
-              "renderOption": "FN-renderOption",
-              "edges": true,
-              "free": true
-            }
-          ]
-        },
-        {
-          "name": "Margin",
-          "styles": [
-            {
-              "label": "margin",
-              "types": [
-                "Xxs/0.125",
-                "Xs/0.25",
-                "Sm/0.5",
-                "Md/0.75",
-                "Lg/1",
-                "Xl/1.5",
-                "Xxl/2",
-                "3xl/2.5"
-              ],
-              "renderOption": "FN-renderOption",
-              "edges": true,
-              "free": true
-            }
-          ]
-        },
-        {
-          "name": "White Space",
-          "styles": [
-            {
-              "title": "white-space",
-              "label": "white-space",
-              "types": [
-                "nowrap",
-                "break-space",
-                "pre",
-                "pre-line",
-                "pre-wrap",
-                "inherit"
-              ]
-            },
-            {
-              "title": "text-overflow",
-              "label": "text-overflow",
-              "types": [
-                "clip",
-                "ellipsis",
-                "inherit"
-              ]
-            },
-            {
-              "title": "overflow",
-              "label": "overflow",
-              "types": [
-                "auto",
-                "hidden",
-                "overlay",
-                "scroll"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
-        }
-      ]
-    },
+    }, 
     "Settings": {}
   },
   "DataGrid": {
@@ -6663,7 +6485,7 @@
     "Events": [
       {
         "name": "onPageChange",
-        "title": "Component is clicked",
+        "title": "Button is clicked",
         "description": "Page value changes",
         "emits": [
           "page"
@@ -9368,16 +9190,6 @@
               "label": "subtitle",
               "type": "chip",
               "bindable": true
-            }
-          ]
-        },
-        {
-          "name": "Appearance",
-          "settings": [
-            {
-              "title": "Variant",
-              "label": "variant",
-              "types": []
             }
           ]
         }

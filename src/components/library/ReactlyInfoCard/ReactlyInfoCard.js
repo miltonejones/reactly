@@ -18,8 +18,9 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
       const binding =  row[item];
       const setting = binding.SettingName;
       const value = binding.record[item];
-      settings = settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
- 
+      settings = settings?.find(f => f.SettingName === setting)
+        ? settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
+        : settings.concat( {SettingName: setting,SettingValue: value } )
     }) 
   }
 
@@ -52,13 +53,12 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
       const footer = !args.below_image ? <i /> : titleBar;
  return (
   <> 
- {/* <pre> {JSON.stringify(settings,0,2)}</pre>
- <hr /> */}
+ 
   <ReactlyComponent elevation={on ? 8 : 1} component={Card} {...props} >
     
 {header} 
 
-     {(!!args.image || args.use_image) && <CardMedia
+     {(!!args.image || args.use_image) && <CardMedia 
       onClick={e => {
         onCardClick && onCardClick(e, {
           ...row,

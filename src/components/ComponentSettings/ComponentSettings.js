@@ -119,9 +119,7 @@ export const ComponentInput = props => {
             
 
     return <>
-<pre>
-      {/* {JSON.stringify(value,0,2)} */}
-      </pre>
+ 
       <ComponentInputBody {...inputProps} /> 
       {!!bindable && <Box sx={{mb: 2}}><ComponentInputBody {...bindProps} /></Box>}
     </>
@@ -184,14 +182,14 @@ export const ComponentInputBody = (props) => {
   , [type, trueProp, onChange, label]);
 
 
-  if (when && !when(args)) {
+  if (when &&  typeof when === 'function' && !when(args)) {
     return <></>
   }
 
 
   const { bindableProps }  = Library [component.ComponentType]
   const header = <> 
-  <Text small variant="caption">{title}</Text>
+  <Text small>{title}</Text>
   </>
 
   const inputProps = {
@@ -226,7 +224,9 @@ export const ComponentInputBody = (props) => {
   const CustomInput = customInputs[type];
   if (CustomInput) {
     return <>
-    <CustomInput {...inputProps} /></> 
+    <CustomInput {...inputProps} />
+    
+    </> 
   } 
 
   if (types && !customProp ) {
@@ -316,7 +316,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
  
     {settings.map(setting => {
 
-      if (setting.when && !setting.when(args)) {
+      if (setting.when && typeof setting.when === 'function' && !setting.when(args)) {
         return <></>
       }
 
@@ -334,9 +334,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
       return (
         <>
  
-          {setting.edges && <Grid sx={{p: 0}} xs={12}>
-          {/* <pre>{JSON.stringify(args,0,2)}</pre> */}
-          {/* <pre>{JSON.stringify(loop,0,2)}</pre> */}
+          {setting.edges && <Grid sx={{p: 0}} xs={12}> 
           <Flex sx={{pl: 1, pt: 1}}>
               <Text
                 onClick={() => {
@@ -357,8 +355,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
           </Grid>}
 
           {setting.color && <Grid sx={{p: 0}} xs={12}>
-          {/* <pre>{JSON.stringify(args,0,2)}</pre> */}
-          {/* <pre>{JSON.stringify(loop,0,2)}</pre> */}
+ 
           <Flex sx={{pl: 1, pt: 1}}>
               <Text 
                 onClick={() => {
@@ -437,7 +434,7 @@ export const ComponentCollapse = ({
         borderBottom: always ? 0 :  1, borderColor: 'divider' 
         }} onClick={() =>  closeCollapse(!on)}>
       <Flex>
-      <Text small variant="caption"><b>{name}</b></Text>
+      <Text small><b>{name}</b></Text>
       <Spacer />
       {!always && <TinyButton icon={!active ? Icon : Delete } deg={on || active  ? 180 : 0} />}
       </Flex>

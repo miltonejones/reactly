@@ -23,8 +23,8 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
     onMouseEnter={() => setRise(3)}
     onMouseLeave={() => setRise(1)}>
     <Stack>
-      <Typography variant="caption"><b>{title}</b></Typography>
-      <Typography variant="caption">{description}</Typography>
+      <Text small><b>{title}</b></Text>
+      <Text small>{description}</Text>
     </Stack>
   </Card>
 }
@@ -39,6 +39,7 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
   const title = !chosenEvent ? `unknown event ${eventName}` : chosenEvent.description; 
   let act = 'Unknown action'
   const obj = resources.find(e => e.ID === action.target)
+  let ok = true;
   switch(action.type) {
     case 'setState':
       const label = action.value?.toString().split('|').join(' or ')
@@ -57,6 +58,7 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
     case 'modalOpen':
       const dialogName = page.components.find(e => e.ID === action.target)
       act = <>{action.open ? 'Open' : 'Close'} component <b>{dialogName?.ComponentName}</b></>
+      ok = !!dialogName;
       break;
     case 'scriptRun':
       const scr = page.scripts && page.scripts.find(f => f.ID === action.target);
@@ -64,10 +66,15 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
         act = <>Run script "{scr.name}"</>
       } else {
         act = <>Could not find script {action.target}</>
+        ok = false;
       }
       break;
     default:
       //do nothing;
+  }
+
+  if (!ok) {
+    return <i />
   }
 
   return <Card sx={{p: 2, cursor: 'pointer', mb: 1,
@@ -76,11 +83,11 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
     >
     <Stack>
       <Flex>
-        <Text small onClick={() => onSelect && onSelect(eventName, ID)} variant="caption"><b>{title}</b></Text>
+        <Text small onClick={() => onSelect && onSelect(eventName, ID)}><b>{title}</b></Text>
         <Spacer />
         <Tiny icon={Delete} onClick={() => onDelete && onDelete(ID)}/>
       </Flex>
-      <Text small onClick={() => onSelect && onSelect(eventName, ID)} variant="caption">{act}</Text>
+      <Text small onClick={() => onSelect && onSelect(eventName, ID)}>{act}</Text>
  
     </Stack>
  
@@ -179,9 +186,7 @@ const ComponentEvents = ({
   
  return (
    <Layout>
-{/* <pre>
-  {JSON.stringify(eventOwner.events,0,2)}
-</pre> */}
+ 
     {/* panel header  */}
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
       <Spacer />
@@ -191,7 +196,7 @@ const ComponentEvents = ({
     {/* events that the component supports  */}
     <Collapse in={open}>
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
-        <Typography variant="caption"> <b>Supported Events</b></Typography>
+        <Text small> <b>Supported Events</b></Text>
       </Flex>
       {supportedEvents
         .filter(f => !selectedEvent || f.name === selectedEvent)
@@ -205,7 +210,7 @@ const ComponentEvents = ({
     {/* events that have handlers  */}
     {!!eventOwner.events?.length && !selectedEvent &&  <>    
       <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
-        <Typography variant="caption"> <b>Active Events</b></Typography>
+        <Text small> <b>Active Events</b></Text>
       </Flex>
       {eventOwner.events?.map(e => <HandlerCard 
         selected={selectedHandler} 

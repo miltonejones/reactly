@@ -29,10 +29,7 @@ const ReactlyComponentSelect = ({ children, ...props }) => {
       </Box>}
       {parsed?.filter(e => !filter || e.text.toLowerCase().indexOf(filter.toLowerCase()) > -1).map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
    </ReactlyComponent></FormControl>
-{/* <pre>
-{JSON.stringify(props,0,2)}
- {JSON.stringify(args,0,2)}
-</pre> */}
+ 
  </>
  );
 }

@@ -6,7 +6,10 @@ import {
   ThemeProvider,
   styled,
   Box,
-  Alert,Avatar
+  Alert,
+  Avatar,
+  MenuItem,
+  Menu
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
@@ -21,6 +24,7 @@ const Layout = styled(Box)(({ theme }) => ({
 
 const Preview = ({
   component: Component,
+  selectedPage,
   on,
   order,
   children,
@@ -31,6 +35,7 @@ const Preview = ({
     <>
       <Component
         {...props}
+        selectedPage={selectedPage}
         componentEditing={on}
         sx={{
           ...sx,
@@ -77,15 +82,30 @@ const ComponentTree = ({
 
   const stateProps = !selectedPage?.state
     ? null
-    : objectReduce(selectedPage.state);
-  // const [pageClientState, setPageClientState] = React.useState(stateProps);
-  // const [pageResourceState, setPageResourceState] = React.useState([]);
+    : objectReduce(selectedPage.state); 
 
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
-
-
   const [pageLoaded, setPageLoaded] = React.useState(0);
+  const [message, setMessage] = React.useState('Unknown action');
+  const [menuCommand, setMenuCommand] = React.useState(null);
+
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl) 
+  const handleClick = (event, data) => {
+    setMessage(data.label);
+    setMenuCommand(data.action)
+    setAnchorEl(event.currentTarget); 
+  };
+  const handleCommand = () => {  
+    menuCommand && menuCommand()
+    setAnchorEl(null); 
+  }; 
+
+  const handleClose = (value) => {  
+    setAnchorEl(null); 
+  }; 
 
   const { handleComponentEvent } = usePageContext(); 
 
@@ -122,7 +142,10 @@ const ComponentTree = ({
   const pageTheme = createTheme(theme);
  
   if (!queryState.pageLoaded) {
-    return <Avatar onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
+    return <>
+    <Avatar className="App-logo" onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
+    Loading...
+    </>
   }
   
   return (
@@ -136,7 +159,7 @@ const ComponentTree = ({
 
           pageRefState,
           setPageRefState,
-
+          handleClick,
           pageClientState,
           getPageClientState,
           setPageClientState,
@@ -159,12 +182,14 @@ const ComponentTree = ({
             <title>
               Reactly |{preview ? " Editor | " : ""} {path.join(" | ")}
             </title>
+            <link rel="apple-touch-icon" href={appContext.Photo}/>
           </Helmet>
         )}
 
 
         {components.sort(componentOrder).map((c) => (
             <RenderComponent
+              selectedPage={selectedPage}
               selectedComponent={selectedComponent}
               preview={preview}
               key={c.ComponentName}
@@ -172,6 +197,19 @@ const ComponentTree = ({
               trees={componentTree}
             />
           ))}
+
+
+          <Menu 
+            anchorEl={anchorEl}
+            anchor="bottom"
+            open={open}
+            onClose={() => handleClose()} 
+          >
+
+          <MenuItem onClick={handleCommand}>{message}</MenuItem>
+          <MenuItem>Edit component</MenuItem>
+
+          </Menu>
       </PageStateContext.Provider>
     </ThemeProvider>
   );
@@ -182,6 +220,7 @@ const RenderComponent = ({
   trees = [],
   preview,
   selectedComponent,
+  selectedPage,
 }) => {
   const on = selectedComponent?.ID === component.ID;
   const kids = trees.filter((t) => t.componentID === component.ID);
@@ -195,6 +234,7 @@ const RenderComponent = ({
     <>
       <Preview
         on={on}
+        selectedPage={selectedPage}
         component={Component}
         preview={preview}
         {...component}
@@ -205,6 +245,7 @@ const RenderComponent = ({
             {kids.sort(componentOrder).map((c) => (
               <>
                 <RenderComponent
+                  selectedPage={selectedPage}
                   selectedComponent={selectedComponent}
                   trees={trees}
                   key={c.ComponentName}

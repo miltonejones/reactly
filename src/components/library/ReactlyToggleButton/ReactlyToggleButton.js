@@ -14,10 +14,10 @@ const ReactlyComponentToggleButton = ({ children, ...props }) => {
 
 
  return (
-  <>
+ 
    <ReactlyComponent component={ToggleButton} {...props}>
       {!!Icon && <Icon />}
-   </ReactlyComponent></>
+   </ReactlyComponent> 
  );
 }
 
@@ -98,6 +98,7 @@ const ReactlyToggleButton = {
   Defaults: { }
 }
  
+console.log ({ Icons })
 
 export default ReactlyToggleButton;
 

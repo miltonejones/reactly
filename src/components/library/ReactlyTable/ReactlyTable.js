@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, 
-  TableBody, Box } from '@mui/material'; 
+  TableBody, Box, styled } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { GridOn } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -68,11 +68,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   }
 
  return (
-  <> 
-  {/* <pre>
-  {JSON.stringify(args,0,2)}
-  {JSON.stringify(props,0,2)}
-  </pre> */}
+  <>  
    <ReactlyComponent component={Table} {...props}>
 
       {!!bindingObject.bindings && <TableHead>
@@ -94,8 +90,9 @@ const ReactlyComponentTable = ({ children, ...props }) => {
             }}
             key={i} 
           >
-            {Object.values(row).map((cell, k) => <TableCell 
-            sx={{fontWeight: isSelected(row, i) ? 500 : 400}}
+            {Object.values(row).map((cell, k) => <Cell 
+            color={args['row-color']}
+                selected={isSelected(row, i)}
               onClick={e => {
                 onCellClick && onCellClick(e, {
                   ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
@@ -106,7 +103,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
               }}
               key={k} component="th" scope="row">
               <Flex nowrap={args.nowrap}>{truncate(cell, args.truncate)}</Flex>
-            </TableCell> )}
+            </Cell> )}
             
           </TableRow>
         ))}
@@ -118,6 +115,12 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   </>
  );
 }
+
+const Cell = styled(TableCell)(({ selected, theme, color = 'primary' }) =>( {
+  fontWeight: selected ? 500 : 400,
+  color: selected ? 'white' :'#222',
+  backgroundColor: !selected ? 'white' : (theme.palette[color]||theme.palette.primary).main
+}))
 
 
 const Settings = {
@@ -146,6 +149,11 @@ const Settings = {
           label: 'padding',
           types: [ 	'checkbox','none','normal'], 
         } , 
+        {
+          title: 'Active Row Color',
+          label: 'row-color',
+          types: ['primary', 'secondary', 'warning', 'error', 'success']
+        },
       ]
     },
     {
@@ -159,13 +167,8 @@ const Settings = {
       ]
     }, 
     {
-      name: 'Behavior', 
+      name: 'Selection', 
       settings: [   
-        {
-          title: 'Sticky Header',
-          label: 'stickyHeader',
-          type:  'boolean'
-        } ,
         {
           title: 'Selected Row',
           label: 'selectedIndex',
@@ -179,24 +182,35 @@ const Settings = {
           when: p => p.use_id
         } ,
         {
-          title: 'ID Column',
-          label: 'selectedColumn' ,
-          type: 'tablecolumn'  ,
-          when: p => p.use_id
-        } ,
-        {
           title: 'Select by ID',
           label: 'use_id'  ,
           type: 'boolean'
         } ,
         {
+          title: 'ID Column',
+          label: 'selectedColumn' ,
+          type: 'tablecolumn'  ,
+          when: p => p.use_id
+        } ,
+      ]
+    }, 
+    {
+      name: 'Behavior', 
+      settings: [   
+        {
           title: 'Truncate Cell Text',
-          label: 'truncate' 
+          label: 'truncate' ,
+          xs:6
+        } ,
+        {
+          title: 'Sticky Header',
+          label: 'stickyHeader',
+          type:  'boolean', 
         } ,
         {
           title: 'Disable text wrap',
           label: 'nowrap' ,
-          type:  'boolean'
+          type:  'boolean', 
         } 
       ]
     },

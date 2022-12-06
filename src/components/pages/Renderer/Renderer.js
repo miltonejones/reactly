@@ -11,9 +11,16 @@ import { useParams } from "react-router-dom";
   
  
 const Renderer = ({ applications: apps = {} }) => { 
-  const { appname, pagename } = useParams();
-  const { queryState = {}, setQueryState ,
-
+  const params =  useParams ();
+  const { appname, pagename } =params;
+  const { 
+    
+    pageResourceState, 
+    getPageResourceState,
+    setPageResourceState,
+ 
+  queryState = {}, 
+  setQueryState ,
   pageClientState,  
   setPageClientState,
 
@@ -22,6 +29,11 @@ const Renderer = ({ applications: apps = {} }) => {
   const applications = typeof apps === 'object'
     ? apps 
     : JSON.parse(apps)
+
+
+  const appData = applications.find(f => f.path === appname);
+  const firstpage = !!pagename ? appData.pages.find(f => f.PagePath === pagename) : appData.pages[0];
+  ; 
 
   const createBreadcrumbs = React.useCallback((node, items = []) => {
     const selectedPage = appData.pages.find(f => f.ID === node.pageID);
@@ -40,13 +52,29 @@ const Renderer = ({ applications: apps = {} }) => {
   } , [ appname])
  
 
-  const appData = applications.find(f => f.path === appname);
+  const componentTreeProps = {
 
-  
-  const firstpage = !!pagename ? appData.pages.find(f => f.PagePath === pagename) : appData.pages[0];
+    pageClientState, 
+    setPageClientState,
+    
+    pageResourceState, 
+    getPageResourceState,
+    setPageResourceState,
+ 
+  }
+
  
 
   const breadcrumbs = createBreadcrumbs(firstpage);
+
+  // if (!queryState.loaded) {
+  //   return <>{JSON.stringify(queryState)}</>
+  // }
+
+  // return <>
+  // {JSON.stringify(params['*']) +
+  //  JSON.stringify(firstpage.parameters) }
+  // </>
 
  return (
    <>
@@ -54,14 +82,14 @@ const Renderer = ({ applications: apps = {} }) => {
     {breadcrumbs.map((crumb, o) => crumb.href 
       ? <Link key={o} href={crumb.href}><Typography variant="body2">{crumb.text}</Typography></Link> 
       : <Typography key={o} sx={{ fontWeight: 600 }} variant="body2">{crumb.text}</Typography>)}
-  </Breadcrumbs> */}
+  </Breadcrumbs> */} 
 
-
-  <ComponentTree loaded={loaded} 
-  
-  pageClientState={pageClientState}
-  setPageClientState={setPageClientState}
-  setLoaded={setLoaded} appContext={appData} selectedPage={firstpage} />
+  <ComponentTree 
+      loaded={loaded} 
+      {...componentTreeProps} 
+      setLoaded={setLoaded} 
+      appContext={appData} 
+      selectedPage={firstpage} />
   
 </>
  );

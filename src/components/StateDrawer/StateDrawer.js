@@ -12,7 +12,7 @@ const Layout = styled(Box)(({ theme }) => ({
  minHeight: '40vh'
 }));
 
-export const StateValue = ({ ID, Key, Value, Type, handleChange, ...props }) => {
+export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }) => {
   if (Type === 'boolean') {
     return <Switch  size="small"
       checked={!!Value}
@@ -21,7 +21,7 @@ export const StateValue = ({ ID, Key, Value, Type, handleChange, ...props }) => 
       }} 
     />
   }
-  return <TextInput {...props} value={Value} onChange={e => {
+  return <TextInput tabIndex={tab} {...props} value={Value} onChange={e => {
     handleChange && handleChange(ID, Key, Type ===  'number' ? parseInt(e.target.value) : e.target.value, Type)
   }}  />
 }
@@ -66,7 +66,7 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
       <Spacer />
 
-      <IconButton
+          <IconButton
               color="inherit" 
               onClick={() => {
                 handleSwitch({ connectOpen: 1, stateOpen: false})
@@ -104,7 +104,7 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
           onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>
       </Flex>
         
-        {visible.map(item => <Flex sx={{mb: 1}}>
+        {visible.map((item, k) => <Flex key={k} sx={{mb: 1}}>
 
           {/* state property name  */}
           <Stack>
@@ -126,7 +126,7 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
           {/* state property value  */}
           <Stack>
             {/* <Typography>Value</Typography> */}
-            <StateValue {...args} {...item} handleChange={handleChange}  />
+            <StateValue {...args} tab={k} {...item} handleChange={handleChange}  />
           </Stack>
 
           <Box>

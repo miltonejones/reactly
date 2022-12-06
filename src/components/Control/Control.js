@@ -28,20 +28,59 @@ export const AU = styled('u')(({ theme, active, error, small }) => ({
   }
 })) 
 
+
+export const PopoverPrompt = ({ 
+    label, 
+    value, 
+    onChange, 
+    component: Component = TextBtn, 
+    children, 
+    ...props 
+  }) => { 
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handleAliasOpen = event => {
+    setAnchorEl(event.currentTarget)
+  } 
+
+  const handleAliasClose = event => {
+    setAnchorEl(null)
+  } 
+
+
+  return  <>
+  
+
+  <Component onClick={handleAliasOpen} {...props}>{children}</Component>
+
+  <PopoverInput label={label} value={value}
+    onChange={text => {
+      if (!text) return handleAliasClose();  
+      onChange && onChange(text)
+      handleAliasClose();
+    }} anchorEl={anchorEl} setAnchorEl={setAnchorEl}/>
+
+  
+  </>
+}
+
+
 export const PopoverTextBox = ({ label, value, onChange, handlePopoverClose }) => {
   const [typedVal, setTypedVal] = React.useState(value);
+  const handleChange = () => {
+    !!typedVal && onChange && onChange(typedVal);
+    handlePopoverClose()
+  }
   return <Stack sx={{p: 2, minWidth: 300}} spacing={1}>
     <Typography>{label}</Typography>
     <TextField label={label} size="small" value={typedVal} onChange={ (e) => { 
       setTypedVal(e.target.value) 
-    } } autoComplete="off"/>
+    } } autoComplete="off" autoFocus 
+    onKeyUp={e => e.keyCode === 13 && handleChange()}/>
     <Flex> 
     <Spacer />
     <TinyButton icon={Close} onClick={handlePopoverClose} />
-    <TinyButton icon={Save} onClick={() => {  
-        !!typedVal && onChange && onChange(typedVal);
-        handlePopoverClose()
-    }}/>
+    <TinyButton icon={Save} onClick={handleChange}/>
   </Flex>
 </Stack>
 }

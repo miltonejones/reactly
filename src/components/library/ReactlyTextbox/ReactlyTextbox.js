@@ -6,7 +6,7 @@ import { TextFields } from "@mui/icons-material";
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
   
-const ReactlyTextboxComponent = (props) => {
+const ReactlyTextboxComponent = ({onEnterPress, ...props}) => {
   const args = getSettings(props.settings);
    
   const Icon = Icons[args.icon];
@@ -24,7 +24,9 @@ const ReactlyTextboxComponent = (props) => {
  return (
 <> 
 <ReactlyComponent component={TextField} {...props}
-   
+   onKeyUp={e => {
+    e.keyCode === 13 && onEnterPress && onEnterPress(e)
+   }}
    InputProps={adornment} >
       {args.Label}
    </ReactlyComponent>
@@ -39,6 +41,11 @@ const renderOption = (props, option) => {
 }
 
 export const ReactlyTextboxEvents =  [
+  {
+    name: 'onEnterPress',
+    title: 'User presses enter',
+    description: 'User presses the enter key.'
+  },
   {
     name: 'onChange',
     title: 'Input value changes',

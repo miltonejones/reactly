@@ -1,10 +1,10 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
-  Typography, Divider } from '@mui/material';
+  Typography, Divider, Alert } from '@mui/material';
 import Library from '../library';
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
-import { Spacer , QuickSelect } from '..';
+import { Spacer , QuickSelect , PopoverPrompt} from '..';
 import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material";
@@ -24,7 +24,7 @@ export const TabButton = styled(Tab)(({theme}) => ({
 
 const ComponentPanel = ({ 
     component, 
-    selectedPage,
+    selectedPage = {},
     onSettingsChange,
     onStyleChange ,
     onPropChange,
@@ -37,6 +37,7 @@ const ComponentPanel = ({
     themes,
     connections,
     resources,
+    application
  }) => {
  
   const [value, setValue] = React.useState(0);
@@ -48,10 +49,16 @@ const ComponentPanel = ({
     setValue(newValue);
   };
 
+  if (!selectedPage) {
+    return <>TBD</>
+  }
+
+  const componentList = selectedPage?.components || application.components || [];
+
   const handleMove = (name) => {
     if (!name) return;
     const [type, title] = name.split(':')
-    const target = selectedPage.components.find(f => f.ComponentName === title.trim());
+    const target = componentList.find(f => f.ComponentName === title.trim());
     // return alert (target.ID)
     if (target) {
       return onMove && onMove(component.ID, target.ID) 
@@ -59,7 +66,7 @@ const ComponentPanel = ({
     return onMove && onMove(component.ID, null) 
   };
 
-  const others = selectedPage.components.filter(f => !!f.children)
+  const others = componentList.filter(f => !!f.children)
 
   const changes = [onSettingsChange, onStyleChange, onEventChange];
   const onChange = !component && !!selectedPage 
@@ -116,7 +123,7 @@ const ComponentPanel = ({
     </Box>
 
     {(!!component || value === 3) && <Panel  {...panelProps} />}
-    {!component && !!selectedPage &&  value === 0 && <PageSettings themes={themes} page={selectedPage} onChange={onChange} />}
+    {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings themes={themes} page={selectedPage} onChange={onChange} />}
     {!component && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
@@ -152,17 +159,20 @@ function PageSettings({ page, themes = [], onChange }) {
 
 
     <Box sx={{pt: 2}}>
-      <Text small>Add page parameters</Text>
-       <Flex sx={{pt: 1, pb: 1}}>
-        <TextInput size="small" 
+      <Divider textAlign="left"><Text small>Path parameters</Text></Divider>
+      {/* <Text small>Add page parameters</Text> */}
+       <Flex sx={{pt: 1}}>
+        {/* <TextInput size="small" 
         placeholder="Type parameter name"
           value={param}
           onChange={e => setParam(e.target.value)}
-        />
-        <TextBtn endIcon={<Add />}  
-         onClick={() => {
+        /> */}
+        <Spacer />
+        <PopoverPrompt endIcon={<Add />}  
+        label="Add page parameter"
+         onChange={(p) => {
           const added ={
-            [param]: ''
+            [p]: ''
           }
           setState(s => {
             const updated = {
@@ -177,9 +187,13 @@ function PageSettings({ page, themes = [], onChange }) {
             return updated
           });
           setParam('')
-         }} >Add</TextBtn>
+         }} >Add</PopoverPrompt>
        </Flex>
-      <Divider textAlign="left"><Text small>Page parameters</Text></Divider>
+
+       {!state.parameters && <Alert>
+        Click Add to include path parameters.
+        </Alert>}
+
          {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex sx={{pt: 1}} key={paramKey}>
 
           <Text sx={{width: 80, fontWeight: 600}} small>{paramKey}</Text>
@@ -204,7 +218,7 @@ function PageSettings({ page, themes = [], onChange }) {
                   setState(s => {
                     const obj = {...s};
                     delete obj.parameters[paramKey] 
-                    alert (JSON.stringify(obj.parameters))
+                    // alert (JSON.stringify(obj.parameters))
                     return obj;
                   })
                 }}

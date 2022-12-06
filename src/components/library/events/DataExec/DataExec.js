@@ -71,10 +71,7 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
           ...event,
           action: state
         })}>Save</TextBtn>
-      </Flex>
-     [ <pre>{JSON.stringify(selectedEvent,0,2)}</pre> ]
-{/*
-      <pre>{JSON.stringify(state,0,2)}</pre>  */}
+      </Flex> 
    </Layout>
  );
 }

@@ -15,14 +15,13 @@ const ChildComponent = ({ component, children  }) => {
   const { attachEventHandlers } = usePageContext();
   const eventMap = attachEventHandlers(component);
 
-  return <> 
-   <Component 
+  return  <Component 
     {...component}
     {...eventMap}
     >
       {children}
   </Component>
-  </>
+  
 }
 
 
