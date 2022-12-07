@@ -43,6 +43,17 @@ import { expandLibrary } from './library';
 import { expandComponent } from './library';
 import config from './library.json'
 import ReactlyFieldset from './ReactlyFieldset/ReactlyFieldset';
+import ReactlyCheckbox from './ReactlyCheckbox/ReactlyCheckbox';
+import ReactlyTooltip from './ReactlyTooltip/ReactlyTooltip';
+import ReactlyRadio from './ReactlyRadio/ReactlyRadio';
+import ReactlyRadioGroup from './ReactlyRadioGroup/ReactlyRadioGroup';
+import ReactlyAvatarGroup from './ReactlyAvatarGroup/ReactlyAvatarGroup';
+import ReactlyBreadcrumbs from './ReactlyBreadcrumbs/ReactlyBreadcrumbs';
+import ReactlySwitch from './ReactlySwitch/ReactlySwitch';
+import ReactlyAccordionActions from './ReactlyAccordionActions/ReactlyAccordionActions';
+import ReactlyAccordionDetails from './ReactlyAccordionDetails/ReactlyAccordionDetails';
+import ReactlyAccordionSummary from './ReactlyAccordionSummary/ReactlyAccordionSummary';
+import ReactlyAccordion from './ReactlyAccordion/ReactlyAccordion';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -89,8 +100,21 @@ const ComponentList = {
   Slider: ReactlySlider,
   Image: ReactlyImage,
   ScrollCouple: ReactlyScrollCouple,
-  Fieldset: ReactlyFieldset
+  Fieldset: ReactlyFieldset,
+  Checkbox: ReactlyCheckbox,
+  Tooltip: ReactlyTooltip,
+  Radio: ReactlyRadio,
+  RadioGroup: ReactlyRadioGroup,
+  AvatarGroup: ReactlyAvatarGroup,
+  Breadcrumbs: ReactlyBreadcrumbs,
+  Switch: ReactlySwitch,
+  AccordionActions: ReactlyAccordionActions,
+  AccordionDetails: ReactlyAccordionDetails,
+  AccordionSummary: ReactlyAccordionSummary,
+  Accordion: ReactlyAccordion
 }
+
+
 
 export {
   expandLibrary ,

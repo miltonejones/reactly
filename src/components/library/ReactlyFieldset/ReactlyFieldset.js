@@ -10,7 +10,7 @@ const ReactlyComponentFieldset = ({ children, ...props }) => {
   const style = getStyles(props.styles) ; 
 
  return (
-   <fieldset {...props}>
+   <fieldset {...props} style={style}>
       <legend>{props.Label || args.Label}</legend>
       {children}
    </fieldset>

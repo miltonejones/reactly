@@ -15,6 +15,7 @@ import {
   Stack,
   Divider,
   Typography,
+  Snackbar
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, ContentTree, PageTree } from "./components";
 import { AppData } from "./data";
@@ -29,6 +30,7 @@ import Modal, { useModal } from "./components/Modal/Modal";
 import Library from "./components/library";
 import { expandLibrary, config } from "./components/library";
 import useDynamoStorage from "./hooks/DynamoStorage";
+import LibraryTree from "./components/LibraryTree/LibraryTree";
  
 
 function ChildRoute({ pages, path, appData })  {
@@ -50,6 +52,7 @@ function App() {
   const [libraryJSON, setLibraryJSON] = React.useState({});
   const [hydratedLibrary, setHydratedLibrary] = React.useState({});
   const [libraryLoaded, setLibraryLoaded] = React.useState(false);
+  const [busy, setBusy] = React.useState(false);
   const [pageClientState, setPageClientState] = React.useState({});
   const [pageResourceState, setPageResourceState] = React.useState([]);
   const [queryState, setQueryState] = React.useState({
@@ -67,6 +70,7 @@ function App() {
   });
 
   const refreshLib = async () => { 
+    setBusy(`Reloading data...`)
     const items = await getItems();
     const converted = Object.keys(items).reduce((out, item) => {
       const [label, key] = item.split('-');
@@ -74,10 +78,12 @@ function App() {
       return out;
     }, {});
     setLibraryJSON(s => converted);
+    setBusy(false)
     return converted;
   }
 
   const commitComponent = async (key, data) => { 
+    setBusy(`Saving ${key}...`)
     await setItem(`reactly-${key}`, JSON.stringify(data))
     const updated = await refreshLib();
     updateLib(updated)
@@ -87,15 +93,18 @@ function App() {
     const lib = expandLibrary(Library, conf); 
     setLibraryJSON(conf)
     setHydratedLibrary(lib)  
+    setBusy(false)
   }
  
   React.useEffect(() => { 
     if (!libraryLoaded) {
       (async () => {
+        setBusy(`Loading initial data...`)
         const f = await refreshLib()
         setLibraryJSON(f);
         const lib = expandLibrary(Library, f);
         setHydratedLibrary(lib)  
+        setBusy(false)
       })();
     }
     setLibraryLoaded(true)
@@ -214,6 +223,7 @@ function App() {
  
 
           <Route path="/" element={<Home appData={appData} />} />  
+          <Route path="/library" element={<LibraryTree appData={appData} />} />  
           <Route path="/edit/:appname" element={<Editor applications={appData} />} />  
           <Route path="/info/:appname" element={<Detail applications={appData} />} />  
           <Route path="/apps/:appname" element={<Renderer applications={appData} />} />  
@@ -227,6 +237,9 @@ function App() {
         </Routes>
       </BrowserRouter>
       <Modal {...modal.modalProps}/>
+      <Snackbar message={busy.toString()} open={busy} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} >
+
+      </Snackbar>
     </AppStateContext.Provider>
   );
 }

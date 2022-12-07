@@ -34,6 +34,7 @@ export const PopoverPrompt = ({
     label, 
     value, 
     onChange, 
+    helperText,
     component: Component = TextBtn, 
     children, 
     ...props 
@@ -55,6 +56,7 @@ export const PopoverPrompt = ({
   <Component onClick={handleAliasOpen} {...props}>{children}</Component>
 
   <PopoverInput label={label} value={value}
+  helperText={helperText}
     onChange={text => {
       if (!text) return handleAliasClose();  
       onChange && onChange(text)
@@ -66,7 +68,7 @@ export const PopoverPrompt = ({
 }
 
 
-export const PopoverTextBox = ({ label, value, onChange, handlePopoverClose, ...props }) => {
+export const PopoverTextBox = ({ label, value, onChange, helperText, handlePopoverClose, ...props }) => {
   const [typedVal, setTypedVal] = React.useState(value);
   const handleChange = () => {
     !!typedVal && onChange && onChange(typedVal);
@@ -77,6 +79,7 @@ export const PopoverTextBox = ({ label, value, onChange, handlePopoverClose, ...
     <TextField label={label} size="small" value={typedVal} onChange={ (e) => { 
       setTypedVal(e.target.value) 
     } } autoComplete="off" autoFocus 
+    helperText={helperText}
     onKeyUp={e => e.keyCode === 13 && handleChange()}/>
     <Flex> 
     <Spacer />
@@ -93,7 +96,8 @@ export const PopoverInput = ( {
     onChange, 
     anchorEl, 
     setAnchorEl, 
-    children 
+    children ,
+    helperText
   } ) => { 
   const { PopComponent, menuPos } = React.useContext(AppStateContext);
 
@@ -117,6 +121,7 @@ export const PopoverInput = ( {
       {children || <PopoverTextBox 
         label={label}
         value={value}
+        helperText={helperText}
         handlePopoverClose={handlePopoverClose}
         onChange={value => {
           onChange && onChange(value)

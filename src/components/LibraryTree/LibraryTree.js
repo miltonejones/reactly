@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box, Divider, Tabs, Collapse, Switch, Grid, Stack, Typography, Chip } from '@mui/material';
+import { styled, Link , Box, Divider, Tabs, Collapse, Switch, Grid, Stack, Typography, Chip } from '@mui/material';
 import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, QuickSelect, QuickMenu, TinyButton } from '..' 
-import { Icons } from '../library/icons'; 
+import { Icons, renderIconOption } from '../library/icons'; 
 import { JsonTree } from '../../colorize'; 
 import { TabButton } from '../ComponentPanel/ComponentPanel';
 import { AppStateContext } from '../../hooks/AppStateContext';
@@ -308,7 +308,10 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
   }
 
   const options = typeof types === 'string'
-    ? [types]
+    ? (types?.indexOf('ICON_TYPES') > -1 
+        ? Object.keys(Icons)
+        : [types]
+        )
     : (types?.indexOf('ICON_TYPES') > -1 
         ? Object.keys(Icons)
         : types
@@ -329,6 +332,76 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
     </Grid> 
 
     <Grid item xs={1}>
+<Flex fullHeight>
+
+<PopoverPrompt 
+
+
+        helperText={error}
+        onChange={e => {
+          setJS(e)
+          const code = e;
+          try {
+            const scr = eval(code)
+            if (typeof scr === 'function' || !code) {
+              try {
+                const enact = scr()
+                if (typeof enact !== 'boolean') {
+                  return setError('Function must return a boolean')
+                }
+              } catch (ex) {
+                  // do nothing
+              }
+              setError('')
+              return saveSetting('when', code)
+            }
+            setError('Not a valid function')
+          } catch (e) {
+            setError(e.message)
+          }
+        }}
+
+        sx={{cursor: 'pointer'}}
+        underline="hover"
+        component={Link}
+        value={js?.toString()}
+        label={`Edit condition`}  
+          > 
+          {!!js ? js?.toString() : 'show if...'}
+         </PopoverPrompt> 
+</Flex>
+{/* 
+
+      <TextInput size="small"
+      helperText={error}
+          onChange={e => {
+            setJS(e.target.value)
+            const code = e.target.value;
+            try {
+              const scr = eval(code);
+              if (typeof scr === 'function' || !code) {
+                try {
+                  const enact = scr()
+                  if (typeof enact !== 'boolean') {
+                    return setError('Function must return a boolean')
+                  }
+                } catch (ex) {
+                    // do nothing
+                }
+                setError('')
+                return saveSetting('when', code)
+              }
+              setError('Not a valid function')
+            } catch (e) {
+              setError(e.message)
+            }
+          }}
+      label={<>𝑓 Condition function</>} value={js?.toString()} /> */}
+
+
+    </Grid>
+
+    <Grid item xs={1}>
       <Flex sx={{height: '100%'}}>
       <QuickMenu options={dataTypes} 
        onChange={val => {
@@ -336,6 +409,30 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
       }}
         value={type || 'text'} label={!type ? "text" : <b>{type}</b>} caret small />
       </Flex>
+    </Grid> 
+
+    <Grid item xs={1}>
+     <Flex fullHeight>
+
+     <QuickMenu
+        value={opt}
+        onChange={setOpt}
+        label={`Options (${options?.length || '0'})`} options={options || []} />
+
+        {!!opt && <>
+          <TinyButton icon={Icons.Close} onClick={() => setOpt('')} />
+          <QuickMenu options={[`Delete "${opt}" option?`]} 
+          label={ <TinyButton icon={Icons.Delete}  />}
+            onChange={e => !!e && dropOpt()} />
+        </>}
+        
+        {!opt && <>
+         <PopoverPrompt sx={{width:16, height: 16, cursor: 'pointer'}} component={Icons.Add} label={`Add option to ${title}`} 
+          onChange={addOpt}> 
+         </PopoverPrompt> 
+
+        </>}
+     </Flex>
     </Grid> 
 
 
@@ -361,58 +458,6 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
           }} label="Attribute Name" value={label} />
     </Grid>
 
-
-    <Grid item xs={2}>
-      <TextInput size="small"
-      helperText={error}
-          onChange={e => {
-            setJS(e.target.value)
-            const code = e.target.value;
-            try {
-              const scr = eval(code);
-              if (typeof scr === 'function' || !code) {
-                try {
-                  const enact = scr()
-                  if (typeof enact !== 'boolean') {
-                    return setError('Function must return a boolean')
-                  }
-                } catch (ex) {
-                    // do nothing
-                }
-                setError('')
-                return saveSetting('when', code)
-              }
-              setError('Not a valid function')
-            } catch (e) {
-              setError(e.message)
-            }
-          }}
-      label="When" value={js?.toString()} />
-    </Grid>
-
-    <Grid item xs={2}>
-     <Flex fullHeight>
-
-     <QuickSelect
-        value={opt}
-        onChange={setOpt}
-        label="Options" options={options || []} />
-
-        {!!opt && <>
-          <TinyButton icon={Icons.Close} onClick={() => setOpt('')} />
-          <QuickMenu options={[`Delete "${opt}" option?`]} 
-          label={ <TinyButton icon={Icons.Delete}  />}
-            onChange={e => !!e && dropOpt()} />
-        </>}
-        
-        {!opt && <>
-         <PopoverPrompt sx={{width:16, height: 16, cursor: 'pointer'}} component={Icons.Add} label={`Add option to ${title}`} 
-          onChange={addOpt}> 
-         </PopoverPrompt> 
-
-        </>}
-     </Flex>
-    </Grid> 
 
 
     <Grid item xs={2}>
@@ -475,12 +520,14 @@ const CategoryTree = ({ categories, component, childName, Name, title, styleCate
 
 {title === 'Styles' && <QuickMenu 
   onChange={val => !!val && importComponentChild(Name, title, val)}
-  options={styleCategories} label={<TextBtn
+  options={styleCategories} label={<TextBtn variant="contained"
   endIcon={<Icons.MoreVert />}
   >Import style category</TextBtn>}/>}
 
-{title === 'Settings' && <QuickMenu options={settingsCategories} label={<TextBtn
-  endIcon={<Icons.MoreVert />}
+{title === 'Settings' && <QuickMenu
+    onChange={val => !!val && importComponentChild(Name, title, val)}
+    options={settingsCategories} label={<TextBtn variant="contained"
+    endIcon={<Icons.MoreVert />}
   >Import settings category</TextBtn>}/>}
 
 
@@ -546,14 +593,15 @@ const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Default
 
   const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s]}`);
   const allowableChildren = Object.keys(Library)
-    .filter(f => !!Library[f].hidden);
+    .filter(f => f !== Name);
 
   return <Grid container sx={{ml: 2, mt: 2}} spacing={2}>
 
     <Grid xs={2}>
       <Flex> 
   <QuickSelect label="Icon" 
-    onChange={val => setComponentProps(Name, 'Icon', val)}
+  renderOption={renderIconOption}
+    onChange={val => !!val && setComponentProps(Name, 'Icon', val)}
     value={typeof Icon === 'string' ? Icon : 'unusable'} options={Object.keys(Icons)} />
       </Flex>
     </Grid>
@@ -667,6 +715,8 @@ const LibraryTree = () => {
   const [expanded, setExpanded] = React.useState([]);
   const [filter, setFilter] = React.useState('');
   const { createComponent } = useLibrary();
+
+  const f = Object.keys(Library).find(f => !Object.keys(config).find(k => k === f));
   
   const expand = node => {
     setExpanded(nodes => nodes.indexOf(node) > -1 
@@ -683,8 +733,9 @@ const LibraryTree = () => {
   
   const settingsCategories = Object.keys(Library).reduce ((out, key) => {
     const settings = Library[key].Settings;
+    console.log({key, settings})
     if (!settings) return out;
-    out = out.concat(settings.categories?.filter(f => !!f.name).map(cat => `${key}.${cat.name}`));
+    out = out.concat(settings.categories?.map(cat => `${key}.${cat.name}`));
     return out;
   }, [])
   
@@ -702,7 +753,7 @@ const LibraryTree = () => {
      </Flex>
         <Typography variant="h5">Reactly Component Library</Typography>
       </Stack>
-
+ 
       <Spacer />
       <SearchBox onClose={() => setFilter('')} label="filter" value={filter} onChange={e => setFilter(e.target.value)}/>
     </Flex>

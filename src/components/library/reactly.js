@@ -4,7 +4,27 @@ import { Paper, styled } from '@mui/material';
 import { getStyles, getSettings , fixText} from './util';
 import { RepeaterContext, AppStateContext } from '../../hooks/AppStateContext'; 
 import { PageStateContext } from '../../hooks/usePageContext';
+import { usePageContext } from "../../hooks/usePageContext";
 import { getParams } from './util';
+
+
+
+export const ChildComponent = ({ component, children  }) => {
+  const { Library } = React.useContext(AppStateContext);
+  const { Component } = Library[component.ComponentType];
+  const { attachEventHandlers } = usePageContext();
+  const eventMap = attachEventHandlers(component);
+
+  return  <Component 
+    {...component}
+    {...eventMap}
+    >
+      {children}
+  </Component> 
+}
+
+
+
 
 export const useTextBind = (settings, selectedPage) => {
   const { 
@@ -74,9 +94,9 @@ const ReactlyComponent = ({
       return items
     }, {})
   
- return  <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}>
+ return ( <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}>
     {children || fixed.children}  
- </Component> 
+ </Component>  )
 } 
 
 export const Faux = styled(Paper)(( {open} ) => ({ 

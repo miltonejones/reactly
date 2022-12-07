@@ -6,6 +6,7 @@ import { QuickSelect, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, Tiny
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add, MoreVert } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
+import { Icons } from '../library/icons';
 import { SketchPicker } from 'react-color';
 import { 
   StateComponentInput, 
@@ -232,14 +233,18 @@ export const ComponentInputBody = (props) => {
 
   if (types && !customProp ) {
 
+    const typeList = types?.indexOf('ICON_TYPES') > -1
+      ? Object.keys(Icons)
+      : types;
+
     return <Stack>
-      {header}
+      {header} 
       <Flexible on={colorProp || free}>
  
         <QuickSelect helperText={helperText} 
           getOptionLabel={getOptionLabel} 
           renderOption={renderOption} 
-          options={types}  
+          options={typeList}  
           value={value} 
           onChange={handleChange} />
 
