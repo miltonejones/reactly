@@ -49,8 +49,8 @@ export const QuickSelect = ({
     onChange={handleChange} 
     {...props}
      freeSolo={free}
-    sx={{...props.sx, mr: 1, minWidth: small ? 120 : 'inherit'}}
-    renderInput={(params) => <TextInput {...params} helperText={helperText} label={label} placeholder="Filter options" size="small" />}
+    sx={{...props.sx, mr: 1, minWidth: small ? 120 : 200}}
+    renderInput={(params) => <TextInput {...params} helperText={helperText} label={label || ''} placeholder="Filter options" size="small" />}
  />
   </>
 

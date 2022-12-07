@@ -1,5 +1,4 @@
-import * as React from 'react';
-import Library from '../components/library';
+import * as React from 'react'; 
 import { uniqueId } from '../components/library/util';
 import { getMax } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
@@ -7,6 +6,7 @@ import { AppStateContext } from './AppStateContext';
 export const useEditor = (apps) => {
   const [applications, setApplications] = React.useState(apps);
   const app = React.useContext(AppStateContext)
+  const { Library } = React.useContext(AppStateContext)
 
 
   const findProg = ID => applications.find(a => a.ID === ID);
@@ -213,7 +213,16 @@ export const useEditor = (apps) => {
     
     
     const res = editPage(appID, pageID, async (page, app) => { 
-      const settings = Library[component.ComponentType].Defaults;
+      if (!Library) {
+        console.warn(app);
+        return alert ('App has no lib!!')
+      }
+      const item = Library[component.ComponentType];
+      if (!item) {
+        console.warn (Library)
+        return alert (`Could not find component ${component.ComponentType}`)
+      }
+      const settings = item.Defaults;
   
       if (!app.components) {
         Object.assign(app, {components: []})

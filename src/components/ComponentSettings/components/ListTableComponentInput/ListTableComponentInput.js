@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Collapse, styled, Grid, Box, Stack } from '@mui/material';
-import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny, TinyButton } from '../../..';
-import Library from '../../../library';
+import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny, TinyButton } from '../../..'; 
+import { AppStateContext } from '../../../../hooks/AppStateContext'; 
 import { CheckCircle, Save, CheckCircleOutline, ExpandMore, ExpandLess } from "@mui/icons-material";  
 import { getSettings } from '../../../library/util';
 
@@ -21,6 +21,7 @@ const ListTableComponentInput = ({
   selectedPage
 }) => {  
   
+  const { Library } = React.useContext(AppStateContext);
   const [terms, setTerms] = React.useState({});
   const [fields, setFields] = React.useState([]);
   const [open, setOpen] = React.useState(false);

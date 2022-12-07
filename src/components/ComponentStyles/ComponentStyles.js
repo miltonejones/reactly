@@ -1,9 +1,9 @@
 import React from 'react';
 import { styled, Alert, Box, Paper, FormControlLabel, Switch } from '@mui/material';
-import { getStyles } from '../library/util';
-import Library from '../library';
+import { getStyles } from '../library/util'; 
 import { ComponentCollapse } from '..';
 import { Json } from '../../colorize';
+import {  AppStateContext } from '../../hooks/AppStateContext'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -11,6 +11,7 @@ const Layout = styled(Box)(({ theme }) => ({
  
 const ComponentStyles = ({ component, onChange }) => {
   const [checked, setChecked] = React.useState(false);
+  const { Library } = React.useContext(AppStateContext);
   const { categories } =  Library[component.ComponentType].Styles  ?? {}
   if (!(categories && component?.styles)) {
     return <Alert sx={{ m: 1 }}>This component has no configurable styles.</Alert>

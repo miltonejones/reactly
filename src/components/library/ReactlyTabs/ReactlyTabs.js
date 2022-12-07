@@ -4,13 +4,13 @@ import { GenericStyles } from '../styles';
 import { Tab } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
-  
-import Library from "..";
+   
 import { AppStateContext } from "../../../hooks/AppStateContext";
 import { usePageContext } from "../../../hooks/usePageContext";
   
 
 const ChildComponent = ({ component, children  }) => {
+  const { Library } = React.useContext(AppStateContext);
   const { Component } = Library[component.ComponentType];
   const { attachEventHandlers } = usePageContext();
   const eventMap = attachEventHandlers(component);

@@ -14,7 +14,7 @@ const PaddingSizes = [
   '3xl/2.5'
 ]
 
-const StandardColors = [
+export const StandardColors = [
   { name: 'Background - Primary', value: 'rgb(255,255,255)' },
   { name: 'Background - Secondary', value: 'rgb(246,246,248)' },
   { name: 'Background - Tertiary', value: 'rgb(228,230,234)' },
@@ -69,7 +69,7 @@ const renderOption = (props, option) => {
   return <Box {...props}> {key} ({value}rem) </Box>
 }
 
-const colorOption = (props, option) => { 
+export const colorOption = (props, option) => { 
   if (!option.name) return <Box {...props}>{option}</Box>
   return <Flex {...props}> <Pill square backgroundColor={option.value}>&nbsp;</Pill> {option.name}</Flex>
 }

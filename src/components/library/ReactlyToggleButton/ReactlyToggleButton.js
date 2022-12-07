@@ -97,8 +97,7 @@ const ReactlyToggleButton = {
   Styles: GenericStyles, 
   Defaults: { }
 }
- 
-console.log ({ Icons })
+  
 
 export default ReactlyToggleButton;
 

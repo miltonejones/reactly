@@ -11,6 +11,7 @@ import {
   InputAdornment,
   TextField,
   Menu,
+  Button,
   Stack,
   Divider,
   Typography,
@@ -24,6 +25,10 @@ import { useAppHistory } from "./hooks/useAppHistory";
 import { AppStateContext } from "./hooks/AppStateContext";
 import { useLocalStorage } from "./hooks/useLocalStorage";
 import Modal, { useModal } from "./components/Modal/Modal";
+
+import Library from "./components/library";
+import { expandLibrary, config } from "./components/library";
+import useDynamoStorage from "./hooks/DynamoStorage";
  
 
 function ChildRoute({ pages, path, appData })  {
@@ -41,6 +46,10 @@ function App() {
   const appHistory = useAppHistory();
   const { appname } = useParams()
 
+  const [dbItems, setDbItems] = React.useState({});
+  const [libraryJSON, setLibraryJSON] = React.useState({});
+  const [hydratedLibrary, setHydratedLibrary] = React.useState({});
+  const [libraryLoaded, setLibraryLoaded] = React.useState(false);
   const [pageClientState, setPageClientState] = React.useState({});
   const [pageResourceState, setPageResourceState] = React.useState([]);
   const [queryState, setQueryState] = React.useState({
@@ -53,16 +62,56 @@ function App() {
     menu_pos: "bottom",
     use_menus: "1",
     page_db_items: JSON.stringify(AppData),
+    app_library: '{}',
     page_resource_state: '[]'
   });
+
+  const refreshLib = async () => { 
+    const items = await getItems();
+    const converted = Object.keys(items).reduce((out, item) => {
+      const [label, key] = item.split('-');
+      out[key] = JSON.parse(atob(items[item]))
+      return out;
+    }, {});
+    setLibraryJSON(s => converted);
+    return converted;
+  }
+
+  const commitComponent = async (key, data) => { 
+    await setItem(`reactly-${key}`, JSON.stringify(data))
+    const updated = await refreshLib();
+    updateLib(updated)
+  }
+
+  const updateLib = async (conf) => {
+    const lib = expandLibrary(Library, conf); 
+    setLibraryJSON(conf)
+    setHydratedLibrary(lib)  
+  }
  
+  React.useEffect(() => { 
+    if (!libraryLoaded) {
+      (async () => {
+        const f = await refreshLib()
+        setLibraryJSON(f);
+        const lib = expandLibrary(Library, f);
+        setHydratedLibrary(lib)  
+      })();
+    }
+    setLibraryLoaded(true)
+  },  [libraryLoaded, store, config])
 
   const menuPos = store.getItem("menu_pos");
   const useMenus = store.getItem("use_menus");
   const appText = store.getItem("page_db_items");
+  const appLib = store.getItem("app_library");
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
+  const { setItem, getItems } = useDynamoStorage()
+
+
+ 
 
   const appData = appText === null || appText === 'null' 
     ? AppData 
@@ -98,9 +147,41 @@ function App() {
  
   }
 
+  // return <>
+
+  // <Flex sx={{p: 2}} wrap spacing={2}>
+
+  // {Object.keys(config).map(c => <Box key={c}>
+  //   <Button 
+  //   variant={!!dbItems && !!dbItems[`reactly-${c}`] ? "contained" : 'outlined'}
+  //   onClick={async () => {
+  //     await setItem(`reactly-${c}`, JSON.stringify(config[c]))
+  //     const items = await getItems();
+  //     setDbItems(items)
+  //   }}>Add {c}</Button>
+
+  //   </Box>)}
+  // </Flex>
+     
+  // <pre>
+  // {JSON.stringify(hydratedLibrary.Button,0,2)}
+  // </pre>
+  // </>
+
+  // return <pre>{Object.keys(hydratedLibrary).map(key => <>
+  //  {key}[ {hydratedLibrary[key].Icon}]
+  //  <br />
+  // </>)}</pre>
+
   return (
     <AppStateContext.Provider
       value={{
+
+        Library: hydratedLibrary,
+        setHydratedLibrary,
+        config: libraryJSON,
+        updateLib,
+        commitComponent,
         appData,
         setAppData,
         queryState,

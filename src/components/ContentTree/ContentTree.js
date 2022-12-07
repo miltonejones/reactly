@@ -3,9 +3,8 @@ import { styled, List, Link, ListItemButton,
   ListItemIcon, ListItemText, ListItemSecondaryAction ,
   Typography, Box, Collapse
   } from "@mui/material";
-
-  import Library from '../library';
-import { Article, Add, MoreVert, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
+ 
+import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
 import { QuickMenu, Tiny } from "..";
 import { AppStateContext } from '../../hooks/AppStateContext';
 
@@ -61,6 +60,7 @@ const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, onCustomNam
 const Contents = ({ filter, tree, parentID, onDrop, trees, 
   onCustomName, quickComponent, label, indent = 0, onNameChange, 
   onCreate, onSelect, selectedComponent }) => { 
+  const { Library } = React.useContext(AppStateContext);
   const kids = !!label ? [] : trees.filter(t => t.componentID === tree.ID);
   const on = !!label ? null : selectedComponent?.ID === tree.ID;
   const [over, setOver] = React.useState(false);
@@ -71,6 +71,10 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
       ? nodes.filter(item => node !== item)
       : nodes.concat(node));
 
+  }
+
+  if (!Library) {
+    return <>Loading...</>
   }
   
   const options = [
@@ -108,7 +112,17 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
 
   const baseIcon = expanded ? Remove : Add;
   const ExpandIcon = !!kids.length ? baseIcon : RadioButtonUnchecked;
-  const { Icon } = !tree ? {Icon: Add} : Library[tree.ComponentType];
+
+  const iconOwner = !tree ? null : Library[tree.ComponentType];
+
+
+
+  const { Icon } = !tree ? {Icon: Add} : { Icon: iconOwner?.Icon || Error }
+  
+//  !!Library[tree.ComponentType] && console.log (typeof Library[tree.ComponentType].Icon)
+//   !Library[tree.ComponentType] && console.log ('Could not find "%s"', tree.ComponentType)
+
+console.log ({ type: tree?.ComponentType, icon: iconOwner?.Icon, Library })
   const nodeLabel = !tree 
     ? label 
     : `${tree.ComponentType}: ${tree.ComponentName}`

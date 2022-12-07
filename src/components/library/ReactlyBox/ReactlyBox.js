@@ -15,10 +15,8 @@ const ReactlyBoxComponent = ( { children, ...props } ) => {
  
 
 const ReactlyBox = {
-  Icon: Inventory,
-  allowChildren: !0,
-  Component: ReactlyBoxComponent, 
-  Styles: LayoutStyles, 
+  Icon: Inventory, 
+  Component: ReactlyBoxComponent 
 }
  
 

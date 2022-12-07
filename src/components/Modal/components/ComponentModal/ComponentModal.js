@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box , Stack, Card, TextField} from '@mui/material';
-import Library from '../../../library'
+import { styled, Box , Stack, Card, TextField} from '@mui/material'; 
 import { Flex, Text } from '../../..'
+import { AppStateContext } from '../../../../hooks/AppStateContext';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1),
@@ -14,6 +14,7 @@ const ComponentModal = ({ onChange, components = [] }) => {
     selected: null,
     name: null
   });
+  const { Library } = React.useContext(AppStateContext);
   const { selected, name } = state;
   
   const select = key => {

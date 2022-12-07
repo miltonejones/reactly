@@ -38,13 +38,18 @@ import ReactlyImage from './ReactlyImage/ReactlyImage';
 import ReactlyScrollCouple from './ReactlyScrollCouple/ReactlyScrollCouple';
 import { Box } from '@mui/material';
 import { East } from '@mui/icons-material';
+import { reduceLibrary } from './library';
+import { expandLibrary } from './library';
+import { expandComponent } from './library';
+import config from './library.json'
+import ReactlyFieldset from './ReactlyFieldset/ReactlyFieldset';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
   Icon: East
 }
  
-const Library = {
+const ComponentList = {
   Box: ReactlyBox,
   Button: ReactlyButton,
   Textbox: ReactlyTextbox,
@@ -83,59 +88,16 @@ const Library = {
   Popover: ReactlyPopover,
   Slider: ReactlySlider,
   Image: ReactlyImage,
-  ScrollCouple: ReactlyScrollCouple
+  ScrollCouple: ReactlyScrollCouple,
+  Fieldset: ReactlyFieldset
 }
 
-// const reduce = (array) => array.reduce((out, item) => {
-        
+export {
+  expandLibrary ,
+  config
+}
 
-//   if (typeof item !== 'string') {
-//     Object.keys(item).map(key => {
-//       if (typeof item[key] === 'function') {
-//         Object.assign(item, {[key]:  `FN-${key}` })
-//       }
-//     })
-//   }
+// const Library = expandLibrary(ComponentList); 
 
-//   if (item.label.indexOf('icon') > -1 || item.label === 'end') {
-//     Object.assign(item, {types: 'ICON_TYPES' }) ;
-//   }
 
-//   return out.concat(item);
-// }, [])
-
-// const reactlyParse = component =>   {
-//   try {
-//     return {
-//       ...component,
-//       Styles: {
-//         categories: [
-//           ...ReactlyButton.Styles?.categories.map(cat => { 
-//             cat.styles = reduce(cat.styles)  
-//             return cat;
-//           })
-//         ]
-//       },
-//       Settings: !component.Settings ? {} : {
-//         categories: [
-//           ...component.Settings?.categories.map(cat => { 
-//             cat.settings = reduce(cat.settings)  
-//             return cat;
-//           })
-//         ]
-//       }
-    
-//     }
-//   } catch (ex) {
-//     return {}
-//   }
-// }
- 
-// const lib = Object.keys(Library).reduce((object, key) => {
-//   object[key] = reactlyParse({...Library[key]});
-//   return object;
-// }, {})
-
-// console.log (JSON.stringify(lib,0,2))
-
-export default Library;
+export default ComponentList;

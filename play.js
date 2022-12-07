@@ -1,44 +1,23 @@
-const obj = {
-  row: {
-    ID: 123,
-    Name: 'top row'
-  },
-  related: {
-    count: 50,
-    records: [
-      {
-        ID: 1,
-        title: 'eureka!'
-      },
-      {
-        ID: 2,
-        title: 'eureka!'
-      },
-      {
-        ID: 3,
-        title: 'eureka!'
-      },
-      {
-        ID: 4,
-        title: 'eureka!'
-      },
-    ]
-  }
-}
-
-
-
-const drillPath = (object, path) => {
-  const arr = path.split('.');
-  const first = arr.shift(); 
-  const node = object[first] 
-
-  if (arr.length) {
-    return drillPath(node, arr.join('.'))
-  }
-
-  return node;
-}
-
-console.log(JSON.stringify(drillPath(obj, 'related.records'), 0, 2))
  
+ const json = require('./src/components/library/library.json')
+ const fs = require('fs')
+ 
+
+ const errors = []
+ Object.keys(json).map(key => {
+  try {
+
+    const file = fs.readFileSync(`./src/components/library/Reactly${key}/Reactly${key}.js`);
+    const regex = /Icon\:\s*(\w+)/.exec(file.toString());
+    const icon = regex[1]
+    console.log ({ key, size: file.length, icon })
+    Object.assign(json[key], {Icon: icon})
+  } catch (e) {
+    // console.log (e.message);
+    errors.push(e.message)
+  }
+ }) 
+
+ fs.writeFileSync( 'index.json', JSON.stringify(json,0,2))
+
+console.log (errors)

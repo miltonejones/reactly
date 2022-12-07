@@ -2,8 +2,7 @@ import React from 'react';
 import { Box, Typography, styled } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { Filter2 } from '@mui/icons-material';
-import ReactlyComponent, { useTextBind } from '../reactly';
-import Library from "..";
+import ReactlyComponent, { useTextBind } from '../reactly'; 
 import useScrollCouple from "./useScrollCouple";
 import { AppStateContext } from "../../../hooks/AppStateContext";
 import { usePageContext } from "../../../hooks/usePageContext";
@@ -44,7 +43,8 @@ const src = 'https://is3-ssl.mzstatic.com/image/thumb/Music/v4/c3/49/ff/c349ffd7
 const ChildComponent = ({ component , page, ...props  }) => {
   const args = getSettings(props.settings); 
   const style = getStyles(props.styles) ; 
-const children = page?.components?.filter(d => d.componentID === component.ID)
+  const children = page?.components?.filter(d => d.componentID === component.ID)
+  const { Library } = React.useContext(AppStateContext);
   const { Component } = Library[component.ComponentType];
   const { attachEventHandlers } = usePageContext();
   const eventMap = attachEventHandlers(component);

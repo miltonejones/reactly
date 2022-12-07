@@ -5,7 +5,8 @@ import { AU, TinyButton, Flex, OptionSwitch, Text } from '..';
 import { ExpandMore } from "@mui/icons-material";
  
  
-const QuickMenu = ({ 
+const QuickMenu = (props) => {
+const { 
   label, 
   error, 
   title,
@@ -18,8 +19,7 @@ const QuickMenu = ({
   icon: LabelIcon,
   onChange ,
   onOpen
-}) => {
-
+} = props;
 const [anchorEl, setAnchorEl] = React.useState(null);
 const open = Boolean(anchorEl) || !!input;
 const handleClick = (event) => {
@@ -31,6 +31,8 @@ const handleClose = (value) => {
   onChange && onChange(value)
 }; 
 const { MenuComponent, menuPos } = React.useContext(AppStateContext);
+
+try  {
 
 return <>
 
@@ -68,13 +70,17 @@ return <>
   {options?.map ((option, index) => {
     const Icon = icons[index];
     return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
-    sx={{fontWeight: selected === option ? 600 : 400, minWidth: 300}}
-    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected === option && <>&bull;{" "}</>}{option}</MenuItem>
+    sx={{fontWeight: selected.indexOf (option) > -1 ? 600 : 400, minWidth: 300}}
+    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected.indexOf (option) > -1  && <>&bull;{" "}</>}{option}</MenuItem>
   })} 
 
 
 </MenuComponent>
 </>
+} catch  (e) {
+  return <>{e.message}</>
+}
+
 
 }
 

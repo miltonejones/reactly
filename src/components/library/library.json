@@ -1,12 +1,168 @@
 {
   "Box": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Inventory",
     "allowChildren": true,
     "Styles": {
       "categories": [
+        {
+          "name": "Layout",
+          "always": true,
+          "styles": [
+            {
+              "title": "Type",
+              "label": "display",
+              "types": [
+                "flex",
+                "grid"
+              ],
+              "start": "flex",
+              "type": "pill"
+            },
+            {
+              "title": "Direction",
+              "label": "flex-direction",
+              "types": [
+                "column",
+                "row"
+              ],
+              "start": "column",
+              "type": "pill",
+              "when": "e => e.display === 'flex'"
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "flex-start",
+                "center",
+                "flex-end",
+                "baseline"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'flex'",
+              "image": true
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "start",
+                "center",
+                "end"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'grid'",
+              "image": true
+            },
+            {
+              "title": "Justify items",
+              "label": "justify-items",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "stretch"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Align content",
+              "label": "align-content",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Justify content",
+              "label": "justify-content",
+              "type": "pill",
+              "image": true,
+              "types": [
+                "flex-start",
+                "center",
+                "flex-end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center"
+            },
+            {
+              "title": "Rows",
+              "label": "grid-template-rows",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "when": "e => e.display === 'grid'",
+              "render": "FN-render"
+            },
+            {
+              "title": "Columns",
+              "label": "grid-template-columns",
+              "when": "e => e.display === 'grid'",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ]
+            },
+            {
+              "title": "Gap",
+              "label": "gap",
+              "types": [
+                "4px",
+                "8px",
+                "12px",
+                "16px",
+                "20px",
+                "24px"
+              ],
+              "free": true
+            },
+            {
+              "title": "Wrap child elements",
+              "label": "flex-wrap",
+              "type": "boolean",
+              "when": "e => e.display === 'flex'"
+            }
+          ]
+        },
         {
           "name": "Dimensions",
           "styles": [
@@ -168,16 +324,90 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Border",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
+              "title": "Thickness",
+              "label": "border-width",
               "types": [
-                "capitalize",
-                "uppercase"
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
               ],
-              "type": "pill"
+              "renderOption": "FN-renderOption",
+              "free": true
+            },
+            {
+              "title": "Type",
+              "label": "border-style",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null'",
+              "types": [
+                "dotted",
+                "solid",
+                "dashed",
+                "ridge",
+                "double",
+                "groove",
+                "inset",
+                "outset",
+                "unset",
+                "initial",
+                "inherit"
+              ]
+            },
+            {
+              "title": "Color",
+              "label": "border-color",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null'",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            },
+            {
+              "title": "Radius",
+              "label": "border-radius",
+              "types": [
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
+              ],
+              "free": true,
+              "renderOption": "FN-renderOption",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null' && !!e['border-width'] && e['border-width'] !== 'null'"
+            }
+          ]
+        },
+        {
+          "name": "Background",
+          "styles": [
+            {
+              "title": "Color",
+              "label": "background-color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            }
+          ]
+        },
+        {
+          "name": "Shadow",
+          "styles": [
+            {
+              "title": "",
+              "label": "box-shadow",
+              "type": "shadow"
             }
           ]
         }
@@ -187,10 +417,7 @@
     "Settings": {}
   },
   "Button": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "SmartButton",
     "Settings": {
       "categories": [
         {
@@ -447,7 +674,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -458,10 +685,7 @@
     "defaultProps": {}
   },
   "Textbox": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "TextFields",
     "Settings": {
       "categories": [
         {
@@ -578,7 +802,7 @@
             {
               "title": "Rows",
               "label": "rows",
-              "when": "FN-when"
+              "when": "p => !!p.multiline"
             }
           ]
         }
@@ -745,20 +969,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -803,10 +1013,7 @@
     "defaultProps": {}
   },
   "Avatar": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "AccountCircle",
     "Settings": {
       "categories": [
         {
@@ -1008,20 +1215,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -1033,7 +1226,7 @@
       },
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1043,10 +1236,7 @@
     "defaultProps": {}
   },
   "Alert": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Error",
     "Settings": {
       "categories": [
         {
@@ -1249,20 +1439,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -1273,10 +1449,7 @@
     "defaultProps": {}
   },
   "Typography": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "FormatColorText",
     "Settings": {
       "categories": [
         {
@@ -1490,16 +1663,15 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Color",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
+              "title": "Color",
+              "label": "color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-colorOption",
+              "getOptionLabel": "FN-getOptionColor",
+              "color": true
             }
           ]
         }
@@ -1508,7 +1680,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1519,10 +1691,7 @@
     "defaultProps": {}
   },
   "Paper": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Description",
     "allowChildren": true,
     "Settings": {
       "categories": [
@@ -1720,30 +1889,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "IconButton": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Mood",
     "Settings": {
       "categories": [
         {
@@ -1754,7 +1906,7 @@
               "title": "Icon",
               "label": "icon",
               "types": "ICON_TYPES",
-              "renderOption": "FN-renderOption",
+              "renderOption": "FN-renderIconOption",
               "bindable": true
             },
             {
@@ -1798,7 +1950,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -1965,16 +2117,90 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Border",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
+              "title": "Thickness",
+              "label": "border-width",
               "types": [
-                "capitalize",
-                "uppercase"
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
               ],
-              "type": "pill"
+              "renderOption": "FN-renderOption",
+              "free": true
+            },
+            {
+              "title": "Type",
+              "label": "border-style",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null'",
+              "types": [
+                "dotted",
+                "solid",
+                "dashed",
+                "ridge",
+                "double",
+                "groove",
+                "inset",
+                "outset",
+                "unset",
+                "initial",
+                "inherit"
+              ]
+            },
+            {
+              "title": "Color",
+              "label": "border-color",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null'",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            },
+            {
+              "title": "Radius",
+              "label": "border-radius",
+              "types": [
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
+              ],
+              "free": true,
+              "renderOption": "FN-renderOption",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null' && !!e['border-width'] && e['border-width'] !== 'null'"
+            }
+          ]
+        },
+        {
+          "name": "Background",
+          "styles": [
+            {
+              "title": "Color",
+              "label": "background-color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            }
+          ]
+        },
+        {
+          "name": "Shadow",
+          "styles": [
+            {
+              "title": "",
+              "label": "box-shadow",
+              "type": "shadow"
             }
           ]
         }
@@ -1983,10 +2209,7 @@
     "Defaults": {}
   },
   "Link": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "InsertLink",
     "Settings": {
       "categories": [
         {
@@ -2005,7 +2228,7 @@
               "title": "Open in new window",
               "label": "window",
               "type": "boolean",
-              "when": "FN-when"
+              "when": "p => !!p.href"
             }
           ]
         },
@@ -2048,7 +2271,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -2213,20 +2436,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -2236,10 +2445,7 @@
     }
   },
   "Fab": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Lens",
     "Settings": {
       "categories": [
         {
@@ -2250,7 +2456,7 @@
               "title": "Icon",
               "label": "icon",
               "types": "ICON_TYPES",
-              "renderOption": "FN-renderOption",
+              "renderOption": "FN-renderIconOption",
               "bindable": 1
             },
             {
@@ -2300,7 +2506,7 @@
     "Events": [
       {
         "name": "onClick",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "User clicks on component or focuses and presses SPACE."
       }
     ],
@@ -2465,30 +2671,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Chip": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Crop169",
     "Settings": {
       "categories": [
         {
@@ -2556,13 +2745,13 @@
               "title": "Start Icon",
               "label": "icon",
               "types": "ICON_TYPES",
-              "renderOption": "FN-renderOption"
+              "renderOption": "FN-renderIconOption"
             },
             {
               "title": "Delete Icon",
-              "label": "deleteIcon", 
+              "label": "deleteIcon",
               "types": "ICON_TYPES",
-              "renderOption": "FN-renderOption",
+              "renderOption": "FN-renderIconOption",
               "helperText": "Requires onDelete event to be handled."
             }
           ]
@@ -2742,20 +2931,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -2764,10 +2939,7 @@
     }
   },
   "AppBar": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "BuildCircle",
     "allowChildren": true,
     "Settings": {
       "categories": [
@@ -2808,6 +2980,165 @@
     },
     "Styles": {
       "categories": [
+        {
+          "name": "Layout",
+          "always": true,
+          "styles": [
+            {
+              "title": "Type",
+              "label": "display",
+              "types": [
+                "flex",
+                "grid"
+              ],
+              "start": "flex",
+              "type": "pill"
+            },
+            {
+              "title": "Direction",
+              "label": "flex-direction",
+              "types": [
+                "column",
+                "row"
+              ],
+              "start": "column",
+              "type": "pill",
+              "when": "e => e.display === 'flex'"
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "flex-start",
+                "center",
+                "flex-end",
+                "baseline"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'flex'",
+              "image": true
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "start",
+                "center",
+                "end"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'grid'",
+              "image": true
+            },
+            {
+              "title": "Justify items",
+              "label": "justify-items",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "stretch"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Align content",
+              "label": "align-content",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Justify content",
+              "label": "justify-content",
+              "type": "pill",
+              "image": true,
+              "types": [
+                "flex-start",
+                "center",
+                "flex-end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center"
+            },
+            {
+              "title": "Rows",
+              "label": "grid-template-rows",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "when": "e => e.display === 'grid'",
+              "render": "FN-render"
+            },
+            {
+              "title": "Columns",
+              "label": "grid-template-columns",
+              "when": "e => e.display === 'grid'",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ]
+            },
+            {
+              "title": "Gap",
+              "label": "gap",
+              "types": [
+                "4px",
+                "8px",
+                "12px",
+                "16px",
+                "20px",
+                "24px"
+              ],
+              "free": true
+            },
+            {
+              "title": "Wrap child elements",
+              "label": "flex-wrap",
+              "type": "boolean",
+              "when": "e => e.display === 'flex'"
+            }
+          ]
+        },
         {
           "name": "Dimensions",
           "styles": [
@@ -2969,16 +3300,90 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Border",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
+              "title": "Thickness",
+              "label": "border-width",
               "types": [
-                "capitalize",
-                "uppercase"
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
               ],
-              "type": "pill"
+              "renderOption": "FN-renderOption",
+              "free": true
+            },
+            {
+              "title": "Type",
+              "label": "border-style",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null'",
+              "types": [
+                "dotted",
+                "solid",
+                "dashed",
+                "ridge",
+                "double",
+                "groove",
+                "inset",
+                "outset",
+                "unset",
+                "initial",
+                "inherit"
+              ]
+            },
+            {
+              "title": "Color",
+              "label": "border-color",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null'",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            },
+            {
+              "title": "Radius",
+              "label": "border-radius",
+              "types": [
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
+              ],
+              "free": true,
+              "renderOption": "FN-renderOption",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null' && !!e['border-width'] && e['border-width'] !== 'null'"
+            }
+          ]
+        },
+        {
+          "name": "Background",
+          "styles": [
+            {
+              "title": "Color",
+              "label": "background-color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            }
+          ]
+        },
+        {
+          "name": "Shadow",
+          "styles": [
+            {
+              "title": "",
+              "label": "box-shadow",
+              "type": "shadow"
             }
           ]
         }
@@ -2990,10 +3395,7 @@
     }
   },
   "Collapse": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "UnfoldLess",
     "allowChildren": true,
     "Settings": {
       "categories": [
@@ -3181,30 +3583,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "List": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "FormatListBulleted",
     "Settings": {
       "categories": [
         {
@@ -3423,20 +3808,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -3447,17 +3818,12 @@
     "Defaults": {}
   },
   "Spacer": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    }, 
+    "Icon": "East",
+    "Styles": {},
     "Settings": {}
   },
   "DataGrid": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "GridOn",
     "Events": [
       {
         "name": "onRowClick",
@@ -3542,13 +3908,13 @@
               "title": "Selected Row",
               "label": "selectedIndex",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => !p.use_id"
             },
             {
               "title": "Selected ID",
               "label": "selectedID",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => p.use_id"
             },
             {
               "title": "Select by ID",
@@ -3559,7 +3925,7 @@
               "title": "ID Column",
               "label": "selectedColumn",
               "type": "tablecolumn",
-              "when": "FN-when"
+              "when": "p => p.use_id"
             }
           ]
         },
@@ -3746,20 +4112,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -3768,10 +4120,7 @@
     }
   },
   "Dialog": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "WebAsset",
     "Settings": {
       "categories": [
         {
@@ -3975,30 +4324,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Menu": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "MenuOpen",
     "Settings": {
       "categories": [
         {
@@ -4197,30 +4529,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "AudioPlayer": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Speaker",
     "Settings": {
       "categories": [
         {
@@ -4313,190 +4628,10 @@
     ],
     "Defaults": {},
     "defaultProps": {},
-    "Styles": {
-      "categories": [
-        {
-          "name": "Dimensions",
-          "styles": [
-            {
-              "title": "Width",
-              "label": "width",
-              "xs": 6
-            },
-            {
-              "title": "Height",
-              "label": "height",
-              "xs": 6
-            },
-            {
-              "title": "Minimum Width",
-              "label": "min-width",
-              "xs": 6
-            },
-            {
-              "title": "Minimum Height",
-              "label": "min-heignt",
-              "xs": 6
-            },
-            {
-              "title": "Maximum Width",
-              "label": "max-width",
-              "xs": 6
-            },
-            {
-              "title": "Maximum Height",
-              "label": "max-heignt",
-              "xs": 6
-            }
-          ]
-        },
-        {
-          "name": "Position",
-          "styles": [
-            {
-              "title": "position",
-              "label": "position",
-              "types": [
-                "relative",
-                "absolute",
-                "fixed"
-              ]
-            },
-            {
-              "label": "top",
-              "title": "top",
-              "xs": 3
-            },
-            {
-              "label": "left",
-              "title": "left",
-              "xs": 3
-            },
-            {
-              "label": "bottom",
-              "title": "bottom",
-              "xs": 3
-            },
-            {
-              "label": "right",
-              "title": "right",
-              "xs": 3
-            }
-          ]
-        },
-        {
-          "name": "Cursor",
-          "styles": [
-            {
-              "label": "cursor",
-              "types": [
-                "pointer",
-                "default",
-                "progress"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Padding",
-          "styles": [
-            {
-              "label": "padding",
-              "types": [
-                "Xxs/0.125",
-                "Xs/0.25",
-                "Sm/0.5",
-                "Md/0.75",
-                "Lg/1",
-                "Xl/1.5",
-                "Xxl/2",
-                "3xl/2.5"
-              ],
-              "renderOption": "FN-renderOption",
-              "edges": true,
-              "free": true
-            }
-          ]
-        },
-        {
-          "name": "Margin",
-          "styles": [
-            {
-              "label": "margin",
-              "types": [
-                "Xxs/0.125",
-                "Xs/0.25",
-                "Sm/0.5",
-                "Md/0.75",
-                "Lg/1",
-                "Xl/1.5",
-                "Xxl/2",
-                "3xl/2.5"
-              ],
-              "renderOption": "FN-renderOption",
-              "edges": true,
-              "free": true
-            }
-          ]
-        },
-        {
-          "name": "White Space",
-          "styles": [
-            {
-              "title": "white-space",
-              "label": "white-space",
-              "types": [
-                "nowrap",
-                "break-space",
-                "pre",
-                "pre-line",
-                "pre-wrap",
-                "inherit"
-              ]
-            },
-            {
-              "title": "text-overflow",
-              "label": "text-overflow",
-              "types": [
-                "clip",
-                "ellipsis",
-                "inherit"
-              ]
-            },
-            {
-              "title": "overflow",
-              "label": "overflow",
-              "types": [
-                "auto",
-                "hidden",
-                "overlay",
-                "scroll"
-              ]
-            }
-          ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
-        }
-      ]
-    }
+    "Styles": {}
   },
   "Select": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Grading",
     "Settings": {
       "categories": [
         {
@@ -4722,20 +4857,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -4744,10 +4865,7 @@
     }
   },
   "Badge": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "LocalPolice",
     "Settings": {
       "categories": [
         {
@@ -4963,30 +5081,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Card": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "CreditCard",
     "Settings": {
       "categories": [
         {
@@ -5194,30 +5295,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Repeater": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Loop",
     "Settings": {
       "categories": [
         {
@@ -5233,19 +5317,19 @@
               "title": "Selected index",
               "label": "selectedIndex",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => !p.use_id"
             },
             {
               "title": "Selected ID",
               "label": "selectedID",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => p.use_id"
             },
             {
               "title": "ID Column",
               "label": "selectedColumn",
               "type": "tablecolumn",
-              "when": "FN-when"
+              "when": "p => p.use_id"
             },
             {
               "title": "Select by ID",
@@ -5258,6 +5342,165 @@
     },
     "Styles": {
       "categories": [
+        {
+          "name": "Layout",
+          "always": true,
+          "styles": [
+            {
+              "title": "Type",
+              "label": "display",
+              "types": [
+                "flex",
+                "grid"
+              ],
+              "start": "flex",
+              "type": "pill"
+            },
+            {
+              "title": "Direction",
+              "label": "flex-direction",
+              "types": [
+                "column",
+                "row"
+              ],
+              "start": "column",
+              "type": "pill",
+              "when": "e => e.display === 'flex'"
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "flex-start",
+                "center",
+                "flex-end",
+                "baseline"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'flex'",
+              "image": true
+            },
+            {
+              "title": "Align items",
+              "label": "align-items",
+              "types": [
+                "stretch",
+                "start",
+                "center",
+                "end"
+              ],
+              "start": "center",
+              "type": "pill",
+              "when": "e => e.display === 'grid'",
+              "image": true
+            },
+            {
+              "title": "Justify items",
+              "label": "justify-items",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "stretch"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Align content",
+              "label": "align-content",
+              "types": [
+                "start",
+                "center",
+                "end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center",
+              "type": "pill",
+              "image": true,
+              "when": "e => e.display === 'grid'"
+            },
+            {
+              "title": "Justify content",
+              "label": "justify-content",
+              "type": "pill",
+              "image": true,
+              "types": [
+                "flex-start",
+                "center",
+                "flex-end",
+                "space-between",
+                "space-around",
+                "space-evenly"
+              ],
+              "start": "center"
+            },
+            {
+              "title": "Rows",
+              "label": "grid-template-rows",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ],
+              "when": "e => e.display === 'grid'",
+              "render": "FN-render"
+            },
+            {
+              "title": "Columns",
+              "label": "grid-template-columns",
+              "when": "e => e.display === 'grid'",
+              "types": [
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12
+              ]
+            },
+            {
+              "title": "Gap",
+              "label": "gap",
+              "types": [
+                "4px",
+                "8px",
+                "12px",
+                "16px",
+                "20px",
+                "24px"
+              ],
+              "free": true
+            },
+            {
+              "title": "Wrap child elements",
+              "label": "flex-wrap",
+              "type": "boolean",
+              "when": "e => e.display === 'flex'"
+            }
+          ]
+        },
         {
           "name": "Dimensions",
           "styles": [
@@ -5419,16 +5662,90 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Border",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
+              "title": "Thickness",
+              "label": "border-width",
               "types": [
-                "capitalize",
-                "uppercase"
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
               ],
-              "type": "pill"
+              "renderOption": "FN-renderOption",
+              "free": true
+            },
+            {
+              "title": "Type",
+              "label": "border-style",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null'",
+              "types": [
+                "dotted",
+                "solid",
+                "dashed",
+                "ridge",
+                "double",
+                "groove",
+                "inset",
+                "outset",
+                "unset",
+                "initial",
+                "inherit"
+              ]
+            },
+            {
+              "title": "Color",
+              "label": "border-color",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null'",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            },
+            {
+              "title": "Radius",
+              "label": "border-radius",
+              "types": [
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
+              ],
+              "free": true,
+              "renderOption": "FN-renderOption",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null' && !!e['border-width'] && e['border-width'] !== 'null'"
+            }
+          ]
+        },
+        {
+          "name": "Background",
+          "styles": [
+            {
+              "title": "Color",
+              "label": "background-color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            }
+          ]
+        },
+        {
+          "name": "Shadow",
+          "styles": [
+            {
+              "title": "",
+              "label": "box-shadow",
+              "type": "shadow"
             }
           ]
         }
@@ -5440,10 +5757,7 @@
     }
   },
   "InfoCard": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "ContactMail",
     "Settings": {
       "categories": [
         {
@@ -5459,7 +5773,7 @@
               "title": "Place label below image",
               "label": "below_image",
               "type": "boolean",
-              "when": "FN-when"
+              "when": "p => p.use_image"
             },
             {
               "title": "Subtext",
@@ -5481,7 +5795,7 @@
               "title": "Card Image",
               "label": "image",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => p.use_image"
             },
             {
               "title": "Use Image",
@@ -5492,12 +5806,12 @@
               "title": "Avatar Image",
               "bindable": true,
               "label": "avatar_image",
-              "when": "FN-when"
+              "when": "p => p.use_avatar"
             },
             {
               "title": "Avatar Text",
               "label": "avatar_text",
-              "when": "FN-when"
+              "when": "p => p.use_avatar"
             },
             {
               "title": "Use Avatar",
@@ -5515,7 +5829,7 @@
               "bindable": true,
               "types": "ICON_TYPES",
               "renderOption": "FN-renderOption",
-              "when": "FN-when"
+              "when": "p => p.use_action"
             },
             {
               "title": "Use Card Action",
@@ -5704,30 +6018,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Carousel": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "ViewCarousel",
     "Settings": {
       "categories": [
         {
@@ -5749,7 +6046,7 @@
               "label": "images",
               "type": "imagelist",
               "bindable": true,
-              "when": "FN-when"
+              "when": "p => !p.bindings"
             }
           ]
         },
@@ -5938,20 +6235,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -5960,10 +6243,7 @@
     }
   },
   "Drawer": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Inventory",
     "Settings": {
       "categories": [
         {
@@ -6169,30 +6449,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Pagination": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Pin",
     "Settings": {
       "categories": [
         {
@@ -6461,20 +6724,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -6485,7 +6734,7 @@
     "Events": [
       {
         "name": "onPageChange",
-        "title": "Button is clicked",
+        "title": "Component is clicked",
         "description": "Page value changes",
         "emits": [
           "page"
@@ -6494,10 +6743,7 @@
     ]
   },
   "LinearProgress": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "LinearScale",
     "Settings": {
       "categories": [
         {
@@ -6698,30 +6944,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "CircularProgress": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "RotateLeft",
     "Settings": {
       "categories": [
         {
@@ -6759,7 +6988,7 @@
               "title": "Disable Shrink",
               "label": "disableShrink",
               "type": "boolean",
-              "when": "FN-when"
+              "when": "p => p.variant === 'indeterminate'"
             },
             {
               "title": "Color",
@@ -6939,20 +7168,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -6963,10 +7178,7 @@
     }
   },
   "Snackbar": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Icecream",
     "Settings": {
       "categories": [
         {
@@ -7165,20 +7377,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -7189,10 +7387,7 @@
     }
   },
   "ToggleButtons": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "EditAttributes",
     "Settings": {
       "categories": [
         {
@@ -7435,30 +7630,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "ToggleButton": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "SmartButton",
     "Settings": {
       "categories": [
         {
@@ -7472,14 +7650,14 @@
             {
               "title": "Label",
               "label": "label",
-              "when": "FN-when"
+              "when": "p => !p.use_icon"
             },
             {
               "title": "Icon",
               "label": "icon",
               "types": "ICON_TYPES",
               "renderOption": "FN-renderOption",
-              "when": "FN-when"
+              "when": "p => p.use_icon"
             },
             {
               "title": "Use icons",
@@ -7691,30 +7869,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Divider": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "HorizontalRule",
     "allowChildren": true,
     "Settings": {
       "categories": [
@@ -7921,30 +8082,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Tabs": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Tab",
     "Settings": {
       "categories": [
         {
@@ -8199,20 +8343,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -8223,10 +8353,7 @@
     "Defaults": {}
   },
   "Tab": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Close",
     "Settings": {
       "categories": [
         {
@@ -8448,30 +8575,13 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
     "Defaults": {}
   },
   "Popover": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "SystemSecurityUpdateGood",
     "Settings": {
       "categories": [
         {
@@ -8664,20 +8774,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -8687,10 +8783,7 @@
     }
   },
   "Slider": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Tune",
     "Settings": {
       "categories": [
         {
@@ -8931,20 +9024,6 @@
               ]
             }
           ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
-            }
-          ]
         }
       ]
     },
@@ -8962,10 +9041,7 @@
     }
   },
   "Image": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Photo",
     "Settings": {
       "categories": [
         {
@@ -9151,16 +9227,90 @@
           ]
         },
         {
-          "name": "Text",
+          "name": "Border",
           "styles": [
             {
-              "title": "Transform",
-              "label": "text-transform",
+              "title": "Thickness",
+              "label": "border-width",
               "types": [
-                "capitalize",
-                "uppercase"
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
               ],
-              "type": "pill"
+              "renderOption": "FN-renderOption",
+              "free": true
+            },
+            {
+              "title": "Type",
+              "label": "border-style",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null'",
+              "types": [
+                "dotted",
+                "solid",
+                "dashed",
+                "ridge",
+                "double",
+                "groove",
+                "inset",
+                "outset",
+                "unset",
+                "initial",
+                "inherit"
+              ]
+            },
+            {
+              "title": "Color",
+              "label": "border-color",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null'",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            },
+            {
+              "title": "Radius",
+              "label": "border-radius",
+              "types": [
+                "Xxs/0.125",
+                "Xs/0.25",
+                "Sm/0.5",
+                "Md/0.75",
+                "Lg/1",
+                "Xl/1.5",
+                "Xxl/2",
+                "3xl/2.5"
+              ],
+              "free": true,
+              "renderOption": "FN-renderOption",
+              "when": "e => !!e['border-width'] && e['border-width'] !== 'null' && !!e['border-style'] && e['border-style'] !== 'null' && !!e['border-width'] && e['border-width'] !== 'null'"
+            }
+          ]
+        },
+        {
+          "name": "Background",
+          "styles": [
+            {
+              "title": "Color",
+              "label": "background-color",
+              "types": "COLOR_TYPES",
+              "renderOption": "FN-renderOption",
+              "getOptionLabel": "FN-getOptionLabel",
+              "color": true
+            }
+          ]
+        },
+        {
+          "name": "Shadow",
+          "styles": [
+            {
+              "title": "",
+              "label": "box-shadow",
+              "type": "shadow"
             }
           ]
         }
@@ -9169,10 +9319,7 @@
     "Defaults": {}
   },
   "ScrollCouple": {
-    "Icon": {
-      "type": {},
-      "compare": null
-    },
+    "Icon": "Filter2",
     "Settings": {
       "categories": [
         {
@@ -9190,6 +9337,16 @@
               "label": "subtitle",
               "type": "chip",
               "bindable": true
+            }
+          ]
+        },
+        {
+          "name": "Appearance",
+          "settings": [
+            {
+              "title": "Variant",
+              "label": "variant",
+              "types": []
             }
           ]
         }
@@ -9354,20 +9511,6 @@
                 "overlay",
                 "scroll"
               ]
-            }
-          ]
-        },
-        {
-          "name": "Text",
-          "styles": [
-            {
-              "title": "Transform",
-              "label": "text-transform",
-              "types": [
-                "capitalize",
-                "uppercase"
-              ],
-              "type": "pill"
             }
           ]
         }

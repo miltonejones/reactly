@@ -15,6 +15,7 @@ import {
 import Tooltip from "@mui/material/Tooltip"; 
 import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext';
+import { Icons } from '../library/icons'; 
  
 export const AU = styled('u')(({ theme, active, error, small }) => ({
   cursor: 'pointer',
@@ -65,13 +66,13 @@ export const PopoverPrompt = ({
 }
 
 
-export const PopoverTextBox = ({ label, value, onChange, handlePopoverClose }) => {
+export const PopoverTextBox = ({ label, value, onChange, handlePopoverClose, ...props }) => {
   const [typedVal, setTypedVal] = React.useState(value);
   const handleChange = () => {
     !!typedVal && onChange && onChange(typedVal);
     handlePopoverClose()
   }
-  return <Stack sx={{p: 2, minWidth: 300}} spacing={1}>
+  return <Stack sx={{p: 2, minWidth: 300}} {...props} spacing={1}>
     <Typography>{label}</Typography>
     <TextField label={label} size="small" value={typedVal} onChange={ (e) => { 
       setTypedVal(e.target.value) 
@@ -150,14 +151,33 @@ export const OptionSwitch = ({ options = [], value, onChange }) => {
 }
 
 
-export const Tiny = ({icon: Icon, hidden, ...props}) => <Icon {...props} 
-    sx={{m: 0, width: 16, height: 16, ...props.sx,
-      opacity: hidden ? 0 : 1,
-      transition: 'opacity 0.1s linear'}} />
+// export const Tiny = (props) => {
+//   console.log ('tiny', { props })
+//   return  <>t</>
+// }
 
 
-export const Flex = styled(Box)(({ theme, nowrap, baseline, fullWidth, direction="row", wrap, spacing = 1 }) => ({
+export const Tiny = ({icon: Icon, hidden, ...props}) => {
+  let Smiley = Icon;
+  if (!Icon) {
+    return <>?</>
+  }
+  if (typeof Icon === 'string') {
+    Smiley = Icons[Icon];
+    if (!Smiley) {
+      return <>{Icon}</>
+    }
+  }
+  return <Smiley {...props} 
+  sx={{m: 0, width: 16, height: 16, ...props.sx,
+    opacity: hidden ? 0 : 1,
+    transition: 'opacity 0.1s linear'}} />
+}
+  
+
+export const Flex = styled(Box)(({ theme, nowrap, baseline, fullWidth, fullHeight, direction="row", wrap, spacing = 1 }) => ({
  display: "flex",
+ height: fullHeight ? "100%" : '',
  width: fullWidth ? '100%' : 'inherit',
  alignItems: baseline ? "baseline" : "center",
  flexDirection: direction,

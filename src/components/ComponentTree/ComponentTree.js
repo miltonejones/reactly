@@ -13,8 +13,7 @@ import {
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
-import { Json } from "../../colorize";
-import Library from "../library";
+import { Json } from "../../colorize"; 
 import { objectReduce } from "../library/util";
 import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
 
@@ -28,26 +27,32 @@ const Preview = ({
   on,
   order,
   children,
+  name,
   sx,
   ...props
 }) => {
-  return (
-    <>
-      <Component
-        {...props}
-        selectedPage={selectedPage}
-        componentEditing={on}
-        sx={{
-          ...sx,
-          outline: on ? "dotted 2px gray" : "none",
-          outlineOffset: 4,
-        }}
-      >
-        {children}
-      </Component>
-      {/* {order} */}
-    </>
-  );
+  try {
+// console.log ('rendering...', name, Component)
+    return (
+      <>
+        <Component
+          {...props}
+          selectedPage={selectedPage}
+          componentEditing={on}
+          sx={{
+            ...sx,
+            outline: on ? "dotted 2px gray" : "none",
+            outlineOffset: 4,
+          }}
+        >
+          {children}
+        </Component>
+        {/* {order} */}
+      </>
+    );
+  } catch (e) {
+    return <>{e.message}</>
+  }
 };
 
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
@@ -224,11 +229,19 @@ const RenderComponent = ({
 }) => {
   const on = selectedComponent?.ID === component.ID;
   const kids = trees.filter((t) => t.componentID === component.ID);
-  const { Component } = Library[component.ComponentType];
+  const { Library } = React.useContext(AppStateContext);
 
   const { attachEventHandlers } = usePageContext();
+  if (! Library[component.ComponentType]) {
+    return <>{component?.ComponentType} does not exist</>
+  }
+
+  const { Component } = Library[component.ComponentType];
+
 
   const eventMap = attachEventHandlers(component);
+
+  // console.log ({ Library, name: component.ComponentType })
 
   return (
     <>
@@ -236,6 +249,7 @@ const RenderComponent = ({
         on={on}
         selectedPage={selectedPage}
         component={Component}
+        name={component.ComponentName}
         preview={preview}
         {...component}
         {...eventMap}

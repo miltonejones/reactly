@@ -1,11 +1,10 @@
 import React from 'react';
-import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material';
-import Library from '../library';
+import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material'; 
 import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
 import { Add, Close, Delete } from "@mui/icons-material";
 import { SetState, RunScript, OpenLink, DataExec, ModalOpen } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
-import { EditorStateContext } from '../../hooks/AppStateContext'; 
+import { EditorStateContext, AppStateContext } from '../../hooks/AppStateContext'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -118,6 +117,7 @@ const ComponentEvents = ({
   const [selectedType, setSelectedType] = React.useState(false);
 
   
+  const { Library } = React.useContext(AppStateContext);
   const defaultEvents = !addedEvents ? Events : addedEvents;
   const supportedEvents = !!addedEvents || !component ? defaultEvents : Library [component.ComponentType].Events  ;
   const eventOwner = !component ? selectedPage : component;

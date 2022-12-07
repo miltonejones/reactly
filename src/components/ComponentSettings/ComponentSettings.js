@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, 
-    Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material';
-import Library from '../library';
+    Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material'; 
+import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { QuickSelect, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add, MoreVert } from "@mui/icons-material";
@@ -158,6 +158,7 @@ export const ComponentInputBody = (props) => {
     multiline
   } = props;
 
+  const { Library } = React.useContext(AppStateContext);
   const node = css?.find(f => f.Key === label);
   const initialProp = !node?.Value ? args[label] : node.Value;
   const customProp = args[label + '-custom'];
@@ -455,6 +456,7 @@ export const ComponentCollapse = ({
 }
 
 const ComponentSettings = ({ selectedPage, component, onChange, resources }) => {
+  const { Library } = React.useContext(AppStateContext);
   if (!component?.settings) {
     return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
   }

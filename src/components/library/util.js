@@ -1,4 +1,4 @@
-import Library from ".";
+ 
 
 export const getPropertyOptions = (page, event) => {
   const options = !page?.state ? [] : page.state.map(d => d.Key);

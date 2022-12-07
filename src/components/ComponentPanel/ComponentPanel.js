@@ -1,7 +1,6 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip,
-  Typography, Divider, Alert } from '@mui/material';
-import Library from '../library';
+  Typography, Divider, Alert } from '@mui/material'; 
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect , PopoverPrompt} from '..';
@@ -40,6 +39,7 @@ const ComponentPanel = ({
     application
  }) => {
  
+  const { Library } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];

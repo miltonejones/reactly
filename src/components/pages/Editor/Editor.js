@@ -58,8 +58,7 @@ import {
 } from "../../../hooks/AppStateContext";
 import { useParams } from "react-router-dom";
 import { useEditor } from "../../../hooks/useEditor";
-import { Json } from "../../../colorize";
-import Library from "../../library";
+import { Json } from "../../../colorize"; 
 import { TextInput } from "../..";
 import { JsonView } from "../../../colorize";
 import { ChipBox } from "../..";
@@ -235,7 +234,7 @@ const Editor = ({ applications: apps = {} }) => {
     getPageResourceState,
     setPageResourceState,
  
-
+    Library,
 
     dirty,
     setDirty,
@@ -461,7 +460,7 @@ const Editor = ({ applications: apps = {} }) => {
     }, componentID);
   };
 
-  const appendComponent = (ok, componentID, options) => {
+  const appendComponent = (ok, componentID, options) => { 
     const component = {
       ComponentType: ok.selected,
       ComponentName: ok.name,
@@ -486,7 +485,9 @@ const Editor = ({ applications: apps = {} }) => {
     appendComponent(ok, componentID, options);
   };
 
-  const libraryKeys = Object.keys(Library).sort((a,b) => a > b ? 1 : -1);
+  const libraryKeys = Object.keys(Library)
+    .filter(f => !Library[f].hidden)
+    .sort((a,b) => a > b ? 1 : -1);
 
   let center_state = '';
   if (collapsed.right && collapsed.left) {
