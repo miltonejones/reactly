@@ -6,6 +6,7 @@ import { JsonTree } from '../../colorize';
 import { TabButton } from '../ComponentPanel/ComponentPanel';
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { TextBtn } from '../Control/Control';
+import { JsonView } from '../../colorize';
 
 
 export const useLibrary = () => {
@@ -307,7 +308,7 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
     saveSetting('types', added)
   }
 
-  const options = typeof types === 'string'
+  let options = (typeof types === 'string'
     ? (types?.indexOf('ICON_TYPES') > -1 
         ? Object.keys(Icons)
         : [types]
@@ -315,7 +316,9 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
     : (types?.indexOf('ICON_TYPES') > -1 
         ? Object.keys(Icons)
         : types
-        );
+        ))
+        
+    options = options?.map(o => !!o && typeof o === 'object' ? Object.values(o)[0] : o) || [];
 
   
   const dataTypes = ['pill', 'boolean', 'chip', 'shadow', 'listtable', 'tablecolumn', 'valuelist',
@@ -507,7 +510,7 @@ const CategoryTree = ({ categories, component, childName, Name, title, styleCate
   </Text>
 
   <Tabs onChange={handleChange} value={value} sx={{minHeight: 24, mt: 1, ml: 1, mb: 2 }}>
-  {categories.map(category =>  <TabButton  label={category.name} /> )}
+  {categories.map(category =>  <TabButton key={category.name} label={category.name} /> )}
  
 </Tabs> 
 
@@ -668,6 +671,10 @@ const LibraryNode = ({ component, name, expanded, expand , styleCategories, sett
   };
 
   const Icon = Icons[Library[name].Icon];
+
+  if (!!expanded && expanded !== name) {
+    return <i />
+  }
   return <>
   <Flex sx={{borderBottom: 1, borderColor: 'divider'
             , p: 1, backgroundColor: expanded ? 'aliceblue' : 'white'}}>
@@ -687,11 +694,15 @@ const LibraryNode = ({ component, name, expanded, expand , styleCategories, sett
         />}
       </Flex>
       <Collapse in={expanded}>
+     {!!expanded &&    <>
+        
         <ComponentRow {...component} Name={name} /> 
+
         <Tabs onChange={handleChange} value={value} sx={{minHeight: 24, mt: 1, ml: 1, mb: 2 }}>
           <TabButton  iconPosition="start" disabled={!component.Settings}  icon={<Tiny icon={Icons.Settings}/>}  label="Settings" />
           <TabButton  iconPosition="start" disabled={!component.Styles}    icon={<Tiny icon={Icons.Palette}/>}  label="Styles" />
           <TabButton  iconPosition="start" disabled={!component.Events}   icon={<Tiny icon={Icons.Bolt}/>} label="Events" />
+          <TabButton  iconPosition="start"  icon={<Tiny icon={Icons.Code}/>} label="JSON" />
         </Tabs>
 
        <Box sx={{ml: 2, pb: expanded ? 4 : 0, borderBottom: 4, borderColor: 'divider'}}>
@@ -701,28 +712,37 @@ const LibraryNode = ({ component, name, expanded, expand , styleCategories, sett
        title="Settings" childName="settings" 
         Name={name}  categories={component.Settings.categories} component={component}/>}
        {expanded && value === 2 && !!component.Events && <EventTree  events={component.Events} />}
+
+        {value === 3 && <JsonView initial={0} json={component} />}
+
        {expanded && value === 1 && !!component.Styles?.categories && <CategoryTree
             styleCategories={styleCategories} 
             settingsCategories={settingsCategories}  title="Styles" childName="styles" 
            Name={name}  categories={component.Styles.categories} component={component}/>}
        </Box>
+        
+        </>
+}
+        
       </Collapse>
   </>
 }
  
 const LibraryTree = () => {
   const { Library , config} = React.useContext(AppStateContext);
-  const [expanded, setExpanded] = React.useState([]);
+  const [expanded, setExpanded] = React.useState('');
   const [filter, setFilter] = React.useState('');
   const { createComponent } = useLibrary();
 
   const f = Object.keys(Library).find(f => !Object.keys(config).find(k => k === f));
   
-  const expand = node => {
-    setExpanded(nodes => nodes.indexOf(node) > -1 
-      ? nodes.filter(item => node !== item)
-      : nodes.concat(node));
-  }
+  // const expand = node => {
+  //   setExpanded(nodes => nodes.indexOf(node) > -1 
+  //     ? nodes.filter(item => node !== item)
+  //     : nodes.concat(node));
+  // }
+
+  const expand = node => setExpanded(s => !!s ? '' : node);
 
   const styleCategories = Object.keys(Library).reduce ((out, key) => {
     const styles = Library[key].Styles;
@@ -768,7 +788,7 @@ const LibraryTree = () => {
       settingsCategories={settingsCategories} 
       styleCategories={styleCategories} 
       settingsCategories={settingsCategories} 
-        expanded={expanded.indexOf(name) > -1} key={name} name={name} component={config[name]} />
+        expanded={expanded} key={name} name={name} component={config[name]} />
      })}
   </Layout>
  );

@@ -32,7 +32,6 @@ const handleClose = (value) => {
 }; 
 const { MenuComponent, menuPos } = React.useContext(AppStateContext);
 
-try  {
 
 return <>
 
@@ -71,15 +70,14 @@ return <>
     const Icon = icons[index];
     return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
     sx={{fontWeight: selected.indexOf (option) > -1 ? 600 : 400, minWidth: 300}}
-    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected.indexOf (option) > -1  && <>&bull;{" "}</>}{option}</MenuItem>
+    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected.indexOf (option) > -1  && <>&bull;{" "}</>}{
+      typeof option === 'string' ? option : typeof option
+    }</MenuItem>
   })} 
 
 
 </MenuComponent>
 </>
-} catch  (e) {
-  return <>{e.message}</>
-}
 
 
 }
