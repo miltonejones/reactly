@@ -21,7 +21,13 @@ export const useLibrary = () => {
         Icon: 'Add',
         dirty: true,
         Settings: {
-          categories: []
+          categories: [
+            {
+              name: 'General',
+              always: true,
+              settings: []
+            }
+          ]
         },
         Styles: {
           categories: []
@@ -49,7 +55,7 @@ export const useLibrary = () => {
 
   const setComponentDefaults =  (componentKey, propName, propVal) => {
     const ex = config[componentKey].Defaults;
-    if (!propVal?.length) {
+    if (typeof propVal === 'string' && !propVal?.length) {
       delete ex[propName]
     } else {
       Object.assign(ex, {[propName]: propVal})
@@ -276,7 +282,7 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const SettingRow = ({ Name, settingType, component, categoryName, childName, ...props }) => {
+const SettingRow = ({ Name, settingType, component, xs, categoryName, childName, ...props }) => {
   const { title, label, type, types, bindable, when, } = props;
   const [js, setJS] = React.useState(when)
   const [opt, setOpt] = React.useState('')
@@ -418,9 +424,10 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
      <Flex fullHeight>
 
      <QuickMenu
+      small
         value={opt}
         onChange={setOpt}
-        label={`Options (${options?.length || '0'})`} options={options || []} />
+        label={opt || `Options (${options?.length || '0'})`} options={options || []} />
 
         {!!opt && <>
           <TinyButton icon={Icons.Close} onClick={() => setOpt('')} />
@@ -435,6 +442,20 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
          </PopoverPrompt> 
 
         </>}
+     </Flex>
+    </Grid> 
+
+    <Grid item xs={1}>
+     <Flex fullHeight>
+
+     <QuickMenu
+      small
+        value={xs} 
+        label={`${xs || ''} columns`} 
+        onChange={e => {
+         !!e && saveSetting('xs', e)
+        }} options={[1,2,3,4,5,6,7,8,9,10,11,12].map(g => g.toString())} />
+ 
      </Flex>
     </Grid> 
 
@@ -463,10 +484,20 @@ const SettingRow = ({ Name, settingType, component, categoryName, childName, ...
 
 
 
-    <Grid item xs={2}>
-      <TextInput size="small" label="Default" 
+    <Grid item xs={2}> 
+     {type !== 'boolean' && <TextInput size="small" label="Default" 
         onChange={e => setComponentDefaults(Name, label, e.target.value)}
-      value={component.Defaults?.[label]} />
+      value={component.Defaults?.[label]} />}
+
+
+     {type === 'boolean' && <Flex
+      onClick={e => setComponentDefaults(Name, label, !component.Defaults?.[label])} fullHeight>
+     <Switch checked={!!component.Defaults?.[label]}
+        size="small"/>
+     <Text small>Default</Text>
+     </Flex> }
+
+
     </Grid> 
 
   </Grid>
@@ -594,9 +625,8 @@ const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Default
   const { Library , config} = React.useContext(AppStateContext);
   const { setComponentProps } = useLibrary();
 
-  const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s]}`);
-  const allowableChildren = Object.keys(Library)
-    .filter(f => f !== Name);
+  const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s].toString()}`);
+  const allowableChildren = Object.keys(Library);
 
   return <Grid container sx={{ml: 2, mt: 2}} spacing={2}>
 
@@ -753,7 +783,7 @@ const LibraryTree = () => {
   
   const settingsCategories = Object.keys(Library).reduce ((out, key) => {
     const settings = Library[key].Settings;
-    console.log({key, settings})
+    // console.log({key, settings})
     if (!settings) return out;
     out = out.concat(settings.categories?.map(cat => `${key}.${cat.name}`));
     return out;

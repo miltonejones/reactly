@@ -69,8 +69,8 @@ return <>
   {options?.map ((option, index) => {
     const Icon = icons[index];
     return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
-    sx={{fontWeight: selected.indexOf (option) > -1 ? 600 : 400, minWidth: 300}}
-    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected.indexOf (option) > -1  && <>&bull;{" "}</>}{
+    sx={{fontWeight: selected?.indexOf && selected.indexOf (option) > -1 ? 600 : 400, minWidth: 300}}
+    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected?.indexOf && selected?.indexOf (option) > -1  && <>&bull;{" "}</>}{
       typeof option === 'string' ? option : typeof option
     }</MenuItem>
   })} 

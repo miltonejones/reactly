@@ -5,9 +5,10 @@ import { Photo } from '@mui/icons-material';
 import { getStyles, getSettings } from '../util';
   
 const ReactlyComponentImage = ({ children, styles, ...props }) => {
+  const args = getSettings(props.settings);
   const style = getStyles(styles) ; 
- return (
-   <img {...props} style={style}/>
+ return ( 
+   <img {...props} {...args} style={style}/> 
  );
 }
 

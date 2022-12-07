@@ -122,7 +122,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
 //  !!Library[tree.ComponentType] && console.log (typeof Library[tree.ComponentType].Icon)
 //   !Library[tree.ComponentType] && console.log ('Could not find "%s"', tree.ComponentType)
 
-console.log ({ type: tree?.ComponentType, icon: iconOwner?.Icon, Library })
+// console.log ({ type: tree?.ComponentType, icon: iconOwner?.Icon, Library })
   const nodeLabel = !tree 
     ? label 
     : `${tree.ComponentType}: ${tree.ComponentName}`

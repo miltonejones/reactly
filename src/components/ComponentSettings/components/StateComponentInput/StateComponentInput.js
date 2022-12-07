@@ -33,7 +33,7 @@ const StateComponentInput = ({
 
   
   if (!selectedPage.state && !selectedPage.parameters) {
-    return <Alert>No state vars are available</Alert>
+    return <i/>
   }
 
   const Component = menu ? QuickMenu : QuickSelect;
