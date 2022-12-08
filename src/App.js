@@ -201,6 +201,10 @@ function App() {
  
   }
 
+  if (!dynamoProgs) {
+    return <>Waiting on app data...</>
+  }
+
   // return <>
   // return <>
   //   <pre>
