@@ -31,6 +31,7 @@ import Library from "./components/library";
 import { expandLibrary, config } from "./components/library";
 import useDynamoStorage from "./hooks/DynamoStorage";
 import LibraryTree from "./components/LibraryTree/LibraryTree";
+import { reduceComponent } from "./components/library/library";
  
 
 function ChildRoute({ pages, path, appData })  {
@@ -48,6 +49,8 @@ function App() {
   const appHistory = useAppHistory();
   const { appname } = useParams()
 
+  const [dynamoProgs, setDynamoProgs] = React.useState(null)
+  const [supportedEvents, setSupportedEvents] = React.useState([])
   const [dbItems, setDbItems] = React.useState({});
   const [libraryJSON, setLibraryJSON] = React.useState({});
   const [hydratedLibrary, setHydratedLibrary] = React.useState({});
@@ -69,6 +72,24 @@ function App() {
     page_resource_state: '[]'
   });
 
+  const commitProg = async (app) => {
+    await setProgItem(`app-${app.ID}`, JSON.stringify(app))
+   }
+  
+   const refreshProgs = async () => { 
+    setBusy(`Reloading data...`)
+    const items = await getProgItems();
+    const converted = Object.keys(items).reduce((out, item) => {
+      const [label, key] = item.split('-');
+      out = out.concat (JSON.parse(atob(items[item])))
+      return out;
+    }, []);
+    console.log(converted)
+    setDynamoProgs(converted)
+    setBusy(false)
+    return converted;
+  }
+ 
   const refreshLib = async () => { 
     setBusy(`Reloading data...`)
     const items = await getItems();
@@ -81,29 +102,51 @@ function App() {
     setBusy(false)
     return converted;
   }
-
+ 
   const commitComponent = async (key, data) => { 
-    setBusy(`Saving ${key}...`)
-    await setItem(`reactly-${key}`, JSON.stringify(data))
+    setBusy(`Saving ${key}...`); 
+    console.log ({ data })
+    const x = reduceComponent(data);
+    
+    console.log ({ x });
+
+    await setItem(`reactly-${key}`, JSON.stringify(x))
     const updated = await refreshLib();
     updateLib(updated)
+  }
+
+  const processLib = lib => {
+
+    const eventNames = Object.keys(lib).reduce ((out, key) => {
+      const events = lib[key].Events;
+      if (!events) return out;
+      out = out.concat(events.filter(e => !out.find(f => f.name === e.name) ));
+      return out;
+    }, [])
+ 
+    setSupportedEvents(eventNames);
+
+  
+
+    setHydratedLibrary(lib)  
   }
 
   const updateLib = async (conf) => {
     const lib = expandLibrary(Library, conf); 
     setLibraryJSON(conf)
-    setHydratedLibrary(lib)  
+    processLib(lib)  
     setBusy(false)
   }
  
   React.useEffect(() => { 
     if (!libraryLoaded) {
       (async () => {
+        await refreshProgs()
         setBusy(`Loading initial data...`)
         const f = await refreshLib()
         setLibraryJSON(f);
         const lib = expandLibrary(Library, f);
-        setHydratedLibrary(lib)  
+        processLib(lib)  
         setBusy(false)
       })();
     }
@@ -117,14 +160,16 @@ function App() {
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
-  const { setItem, getItems } = useDynamoStorage()
+  const { setItem, getItems,  removeProgItem, getProgItems, setProgItem } = useDynamoStorage()
 
 
- 
-
-  const appData = appText === null || appText === 'null' 
+  let appData = appText === null || appText === 'null' 
     ? AppData 
     : JSON.parse(appText);
+
+  if (dynamoProgs) {
+    appData = dynamoProgs;
+  }
 
   const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
     if (!pages) return items.concat('huh');
@@ -157,7 +202,11 @@ function App() {
   }
 
   // return <>
-
+  // return <>
+  //   <pre>
+  //     {JSON.stringify(dynamoProgs,0,2)}
+  //   </pre>
+  // </>
   // <Flex sx={{p: 2}} wrap spacing={2}>
 
   // {Object.keys(config).map(c => <Box key={c}>
@@ -195,13 +244,17 @@ function App() {
         setAppData,
         queryState,
         setQueryState,
-
-
+        supportedEvents,
+        refreshLib,
+        commitProg,
+        refreshProgs,
         // "persistent" state values 
 
         pageClientState, 
         setPageClientState,
         
+        removeProgItem,
+
         pageResourceState, 
         getPageResourceState,
         setPageResourceState,
@@ -224,6 +277,7 @@ function App() {
 
           <Route path="/" element={<Home appData={appData} />} />  
           <Route path="/library" element={<LibraryTree appData={appData} />} />  
+          <Route path="/library/:appname" element={<LibraryTree appData={appData} />} />  
           <Route path="/edit/:appname" element={<Editor applications={appData} />} />  
           <Route path="/info/:appname" element={<Detail applications={appData} />} />  
           <Route path="/apps/:appname" element={<Renderer applications={appData} />} />  

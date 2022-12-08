@@ -5,10 +5,10 @@ import {
   Tooltip,
   ThemeProvider,
   styled,
-  Box,
-  Alert,
+  Box, 
   Avatar,
   MenuItem,
+  Alert,
   Menu
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
@@ -233,7 +233,7 @@ const RenderComponent = ({
 
   const { attachEventHandlers } = usePageContext();
   if (! Library[component.ComponentType]) {
-    return <>{component?.ComponentType} does not exist</>
+    return <Alert sx={{m: 2}}>Waiting for {component?.ComponentType} definition...</Alert>
   }
 
   const { Component } = Library[component.ComponentType];

@@ -1,10 +1,23 @@
 import React from 'react';
-import { styled, Box, Divider, Typography, MenuItem } from '@mui/material';
+import { styled, Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
-import { AU, TinyButton, Flex, OptionSwitch, Text } from '..';
-import { ExpandMore } from "@mui/icons-material";
+import { AU, TinyButton, Tiny, Flex, OptionSwitch, Text } from '..';
+import { ExpandMore, Delete } from "@mui/icons-material";
  
  
+export const DeleteConfirmMenu = ({message, hidden, 
+  title="Confirm Delete",
+  subtitle="This action cannot be undone.",
+  onDelete, ...props}) => <QuickMenu 
+  { ...props}
+  title={title}
+  options={[<Stack sx={{ lineHeight: 1 }}>
+    <Text>{message}</Text>
+    <Text error active small>{subtitle}</Text>
+  </Stack>]} 
+  label={ <Tiny icon={Delete} hidden={hidden} />}
+  onChange={onDelete} /> 
+
 const QuickMenu = (props) => {
 const { 
   label, 
@@ -32,11 +45,24 @@ const handleClose = (value) => {
 }; 
 const { MenuComponent, menuPos } = React.useContext(AppStateContext);
 
+const equals = (source, dest) => {
+  if (typeof source === 'object') {
+    try {
+      return source.indexOf(dest) > -1
+    } catch (e) {
+      return false
+    }
+  }
+  if (['string', 'number'].some(f => typeof(source) === f)) {
+    return  !!source && source === dest;
+  }
+  return false;
+}
 
 return <>
 
 
-<AU style={{marginRight: 4}} small={small}
+<AU {...props} small={small}
   active={open ? 1 : 0} error={error || open ? 1 : 0} onClick={handleClick}
   >
     {!!LabelIcon && <TinyButton icon={LabelIcon}  sx={{mr: 1}}/>}
@@ -51,7 +77,8 @@ return <>
 > 
 
 {/* menu title  */}
-  {!!title && <Flex sx={{m: t => t.spacing(1,0)}}><Divider sx={{width: '100%'}}><Typography variant="caption">{title}</Typography></Divider></Flex>}
+  {!!title && typeof title === 'string' && <Flex sx={{m: t => t.spacing(1,0)}}
+    ><Divider textAlign="left" sx={{width: '100%'}}><Typography variant="caption">{title}</Typography></Divider></Flex>}
 
 {/* when only 2 options use a Switch  */}
   {/* {options?.length === 2 && <Box sx={{m: 2, minWidth: 300}}>
@@ -64,14 +91,15 @@ return <>
     </Box>}
  */}
 
+{!options.length && <MenuItem>[empty menu]</MenuItem>}
 
 {/* otherwise make a menu item list  */}
   {options?.map ((option, index) => {
     const Icon = icons[index];
     return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
-    sx={{fontWeight: selected?.indexOf && selected.indexOf (option) > -1 ? 600 : 400, minWidth: 300}}
-    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{selected?.indexOf && selected?.indexOf (option) > -1  && <>&bull;{" "}</>}{
-      typeof option === 'string' ? option : typeof option
+    sx={{fontWeight: equals(selected, option) ? 600 : 400, minWidth: 300}}
+    >{!!Icon && <><Icon sx={{mr: 1}} /></>}{equals(selected, option)   && <>&bull;{" "}</>}{
+      option
     }</MenuItem>
   })} 
 

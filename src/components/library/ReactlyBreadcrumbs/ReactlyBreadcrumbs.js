@@ -1,21 +1,19 @@
 import React from 'react';
 import { Breadcrumbs } from '@mui/material';  
 import { Add } from '@mui/icons-material';
-import ReactlyComponent, { ChildComponent } from '../reactly';
+import ReactlyComponent  from '../reactly';
   
-import { getSettings } from '../util';
-import { AppStateContext } from "../../../hooks/AppStateContext";
+import { getSettings } from '../util'; 
 
 
-const ReactlyComponentBreadcrumbs = ({ children, ...props }) => {
-  const args = getSettings(props.settings);
-  const { queryState = {} } = React.useContext(AppStateContext);
-  const { page } = queryState;
-  const offspring = page?.components?.filter(f => f.componentID === props.ID)
+const ReactlyComponentBreadcrumbs = ({ children, ...props }) => { 
+  const args = getSettings(props.settings); 
  return (
-   <ReactlyComponent component={Breadcrumbs} {...props}>
-    {offspring?.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
-   </ReactlyComponent>
+   <ReactlyComponent component={Breadcrumbs} {...props} {...args} 
+    sx={{'& .MuiBreadcrumbs-separator': {
+      color: args.seperator_color
+    }}}
+     />
  );
 }
 

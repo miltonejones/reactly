@@ -1,28 +1,18 @@
 import React from 'react';
-import { BottomNavigation } from '@mui/material';  
-import { Add } from '@mui/icons-material'; 
-import { Icons } from '../icons';
+import { BottomNavigation } from '@mui/material';   
 import { getSettings } from '../util';
-import ReactlyComponent, { ChildComponent } from '../reactly';
-import { AppStateContext } from "../../../hooks/AppStateContext";
+import ReactlyComponent  from '../reactly'; 
   
 const ReactlyComponentBottomNavigation = ({ children, ...props }) => {
-  const args = getSettings(props.settings);
-  const { queryState = {} } = React.useContext(AppStateContext);
-  const { page } = queryState;
-  const offspring = page?.components?.filter(f => f.componentID === props.ID) 
-  const Icon = Icons[props.icon || args.icon];
+  const args = getSettings(props.settings); 
  return (
-   <ReactlyComponent component={BottomNavigation} {...props} {...args}>
-   {offspring?.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
-   </ReactlyComponent> 
+   <ReactlyComponent component={BottomNavigation} {...props} {...args} /> 
  );
 }
 
  
 
-const ReactlyBottomNavigation = {
-  Icon: Add,
+const ReactlyBottomNavigation = { 
   Component: ReactlyComponentBottomNavigation 
 }
  

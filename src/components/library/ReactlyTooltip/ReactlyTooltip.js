@@ -8,7 +8,7 @@ const ReactlyComponentTooltip = ({ children, ...props }) => {
  return (
    <ReactlyComponent component={Tooltip} {...props}>
      <Box sx={{ width: 'fit-content'}}>
-     {children}
+      {children}
      </Box>
    </ReactlyComponent>
  );

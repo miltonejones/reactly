@@ -1,4 +1,4 @@
-export const AppData =[
+export const AppData = [
   {
     "Name": "Demo Application",
     "path": "demo-application",

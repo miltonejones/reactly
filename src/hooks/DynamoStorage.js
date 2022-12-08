@@ -66,7 +66,8 @@ class DynamoStorage {
         this.endpoint + `/${auth_key}/${data_key}`,
         requestOptions
       );
-      return await response.json();
+
+      return true; //await response.json();
     }
     
     /**
@@ -94,6 +95,7 @@ const useDynamoStorage = () => {
 
   // auth key alwas the same
   const auth_key = 'reactly';
+  const app_key = 'reactly-app';
 
   const getItem = async(name) => { 
     const dynamoDatum = await store.getItem(auth_key, name);
@@ -106,7 +108,26 @@ const useDynamoStorage = () => {
   }
 
   const setItem = async (name, value) => await store.setItem(auth_key, name, value);
-  return { getItem, setItem, getItems }
+
+
+
+
+  const getProgItem = async(name) => { 
+    const dynamoDatum = await store.getItem(app_key, name);
+    return dynamoDatum;
+  }
+
+  const getProgItems = async() => { 
+    const dynamoDatum = await store.getItems(app_key);
+    return dynamoDatum;
+  }
+
+  const setProgItem = async (name, value) => await store.setItem(app_key, name, value);
+  
+  const removeProgItem = async (name) => await store.removeItem(app_key, name);
+  
+
+  return { getItem, setItem, getItems, getProgItem, getProgItems, setProgItem , removeProgItem}
 }   
 
 export default useDynamoStorage;

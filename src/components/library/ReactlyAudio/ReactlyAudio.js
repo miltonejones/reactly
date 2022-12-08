@@ -7,6 +7,7 @@ import { getStyles, getSettings } from '../util';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { usePageResourceState } from '../../../hooks/usePageResourceState';
 import { AppStateContext } from '../../../hooks/AppStateContext';
+import moment from 'moment';
 
  
 const ReactlyAudioComponent = ({
@@ -100,11 +101,16 @@ const ReactlyAudioComponent = ({
       
       const handleTimeUpdate =  () => {
         if (!ref.current) return;
+        const duration_formatted = moment.utc(ref.current.duration*1000).format('mm:ss');
+        const current_time_formatted = moment.utc(ref.current.currentTime * 1000).format('mm:ss');
+
         onProgress && onProgress (ref.current, {
           currentTime: ref.current.currentTime,
           duration: ref.current.duration,
           currentTime: ref.current.currentTime,
-          progress: ref.current.currentTime / ref.current.duration
+          progress: (ref.current.currentTime / ref.current.duration) * 100,
+          duration_formatted,
+          current_time_formatted
         })
       };
 
@@ -115,7 +121,7 @@ const ReactlyAudioComponent = ({
           ref.current.addEventListener('play', handlePlay)
           ref.current.addEventListener('pause', handlePause)
           ref.current.addEventListener('timeupdate', handleTimeUpdate);
-          console.log ('added ended listener', listeners); 
+          console.log ('added event listeners', listeners); 
         }
         return listen.concat('ended');
       });

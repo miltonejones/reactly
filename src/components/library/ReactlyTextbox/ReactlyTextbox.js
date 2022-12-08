@@ -23,7 +23,8 @@ const ReactlyTextboxComponent = ({onEnterPress, ...props}) => {
  
  return (
 <> 
-<ReactlyComponent component={TextField} {...props}
+{/* {JSON.stringify(args)} */}
+<ReactlyComponent component={TextField} {...props} {...args} value={props.value}
    onKeyUp={e => {
     e.keyCode === 13 && onEnterPress && onEnterPress(e)
    }}

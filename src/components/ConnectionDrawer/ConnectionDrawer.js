@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField, Link,
   Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
-import { Tiny, PopoverInput, Flex, Text, Spacer, TextBtn ,QuickSelect, QuickMenu, TextBox, PillMenu} from '..';
+import { Tiny, PopoverInput, Flex, Text, Spacer, TextBtn ,QuickSelect, QuickMenu, DeleteConfirmMenu, TextBox, PillMenu} from '..';
 import { Close, RecentActors, Add, Code, Biotech, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
 import { Json } from '../../colorize'; 
 import { useEditor } from '../../hooks/useEditor';
@@ -48,8 +48,10 @@ const ConnectionNode = ({
         <Tiny icon={Close}  onClick={() => connectionClick()} />
           </> }
 
+          <DeleteConfirmMenu message={`Delete connection ${name}?`} 
+            onDelete={(e) => !!e && connectionDrop && connectionDrop(ID, true)}   />
 
-        <Tiny icon={Delete}  onClick={() => connectionDrop && connectionDrop(ID)} /> 
+        {/* <Tiny icon={Delete}  onClick={() => connectionDrop && connectionDrop(ID)} />  */}
 
     </Text >
 
@@ -68,7 +70,11 @@ const ConnectionNode = ({
         <Tiny icon={Close}  onClick={() => resourceClick()} />
       </> }
 
-      <Tiny icon={Delete}  onClick={() => resourceDrop && resourceDrop(kid.ID)} /> 
+
+      <DeleteConfirmMenu message={`Delete resource ${kid.name}?`} 
+            onDelete={(e) => !!e && resourceDrop && resourceDrop(ID, true)}   />
+
+      {/* <Tiny icon={Delete}  onClick={() => resourceDrop && resourceDrop(kid.ID)} />  */}
 
     </Text>)}
 
@@ -212,7 +218,7 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
             </Grid>
             <Grid item xs={1}>
              <Box onClick={() => onTermDrop(prop.key)}>
-              <Tiny sx={{mt: 2}} icon={Delete} />
+              <Tiny sx={{mt: 2}} icon={Close} />
              </Box>
             </Grid>
 
@@ -530,12 +536,18 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
             {selected.columns.map(col => <Text small key={col}>
               <Check on /> {selected.node}.{col}
               <Spacer />
-              <Tiny onClick={() => addProp(col, selected.node)} icon={Delete} />
+              <Tiny onClick={() => addProp(col, selected.node)} icon={Close} />
             </Text>)}
           </Box>
         </Grid>} 
 
-        {!answer && !!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+        {!answer && !!selected?.name && !selectedPage && <Grid item xs={3}>
+        <Typography sx={{pl: 1}} variant="caption"><b>Events</b></Typography>
+          <Divider  sx={{mb: 2}}/>
+          <Flex sx={{p: 2}}>
+          Select a page to see resource events </Flex></Grid>}
+
+        {!answer && !!selected?.name && !!selectedPage && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Events</b></Typography>
           <Divider  sx={{mb: 2}}/>
           <Box sx={{height: 400, overflow: 'auto', pl: 2}}>

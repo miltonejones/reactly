@@ -17,7 +17,7 @@ const ReactlyComponentCarousel = ({ children, onCarouselClick, ...props }) => {
 
   if (!args?.images && !props.images) {
     return <> 
-    No images to display
+    {args['empty-message']}
     
     </>
   }
@@ -33,7 +33,8 @@ const ReactlyComponentCarousel = ({ children, onCarouselClick, ...props }) => {
   <>
   <ReactlyComponent component={Box} {...props} 
   onClick={e => onCarouselClick && onCarouselClick(e, {
-    ...carouselImages[index % carouselImages.length]
+    ...carouselImages[index % carouselImages.length],
+    index: index % carouselImages.length
   })}
   sx={{
     height: 320, 
@@ -44,21 +45,20 @@ const ReactlyComponentCarousel = ({ children, onCarouselClick, ...props }) => {
     borderColor: 'divider'
     }}>
  
-{props.componentEditing && <Box sx={{
-  position: 'absolute',
-  top: 10,
-  left: 10,
-  zIndex: 40
- }}>
+      {props.componentEditing && <Box sx={{
+        position: 'absolute',
+        top: 10,
+        left: 10,
+        zIndex: 40
+      }}>
 
-<Chip color="success" label={<><em>Preview Mode</em> index: {index % carouselImages.length} of {carouselImages.length} --- speed: {args.speed}</>} />
+        <Chip color="success" label={<><em>Preview Mode</em> index: {index % carouselImages.length} of {carouselImages.length} --- speed: {args.speed}</>} />
 
 
- </Box>}
+      </Box>}
 
       <Carousel speed={args.speed} imageList={carouselImages} loaded={loaded} setLoaded={setLoaded} onClick={setIndex} />
-   </ReactlyComponent>
-   {/* {JSON.stringify(props)} */}
+   </ReactlyComponent> 
    </> 
  );
 }
@@ -147,65 +147,11 @@ const Carousel = ({ imageList, onClick, loaded, setLoaded, speed = 10 }) => {
 
 
 
-
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Speed',
-          label: 'speed' 
-        }, 
-      ]
-    }, 
-    {
-      name: 'Images', 
-      always: true,
-      settings: [  
-        {
-          title: 'Add images to the carousel',
-          label: 'images' ,
-          type: 'imagelist',
-          bindable: !0,
-          when: p => !p.bindings
-        },  
-      ]
-    }, 
-    {
-      name: 'Data',  
-      settings: [  
-        {
-          title: 'Bind to data resource',
-          label: 'bindings' ,
-          type: 'repeatertable'
-        },  
-      ]
-    }, 
-
-  ]
-}
-
-export const Events =  [
-  {
-    name: 'onCarouselClick',
-    title: 'Carousel is clicked',
-    description: 'User clicks on the  carousel.',
-    emits: ['src','text','subtext']
-  }, 
-]
-
-
+ 
 
 const ReactlyCarousel = {
   Icon: ViewCarousel,
-  Component: ReactlyComponentCarousel,
-  Settings,
-  Events,
-  Styles: GenericStyles, 
-  Defaults: { speed: 10 }
+  Component: ReactlyComponentCarousel, 
 }
  
 

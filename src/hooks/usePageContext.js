@@ -8,120 +8,19 @@ import moment from 'moment';
 export const PageStateContext = React.createContext({});
 
 
-export const eventTypes =  [
+export const eventTypes =  [ 
   {
-    name: 'onSliderChange', 
-    description: 'User clicks the slider.'
+    name: 'onPageLoad', 
+    description: 'Page  finishes loading.'
   },
   {
-    name: 'onCarouselClick', 
-    description: 'User clicks on component or focuses and presses SPACE.', 
+    name: 'dataLoaded', 
+    description: 'Data finishes loading.'
   }, 
   {
-    name: 'onClick',
-    description: 'When component is clicked'
-  },
-  {
-    name: 'onProgress', 
-    description: 'Audio player track position changes.'
+    name: 'loadStarted', 
+    description: 'Data starts loading.'
   }, 
-  {
-    name: 'onKeyup',
-    description: 'When user releases a key on the keyboard'
-  },
-  {
-    name: 'onPlayerPaused', 
-    description: 'Audio player track is paused.'
-  }, 
-  {
-    name: 'onKeyDown',
-    description: 'When user presses a key on the keyboard'
-  },
-  {
-    name: 'onBlur',
-    description: 'When component loses focus'
-  },
-  {
-    name: 'onChange',
-    description: 'When component value changes'
-  },
-  {
-    name: 'onFocus',
-    description: 'When component obtains focus'
-  },
-  {
-    name: 'onDelete',
-    description: 'When component delete icon is clicked'
-  },
-  {
-    name: 'onCardClick', 
-    description: 'User clicks on the card.'
-  }, 
-  {
-    name: 'onEnterPress', 
-    description: 'User presses the enter key.'
-  },
-  {
-    name: 'onMenuClick', 
-    description: 'User clicks on the menu icon at the right of a card.'
-  }, 
-  {
-    name: 'onButtonClick', 
-    description:  'User clicks on a button in the group.'
-  },
-  {
-    name: 'onPageChange', 
-    description: 'Page value changes'
-  },
-  {
-    name: 'onItemClick',
-    description: 'WHen user clicks a list item'
-  },
- {
-    name: 'onSecondaryClick', 
-    description: 'User clicks on the icon at the right of a list item.'
- },
-
- {
-  name: 'onImageLoad', 
-  description: 'Image, when present finishes loading.'
-},  
- {
-  name: 'onPlayerStart', 
-  description: 'Audio player playing event fires.'
-}, 
-{
-  name: 'onPlayerStop', 
-  description: 'Audio stop playing event fires.'
-}, 
-{
-  name: 'onPlayerEnded', 
-  description: 'Audio player track reaches its end.'
-}, 
- {
-  name: 'onRowClick', 
-  description: 'User clicks on a row in the list.'
-}, 
-{
-  name: 'onMenuClick', 
-  description: 'User clicks on a item in the menu.'
-},  
-{
-  name: 'onPageLoad', 
-  description: 'Page  finishes loading.'
-},
-{
-  name: 'onCellClick', 
-  description: 'User clicks on a cell in a row.'
-}, 
-{
-  name: 'dataLoaded', 
-  description: 'Data finishes loading.'
-}, 
-{
-  name: 'loadStarted', 
-  description: 'Data starts loading.'
-}, 
 ];
   
 
@@ -146,10 +45,11 @@ export const usePageContext = () => {
 
  const {
     Alert,
-    queryState
+    queryState,
+    supportedEvents
  } = React.useContext(AppStateContext);
 
-
+  const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
   const routeParams = useParams()
   const navigate = useNavigate();
 
@@ -277,10 +177,11 @@ export const usePageContext = () => {
   }, [appContext, openLink])
 
   const stringToggle = (state, { target, value }, options) => {
+    if (!options) return ''
+    console.log({ options })
     const regex = /\{([^}]+)\}/g;
     const literal = regex.exec(value);
-    if (literal) {
-      alert (JSON.stringify(literal))
+    if (literal) { 
       return literal[1];
     }
     if (!value) {
@@ -316,7 +217,21 @@ export const usePageContext = () => {
     });
     
   }, [selectedPage])
+/**
+ * function play (page, options) {
+  const {  setState } = options; 
+  setState(s => ({
+    ...s,
+    url: options.data.previewUrl
+  }))
 
+  setTimeout(() => {
+     options.api.execRefByName('aux', player => {
+       player.play();
+    })
+  }, 999);
+}
+ */
 
   const getRefByName = React.useCallback((name) => {
     const component = selectedPage.components.find(f => f.ComponentName === name);
@@ -548,7 +463,7 @@ export const usePageContext = () => {
 // 
   const attachEventHandlers = React.useCallback ( component => {
     const { settings, events, boundProps } = component;
-    const eventHandlers = eventTypes.map(e => e.name).reduce((handlers, eventName) => {
+    const eventHandlers = includedEvents.map(e => e.name).reduce((handlers, eventName) => {
       
       const supported = events?.find( f => f.event === eventName);
       if (!supported) return handlers;
@@ -594,9 +509,7 @@ export const usePageContext = () => {
 
               // add onChange event to update client state
               onChange: e => {
-                // console.log ('%s: setting boundTo: %s, attribute: %s to %s', 
-                // component.ComponentName,
-                //   boundTo, attribute, !e.target ? e : e.target.value)
+            
                 setPageClientState(s => ({...s, [boundTo]: !e.target ? e : e.target.value}))
               }
 

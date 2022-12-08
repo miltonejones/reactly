@@ -1,6 +1,7 @@
 import React from 'react';
 import { styled, Box , Stack, Card, TextField} from '@mui/material'; 
 import { Flex, Text } from '../../..'
+import { Icons } from '../../../library/icons'
 import { AppStateContext } from '../../../../hooks/AppStateContext';
  
 const Layout = styled(Box)(({ theme }) => ({
@@ -39,7 +40,7 @@ const ComponentModal = ({ onChange, components = [] }) => {
     .sort((a,b) => a > b ? 1 : -1)
     .filter(f => !Library[f].hidden)
     .map(icon => {
-      const Icon = Library[icon].Icon;
+      const Icon = Icons[Library[icon].Icon];
       return <Card 
         onClick={() => select(icon)} sx={{cursor: 'pointer', p: 2, ml: 1,  mt: 1, 
             minWidth: 120, maxWidth: 120, overflow: 'hidden', 

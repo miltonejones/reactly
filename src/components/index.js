@@ -1,7 +1,7 @@
 import ConnectionModal from "./ConnectionModal/ConnectionModal";
 import MenuDrawer from "./MenuDrawer/MenuDrawer"; 
 import ListGrid from "./ListGrid/ListGrid"; 
-import QuickMenu from './QuickMenu/QuickMenu';
+import QuickMenu, { DeleteConfirmMenu } from './QuickMenu/QuickMenu';
 import QuickSelect from './QuickSelect/QuickSelect';
 import ContentTree from './ContentTree/ContentTree'
 import ComponentTree from "./ComponentTree/ComponentTree";
@@ -29,6 +29,7 @@ export {
   ChipBox,
   TabButton,
   LibraryTree,
+  DeleteConfirmMenu,
   ConnectionModal,
   PopoverPrompt,
   MenuDrawer, 

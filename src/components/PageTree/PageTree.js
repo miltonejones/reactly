@@ -3,7 +3,7 @@ import { styled, List, Link, ListItemButton, Typography,
   ListItemIcon, ListItemText, ListItemSecondaryAction 
   } from "@mui/material";
   import { Article, MoreVert, Close, Delete } from "@mui/icons-material";
-  import { QuickMenu, Tiny } from "..";
+  import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
   
  
 const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClick}) => {
@@ -62,7 +62,13 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
          {!!tree && <ListItemSecondaryAction>
 
           {on && <Tiny onClick={() =>  onClick && onClick() }  icon={Close}  sx={{mr: 1}} />}
-          <Tiny hidden={!(on || over)} onClick={() => dropPage && dropPage(tree.ID)}  icon={Delete}  sx={{mr: 1}} />
+
+
+          <DeleteConfirmMenu hidden={!(on || over)}  sx={{mr: 1}} message={`Delete page ${tree.PageName}?`} 
+              onDelete={(e) => !!e && dropPage(tree.ID, true)}/>
+
+
+          {/* <Tiny hidden={!(on || over)} onClick={() => dropPage && dropPage(tree.ID)}  icon={Delete}  sx={{mr: 1}} /> */}
           
           <QuickMenu options={options.map(f => f.name)} 
           onChange={value => {

@@ -12,13 +12,13 @@ import { Text } from '../Control/Control';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
-export const TabButton = styled(Tab)(({theme}) => ({ 
-  textTransform: 'capitalize',
+export const TabButton = styled(Tab)(({ theme, uppercase }) => ({ 
+  textTransform: uppercase ? 'uppercase' : 'capitalize',
   margin: 0,
   padding: theme.spacing(1),
   height: 24,
   minHeight: 24,
-  fontSize: '0.85rem', 
+  fontSize: '0.85rem' 
 }));
 
 const ComponentPanel = ({ 

@@ -5,7 +5,7 @@ import { styled, List, Link, ListItemButton,
   } from "@mui/material";
  
 import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
-import { QuickMenu, Tiny } from "..";
+import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
 import { AppStateContext } from '../../hooks/AppStateContext';
 
 
@@ -144,7 +144,12 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
          > {nodeLabel}</NodeText>} />
         {!!tree && <ListItemSecondaryAction> 
           {on && <Tiny onClick={() => onSelect && onSelect(tree, on)}  icon={Close}  sx={{mr: 1}} />}
-          <Tiny hidden={!(on || over)} onClick={() => onDrop && onDrop(tree.ID)}  icon={Delete}  sx={{mr: 1}} />
+
+          {/* <TinyonClick={() => onDrop && onDrop(tree.ID)}  icon={Delete}  /> */}
+          
+          <DeleteConfirmMenu hidden={!(on || over)}  sx={{mr: 1}} message={`Delete component ${nodeLabel}?`} 
+              onDelete={(e) => !!e && onDrop(tree.ID, true)}/>
+
           <QuickMenu options={options.map(f => f.name)} 
           onChange={value => {
             const { action } = options.find(f => f.name === value);

@@ -110,6 +110,7 @@ export const ComponentInput = props => {
           title: <>Bind <b>{component.ComponentName}.{label}</b> to client state variable:</>,
           label: 'target',
           binding: label,
+          bound: 1,
           bindingValue: isBound.boundTo,
           type: 'state' ,
           onChange: (attribute, boundTo) => {  
@@ -122,7 +123,7 @@ export const ComponentInput = props => {
     return <>
  
       <ComponentInputBody {...inputProps} /> 
-      {!!bindable && <Box sx={{mb: 2}}><ComponentInputBody {...bindProps} /></Box>}
+      {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>}
     </>
 }
 
@@ -147,6 +148,7 @@ export const ComponentInputBody = (props) => {
     image,  
     css,
     free,
+    bound,
     renderOption, 
     start, 
     args = {}, 
@@ -188,9 +190,14 @@ export const ComponentInputBody = (props) => {
     return <></>
   }
 
+  if (when &&  typeof when === 'string' ) {
+    const ok = eval(when)(args);
+    if (!ok) return <></>
+  }
+
 
   const { bindableProps }  = Library [component.ComponentType]
-  const header = <> 
+  const header = <>  
   <Text small>{title}</Text>
   </>
 
@@ -460,21 +467,25 @@ export const ComponentCollapse = ({
  
 }
 
+const sortByOrder = (a,b) => a.order > b.order ? 1 : -1;
+
 const ComponentSettings = ({ selectedPage, component, onChange, resources }) => {
   const { Library } = React.useContext(AppStateContext);
   if (!component?.settings) {
-    return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
+    return <Alert sx={{m: 1}}>This component has no configurable settings!!.</Alert>
   }
   const { categories } = Library [component.ComponentType].Settings ?? {}
 
 
   if (!categories) {
-    return <Alert sx={{m: 1}}>This component has no configurable settings.</Alert>
+    return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert></>
   }
   const args = getSettings(component.settings);
 
   return <> 
-  {categories.map(category => <ComponentCollapse
+  {categories
+    .sort(sortByOrder)
+    .map(category => <ComponentCollapse
       component={component}
       resources={resources}
       onChange={onChange}

@@ -4,6 +4,7 @@ import { Icons, renderIconOption } from './icons';
 import { getOptionColor, colorOption } from './styles'; 
 import config from './library.json'
 import { StandardColors } from './styles';
+import { uniqueId } from './util';
 
 const renderOption = (props, option) => {
   const Icon = Icons[option];
@@ -24,30 +25,43 @@ const fn = {
 const expand = (array, omitIcons) => array.reduce((out, item) => { 
 
   Object.keys(item).map(key => {
-    if (key === 'when') {
-      Object.assign(item, { [key]:  eval(item[key]) })
-    } else if (item[key] && typeof(item[key]) === 'string' && item[key].indexOf('FN-') === 0){
-      const [t, name] = item[key].split('-') 
-      Object.assign(item, {[key]:  fn[name] || `Could not find ${name}` })
-    }
+
+      if (key === 'when') {
+          // try {
+          //     Object.assign(item, { [key]:  eval(item[key]) })
+          // } catch (e) {
+          //   console.log ({ e })
+          // }
+      } else if (item[key] && typeof(item[key]) === 'string' && item[key].indexOf('FN-') === 0){
+        const [t, name] = item[key].split('-') 
+        Object.assign(item, {[key]:  fn[name] || `Could not find ${name}` })
+      }
   })
   
   if (item.types === 'COLOR_TYPES') {
     Object.assign(item, {types: ['COLOR_TYPES'] }) ;
   }
-  if (item.types && item.types.find(f => typeof f === 'object')) {
+  if (item.types && item.types.find && item.types.find(f => typeof f === 'object')) {
     Object.assign(item, { getOptionLabel: fn.getOptionLabel })
     // Object.assign(item, {types: item.types.map(e => JSON.stringify(e))}) ;
   }
   if (item.types === 'ICON_TYPES' && !omitIcons) {
     Object.assign(item, {types: ['ICON_TYPES']}) ;
   }
+
+  if (!item.ID) {
+    Object.assign(item, {ID: uniqueId()})
+  }
+ 
+  if (!item.order || item.order === 1) {
+    Object.assign(item, {order: out.length})
+  }
  
   return out.concat(item);
 }, [])
 
 
-const reduce = (array) => array.reduce((out, item) => {
+export const reduce = (array) => array.reduce((out, item) => {
         
   if (typeof item !== 'string') {
     Object.keys(item).map(key => {
@@ -65,26 +79,46 @@ const reduce = (array) => array.reduce((out, item) => {
     Object.assign(item, {types: 'ICON_TYPES' }) ;
   }
 
+  if (!item.ID) {
+    Object.assign(item, {ID: uniqueId()})
+  }
+  if (!item.order) {
+    Object.assign(item, {order: 1})
+  }
+ 
+ 
   return out.concat(item);
 }, [])
 
 
-const reactlyParse = (component, fn, omitIcons) =>   {
+export const reactlyParse = (component, fn, omitIcons) =>   {
   try {
     return {
       ...component,
       Styles: !component.Styles?.categories ? {} : {
         categories: [
-          ...component.Styles?.categories.map(cat => { 
+          ...component.Styles?.categories.map((cat, order) => { 
             cat.styles = fn(cat.styles, omitIcons)  
+            if (!cat.ID) {
+              Object.assign(cat, {ID: uniqueId()})
+            }
+            if (!cat.order || cat.order === 1) {
+              Object.assign(cat, {order})
+            } 
             return cat;
           })
         ]
       },
       Settings: !component.Settings?.categories ? {} : {
         categories: [
-          ...component.Settings?.categories.map(cat => { 
+          ...component.Settings?.categories.map((cat, order) => { 
             cat.settings = fn(cat.settings, omitIcons)  
+            if (!cat.ID) {
+              Object.assign(cat, {ID: uniqueId()})
+            }
+            if (!cat.order|| cat.order === 1) {
+              Object.assign(cat, {order})
+            } 
             return cat;
           })
         ]
@@ -92,11 +126,13 @@ const reactlyParse = (component, fn, omitIcons) =>   {
     
     }
   } catch (ex) {
-    console.log ({ ex, component })
-    return { ex, component }
+    console.log ({ ex, component }) 
+    return component
   }
 }
 
+
+export const reduceComponent = component => reactlyParse(component, reduce);
 
 export const reduceLibrary = library => {
   return Object.keys(library).reduce((object, key) => {

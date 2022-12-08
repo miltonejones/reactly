@@ -1,20 +1,14 @@
 import React from 'react';
 import { Masonry } from '@mui/lab';  
 import { Add } from '@mui/icons-material';
-import ReactlyComponent, { ChildComponent } from '../reactly';
+import ReactlyComponent from '../reactly';
   
-import { getSettings } from '../util';
-import { AppStateContext } from "../../../hooks/AppStateContext";
+import { getSettings } from '../util'; 
   
 const ReactlyComponentMasonry = ({ children, ...props }) => {
-  const args = getSettings(props.settings);
-  const { queryState = {} } = React.useContext(AppStateContext);
-  const { page } = queryState;
-  const offspring = page?.components?.filter(f => f.componentID === props.ID)
+  const args = getSettings(props.settings); 
  return (
-   <ReactlyComponent component={Masonry} {...props} {...args}>
-   {children}
-   </ReactlyComponent>
+   <ReactlyComponent component={Masonry} {...props} {...args} />
  );
 }
 

@@ -60,10 +60,10 @@ const ReactlyComponent = ({
   ...props 
 }) => {
 
-  const { queryState = {} } = React.useContext(AppStateContext);
+  const { queryState = {} , Library} = React.useContext(AppStateContext);
   const { row } = React.useContext(RepeaterContext);
   const { 
-    pageClientState,  
+    pageClientState,   
   } = React.useContext(PageStateContext);
 
   if (row) {
@@ -74,6 +74,9 @@ const ReactlyComponent = ({
       settings = settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
     }) 
   }
+
+  const { page } = queryState;
+  const childComponents = page?.components?.filter(f => f.componentID === props.ID);
 
   const routeParams = useParams()
   const routes = getParams(queryState,  selectedPage, routeParams)
@@ -93,10 +96,18 @@ const ReactlyComponent = ({
       items[prop.arg] = prop.val 
       return items
     }, {})
-  
- return ( <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}>
-    {children || fixed.children}  
- </Component>  )
+ 
+  if (childComponents?.length && Library[props.ComponentType].allowedChildren ) {
+    return  <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}> 
+            { childComponents.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
+          </Component>
+  }
+
+ return (  
+ <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}} > 
+    {children || fixed.children}
+ </Component>
+   )
 } 
 
 export const Faux = styled(Paper)(( {open} ) => ({ 

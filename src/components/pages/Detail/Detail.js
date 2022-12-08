@@ -2,11 +2,14 @@ import React from 'react';
 import { styled, Box , Collapse, Tabs, Grid, Chip, IconButton, Typography, Divider,Stack} from '@mui/material';
 import { useParams } from "react-router-dom";
 import { Flex, Spacer, TextInput, TextBtn, Tiny, ConnectionDrawer, Text, QuickMenu } from "../..";
-import { AppRegistration, Save, MoreVert, Edit, Add } from "@mui/icons-material"; 
+import { AppRegistration, Save, MoreVert, Edit, Add , Delete} from "@mui/icons-material"; 
 import { List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { useConnectionEdit } from '../Editor/Editor';
 import { TabButton } from '../../ComponentPanel/ComponentPanel';
 import { useEditor } from '../../../hooks/useEditor';
+import {
+  AppStateContext, 
+} from "../../../hooks/AppStateContext";
 
 
 
@@ -35,6 +38,9 @@ const DetailList = ({ header, items = [], onConnect}) => {
 }
  
 const Detail = ({ applications, onConnect }) => {
+  const {
+    removeProgItem
+  } = React.useContext(AppStateContext)
   const { appname } = useParams();
   const application = applications.find(f => f.path === appname);
   const editor = useEditor(applications);
@@ -156,6 +162,12 @@ const Detail = ({ applications, onConnect }) => {
               size="small" onChange={e => setSettings({...settings, dirty: 1, Photo: e.target.value})} 
             />
             <Flex sx={{pt: 1}}>
+              <TextBtn onClick={async () => { 
+                await removeProgItem(`app-${application.ID}`) ;
+                window.location.replace('/')
+              }} endIcon={<Delete />} variant="contained"
+              color="error"
+              >Delete</TextBtn>
               <Spacer />
               <TextBtn onClick={() => {
                 const { dirty, ...props } = settings;

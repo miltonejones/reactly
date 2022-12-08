@@ -17,7 +17,7 @@ import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { Icons } from '../library/icons'; 
  
-export const AU = styled('u')(({ theme, active, error, small }) => ({
+export const AU = styled('span')(({ theme, active, error, small }) => ({
   cursor: 'pointer',
   fontWeight: active ? 600 : 400,
   fontSize: small ? '0.85rem' : '1rem',
@@ -47,8 +47,7 @@ export const PopoverPrompt = ({
 
   const handleAliasClose = event => {
     setAnchorEl(null)
-  } 
-
+  }  
 
   return  <>
   
@@ -390,11 +389,12 @@ export const TextInput = styled(TextField)(() => ({
   fontSize: '0.85rem'
 }))
  
-export const Text = styled(Box)(({ theme, active, small }) => ({
+export const Text = styled(Box)(({ theme, active, small, error, spacing = 1 }) => ({
   display: 'flex',
-  gap: theme.spacing(1) ,
+  color: error ? theme.palette.error.main : theme.palette.black,
+  gap: theme.spacing(spacing) ,
   alignItems: 'center',
-  borderBottom: small ? '' : 'solid 1px gray',
+  // borderBottom: small || error ? '' : 'solid 1px gray',
   fontSize: small ? '0.85rem' : '1rem',
   maxWidth: 400,
   padding: theme.spacing(0.5, 0),

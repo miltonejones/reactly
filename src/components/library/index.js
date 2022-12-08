@@ -63,6 +63,11 @@ import ReactlyMasonry from './ReactlyMasonry/ReactlyMasonry';
 import ReactlyImageListItemBar from './ReactlyImageListItemBar/ReactlyImageListItemBar';
 import ReactlyImageListItem from './ReactlyImageListItem/ReactlyImageListItem';
 import ReactlyImageList from './ReactlyImageList/ReactlyImageList';
+import ReactlyPopoverPrompt from './ReactlyPopoverPrompt/ReactlyPopoverPrompt';
+import ReactlyDeleteConfirmMenu from './ReactlyDeleteConfirmMenu/ReactlyDeleteConfirmMenu';
+import ReactlySpeedDialIcon from './ReactlySpeedDialIcon/ReactlySpeedDialIcon';
+import ReactlySpeedDialAction from './ReactlySpeedDialAction/ReactlySpeedDialAction';
+import ReactlySpeedDial from './ReactlySpeedDial/ReactlySpeedDial';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -129,7 +134,12 @@ const ComponentList = {
   Masonry:  ReactlyMasonry,
   ImageListItemBar:ReactlyImageListItemBar,
   ImageListItem: ReactlyImageListItem,
-  ImageList: ReactlyImageList
+  ImageList: ReactlyImageList,
+  PopoverPrompt: ReactlyPopoverPrompt,
+  DeleteConfirmMenu: ReactlyDeleteConfirmMenu,
+  SpeedDialIcon: ReactlySpeedDialIcon,
+  SpeedDialAction: ReactlySpeedDialAction,
+  SpeedDial: ReactlySpeedDial
 }
 
 
@@ -137,9 +147,10 @@ const ComponentList = {
 export {
   expandLibrary ,
   config
-}
-
-// const Library = expandLibrary(ComponentList); 
-
+} 
 
 export default ComponentList;
+
+// openIcon,icon
+
+// direction,hidden,transitionDuration

@@ -2,13 +2,14 @@ import React from 'react';
 import { styled, Box, Card, CardMedia, Link, Typography } from '@mui/material';
 import { AppRegistration, MoreVert, Edit, Add } from "@mui/icons-material"; 
 import { useEditor } from '../../../hooks/useEditor';
-import { Flex  } from "../..";
+import { Flex, PopoverPrompt  } from "../..";
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(0)
 }));
  
 const Home = ({ appData }) => {
+
   const { createProg } = useEditor(appData);
   const create = () => {
     const name = window.prompt('Name?')
@@ -38,10 +39,19 @@ const Home = ({ appData }) => {
      </Flex>
      
      </Card>)}
-     <Flex sx={{p: 1}} onClick={create} >
+
+     <PopoverPrompt
+  onChange={val => !!val &&  createProg(val)}
+  endIcon={<Add />}
+  label={<>Enter application name</>}
+  
+>Create application</PopoverPrompt>
+
+
+     {/* <Flex sx={{p: 1}} onClick={create} >
      <Add /> 
        <Link >Create application...</Link>
-     </Flex>
+     </Flex> */}
 </Flex>
    </Layout>
  );

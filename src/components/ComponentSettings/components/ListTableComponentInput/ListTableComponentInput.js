@@ -212,8 +212,13 @@ const ListTableComponentInput = ({
 
             <Grid item xs={2}>
               <Flex sx={{ height: '100%' }}>
-                <TinyButton disabled={!(index < resource.columns.length - 1)} onClick={() => changeOrder(index, 1)} icon={ExpandMore} sx={{mr: 1}}/>
-                <TinyButton disabled={index === 0} onClick={() => changeOrder(index, -1)} icon={ExpandLess} />
+              <TextInput 
+              placeholder="#"
+                size="small"
+                sx={{maxWidth: 50}}
+              />
+                {/* <TinyButton disabled={!(index < resource.columns.length - 1)} onClick={() => changeOrder(index, 1)} icon={ExpandMore} sx={{mr: 1}}/>
+                <TinyButton disabled={index === 0} onClick={() => changeOrder(index, -1)} icon={ExpandLess} /> */}
               </Flex>
             </Grid>
  

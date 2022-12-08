@@ -30,11 +30,13 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
 
 const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, onDelete  }) => {
   const { appData  } = React.useContext(EditorStateContext);
+  const { supportedEvents } = React.useContext(AppStateContext);
+  const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
   const { pages, resources } = appData;
   const [rise, setRise] = React.useState(1);
   
   if (!action) return <u />
-  const chosenEvent = eventTypes.find(f => f.name === eventName)
+  const chosenEvent = includedEvents.find(f => f.name === eventName)
   const title = !chosenEvent ? `unknown event ${eventName}` : chosenEvent.description; 
   let act = 'Unknown action'
   const obj = resources.find(e => e.ID === action.target)
@@ -55,7 +57,7 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       act = <>Open a link to "{href}"</>
       break;
     case 'modalOpen':
-      const dialogName = page.components.find(e => e.ID === action.target)
+      const dialogName = page?.components.find(e => e.ID === action.target)
       act = <>{action.open ? 'Open' : 'Close'} component <b>{dialogName?.ComponentName}</b></>
       ok = !!dialogName;
       break;
@@ -136,7 +138,7 @@ const ComponentEvents = ({
     event: selectedEvent
   }
 
-  const modalsExist = !!selectedPage.components && ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar', 'Popover']
+  const modalsExist = !!selectedPage?.components && ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar', 'Popover']
       .some(type => selectedPage.components.find(f => f.ComponentType === type)) 
 
   const handleSave = state => {  

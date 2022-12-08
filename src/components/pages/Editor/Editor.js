@@ -50,7 +50,7 @@ import {
   RecentActors,
   Code,
   Article,
-  Newspaper
+  Newspaper, Widgets
 } from "@mui/icons-material";
 import {
   AppStateContext,
@@ -60,6 +60,7 @@ import { useParams } from "react-router-dom";
 import { useEditor } from "../../../hooks/useEditor";
 import { Json } from "../../../colorize"; 
 import { TextInput } from "../..";
+import { Icons } from "../../library/icons";
 import { JsonView } from "../../../colorize";
 import { ChipBox } from "../..";
 
@@ -107,8 +108,8 @@ export const useConnectionEdit = (apps) => {
 
   const appData = applications.find((f) => f.path === appname);
 
-  const handleResourceDelete = async (ID) => {
-    const ok = await Confirm(
+  const handleResourceDelete = async (ID, confirmed) => {
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this resource?",
       "Confirm delete"
     );
@@ -116,8 +117,8 @@ export const useConnectionEdit = (apps) => {
     dropResource(appData.ID, ID);
   };
 
-  const handleConnectionDelete = async (ID) => {
-    const ok = await Confirm(
+  const handleConnectionDelete = async (ID, confirmed) => {
+    const ok =confirmed ||  await Confirm(
       "Are you sure you want to delete this connection?",
       "Confirm delete"
     );
@@ -148,8 +149,8 @@ export const useResourceEdit = (apps) => {
     setComponentEvent(appData.ID, queryState.page?.ID, componentID, event);
   };
 
-  const handledEventDelete = async (componentID, eventID) => {
-    const ok = await Confirm(
+  const handledEventDelete = async (componentID, eventID, confirmed) => {
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this event?",
       "Confirm delete"
     );
@@ -235,7 +236,7 @@ const Editor = ({ applications: apps = {} }) => {
     setPageResourceState,
  
     Library,
-
+    commitProg,
     dirty,
     setDirty,
   } = React.useContext(AppStateContext);
@@ -339,11 +340,11 @@ const Editor = ({ applications: apps = {} }) => {
       command(appData.ID, queryState.page?.ID, componentID, event);
   };
 
-  const handledEventDelete = async (componentID, eventID, type) => {
+  const handledEventDelete = async (componentID, eventID, type, confirmed) => {
     const command = type === 'connection' 
       ? dropResourceEvent
       : dropComponentEvent
-    const ok = await Confirm(
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this event?",
       "Confirm delete"
     );
@@ -389,6 +390,11 @@ const Editor = ({ applications: apps = {} }) => {
     });
   }
 
+  const closeLib = () => {
+    setShowLib(!showLib);
+    setCollapsed((s) => ({ ...s, left: !showLib, right: !showLib }))
+  }
+
   const menuOptions = [
     {
       name: collapsed.left ? "Show Navigation Panel" : "Hide Navigation Panel",
@@ -401,13 +407,10 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "-",
     },
-    {
-      name: `${showLib ? 'Hide' : 'Show'} Library`,
-      action: () => {
-        setShowLib(!showLib);
-        setCollapsed((s) => ({ ...s, left: !showLib, right: !showLib }))
-      },
-    },
+    // {
+    //   name: `${showLib ? 'Hide' : 'Show'} Library`,
+    //   action: closeLib,
+    // },
     {
       name: "Show client state",
       action: () => Alert(<Json>
@@ -422,8 +425,8 @@ const Editor = ({ applications: apps = {} }) => {
     },
   ]; 
 
-  const handleDropScript = async (scriptID) => {
-    const ok = await Confirm(
+  const handleDropScript = async (scriptID, confirmed) => {
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this script?",
       "Confirm delete"
     );
@@ -431,8 +434,8 @@ const Editor = ({ applications: apps = {} }) => {
     dropPageScript(appData.ID, queryState.page?.ID, scriptID);
   };
 
-  const handlePageDelete = async (pageID) => {
-    const ok = await Confirm(
+  const handlePageDelete = async (pageID, confirmed) => {
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this page?",
       "Confirm delete"
     );
@@ -440,8 +443,8 @@ const Editor = ({ applications: apps = {} }) => {
     dropPage(appData.ID, pageID);
   };
 
-  const handleDropComponent = async (componentID) => {
-    const ok = await Confirm(
+  const handleDropComponent = async (componentID, confirmed) => {
+    const ok = confirmed || await Confirm(
       "Are you sure you want to delete this component?" + componentID,
       "Confirm delete"
     );
@@ -591,7 +594,7 @@ const Editor = ({ applications: apps = {} }) => {
                 <b>Reactly</b>
               </Flex>
 
-              <Chip label={appData.Name} />
+              <Chip color="primary" variant="outlined" label={<b>{appData.Name}</b>} />
 
               <Flex nowrap>
                 <QuickMenu
@@ -607,6 +610,10 @@ const Editor = ({ applications: apps = {} }) => {
                   }}
                 />
               </Flex>
+                  
+                  <IconButton onClick={() => closeLib()}>
+                    <Widgets />
+                  </IconButton>
 
               <Addressbox value={`/${path.join("/")}`}  
                 queryState={queryState}
@@ -632,6 +639,7 @@ const Editor = ({ applications: apps = {} }) => {
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
                   copy(JSON.stringify(applications, 0, 2));
+                  commitProg(appData);
                   setDirty(false);
                 }}
               >
@@ -752,7 +760,7 @@ const Editor = ({ applications: apps = {} }) => {
                           onChange={quickComponent}
                           options={libraryKeys}
                           icons={libraryKeys.map(
-                            (e) => Library[e].Icon
+                            (e) => Icons[Library[e].Icon]
                           )}
                           label={<TextBtn endIcon={<Add />}>Add</TextBtn>}
                         />
@@ -778,7 +786,7 @@ const Editor = ({ applications: apps = {} }) => {
             side="work">
 
             <Collapse in={showLib && !json}>
-             {!!showLib && <LibraryTree />}
+             {!!showLib && <LibraryTree onClose={closeLib} />}
             </Collapse>
 
             <Collapse in={json && !showLib}>
@@ -925,7 +933,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
       size="small"
       disabled
       {...props}
-      sx={{ width: "calc(100vw - 700px)" }}
+      sx={{ width: "calc(100vw - 740px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}
