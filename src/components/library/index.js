@@ -68,6 +68,7 @@ import ReactlyDeleteConfirmMenu from './ReactlyDeleteConfirmMenu/ReactlyDeleteCo
 import ReactlySpeedDialIcon from './ReactlySpeedDialIcon/ReactlySpeedDialIcon';
 import ReactlySpeedDialAction from './ReactlySpeedDialAction/ReactlySpeedDialAction';
 import ReactlySpeedDial from './ReactlySpeedDial/ReactlySpeedDial';
+import ReactlyVideoPlayer from './ReactlyVideoPlayer/ReactlyVideoPlayer';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -94,6 +95,7 @@ const ComponentList = {
   Dialog: ReactlyDialog,
   Menu: ReactlyMenu,
   AudioPlayer: ReactlyAudio,
+  VideoPlayer: ReactlyVideoPlayer,
   Select: ReactlySelect,
   Badge: ReactlyBadge,
   Card: ReactlyCard,
