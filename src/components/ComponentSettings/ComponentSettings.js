@@ -162,8 +162,11 @@ export const ComponentInputBody = (props) => {
   } = props;
 
   const { Library } = React.useContext(AppStateContext);
-  const node = css?.find(f => f.Key === label);
-  const initialProp = !node?.Value ? args[label] : node.Value;
+  
+  const node = css?.find(f => f.Key === label && !f.selector);
+  
+  const initialProp = !node?.Value   ? args[label] : node.Value;
+  
   const customProp = args[label + '-custom'];
   const colorProp = label.indexOf('color') > -1;
   const [value, setValue] = React.useState(!!binding ? bindingValue : initialProp);
@@ -206,7 +209,7 @@ export const ComponentInputBody = (props) => {
     header,
     handleChange,
     resources,
-    value,
+    value: value || args[label],
     type,
     selectedPage,
     component,
@@ -238,7 +241,7 @@ export const ComponentInputBody = (props) => {
     </> 
   } 
 
-  if (types && !customProp ) {
+  if (types?.length && !customProp ) {
 
     const typeList = types?.indexOf('ICON_TYPES') > -1
       ? Object.keys(Icons)
@@ -287,8 +290,8 @@ export const ComponentInputBody = (props) => {
   {header} 
       <Flexible on={free || chip}>
   <Component 
-  multiline={!!multiline}
-  rows={4}
+    multiline={!!multiline}
+    rows={4}
     autoComplete="off"
     helperText={helperText}  
     onChange={e => handleChange(e.target.value)} 
@@ -296,7 +299,8 @@ export const ComponentInputBody = (props) => {
     value={attempt(value)} 
     placeholder={title}
   />
-
+  {/* [{JSON.stringify(args)}]
+ [{JSON.stringify(value)}] */}
   {!!chip && <StateComponentInput menu {...inputProps}
     handleChange={val => handleChange(`${attempt(value)} {${val}} `)}
     header={<i />}/>}
@@ -419,6 +423,7 @@ export const ComponentCollapse = ({
     settings, 
     args,  
     css, 
+    selectors,
     resources,
     open =  false ,
     always = false
@@ -451,7 +456,7 @@ export const ComponentCollapse = ({
       <Spacer />
       {!always && <TinyButton icon={!active ? Icon : Delete } deg={on || active  ? 180 : 0} />}
       </Flex>
-    </Box>
+    </Box> 
 
     <Collapse in={on || active}>
       <ComponentPanelSettings 

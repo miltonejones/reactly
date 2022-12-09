@@ -276,13 +276,15 @@ const Editor = ({ applications: apps = {} }) => {
     !queryState.page?.PagePath ? [] : queryState.page.PagePath
   );
 
-  const handleStyleChange = (componentID, label, value) => {
+  const handleStyleChange = (componentID, label, value, selector) => {
+    // alert (selector) //white
     setComponentStyle(
       appData.ID,
       queryState.page?.ID,
       componentID,
       label,
-      value
+      value,
+      selector
     );
   };
 
@@ -634,7 +636,7 @@ const Editor = ({ applications: apps = {} }) => {
               />
               <TextBtn
                 variant="contained"
-                endIcon={<CopyAll />}
+                endIcon={<Save />}
                 disabled={!dirty}
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
@@ -643,7 +645,7 @@ const Editor = ({ applications: apps = {} }) => {
                   setDirty(false);
                 }}
               >
-                Copy
+                Save
               </TextBtn>
               <IconButton
                 sx={{ border: 1, borderColor: "divider" }}

@@ -2,10 +2,12 @@ import React from 'react';
 import { styled, Card, Stack, Typography, Switch, TextField } from '@mui/material';
 import { QuickSelect, Flex, Spacer, TextBtn, Pill } from '../../..';
 import { Json } from '../../../../colorize';
+import { getPropertyOptions } from '../../util';
   
 
 
-const StateValue = ({ Value, Type, handleChange, ...props }) => {
+const StateValue = ({ Value, Type, handleChange, page, component, resources, selectedEvent, ...props }) => {
+  const options = getPropertyOptions(page,selectedEvent, component, resources)
   const pills = [
     {
       name: 'true',
@@ -36,15 +38,23 @@ const StateValue = ({ Value, Type, handleChange, ...props }) => {
 
   const helperText =  `Use "|" to toggle between 2 values`;
 
+  if (options?.length) {
+    return <>
+    <QuickSelect options={options} free onChange={handleChange} value={Value?.toString()} label="to"/>
+    {/* {JSON.stringify(Value)}{typeof(Value)} */}
+    </>
+  }
 
   return <Stack>
+
+     
   <Typography>to</Typography>
     <TextField helperText={helperText} size="small" label="enter value" {...props} value={Value} onChange={e => {
     handleChange && handleChange(e.target.value)
   }}  /></Stack>
 }
 
-const SetState = ({ event = {}, page, handleSave }) => {
+const SetState = ({ event = {}, page, component, resources, handleSave, selectedEvent }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'setState' });
   const { target, value } = state;
 
@@ -73,8 +83,12 @@ const SetState = ({ event = {}, page, handleSave }) => {
  
       <StateValue 
         {...handled} 
+        resources={resources}
         Type={selectedState?.Type}
         Value={value}
+        component={component}
+        selectedEvent={selectedEvent}
+        page={page}
         handleChange={value => setState(s => ({...s, value}))}
       />
 
@@ -95,9 +109,7 @@ const SetState = ({ event = {}, page, handleSave }) => {
    {/* <Json> 
       {JSON.stringify(state,0,2)}
       </Json>
-      <Json> 
-      {JSON.stringify(event,0,2)}
-      </Json>  */}
+      {JSON.stringify(selectedEvent,0,2)} */}
 </>
 
  );

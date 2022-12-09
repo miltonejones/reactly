@@ -37,6 +37,7 @@ export const QuickSelect = ({
   .filter(f => !filterText || f.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
 
   return <>  
+  {/* [{selected}] */}
   {/* {props.getOptionLabel?.toString()} */} 
   <Autocomplete  
     disablePortal

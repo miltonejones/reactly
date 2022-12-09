@@ -15,7 +15,8 @@ import {
   Stack,
   Divider,
   Typography,
-  Snackbar
+  Snackbar,
+  Avatar
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, ContentTree, PageTree } from "./components";
 import { AppData } from "./data";
@@ -202,7 +203,13 @@ function App() {
   }
 
   if (!dynamoProgs) {
-    return <>Waiting on app data...</>
+
+   
+
+    return <Flex sx={{width: '100vw', height: '100vh', justifyContent: 'center'}}>
+     <Avatar className="App-logo" src="/logo192.png" alt="loader" >A</Avatar>
+    Loading application info from database...
+     </Flex>
   }
 
   // return <>

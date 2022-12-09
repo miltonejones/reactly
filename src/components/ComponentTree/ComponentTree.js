@@ -3,13 +3,14 @@ import {
   createTheme,
   useTheme,
   Tooltip,
+  Button,
   ThemeProvider,
   styled,
   Box, 
   Avatar,
   MenuItem,
   Alert,
-  Menu
+  Menu,v
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
@@ -31,28 +32,20 @@ const Preview = ({
   sx,
   ...props
 }) => {
-  try {
-// console.log ('rendering...', name, Component)
-    return (
-      <>
-        <Component
-          {...props}
-          selectedPage={selectedPage}
-          componentEditing={on}
-          sx={{
-            ...sx,
-            outline: on ? "dotted 2px gray" : "none",
-            outlineOffset: 4,
-          }}
-        >
-          {children}
-        </Component>
-        {/* {order} */}
-      </>
-    );
-  } catch (e) {
-    return <>{e.message}</>
-  }
+  return (  
+      <Component
+      {...props}
+      selectedPage={selectedPage}
+      componentEditing={on}
+      sx={{
+        ...sx,
+        outline: on ? "dotted 2px gray" : "none",
+        outlineOffset: 4,
+      }}
+    >
+      {children}
+    </Component> 
+);
 };
 
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);

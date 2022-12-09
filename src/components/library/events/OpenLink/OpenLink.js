@@ -9,7 +9,7 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const OpenLink = ({ event , page, handleSave, selectedEvent }) => {
+const OpenLink = ({ event , page, component, handleSave, selectedEvent, resources }) => {
   const { appData  } = React.useContext(EditorStateContext);
   const [state, setState ] = React.useState({ ...event.action, type: 'openLink' });
 
@@ -30,7 +30,7 @@ const OpenLink = ({ event , page, handleSave, selectedEvent }) => {
     
     const found = pages.find(f => f.ID === state.target)
 
-    const options = getPropertyOptions(page, selectedEvent);
+    const options = getPropertyOptions(page, selectedEvent, component, resources);
     const parameters = found?.parameters;
 
 

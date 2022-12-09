@@ -55,8 +55,8 @@ export const useLibrary = () => {
     updateLib(updated)
   }
 
-  const setComponentDefaults =  (componentKey, propName, propVal) => {
-    const ex = config[componentKey].Defaults || {}; 
+  const setComponentDefaults =  (componentKey, propName, propVal, type = 'Defaults') => {
+    const ex = config[componentKey][type] || {}; 
 
     if (!propVal || (typeof propVal === 'string' && !propVal?.length)) {
       delete ex[propName]
@@ -70,7 +70,7 @@ export const useLibrary = () => {
       [componentKey]: {
         dirty: true,
         ...config[componentKey],
-        Defaults : ex
+        [type] : ex
       }
     } 
    // alert (JSON.stringify(ex))
@@ -222,11 +222,12 @@ export const useLibrary = () => {
   
   const addEvent = (
     componentKey, 
-    eventName ) => {
+    eventName,
+    type = 'Events' ) => {
 
       const settings = eventName.split(',').map(f => ({
         name: f,
-        title: `${f} event`,
+        title: `${f}`,
         ID: uniqueId()
       }))
 
@@ -235,7 +236,7 @@ export const useLibrary = () => {
         [componentKey]: {
           ...config[componentKey],
           dirty: true,
-          Events:  (config[componentKey].Events||[]).concat(settings)
+          [type]:  (config[componentKey][type]||[]).concat(settings)
         }
       } 
       updateLib(updated)
@@ -243,7 +244,8 @@ export const useLibrary = () => {
   
   const dropEvent = (
     componentKey, 
-    eventName ) => {
+    eventName,
+    type = 'Events'  ) => {
  
 
       const updated = {
@@ -251,7 +253,7 @@ export const useLibrary = () => {
         [componentKey]: {
           ...config[componentKey],
           dirty: true,
-          Events:  (config[componentKey].Events||[]).filter(f => f.name !== eventName)
+          [type]:  (config[componentKey][type]||[]).filter(f => f.name !== eventName)
         }
       } 
       updateLib(updated)
@@ -261,7 +263,8 @@ export const useLibrary = () => {
     componentKey, 
     eventName,
     key,
-    value ) => {
+    value,
+    type = 'Events' ) => {
  
 
       const updated = {
@@ -269,7 +272,7 @@ export const useLibrary = () => {
         [componentKey]: {
           ...config[componentKey],
           dirty: true,
-          Events:  (config[componentKey].Events||[]).map(f => f.name !== eventName ? f : {
+          [type]:  (config[componentKey][type]||[]).map(f => f.name !== eventName ? f : {
             ...f,
             [key]: value
           })
@@ -278,6 +281,7 @@ export const useLibrary = () => {
       updateLib(updated)
   }
   
+
   const dropComponentChild = (
     componentKey, 
     settingType,
@@ -472,29 +476,14 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
         
     options = options?.map(o => !!o && typeof o === 'object' ? Object.values(o)[0] : o) || [];
 
+  const defaultType = settingType === 'Settings' ? 'Defaults' : 'Presets';
+  const defaultNode = component[defaultType]
   
   const dataTypes = ['pill', 'boolean', 'chip', 'shadow', 'listtable', 'tablecolumn', 'valuelist',
   'repeatertable', 'listbuilder', 'imagelist', 'text']
   return <>
   <Grid sx={{mt: 1}} spacing={1} container>
- 
- {/* <Grid item xs={2}>
-   
- </Grid> 
- */}
-
- {/* <Grid item xs={1}>
-
-
- </Grid> 
-
- <Grid item xs={1}>
-   <Flex fullHeight>
-
-
-   </Flex>
- </Grid>  */}
-
+  
 
  <Grid item xs={3}>
  <Flex>
@@ -522,19 +511,19 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
  <Grid item xs={2}> 
  
    {type !== 'boolean' && !types?.length && <TextInput size="small" label="Default value" 
-     onChange={e => setComponentDefaults(Name, label, e.target.value)}
-   value={component.Defaults?.[label]} />}
+     onChange={e => setComponentDefaults(Name, label, e.target.value, defaultType)}
+   value={defaultNode?.[label]} />}
 
    {type !== 'boolean' && !!types?.length && <QuickSelect options={types} size="small" label="Default value" 
-     onChange={e => setComponentDefaults(Name, label, e)}
-   value={component.Defaults?.[label]} />}
+     onChange={e => setComponentDefaults(Name, label, e, defaultType)}
+   value={defaultNode?.[label]} />}
 
 
    {type === 'boolean' && <Flex
-     onClick={e => setComponentDefaults(Name, label, !component.Defaults?.[label])} fullHeight>
-     <Switch checked={!!component.Defaults?.[label]}
+     onClick={e => setComponentDefaults(Name, label, !defaultNode?.[label], defaultType)} fullHeight>
+     <Switch checked={!!defaultNode?.[label]}
        size="small"/>
-     <Text small>Default to <b>{!!component.Defaults?.[label] ? 'true' : 'false'}</b></Text>
+     <Text small>Default to <b>{!!defaultNode?.[label] ? 'true' : 'false'}</b></Text>
    </Flex> }
  </Grid> 
 
@@ -545,6 +534,7 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
 
 
 </Grid>
+
 <Collapse in={adv}>
 
 <Flex fullWidth  sx={{ p: 1 }} spacing={2}>
@@ -566,7 +556,7 @@ Input type
     value={type || 'text'} label={!type ? "text" : <b>{type}</b>} caret small />
 
     Condition: 
-  <Flex nowrap  sx={{maxWidth: 100}}>
+  <Flex nowrap  sx={{maxWidth: !!when ? 180 : 100, overflow: 'hidden', textOverflow: 'ellipsis'}}>
   <PopoverPrompt 
     helperText={error}  
     onChange={e => {
@@ -580,7 +570,7 @@ Input type
     value={js?.toString()}
     label={`Edit condition`}  
     > 
-      {!!js ? js?.toString() : 'show if...'}
+      {!!js ? <i>{js?.toString()}</i> : 'show if...'}
   </PopoverPrompt>
   </Flex> 
 
@@ -612,63 +602,23 @@ Input type
     <Text small>Allow data binding</Text>
   </Flex>
 
-  <Flex nowrap sx={{width: 280}} onClick={e => {
+  <Flex nowrap sx={{width: 180}} onClick={e => {
         saveSetting('free', !free)
       }}>
     <Switch checked={free} size="small"/>
     <Text small>Allow free text</Text>
   </Flex>
-  <Flex nowrap sx={{width: 280}} onClick={e => {
+  {type === 'pill' && <Flex nowrap sx={{width: 280}} onClick={e => {
         saveSetting('image', !image)
       }}>
-    <Switch checked={image} size="small"/>
+    <Switch  checked={image} size="small"/>
     <Text small>Use named images</Text>
-  </Flex>
+  </Flex>}
 
 </Flex>
 
 </Collapse>
   </>
-}
-
-const EventRow = ({ title, name, Name, emits = [], description, eventNames }) => {
-  const [emit, setEmit] = React.useState('')
-
-  const { dropEvent, editEvent } = useLibrary();
- 
-  return <Grid sx={{mt: 1}} spacing={1} container>
-    <Grid item xs={2}>
-      <QuickSelect options={eventNames} value={name} /> 
-    </Grid>  
-    <Grid item xs={2}>
-      <TextInput size="small" label="Title"
-      onChange={e => editEvent(Name, name, 'title', e.target.value)}
-       fullWidth value={title} />
-    </Grid>  
-    <Grid item xs={3}>
-      <TextInput fullWidth size="small"
-      onChange={e => editEvent(Name, name, 'description', e.target.value)}
-      label="Description" value={description} />
-    </Grid>  
-    <Grid item xs={2}> 
-      <EditableListCell options={emits} onChange={setEmit} value={emit}
-        caption="Add emitted value"
-        onAdd={e => editEvent(Name, name, 'emits', (emits||[]).concat(e))} 
-        onDelete={e => {
-          editEvent(Name, name, 'emits', 
-            (emits||[]).filter(f => f !== emit))
-            setEmit('')
-        }}  
-        label={`Event emits ${emits.length} values`}
-        /> 
-    </Grid>  
-    <Grid item xs={1}>
-       <Flex fullHeight>
-        <DeleteConfirmMenu message={`Delete event "${name}"?`}    
-        onDelete={e =>    !!e && dropEvent(Name, name) } /> 
-       </Flex>
-    </Grid>
-  </Grid>
 }
 
 const CategoryTree = ({ categories, component, order, childName, Name, title, styleCategories, settingsCategories }) => {
@@ -803,18 +753,108 @@ const EventTree = ({ Name, events, eventNames, eventSources  }) => {
   </>
 }
 
-const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Defaults = {}, hidden}) => {
+const EventRow = ({ title, name, Name, emits = [], description, eventNames }) => {
+  const [emit, setEmit] = React.useState('')
 
+  const { dropEvent, editEvent } = useLibrary();
+ 
+  return <Grid sx={{mt: 1}} spacing={1} container>
+    <Grid item xs={2}>
+      <QuickSelect options={eventNames} value={name} /> 
+    </Grid>  
+    <Grid item xs={2}>
+      <TextInput size="small" label="Title"
+      onChange={e => editEvent(Name, name, 'title', e.target.value)}
+       fullWidth value={title} />
+    </Grid>  
+    <Grid item xs={3}>
+      <TextInput fullWidth size="small"
+      onChange={e => editEvent(Name, name, 'description', e.target.value)}
+      label="Description" value={description} />
+    </Grid>  
+    <Grid item xs={2}> 
+      <EditableListCell options={emits} onChange={setEmit} value={emit}
+        caption="Add emitted value"
+        onAdd={e => editEvent(Name, name, 'emits', (emits||[]).concat(e.split(',')))} 
+        onDelete={e => {
+          editEvent(Name, name, 'emits', 
+            (emits||[]).filter(f => f !== emit))
+            setEmit('')
+        }}  
+        label={`Event emits ${emits.length} values`}
+        /> 
+    </Grid>  
+    <Grid item xs={1}>
+       <Flex fullHeight>
+        <DeleteConfirmMenu message={`Delete event "${name}"?`}    
+        onDelete={e =>    !!e && dropEvent(Name, name) } /> 
+       </Flex>
+    </Grid>
+  </Grid>
+}
+
+const MethodTree = ({ Name, methods  }) => { 
+  const { addEvent, importEvent } = useLibrary();
+  return <>
+  <Flex>
+    <Text small active>Methods</Text>
+    <Spacer />
+    <PopoverPrompt 
+      onChange={val => !!val && addEvent(Name, val, 'Methods')}
+          endIcon={<Icons.Add />} label={`Add method named:`}  > 
+        add method </PopoverPrompt> 
+  </Flex> 
+
+  {methods?.map(method => <MethodRow Name={Name} {...method} key={method.ID}/>)}
+ 
+  </>
+}
+
+const MethodRow = ({ Name,  name, accepts = [] }) => {
+  const [accept, setAccpet] = React.useState('')
+
+  const { dropEvent, editEvent } = useLibrary();
+ 
+  return <Grid sx={{mt: 1}} spacing={1} container>
+    <Grid item xs={2}>
+      <TextInput size="small" label="name"
+      onChange={e => editEvent(Name, name, 'name', e.target.value, 'Methods')}
+       fullWidth value={name} />
+    </Grid>    
+    <Grid item xs={2}> 
+      <EditableListCell options={accepts} onChange={setAccpet} value={accept}
+        caption="Add accepted argument name"
+        onAdd={e => editEvent(Name, name, 'accepts', (accepts||[]).concat(e.split(',')), 'Methods'  )} 
+        onDelete={e => {
+          editEvent(Name, name, 'accepts', 
+            (accepts||[]).filter(f => f !== accept))
+            setAccpet('')
+        }}  
+        label={`Method accepts ${accepts.length} arguments`}
+        /> 
+    </Grid>   
+  </Grid>
+}
+
+const ComponentRow = ({ Name, allowChildren, Icon, 
+    Styles, Settings, selectors = {},
+    allowedChildren = [], Defaults = {}, Presets = {}, modal, hidden}) => {
+
+      const [css, setCss] = React.useState('')
+      const [adv, setAdv] = React.useState(false)
   const { Library , config} = React.useContext(AppStateContext);
   const { setComponentProps } = useLibrary();
 
   const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s].toString()}`);
+  const pre = Object.keys(Presets).map(s => `${s}: ${Presets[s].toString()}`);
   const allowableChildren = Object.keys(Library);
+  const selectorKeys = Object.keys(selectors)
 
-  return <Grid container sx={{ml: 2, mt: 2}} spacing={2}>
+  return <><Grid container sx={{ml: 2, mt: 2}} spacing={2}>
 
-    <Grid xs={2}>
+    <Grid xs={3}>
       <Flex> 
+  <TinyButton icon={Icons.Settings} onClick={() => setAdv(!adv)} />
         Icon
   <QuickSelect label="Icon" 
   renderOption={renderIconOption}
@@ -823,9 +863,27 @@ const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Default
       </Flex>
     </Grid>
 
+ 
 
-    <Grid xs={5}>
-      <Flex spacing={2}>
+  <Grid xs={9}>
+      <Flex> 
+ {!!Settings?.categories && <QuickSelect disabled={!def?.length} label="Default settings" options={def} />}
+ {!!Styles?.categories && <QuickSelect disabled={!pre?.length} label="Default styles" options={pre} />} 
+ {/* [{JSON.stringify(Styles)}] */}
+      </Flex>
+    </Grid>
+
+    <Collapse in={adv}>
+    <Flex fullWidth  sx={{ p: 1 }} spacing={2}>
+
+    <Flex onClick={e => {
+          setComponentProps(Name, 'modal', !modal)
+        }}
+        >
+          <Switch checked={!!modal} />
+          <Text small> Modal</Text>
+        </Flex>
+ 
         <Flex onClick={e => {
           setComponentProps(Name, 'hidden', !hidden)
         }}
@@ -834,7 +892,7 @@ const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Default
           <Text small> Hidden</Text>
         </Flex>
  
-        <Flex onClick={e => {
+        <Flex nowrap onClick={e => {
           setComponentProps(Name, 'allowChildren', !allowChildren)
         }}>
           <Switch checked={!!allowChildren}  />
@@ -856,18 +914,25 @@ const ComponentRow = ({ Name, allowChildren, Icon, allowedChildren = [], Default
           }}
           label={ <TinyButton icon={Icons.Add}  />}  
         /> 
+
+          <EditableListCell
+              options={selectorKeys} onChange={setCss} value={css}
+            caption={`Add selector to ${Name}`} onAdd={(value) => {
+              !!value && setComponentProps(Name, 'selectors', {
+                ...selectors,
+                [value]: `Rename ${value}`
+              })
+            }} onDelete={window.alert} 
+            label={css || ` ${selectorKeys?.length || '0'} selectors`}
+            />  
+
     </Flex>
-  </Grid>
 
-  <Grid xs={2}>
-      <Flex> 
-  <QuickSelect label="Default settings" options={def} />
-      </Flex>
-    </Grid>
-
-
+    </Collapse>
 
   </Grid>
+
+  </>
 } 
 
 const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eventSources, styleCategories, settingsCategories}) => {
@@ -931,19 +996,26 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
               <TabButton  iconPosition="start"  uppercase icon={<Tiny icon={Icons.Settings}/>}  label="Settings" />
               <TabButton  iconPosition="start"  uppercase  icon={<Tiny icon={Icons.Palette}/>}  label="Styles" />
               <TabButton  iconPosition="start" uppercase icon={<Tiny icon={Icons.Bolt}/>} label="Events" />
+              <TabButton  iconPosition="start" uppercase icon={<Tiny icon={Icons.DocumentScanner}/>} label="Methods" />
               <TabButton  iconPosition="start" uppercase icon={<Tiny icon={Icons.Code}/>} label="JSON" />
             </Tabs>
           </Flex>
 
           <Box sx={{ml: 2, pb: expanded ? 4 : 0, borderBottom: 4, borderColor: 'divider'}}>
+
             {expanded && value === 0 && !!component.Settings?.categories && <CategoryTree  
               styleCategories={styleCategories} 
               settingsCategories={settingsCategories} 
             title="Settings" childName="settings" 
               Name={name}  categories={component.Settings.categories} component={component}/>}
-            {expanded && value === 2 &&  <EventTree eventSources={eventSources} Name={name} eventNames={eventNames}  events={component.Events} />}
+              
+            {expanded && value === 2 &&  <EventTree eventSources={eventSources} 
+                Name={name} eventNames={eventNames}  events={component.Events} />}
 
-            {value === 3 && <JsonView initial={0} json={component} />}
+
+            {expanded && value === 3 &&  <MethodTree  Name={name} methods={component.Methods} />}
+
+            {value === 4 && <JsonView initial={0} json={component} />}
 
             {expanded && value === 1 && !!component.Styles?.categories && <CategoryTree
               styleCategories={styleCategories} 
@@ -979,7 +1051,7 @@ const LibraryTree = ({onClose}) => {
     if (!styles) return out;
     out = out.concat(styles.categories?.filter(f => !!f.name).map(cat => `${key}.${cat.name}`));
     return out;
-  }, [])
+  }, []).filter(f => !!f);
   
   const eventNames = Array.from(new Set(Object.keys(Library).reduce ((out, key) => {
     const events = Library[key].Events;
@@ -1048,5 +1120,7 @@ const LibraryTree = ({onClose}) => {
   </Layout>
  );
 }
+
+
 LibraryTree.defaultProps = {};
 export default LibraryTree;

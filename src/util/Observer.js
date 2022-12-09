@@ -17,10 +17,10 @@ export default class Observer {
 class Subscriber {
   constructor(fn, name) {
     this.name = name;
-    this.fn = (this.fn || []).concat(fn);
+    this.fn = fn
   }
   next(value) {
-    this.fn && this.fn.map((f) => f(value));
+    this.fn (value)
   }
   unsubscribe() {
     // console.log("unsubscribing '%s'", this.name);

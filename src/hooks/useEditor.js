@@ -225,6 +225,7 @@ export const useEditor = (apps) => {
         return alert (`Could not find component ${component.ComponentType}`)
       }
       const settings = item.Defaults;
+      const styles = item.Presets;
   
       if (!app.components) {
         Object.assign(app, {components: []})
@@ -256,6 +257,15 @@ export const useEditor = (apps) => {
           return box.settings.push({
             SettingName: setting,
             SettingValue: settings[setting]
+          })
+        }) 
+      }
+      
+      if (styles) {
+        Object.keys(styles).map(style => {
+          return box.styles.push({
+            Key: style,
+            Value: styles[style]
           })
         }) 
       }
@@ -419,21 +429,31 @@ export const useEditor = (apps) => {
     });
   }
 
-  const setComponentStyle = async (appID, pageID, componentID, key, value) => {
-    editComponent(appID, pageID, componentID, async (component) => {
+
+
+
+  const setComponentStyle = async (appID, pageID, componentID, key, value, selector) => {
+    
+    editComponent(appID, pageID, componentID, async (component) => { 
+
       const style = {
         Key: key ,
-        Value: value 
+        Value: value ,
+        selector
       };
 
       if (value === null) { 
         return  component.styles = component.styles.filter(f => f.Key !== key) 
       }
-      component.styles = component.styles.find(f => f.Key === key)
-        ? component.styles.map((c) => c.Key === key ? style : c)
+      component.styles = component.styles.find(f => f.Key === key && (!selector || f.selector === selector)  )
+        ? component.styles.map((c) => c.Key === key && 
+            (!selector || c.selector === selector) ? style : c)
         : component.styles.concat(style);
     });
   }
+
+
+
 
   const setComponentEvent = async (appID, pageID, componentID, event) => {
     editComponent(appID, pageID, componentID, async (component) => {

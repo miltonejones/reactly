@@ -1,13 +1,34 @@
  
 
-export const getPropertyOptions = (page, event) => {
+export const getPropertyOptions = (page, event, component, resources) => {
   const options = !page?.state ? [] : page.state.map(d => d.Key);
+
+
   !!page?.parameters && Object.keys(page.parameters).map(paramKey => {
     return options.push(`parameters.${paramKey}`);
   })
+
+
   !!event?.emits && event.emits.map(paramKey => {
     return options.push(`event.${paramKey}`);
   })
+
+
+  if (!!component) {
+    const args = getSettings(component.settings || []); 
+    if (args.bindings && !!resources){
+      const bindings = JSON.parse(args.bindings);
+      const resource = resources.find(f => f.ID === bindings.resourceID);
+
+      console.log ({ resource })
+      if (!resource.columns) {
+        return options;
+      }
+      resource.columns.map(p => options.push(`${component.ComponentName}.data.${p}`))
+    }
+  }
+
+
   return options;
 }
 

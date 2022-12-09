@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material'; 
 import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
 import { Add, Close, Delete } from "@mui/icons-material";
-import { SetState, RunScript, OpenLink, DataExec, ModalOpen } from '../library/events';
+import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
 import { EditorStateContext, AppStateContext } from '../../hooks/AppStateContext'; 
  
@@ -44,7 +44,7 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
   switch(action.type) {
     case 'setState':
       const label = action.value?.toString().split('|').join(' or ')
-      act = <>Set the value of "{action.target}" to <b>{label}</b></>
+      act = <Box>Set the value of "{action.target}" to <b>{label}</b></Box>
       break;
     case 'dataExec':
       act = <>Execute "{obj.name} - {obj.method}"</>
@@ -56,8 +56,12 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       const href = pages.find(e => e.ID === action.target).PageName
       act = <>Open a link to "{href}"</>
       break;
+    case 'methodCall':
+      act = <Box>Execute method "{action.methodName}" on 
+        component "{action.componentName}" after {action.delay}ms</Box>
+      break;
     case 'modalOpen':
-      const dialogName = page?.components.find(e => e.ID === action.target)
+      const dialogName = page?.components?.find(e => e.ID === action.target)
       act = <>{action.open ? 'Open' : 'Close'} component <b>{dialogName?.ComponentName}</b></>
       ok = !!dialogName;
       break;
@@ -150,11 +154,17 @@ const ComponentEvents = ({
   const options = [
     {
       name: 'Set state value',
-      value: 'setState'
+      value: 'setState',
+      when: () => !!selectedPage?.state?.length
     },
     {
       name: 'Execute client script',
-      value: 'scriptRun'
+      value: 'scriptRun',
+      when: () => !!selectedPage?.scripts?.length
+    } ,
+    {
+      name: 'Call a component method',
+      value: 'methodCall', 
     } ,
     {
       name: 'Link to page',
@@ -171,7 +181,7 @@ const ComponentEvents = ({
   } ]: []).concat(modalsExist ? {
     name: 'Open or close a modal component',
     value: 'modalOpen'
-  } : []);
+  } : []).filter(f => !f.when || !!f.when());
 
   const forms = {
     setState: SetState,
@@ -179,7 +189,8 @@ const ComponentEvents = ({
     openLink: OpenLink,
     dataExec: DataExec,
     dataReset: DataExec,
-    modalOpen: ModalOpen
+    modalOpen: ModalOpen,
+    methodCall: MethodCall
     
   }
 
@@ -235,6 +246,7 @@ const ComponentEvents = ({
       <><EventEditor
             resources={resources}
             handleSave={handleSave}
+            component={component}
             event={freshEvent} 
             selectedEvent={supportedEvent}
             page={selectedPage} 
@@ -253,6 +265,7 @@ const ComponentEvents = ({
             return <>
           
             <Editor
+              component={component}
               resources={resources}
               selectedEvent={supportedEvent}
               handleSave={handleSave}

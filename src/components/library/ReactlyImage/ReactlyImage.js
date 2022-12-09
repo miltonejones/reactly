@@ -12,43 +12,10 @@ const ReactlyComponentImage = ({ children, styles, ...props }) => {
  );
 }
 
+ 
 
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Image Source',
-          label: 'src' ,
-          bindable: 1,
-          type: 'chip'
-        }, 
-        {
-          title: 'Image Title',
-          label: 'alt' ,
-          bindable: 1,
-          type: 'chip'
-        }, 
-      ]
-    }, 
-  ]
-}
-
-
-const ReactlyImage = {
-  Icon: Photo,
-  Component: ReactlyComponentImage,
-  Settings,
-  Styles: {
-    categories: [
-      ...GenericStyles.categories,
-      ...ColorStyles.categories
-    ]
-    }, 
-  Defaults: { }
+const ReactlyImage = { 
+  Component: ReactlyComponentImage, 
 }
  
 

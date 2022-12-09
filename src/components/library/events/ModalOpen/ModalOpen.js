@@ -1,31 +1,46 @@
 import React from 'react';
 import { styled, Box, Typography, FormControlLabel, Switch} from '@mui/material'; 
 import { QuickSelect, Flex, Spacer, Text, TextBtn, Pill } from '../../..';
+import { AppStateContext } from '../../../../hooks/AppStateContext'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
 const ModalOpen = ({ event = {}, page, handleSave }) => {
+  const { Library } = React.useContext(AppStateContext);
   const [state, setState ] = React.useState({ ...event.action, type: 'modalOpen' });
 
-  const modals = ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar', 'Popover'].reduce((output, key) => {
-    output = output.concat (page.components.filter(f => f.ComponentType === key));
-    return output;
-  }, [])
 
-  const modal = page.components.filter(f => f.ComponentType === 'Dialog')
-  const menus = page.components.filter(f => f.ComponentType === 'Menu')
-  const drawers = page.components.filter(f => f.ComponentType === 'Drawer')
+ 
 
-  // const modals = modal.concat (menus).concat(drawers)
+  const modals = Object.keys(Library)
+    .filter(f => !!Library[f].modal)
+    .reduce((items, key) => {
+        items = items.concat(page.components.filter(f => f.ComponentType === key))
+        return items;
+      }, []);   
+ 
 
- const getOptionLabel =  (option ) => {
-  const found = page.components.find(f => f.ID === option)
-  if (found) {
-    return found.ComponentName;
+  const renderOption = (props, option) => {
+    if (!option?.ComponentName) {
+      return <Box {...props}>- none -</Box>
+    }
+     
+    return <Box {...props}>
+{option.ComponentName }  
+    </Box>
   }
-  return option;
+       
+ const getOptionLabel =  (option ) => {
+  if (typeof option === 'string') {
+    const found = page.components?.find(f => f.ID === option)
+    if (found) {
+      return found.ComponentName;
+    }
+  }
+  
+  return option?.ComponentName + (typeof option); 
 }
 
   const pills = [
@@ -47,8 +62,13 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
    <Layout data-testid="test-for-ModalOpen">
    <Text small>Select component:</Text>  
 
-   <QuickSelect getOptionLabel={getOptionLabel} options={modals.map(d => d.ComponentName)} value={state.target}
-      onChange={value => setState(s => ({...s, target: modals.find(d => d.ComponentName === value).ID}))}
+   <QuickSelect 
+
+      getOptionLabel={getOptionLabel} 
+      options={modals} 
+      value={state.target}
+      renderOption={renderOption}
+      onChange={value => setState(s => ({...s, target: value?.ID || null}))}
     />
 <Flex sx={{mt: 2}}>
   {pills.map(p => <Pill 
@@ -70,9 +90,7 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
               }} 
             />}
           /> */}
-
-
-{/* {JSON.stringify(modals)} */}
+ 
 
    <Flex sx={{mt: 2}}>
         <Spacer />
@@ -83,7 +101,9 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
         })}>Save</TextBtn>
       </Flex>
     
-    
+    <pre>
+    {JSON.stringify(state,0,2)}
+    </pre>
 
    </Layout>
  );

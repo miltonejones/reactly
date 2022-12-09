@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { fixText, getParams } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
+import Observer from '../util/Observer';
 
 
 export const PageStateContext = React.createContext({});
@@ -46,6 +47,7 @@ export const usePageContext = () => {
  const {
     Alert,
     queryState,
+    Library,
     supportedEvents
  } = React.useContext(AppStateContext);
 
@@ -177,8 +179,7 @@ export const usePageContext = () => {
   }, [appContext, openLink])
 
   const stringToggle = (state, { target, value }, options) => {
-    if (!options) return ''
-    console.log({ options })
+
     const regex = /\{([^}]+)\}/g;
     const literal = regex.exec(value);
     if (literal) { 
@@ -187,10 +188,23 @@ export const usePageContext = () => {
     if (!value) {
       return ''
     }
+
+
     if (value?.indexOf('.') > 0) {
-      const [key, prop] = value.split('.'); 
+      // console.log({ options, value })
+      if (!options) return value
+
+      const values = value.split('.'); 
+      if (values.length === 3) {
+        const [key, prop, datum] = values;
+        return options[datum];
+      }
+
+      const [key, prop] = values;
       return options[prop]
     }
+
+
     if (value?.indexOf('|') < 0) {
       return value;
     }
@@ -218,12 +232,17 @@ export const usePageContext = () => {
     
   }, [selectedPage])
 /**
+ * 
+ * /search
  * function play (page, options) {
   const {  setState } = options; 
-  setState(s => ({
+    setState(s => ({
     ...s,
-    url: options.data.previewUrl
-  }))
+    url: options.data.previewUrl,
+    track: options.data.trackName,
+    artist: options.data.artistName,
+    price: options.data.trackPrice,
+  }));
 
   setTimeout(() => {
      options.api.execRefByName('aux', player => {
@@ -309,7 +328,14 @@ export const usePageContext = () => {
     const triggers = (events || component?.events).filter( e => e.event === name);
 
     triggers.map((trigger, index) => { 
-      trigger.event !== 'onProgress' && console.log ('%s, triggering "%s" script', index, trigger.action.type, trigger);
+
+      trigger.event !== 'onProgress' && 
+      console.log ('%s, triggering "%s" script on %s', index, 
+      trigger.action.type, 
+      trigger.action.target, 
+          trigger, {
+            caller: event.currentTarget
+          });
 
  
       // if (event.currentTarget && !over) {
@@ -321,6 +347,16 @@ export const usePageContext = () => {
 
       // console.log ({ event })
       switch(trigger.action.type) {
+        case "methodCall": 
+          setTimeout(() => {
+
+            execRefByName(trigger.action.componentName, callee => {
+              callee[trigger.action.methodName].call(callee)
+            })
+            // return Alert(<pre>{JSON.stringify(trigger,0,2)}</pre>)
+
+          }, trigger.action.delay || 2)
+          break;
         case "setState":  
           setPageClientState(s => ({...s, 
             [trigger.action.target]: trigger.action.value === 'toggle' 
@@ -328,13 +364,31 @@ export const usePageContext = () => {
               : stringToggle(s, trigger.action, options) }))
           break;
         case "modalOpen":   
-            setPageModalState(s => ({
-              ...s,
-              [trigger.action.target]:  trigger.action.open === 'toggle' 
-              ? !s[trigger.action.target]
-              : trigger.action.open ,
-              anchorEl: event?.currentTarget
-            } ))
+
+ 
+            const component = selectedPage?.components?.find(f => f.ID === trigger.action.target);
+            if (component) {
+              
+
+              setPageModalState(s => ({
+                  ...s,
+                  [trigger.action.target]:  trigger.action.open === 'toggle' 
+                  ? !s[trigger.action.target]
+                  : trigger.action.open ,
+                  anchorEl: event?.currentTarget,
+                  index
+                } ))
+
+
+            } else {
+              console.log ( { skipping: {...trigger.action} } )
+            }
+            
+            // alert(JSON.stringify({...trigger.action,
+            //   anchor: !!event?.currentTarget,
+            //   index
+            // },0,2) )
+
           break;
         case 'dataReset':
           
@@ -463,6 +517,28 @@ export const usePageContext = () => {
 // 
   const attachEventHandlers = React.useCallback ( component => {
     const { settings, events, boundProps } = component;
+    const { Methods } = Library[component.ComponentType] ?? {};
+
+    // const calls = []
+    // Methods?.map(method => {
+    //   const observer = new Observer(method.name)
+    //   calls.push({
+    //     observer,
+    //     action_title: method.name,
+    //     callee: component.ID,
+    //     ...method
+    //   })
+    // })
+
+
+    // !!Methods && setPageRefState(refState => { 
+    //   return {
+    //     ...refState,
+    //     calls
+    //   };
+    // });
+
+
     const eventHandlers = includedEvents.map(e => e.name).reduce((handlers, eventName) => {
       
       const supported = events?.find( f => f.event === eventName);
@@ -483,6 +559,10 @@ export const usePageContext = () => {
       }})(pageClientState)
       return handlers;
     }, {});
+
+   
+
+    // Object.assign(eventHandlers, { calls });
    
     if (boundProps) {
 
