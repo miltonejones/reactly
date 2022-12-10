@@ -21,4 +21,4 @@ const ReactlyVideoPlayer = {
 
 export default ReactlyVideoPlayer;
 
-
+ 

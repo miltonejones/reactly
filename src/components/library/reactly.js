@@ -55,7 +55,7 @@ const ReactlyComponent = ({
   selectedPage,
   children,
   settings,
-  styles, 
+  styles = [], 
   extra,
   ...props 
 }) => {
@@ -83,7 +83,30 @@ const ReactlyComponent = ({
 
   // console.log ({ routes })
   const args = getSettings(settings); 
-  const style = getStyles(styles) ; 
+
+
+  const style = getStyles(styles.filter(f => !f.selector));
+ 
+    
+
+  const made = {}
+  
+  const subCss = styles.filter(f => !!f.selector).map(m => {
+    Object.assign(made, { 
+      [`&.${m.selector}`]: { 
+        ...made [`&.${m.selector}`],
+          [`${m.Key}`]: `${m.Value}`
+        }  
+    }) 
+  })
+
+  const completed = {
+    ...style,
+    ...made
+  }
+
+
+
   const fixed = Object.keys(args)
     .map(arg => {
       const val = fixText(args[arg], pageClientState, routes);
@@ -98,15 +121,19 @@ const ReactlyComponent = ({
     }, {})
  
   if (childComponents?.length && Library[props.ComponentType].allowedChildren ) {
-    return  <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}}> 
+    return  <Component {...fixed} {...props}  style={completed} sx={{...props.sx, ...style, ...extra}}> 
             { childComponents.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
           </Component>
   }
 
  return (  
- <Component {...fixed} {...props}  style={style} sx={{...props.sx, ...extra}} > 
+  <>
+  {/* <pre>
+    {JSON.stringify(completed,0,2)}
+  </pre> */}
+ <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
     {children || fixed.children}
- </Component>
+ </Component></>
    )
 } 
 

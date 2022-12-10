@@ -10,6 +10,7 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
  
 const ComponentStyles = ({ component, onChange }) => {
+  const [busy, setBusy] = React.useState(false);
   const [checked, setChecked] = React.useState(false);
   const [css, setCss] = React.useState('');
   const { Library } = React.useContext(AppStateContext);
@@ -38,17 +39,29 @@ const ComponentStyles = ({ component, onChange }) => {
     return <Alert>could not render categories</Alert>
   }
 
+  if (busy) {
+    return <>loading</>
+  }
+
+  const changeCss = style => {
+    setBusy(true);
+    setTimeout(() => {
+      setCss(style)
+      setBusy(false);
+    }, 99)
+  }
+
  
   return <> 
  
  <Collapse in={!!selectors}>
-     <Stack sx={{p: 2}}>
+     <Stack sx={{p: 1}}>
       <Text small>Component sub-classes</Text>
      {!!selectors && <QuickSelect
       
       options={Object.keys(selectors)}
       value={css}
-      onChange={setCss}
+      onChange={changeCss}
     />}
 
      </Stack>
@@ -63,6 +76,7 @@ const ComponentStyles = ({ component, onChange }) => {
     onChange={handleCssChange}
     {...category}
     selectors={selectors}
+    selector={css}
     settings={category.styles}
     css={componentList}
     args={args}

@@ -156,6 +156,7 @@ export const ComponentInputBody = (props) => {
     onChange ,
     trueProp,
     selectedPage,
+    selector,
     helperText,
     resources,
     multiline
@@ -163,12 +164,14 @@ export const ComponentInputBody = (props) => {
 
   const { Library } = React.useContext(AppStateContext);
   
-  const node = css?.find(f => f.Key === label && !f.selector);
+  const node = css?.find(f => f.Key === label && (!f.selector || f.selector  === selector));
   
   const initialProp = !node?.Value   ? args[label] : node.Value;
   
   const customProp = args[label + '-custom'];
   const colorProp = label.indexOf('color') > -1;
+
+
   const [value, setValue] = React.useState(!!binding ? bindingValue : initialProp);
 
   const handleChange = React.useCallback((prop, binding) => {   
@@ -201,6 +204,23 @@ export const ComponentInputBody = (props) => {
 
   const { bindableProps }  = Library [component.ComponentType]
   const header = <>  
+{/* <Stack>
+<pre>
+ {JSON.stringify({node},0,2)}
+ </pre> 
+ <pre>
+ {JSON.stringify({args: args[label]},0,2)}
+ </pre>
+ <pre>
+ {JSON.stringify({selector},0,2)}
+ </pre> 
+</Stack> */}
+{/* <pre>
+ {JSON.stringify({initialProp},0,2)}
+ </pre> 
+<pre>
+ {JSON.stringify({value},0,2)}
+ </pre>  */}
   <Text small>{title}</Text>
   </>
 
@@ -237,7 +257,21 @@ export const ComponentInputBody = (props) => {
   if (CustomInput) {
     return <>
     <CustomInput {...inputProps} />
-    
+    {/* <pre>
+ {JSON.stringify({initialProp},0,2)}
+ </pre> 
+<pre>
+ {JSON.stringify({value},0,2)}
+ </pre> 
+<pre>
+[ {JSON.stringify({node},0,2)}]
+ </pre> 
+<pre>
+ {JSON.stringify({css},0,2)}
+ </pre> 
+<pre>
+ {JSON.stringify({selector},0,2)}
+ </pre>  */}
     </> 
   } 
 
@@ -325,7 +359,7 @@ const CustomSwitch = ({ args, label, onChange, type = 'free'}) =>
 
   
 
-export const ComponentPanelSettings = ({ selectedPage, resources, component, css, settings ,args,  onChange }) => { 
+export const ComponentPanelSettings = ({ selectedPage, resources, component, css, settings , args, selector, onChange }) => { 
    
 
  return (
@@ -400,6 +434,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
             selectedPage={selectedPage} 
             args={args} 
             css={css}
+            selector={selector}
             component={component}
             onChange={(label, value) => onChange && onChange(component.ID, label, value)} 
             />  
@@ -419,6 +454,7 @@ export const ComponentCollapse = ({
     component, 
     onChange, 
     selectedPage,
+    selector,
     name, 
     settings, 
     args,  
@@ -463,6 +499,7 @@ export const ComponentCollapse = ({
         resources={resources}
         args={args}
         css={css}
+        selector={selector}
         settings={settings}
         component={component}
         selectedPage={selectedPage}
@@ -479,14 +516,21 @@ const ComponentSettings = ({ selectedPage, component, onChange, resources }) => 
   if (!component?.settings) {
     return <Alert sx={{m: 1}}>This component has no configurable settings!!.</Alert>
   }
+
+  const args = getSettings(component.settings);
+
+  const debug =  <Flex sx={{p: 1}} onClick={() => onChange(component.ID, 'debug', !args.debug )}>
+   <Text active={args.debug} small>Debug</Text>
+   <Spacer />
+   <Switch checked={args.debug} />
+  </Flex>
+
   const { categories } = Library [component.ComponentType].Settings ?? {}
 
 
   if (!categories) {
-    return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert></>
+    return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{debug}</>
   }
-  const args = getSettings(component.settings);
-
   return <> 
   {categories
     .sort(sortByOrder)
@@ -498,8 +542,8 @@ const ComponentSettings = ({ selectedPage, component, onChange, resources }) => 
       {...category}
       args={args}
       key={category.name}
-    />)}
- 
+    />)} 
+  {debug}
  </>
 }
 

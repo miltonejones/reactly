@@ -13,9 +13,29 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
-  const { selectedComponent } = queryState;
+  const { selectedComponent, page } = queryState;
 
-  const childOpen = selectedComponent?.componentID === props.ID && preview;
+
+  const recurse = (tag, open = false) => {
+    
+    const kids = page?.components.filter(f => f.componentID === tag.ID);
+    if (kids?.length) {
+      const out = kids.map(kid => recurse(kid, open || selectedComponent?.ID === kid.ID )) 
+      const ok = out.some(f => !!f);
+
+      console.log ({ out, ok })
+      return ok
+    }
+ 
+    console.log ({ returning: open })
+    return open;
+  }
+
+  const childOpen = recurse(props) ;// selectedComponent?.componentID === props.ID && preview;
+ 
+
+
+
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
@@ -28,19 +48,23 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
    }
    const extra = { 
      '& .MuiPaper-root': {
-      ...args
+      ...args,
+      width: 'fit-content'
    }};
 
  return (
+  
+  
    <ReactlyComponent 
    extra={extra}
       onClose={handleClose}
         component={open || !preview ? Dialog : Faux} 
-        open={open || componentEditing || childOpen} 
+        open={open || componentEditing || (childOpen && preview )} 
         {...rest}
         >
       {children} 
    </ReactlyComponent>
+    
  );
 }
 

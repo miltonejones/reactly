@@ -14,8 +14,10 @@ import {
 } from "@mui/material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
+import { Flex } from ".."; 
 import { Json } from "../../colorize"; 
 import { objectReduce } from "../library/util";
+import { getSettings } from '../library/util';
 import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
 
 const Layout = styled(Box)(({ theme }) => ({
@@ -140,10 +142,10 @@ const ComponentTree = ({
   const pageTheme = createTheme(theme);
  
   if (!queryState.pageLoaded) {
-    return <>
+    return <Flex sx={{ width: '100vw', height: '100vh', justifyContent: 'center'}}>
     <Avatar className="App-logo" onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
-    Loading...
-    </>
+    Loading....
+    </Flex>
   }
   
   return (
@@ -233,6 +235,7 @@ const RenderComponent = ({
 
 
   const eventMap = attachEventHandlers(component);
+  const settings = getSettings(component.settings);
 
   // console.log ({ Library, name: component.ComponentType })
 
@@ -263,6 +266,10 @@ const RenderComponent = ({
           </>
         )}
       </Preview>
+     {!!settings.debug && <pre>
+ {JSON.stringify(component,0,2)}
+ </pre>
+     }
     </>
   );
 };

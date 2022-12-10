@@ -32,24 +32,9 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   const  {
     bindingObject,
     resource,
-    dataRows
-  } = usePageResourceState(settings);
-  // let obj = {}, parsed = [];//, resource;
-
-
-  // if (args.bindings)  {
-  //   obj = JSON.parse(args.bindings); 
-  //   const id = obj.resourceID;
-  //   resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
-  //   if (resource) {
-  //     parsed = resource.records.map(record => {
-  //       return Object.keys(obj.bindings).reduce((items, res) => {
-  //         items[obj.bindings[res]] = record[ res ]
-  //         return items;
-  //       }, {})
-  //     })
-  //   }
-  // }
+    dataRows,
+    columnMap
+  } = usePageResourceState(settings); 
 
   if (!dataRows.length && !componentEditing) {
     return <> 
@@ -71,9 +56,9 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   <>  
    <ReactlyComponent component={Table} {...props}>
 
-      {!!bindingObject.bindings && <TableHead>
+      {!!columnMap && <TableHead>
         <TableRow>
-          {Object.values(bindingObject?.bindings).map( t => <TableCell key={t}>{t}</TableCell>)} 
+          {columnMap.map( t => <TableCell key={t}>{bindingObject.bindings[t]}</TableCell>)} 
         </TableRow>
       </TableHead>
 }

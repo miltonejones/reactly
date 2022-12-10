@@ -269,6 +269,8 @@ export const useEditor = (apps) => {
           })
         }) 
       }
+
+       console.log ({ box })
       
       page.components = page.components.concat(box);
 

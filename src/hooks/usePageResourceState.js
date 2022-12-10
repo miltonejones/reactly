@@ -9,17 +9,19 @@ export const usePageResourceState = (settings) => {
   const { appContext, setPageResourceState, pageResourceState } = React.useContext(PageStateContext);
 
 
-  let bindingObject = {}, dataRows = [], resource;
+  let bindingObject = {}, dataRows = [], resource, columnMap;
 
 
   const componentProps = getSettings(settings);
   if (componentProps.bindings)  {
     bindingObject = JSON.parse(componentProps.bindings); 
+    columnMap = bindingObject.columnMap || Object.keys(bindingObject.bindings) 
     const id = bindingObject.resourceID;
     resource = pageResourceState.find(f => f.resourceID === bindingObject.resourceID);
     if (resource) {
+      console.log({ bindingObject })
       dataRows = resource.records.map(record => {
-        return Object.keys(bindingObject.bindings).reduce((items, res) => {
+        return columnMap.reduce((items, res) => {
           items[bindingObject.bindings[res]] = record[ res ]
           return items;
         }, {})
@@ -86,6 +88,7 @@ export const usePageResourceState = (settings) => {
     bindingObject,
     resource,
     dataRows,
+    columnMap,
     handleComponentRequest,
     executeComponentRequest,
     pageResourceState

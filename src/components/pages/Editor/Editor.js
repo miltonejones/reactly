@@ -480,6 +480,7 @@ const Editor = ({ applications: apps = {} }) => {
     };
    const res = addComponent(appData.ID, queryState.page?.ID, component, {...options, 
     fn: (comp) => {
+      // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
       setQueryState(s => ({...s, selectedComponent: comp}));
     }}); 
   };

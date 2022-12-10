@@ -4,6 +4,9 @@ import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny, TinyButton }
 import { AppStateContext } from '../../../../hooks/AppStateContext'; 
 import { CheckCircle, Save, CheckCircleOutline, ExpandMore, ExpandLess } from "@mui/icons-material";  
 import { getSettings } from '../../../library/util';
+import { ListTableRow } from './components';
+
+
 
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -41,14 +44,19 @@ const ListTableComponentInput = ({
   }
 
   const addProp = name => { 
+    
     setFields (f => f.indexOf(name) > -1 
       ? f.filter(e => e !== name)
       : f.concat(name));
+ 
 
-    const bindings = state.bindings || {};
-    const exists = bindings?.[name];
+    const bindings = state.bindings || {}; 
+    const columnNames = (state.columnMap || Object.keys(bindings));
+    const columnMap = columnNames.indexOf(name) > -1 
+    ? columnNames.filter(e => e !== name)
+    : columnNames.concat(name)
     
-    if (exists) {
+    if (bindings?.[name]) {
       delete bindings[name]
     } else {
       Object.assign(bindings, {[name]: name})
@@ -56,10 +64,13 @@ const ListTableComponentInput = ({
     
      setState(s => ({
       ...s,
-      bindings 
+      bindings ,
+      columnMap
     }))
        
   }
+
+  
   const offspring = selectedPage?.components?.find(f => f.componentID === component?.ID);
 
 
@@ -79,6 +90,7 @@ const ListTableComponentInput = ({
 
   const bindingKeys = Object.keys(state.bindings || {});
 
+
   const colnames = !state.bindings ? [] : bindingKeys;
 
  
@@ -87,13 +99,17 @@ const ListTableComponentInput = ({
   const bindableNames = bindableProps.map(f => f.title);
   const getBindableByName = name => bindableProps.find(f => f.title === name);
 
-  const changeOrder = (ordinal, offset) => {
-    const bindings = arraymove(bindingKeys , ordinal, ordinal + offset)  
-      .reduce ((obj, key) => {
-        obj[key] = state.bindings[key]
-        return obj;
-      }, {})
-    setState(s => ({...s, bindings}))
+
+
+
+  const handleMove = (key, offset) => {
+    const columnMap = (state.columnMap || Object.keys(state.bindings));
+    const index = columnMap.indexOf(key);
+    arraymove(columnMap, index, index + offset);
+    setState(s => ({
+      ...s,
+      columnMap
+    })) 
   }
 
   function arraymove(arr, fromIndex, toIndex) {
@@ -104,8 +120,8 @@ const ListTableComponentInput = ({
     } 
     return arr;
   }
+ 
 
-  const test = arraymove(bindingKeys, 2, 1)
   const bindingSort = (col1, col2) => {
     const a = state.bindings[col1];
     const b = state.bindings[col2];
@@ -137,9 +153,10 @@ const ListTableComponentInput = ({
 
  return (
    <Layout data-testid="test-for-ListTableComponentInput"> 
-   
- 
- 
+     
+    
+
+
       {header}
 
       <QuickSelect value={resource?.name} options={resources.map(f => f.name)} onChange={value => {
@@ -149,83 +166,47 @@ const ListTableComponentInput = ({
       }}/>
 
       <Box sx={{mt: 2}}>
-        <Text small variant="caption">Available Fields</Text>
+        <Text small variant="caption">Bound Fields</Text> 
+
         <Grid container sx={{mt: 0.5}} spacing={1}>
 
-        <Grid item xs={5}>
+          <Grid item xs={6}>
             <Text small active>Name</Text>
           </Grid>
           
-          <Grid item xs={7}>
+          <Grid item xs={6}>
             <Text small active>Label</Text> 
           </Grid>
-          
-        {resource?.columns.map((col, index) => {
-          const active = colnames.indexOf(col) > -1  ;
 
+          {state.columnMap?.map((col, index) => {
+            const args = {
+              active: !0, addProp, componentBound, col,
+              bindableProps, getBindableByName, state, 
+              setState, onMove: handleMove, index } 
 
-          return <>
-          
-          
-          <Grid item xs={4} key={col} >
-              <Flex >
-                <Check on={active} />
-                <Text small onClick={() => addProp(col)}
-                  sx={{fontWeight: active ? 600 : 400 }}>
+            return <ListTableRow key={col} {...args} />
 
-                {col}
-                </Text>
-              </Flex>
-        
-          </Grid>
-            <Grid item xs={6}>  
-              {!!componentBound && <QuickSelect 
-                label={`Bind ${col} to`} 
-                value={!state.bindings[col] ? '' : state.bindings[col].title}
-                onChange={e => {
-                  setState(s => ({
-                    ...s,
-                    bindings: {
-                      ...s.bindings,
-                      [col]: getBindableByName(e)
-                    }
-                  }))
-                }}
-                options={bindableProps.map(f => f.title)} />}
+          })} 
 
-           {!componentBound && <TextInput 
-            disabled={!active}
-              value={state.bindings[col]}
-             onChange={e => {
-              setState(s => ({
-                ...s,
-                bindings: {
-                  ...s.bindings,
-                  [col]: e.target.value
-                }
-              }))
-            }}
+        </Grid>
 
-            size="small" placeholder={`Label for ${col}`}/>}
+        <Grid item>
 
-            </Grid>
-
-            <Grid item xs={2}>
-              <Flex sx={{ height: '100%' }}>
-              <TextInput 
-              placeholder="#"
-                size="small"
-                sx={{maxWidth: 50}}
-              />
-                {/* <TinyButton disabled={!(index < resource.columns.length - 1)} onClick={() => changeOrder(index, 1)} icon={ExpandMore} sx={{mr: 1}}/>
-                <TinyButton disabled={index === 0} onClick={() => changeOrder(index, -1)} icon={ExpandLess} /> */}
-              </Flex>
-            </Grid>
+        <Text small variant="caption">Available Fields</Text> 
+        </Grid>
  
-                </> 
-        })}
+          
+          {resource?.columns
+            .filter(col => colnames.indexOf(col) < 0)
+            .map((col, index) => { 
+            const args = {
+              active: !1, addProp, componentBound, col,
+              bindableProps, getBindableByName, state, 
+              setState } 
 
-      </Grid>
+            return <ListTableRow {...args} />
+          })}
+
 
       </Box>
  
@@ -237,6 +218,13 @@ const ListTableComponentInput = ({
 
           <TextBtn endIcon={<Save />} variant="contained" onClick={() => handleChange(state) }>save</TextBtn>
         </Flex>
+
+<pre>
+
+[{JSON.stringify(state,0,2)}]
+</pre>
+
+        {/* form for setting request variables, when needed  */}
         <Collapse sx={{mt: 2}} in={open}>
           <Text small>Set values</Text>
           <Grid container>

@@ -1,6 +1,9 @@
 import React from 'react';
-import { styled, IconButton, Link , Box, Divider, Tabs, Collapse, Switch, Grid, Stack, Typography, Chip } from '@mui/material';
-import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, QuickSelect, DeleteConfirmMenu, QuickMenu, TinyButton } from '..' 
+import { styled, IconButton, Link , Box, Divider, Tabs, Collapse, 
+  Alert,
+  Switch, Grid, Stack, Typography, Chip } from '@mui/material';
+import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, 
+    QuickSelect, DeleteConfirmMenu, QuickMenu, TinyButton, useClipboard } from '..' 
 import { Icons, renderIconOption } from '../library/icons'; 
 import { JsonTree } from '../../colorize'; 
 import { TabButton } from '../ComponentPanel/ComponentPanel';
@@ -15,7 +18,6 @@ const conseq = (count, out = []) => { for (var e=0;++e<count + 1;out.push(e)); r
 
 export const useLibrary = () => {
   const { config, commitComponent, updateLib} = React.useContext(AppStateContext);
-
 
    
   const createComponent = (componentKey) => {
@@ -280,7 +282,39 @@ export const useLibrary = () => {
       } 
       updateLib(updated)
   }
-  
+
+  const relocateProp = (componentKey, sourceProp, destProp, setting) => {
+
+    const updated = {
+      ...config,
+      [componentKey]: {
+        ...config[componentKey],
+        dirty: true,
+        Settings: {
+          categories: config[componentKey].Settings.categories.map( category => {
+              if (category.name === sourceProp) {
+                return {
+                  ...category,
+                  settings: category.settings.filter(f => f.ID !== setting.ID)
+                }
+              }
+              if (category.name === destProp) {
+                return {
+                  ...category,
+                  settings: category.settings.concat(setting)
+                }
+              }
+             return category;
+          })
+        }
+      }
+    } 
+
+    
+    updateLib(updated)
+
+
+  }
 
   const dropComponentChild = (
     componentKey, 
@@ -367,6 +401,7 @@ export const useLibrary = () => {
   }
 
   return {
+    relocateProp,
     setComponentProps,
     setComponentChild,
     setCategoryAlways,
@@ -427,14 +462,51 @@ const EditableListCell = ({ label, value, options, caption, onChange, onAdd, onD
 
   </Flex>)
 }
- 
-const SettingRow = ({ Name, ID, settingType, component, image, xs, order, categoryName, childName, ...props }) => {
-  const { title, label, type, types, bindable, when, free } = props;
+ /**
+  * 
+  * Name={Name}
+    settingType={title}
+    categoryName={category.name}
+    categories={categories}
+    childName={childName}
+    component={component} 
+    
+  */
+const SettingRow = ({ 
+
+  Name, 
+  settingType, 
+  component, 
+  categories,
+  categoryName, 
+  childName, 
+
+  ...props 
+
+}) => {
+  const { title, 
+          label, 
+          type, 
+          types, 
+          bindable, 
+          when, 
+          free,
+          ID, 
+          image, 
+          xs, 
+          order,      
+    } = props;
   const [js, setJS] = React.useState(when)
   const [adv, setAdv] = React.useState(false)
   const [opt, setOpt] = React.useState('')
   const [error, setError] = React.useState('')
-  const { setComponentChild, setComponentDefaults, dropComponentChild } = useLibrary();
+  const { setComponentChild, setComponentDefaults, relocateProp, dropComponentChild } = useLibrary();
+
+  const duplicate = categories?.find(c => c.name !== categoryName && c.settings?.some(f => f.label === label));
+
+  const handleMove = destName => {
+    relocateProp(Name, categoryName, destName, props);
+  }
 
   const saveSetting = (key, val) => {
     const added = {
@@ -444,12 +516,12 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
     }
 
     setComponentChild( 
-      Name, 
-      settingType,
-      categoryName,
-      childName, 
-      added,
-      order
+        Name, 
+        settingType,
+        categoryName,
+        childName, 
+        added,
+        order
       )
   }
 
@@ -484,6 +556,7 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
   return <>
   <Grid sx={{mt: 1}} spacing={1} container>
   
+{/* {JSON.stringify(duplicate)} */}
 
  <Grid item xs={3}>
  <Flex>
@@ -527,16 +600,19 @@ const SettingRow = ({ Name, ID, settingType, component, image, xs, order, catego
    </Flex> }
  </Grid> 
 
-   
-       <Grid item xs={1}> 
-
- </Grid>
+    
 
 
 </Grid>
 
+
+
+{!!duplicate && <Alert sx={{ m: 1, maxWidth: 800 }} severity="warning"
+    >This setting also exists in the <b>{duplicate.name}</b> category</Alert>}
 <Collapse in={adv}>
 
+
+{/* bottom row  */}
 <Flex fullWidth  sx={{ p: 1 }} spacing={2}>
 
 
@@ -583,6 +659,8 @@ Input type
      />  
 </Flex>
 </Flex>
+
+
 <Flex fullWidth  sx={{ p: 1 }} spacing={2}>
 
     Grid columns
@@ -615,6 +693,12 @@ Input type
     <Text small>Use named images</Text>
   </Flex>}
 
+  <Text small>Move</Text>
+       <QuickMenu label="Choose category" 
+        onChange={handleMove}
+        options={categories
+          .filter(h => h.name !== categoryName)
+          .map(h => h.name)} />
 </Flex>
 
 </Collapse>
@@ -710,7 +794,10 @@ const CategoryTree = ({ categories, component, order, childName, Name, title, st
     </Flex>
 
     <DeleteConfirmMenu message={`Delete category "${category.name}"?`}    
-        onDelete={e => !!e && dropCategory(Name, title,  category.name) } /> 
+        onDelete={e =>  {
+          setValue(0)
+          !!e && dropCategory(Name, title,  category.name) 
+        }} /> 
 
          
 
@@ -719,11 +806,14 @@ const CategoryTree = ({ categories, component, order, childName, Name, title, st
    {!!category && !!category[childName].length && category[childName]
     .sort(sortByOrder)
     .map (kid => <SettingRow 
-   Name={Name}
+    
+    Name={Name}
     settingType={title}
     categoryName={category.name}
+    categories={categories}
     childName={childName}
-    component={component} key={kid.label} {...kid} />)}
+    component={component} 
+    key={kid.label} {...kid} />)}
  
   
   </>
@@ -939,11 +1029,14 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
   const { commit } = useLibrary();
   const { Library, refreshLib } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
+  const { copy } = useClipboard()
  
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const imported = component.Settings.categories?.some(c => c.name === 'Imported')
 
   const Icon = Icons[Library[name].Icon];
 
@@ -953,7 +1046,8 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
   return <>
   <Flex sx={{borderBottom: 1, borderColor: 'divider'
             , p: 1, backgroundColor: expanded ? 'aliceblue' : 'white'}}>
-    <Expander on={expanded} />
+
+    {/* <Expander on={expanded} /> */}
 
       <Flex onClick={() => expand(name)}>
 
@@ -964,6 +1058,8 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
       </Flex>
 
       {!!expanded && <QuickMenu value={name} small label={<b>{name}</b>} options={keys} onChange={expand} caret />}
+
+      {!!imported && <>*</>}
 
        <Spacer />
        {JSON.stringify(component).length} bytes
@@ -980,7 +1076,10 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
         />
 
         <TinyButton icon={Icons.Save} 
-        onClick={() => commit(name)}
+        onClick={() => {
+          commit(name);
+          copy(JSON.stringify(component, 0, 2))
+        }}
         />
        </>}
       </Flex>

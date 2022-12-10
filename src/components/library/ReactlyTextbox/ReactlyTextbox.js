@@ -11,6 +11,8 @@ const ReactlyTextboxComponent = ({onEnterPress, styles = [], ...props}) => {
 
 
   const args = getSettings(props.settings);
+
+  
   const css = getStyles(styles.filter(f => !f.selector));
   const sub = getStyles(styles.filter(f => !!f.selector));
    

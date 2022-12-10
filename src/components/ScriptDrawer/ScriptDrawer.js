@@ -25,7 +25,8 @@ const Bar = styled(Box)(({ theme, active, big }) => ({
 }));
  
 const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDrop, handleClose, handleChange }) => {
-
+  const ref = React.useRef(null)
+  const [assist, setAssist] = React.useState('')
   const [selected, setSelected] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
   const [dirty, setDirty] = React.useState(false)
@@ -52,6 +53,19 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     setAnchorEl(null)
   } 
 
+  const scriptInsert = data => {
+    const target = ref.current;
+    if (!target) return alert ('Nope!');
+    
+    if (target.setRangeText) {
+        //if setRangeText function is supported by current browser
+        target.setRangeText(data)
+    } else {
+        target.focus()
+        document.execCommand('insertText', false /*no UI*/, data);
+    }
+  }
+
   const scriptMenu = application.pages?.reduce ((items, page) => {
     !!page.scripts?.length && items.push({
       name: <b>{page.PageName}</b>
@@ -64,6 +78,21 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     })
     return items;
   }, [])
+
+  const api = [
+    'getRef', 
+    'getRefByName', 
+    'openLink', 
+    'openPath',
+    'getPageResourceState',
+    'pageResourceState',
+    'Alert',
+    'getResourceByName' ,
+    'execResourceByName',
+    'executeScriptByName',
+    'execRefByName',
+    'moment'
+  ]
 
  return (
 
@@ -138,9 +167,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
 
       <Grid item xs={big ? 9 : 6}> 
 
-      {!editMode  && <Box 
+      {!editMode  && <Box onClick={() => setEditMode(!editMode)} 
           sx={{ position: 'relative' }}>
-          <IconButton onClick={() => setEditMode(!editMode)}
+          <IconButton
             sx={{
               position: 'absolute',
               top: 20,
@@ -157,6 +186,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
         </Box>}
 
         {!!editMode  && <TextBox 
+        ref={ref}
           value={code} 
           disabled={!name}
           multiline
@@ -181,13 +211,19 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
 
 
         {!!error && <Alert severity="error">{error}</Alert>}
+        {/* <QuickMenu options={api} onChange={setAssist} 
+          value={assist} label={assist || 'methods'}/>
+          {!!assist && <TextBtn onChange={() => {
+            scriptInsert(assist);
+            setAssist('')
+          }}>add</TextBtn>} */}
           <Spacer />
           <TextBtn onClick={() => {
           setSelected( {code: ''} )
         }}  > 
           cancel
         </TextBtn>
-          <TextBtn onClick={() => {
+          <TextBtn onClick={() => { 
             setDirty(false);
           handleChange( ID, name, code)
         }} endIcon={<Save />}  
