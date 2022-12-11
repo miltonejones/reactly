@@ -69,26 +69,26 @@ const ReactlyComponentTable = ({ children, ...props }) => {
 
       <TableBody>
         {dataRows.map((row, i) => (
-          <TableRow
-            onClick={e => {
-              onRowClick && onRowClick(e, {
-                ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
-                row: i, 
-                ...resource.records[i]
-              })
-            }}
-            key={i} 
-          >
+          <TableRow key={i}  >
             {Object.values(row).map((cell, k) => <Cell 
             color={args['row-color']}
                 selected={isSelected(row, i)}
               onClick={e => {
+                
                 onCellClick && onCellClick(e, {
                   ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                   row: i,
                   cell: k,
                   ...resource.records[i]
+                });
+
+
+                onRowClick && onRowClick(e, {
+                  ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
+                  row: i, 
+                  ...resource.records[i]
                 })
+
               }}
               key={k} component="th" scope="row">
               <Flex nowrap={args.nowrap}>

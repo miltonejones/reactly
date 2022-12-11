@@ -231,26 +231,7 @@ export const usePageContext = () => {
     });
     
   }, [selectedPage])
-/**
- * 
- * /search
- * function play (page, options) {
-  const {  setState } = options; 
-    setState(s => ({
-    ...s,
-    url: options.data.previewUrl,
-    track: options.data.trackName,
-    artist: options.data.artistName,
-    price: options.data.trackPrice,
-  }));
-
-  setTimeout(() => {
-     options.api.execRefByName('aux', player => {
-       player.play();
-    })
-  }, 999);
-}
- */
+ 
 
   const getRefByName = React.useCallback((name) => {
     const component = selectedPage.components.find(f => f.ComponentName === name);
@@ -267,6 +248,13 @@ export const usePageContext = () => {
       return resourceState;
     }) 
   } 
+
+  const getApplicationScripts = () => {
+    return appContext.pages.reduce((out, page) => {
+      out = out.concat(page.scripts || []);
+      return out;
+    }, [])
+  }
 
   const executeScriptByName = (scriptName, options) => {
     const scr = selectedPage.scripts?.find(f => f.name === scriptName);
@@ -334,7 +322,7 @@ export const usePageContext = () => {
       trigger.action.type, 
       trigger.action.target, 
           trigger, {
-            caller: event.currentTarget
+            caller: event?.currentTarget
           });
 
  
@@ -575,14 +563,29 @@ export const usePageContext = () => {
 
           const routes = getParams(queryState, selectedPage, routeParams)
 
-          // console.log ({ routes })
+          //  console.log ({ routes })
 
           const attributeProp = fixText(pageClientState[boundTo], clientState, routes)
+          
           Object.assign(eventHandlers, {
             // set current component value to client state
             [attribute]: attributeProp,
           });
 
+          if (attributeProp?.indexOf && attributeProp.indexOf('.') > 0) {
+            const [type, val] = attributeProp.split('.');
+            if (type === 'parameters') {
+
+              Object.assign(eventHandlers, {
+                // set current component value to client state
+                [attribute]: routes[val],
+              });
+    
+            }
+          }
+          
+
+ 
           if (attribute === 'value') {
             // console.log ('assigning %s.%s', component.ComponentName, attribute)
             Object.assign(eventHandlers, {

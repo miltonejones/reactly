@@ -114,6 +114,7 @@ const ComponentEvents = ({
     component, 
     onEventDelete, 
     onChange, 
+    application,
     addedEvents,
     connections, 
     resources }) => {
@@ -247,6 +248,7 @@ const ComponentEvents = ({
             resources={resources}
             handleSave={handleSave}
             component={component}
+            application={application}
             event={freshEvent} 
             selectedEvent={supportedEvent}
             page={selectedPage} 
@@ -267,6 +269,7 @@ const ComponentEvents = ({
             <Editor
               component={component}
               resources={resources}
+              application={application}
               selectedEvent={supportedEvent}
               handleSave={handleSave}
               selectedType={e.action.type}

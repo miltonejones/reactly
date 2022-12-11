@@ -929,9 +929,11 @@ const MethodRow = ({ Name,  name, accepts = [] }) => {
 }
 
 const ComponentRow = ({ Name, allowChildren, Icon, 
-    Styles, Settings, selectors = {},
-    allowedChildren = [], Defaults = {}, Presets = {}, modal, hidden}) => {
-
+    Styles, Settings, selectors = {}, bindableProps,
+    allowedChildren = [], Defaults = {}, Presets = {}, 
+    modal, hidden}) => {
+      
+      const [prop, setProp] = React.useState('')
       const [css, setCss] = React.useState('')
       const [adv, setAdv] = React.useState(false)
   const { Library , config} = React.useContext(AppStateContext);
@@ -1031,9 +1033,11 @@ const ComponentRow = ({ Name, allowChildren, Icon,
           label={ <TinyButton icon={Icons.Add}  />}  
         /> 
 
-          <EditableListCell
+        <EditableListCell
               options={selectorKeys} onChange={setCss} value={css}
-            caption={`Add selector to ${Name}`} onAdd={(value) => {
+            caption={`Add selector to ${Name}`} 
+            
+            onAdd={(value) => {
               !!value && setComponentProps(Name, 'selectors', {
                 ...selectors,
                 [value]: `Rename ${value}`
@@ -1041,6 +1045,20 @@ const ComponentRow = ({ Name, allowChildren, Icon,
             }} onDelete={window.alert} 
             label={css || ` ${selectorKeys?.length || '0'} selectors`}
             />  
+
+        <Flex nowrap>
+          <EditableListCell
+              options={bindableProps||[]} onChange={setProp} value={prop}
+            caption={`Add bindable propery to ${Name}`} 
+            
+            onAdd={(value) => {
+              !!value && setComponentProps(Name, 'bindableProps', (bindableProps||[]).concat(value))
+            }} onDelete={window.alert} 
+            label={prop || ` ${bindableProps?.length || '0'} bindable Props`}
+            />  
+
+        </Flex>
+
 
 
 

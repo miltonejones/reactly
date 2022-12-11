@@ -31,17 +31,18 @@ const Preview = ({
   order,
   children,
   name,
+  hilit,
   sx,
   ...props
 }) => {
   return (  
       <Component
       {...props}
-      selectedPage={selectedPage}
+      selectedPage={selectedPage} 
       componentEditing={on}
       sx={{
         ...sx,
-        outline: on ? "dotted 2px gray" : "none",
+        outline: on || hilit ? "dotted 2px gray" : "none",
         outlineOffset: 4,
       }}
     >
@@ -59,7 +60,7 @@ const ComponentTree = ({
   setLoaded,
   appContext,
   themes = [],
-
+  hilit,
 
   pageClientState, 
   setPageClientState,
@@ -193,6 +194,7 @@ const ComponentTree = ({
               preview={preview}
               key={c.ComponentName}
               component={c}
+              hilit={hilit}
               trees={componentTree}
             />
           ))}
@@ -221,6 +223,7 @@ const RenderComponent = ({
   component,
   trees = [],
   preview,
+  hilit,
   selectedComponent,
   selectedPage,
 }) => {
@@ -260,6 +263,7 @@ const RenderComponent = ({
         component={Component}
         name={component.ComponentName}
         preview={preview}
+        hilit={hilit}
         {...component}
         {...eventMap}
       >
@@ -268,6 +272,7 @@ const RenderComponent = ({
             {kids.sort(componentOrder).map((c) => (
               <>
                 <RenderComponent
+                hilit={hilit}
                   selectedPage={selectedPage}
                   selectedComponent={selectedComponent}
                   trees={trees}

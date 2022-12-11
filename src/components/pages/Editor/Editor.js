@@ -242,6 +242,7 @@ const Editor = ({ applications: apps = {} }) => {
     setDirty,
   } = React.useContext(AppStateContext);
 
+  const [hilit,  setHilit] = React.useState(false);
   const [popoverContent,  setPopoverContent] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
@@ -414,10 +415,10 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "-",
     },
-    // {
-    //   name: `${showLib ? 'Hide' : 'Show'} Library`,
-    //   action: closeLib,
-    // },
+    {
+      name: `Hilight all components`,
+      action: () => setHilit(!hilit),
+    },
     {
       name: "Show client state",
       action: () => Alert(<Json>
@@ -805,7 +806,7 @@ const Editor = ({ applications: apps = {} }) => {
               <ComponentTree
                  
                 {...componentTreeProps}
-
+                hilit={hilit}
                 themes={appData?.themes || []}
                 appContext={appData}
                 loaded={loaded}
@@ -863,6 +864,7 @@ const Editor = ({ applications: apps = {} }) => {
 
       <ConnectionDrawer
         appID={appData.ID}
+        application={appData}
         selectedPage={queryState.page}
         dropResource={handleResourceDelete}
         dropConnection={handleConnectionDelete}

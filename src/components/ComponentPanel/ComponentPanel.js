@@ -86,6 +86,7 @@ const ComponentPanel = ({
     connections:connections,
     resources:resources,
     themes:themes,
+    application
   }
   
   return <Stack>
@@ -130,6 +131,8 @@ const ComponentPanel = ({
       Confirm={Confirm}
       application={application} themes={themes} 
       page={selectedPage} onChange={onChange} />}
+
+
     {!component && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
@@ -143,7 +146,7 @@ const ComponentPanel = ({
 function PageSettings({ page, application, themes = [], onChange, Confirm, onComponentImport }) {
   const { queryState } = React.useContext(AppStateContext);
   const [imported, setImported] = React.useState(''); 
-  const [param, setParam] = React.useState(''); 
+  const [param, setParam] = React.useState('');  
   const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state
 
@@ -169,7 +172,7 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
       <Text small>Process does not clone event mappings.</Text>
     </Stack>)
     if (!ok) return; 
-    onComponentImport(sourceID, destID, tag.ID)
+    onComponentImport(sourceID, destID, tag.ID);
   }
 
   const handleImport = text => {
@@ -222,6 +225,7 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
             setState(s => {
               const updated = {
                 ...s, 
+                dirty: 1,
                 parameters: !s.parameters 
                   ? added
                   : {
@@ -250,6 +254,7 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
               onChange={e => {
                 setState(s => ({
                   ...s,
+                  dirty: 1,
                   parameters: {
                     ...s.parameters,
                     [paramKey]: e.target.value
@@ -261,7 +266,8 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
               <TinyButton icon={Delete}
                   onClick={e => {
                     setState(s => {
-                      const obj = {...s};
+                      const obj = {
+                        dirty: 1, ...s};
                       delete obj.parameters[paramKey] 
                       // alert (JSON.stringify(obj.parameters))
                       return obj;
@@ -277,7 +283,10 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
 
       <Flex sx={{pt: 4}}>
         <Spacer /> 
-        <TextBtn endIcon={<Save />} variant="contained" onClick={() => onChange(state)}>Save</TextBtn>
+        <TextBtn disabled={!state.dirty} endIcon={<Save />} variant="contained" onClick={() => {
+          onChange(state);
+          setState(s => ({...s, dirty: false}))
+        }}>Save</TextBtn>
       </Flex>
     
   </Stack>

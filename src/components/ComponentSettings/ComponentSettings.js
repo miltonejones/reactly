@@ -517,6 +517,9 @@ const OrderSlider = ({ ticks, value, onChange }) => {
     onChange && onChange(newValue);
   }
 
+  if (!ticks.length) {
+    return <i />
+  }
 
   const marks = ticks.sort((a,b) => a.value > b.value ? 1 : -1)
 

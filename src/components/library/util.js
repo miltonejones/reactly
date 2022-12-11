@@ -187,7 +187,7 @@ export const fixText = (str, options, parameters) => {
   let out = str;
 
   findMatches(test, str).map(match => {
-    let prop;  
+    let prop;   
     if (match[1].indexOf('parameters.') === 0) {
       const [name, key] = match[1].split('.');
       prop = !parameters ? 'unknown' : parameters[key];
@@ -209,7 +209,6 @@ export const getParams = (state, page, route) => {
     const ps = vals.split('/')
     Object.keys(page.parameters).map((p, i) =>{
       params[p] = ps[i]
-      // console.log ({p})
     } )
   
     if (params) { 

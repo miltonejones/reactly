@@ -278,7 +278,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
 const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     resources = [], connections = [], appID, handleDrop, selectedPage,
     setConnection, dropConnection, handleClose, handleChange ,
-    onEventChange, onEventDelete}) => {
+    onEventChange, onEventDelete, application}) => {
   // const { setResource } = useEditor()
   const [selected, setSelected] = React.useState({})
   const [selectedConnection, setSelectedConnection] = React.useState({})
@@ -558,6 +558,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
             onEventDelete={(componentID, eventID) => {
               onEventDelete(componentID, eventID, 'connection')
             }}
+            application={application}
             selectedPage={selectedPage}
             component={selected}
             addedEvents={Events}
