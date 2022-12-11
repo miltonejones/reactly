@@ -326,12 +326,18 @@ export const usePageContext = () => {
           });
 
  
-      // if (event.currentTarget && !over) {
-      //   return handleClick (event, {
-      //     label: `Execute ${trigger.action.type} event`,
-      //     action: () => handleComponentEvent(event, eventProps, events, !0)
-      //   });
-      // } 
+
+        const pageParameters = {}
+        !!trigger.action.params && Object.keys(trigger.action.params).map(key => {
+          const triggerKey = trigger.action.params[key];
+          let triggerProp = pageClientState[ triggerKey ];
+          if (triggerKey.indexOf('.') > 0) {
+            const [t, optionKey] = triggerKey.split('.') ;
+            triggerProp = options[optionKey];
+          }
+          Object.assign(pageParameters, {[key]: triggerProp })
+        })
+
 
       // console.log ({ event })
       switch(trigger.action.type) {
@@ -346,6 +352,7 @@ export const usePageContext = () => {
           }, trigger.action.delay || 2)
           break;
         case "setState":  
+        //  Alert(<pre>{JSON.stringify(options)}</pre>)
           setPageClientState(s => ({...s, 
             [trigger.action.target]: trigger.action.value === 'toggle' 
               ? !s[trigger.action.target]
@@ -391,21 +398,10 @@ export const usePageContext = () => {
         case 'openLink':  
 
           const targetPage = appContext.pages.find((f) => f.ID === trigger.action.target); 
-
-          const params = {}
-          !!trigger.action.params && Object.keys(trigger.action.params).map(key => {
-            const triggerKey = trigger.action.params[key];
-            let triggerProp = pageClientState[ triggerKey ];
-            if (triggerKey.indexOf('.') > 0) {
-              const [t, optionKey] = triggerKey.split('.') ;
-              triggerProp = options[optionKey];
-            }
-            Object.assign(params, {[key]: triggerProp })
-          })
-
+ 
           if (!preview) {
             const value = `/apps/${appContext.path}/${targetPage.PagePath}`;
-            const path = [value, Object.values(params).join('/')].join('/'); 
+            const path = [value, Object.values(pageParameters).join('/')].join('/'); 
             return window.location.replace(path)
             return navigate(path)
           }
@@ -416,7 +412,7 @@ export const usePageContext = () => {
           setQueryState((s) => ({
             ...s,
             page: targetPage,
-            params ,
+            params: pageParameters ,
             pageLoaded: false
           }))
 
