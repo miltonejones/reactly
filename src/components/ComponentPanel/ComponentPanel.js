@@ -34,9 +34,11 @@ const ComponentPanel = ({
     onEventDelete,
     collapsed,
     themes,
+    onComponentImport,
     connections,
     resources,
-    application
+    application,
+    Confirm
  }) => {
  
   const { Library } = React.useContext(AppStateContext);
@@ -123,7 +125,11 @@ const ComponentPanel = ({
     </Box>
 
     {(!!component || value === 3) && <Panel  {...panelProps} />}
-    {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings themes={themes} page={selectedPage} onChange={onChange} />}
+    {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
+      onComponentImport={onComponentImport}
+      Confirm={Confirm}
+      application={application} themes={themes} 
+      page={selectedPage} onChange={onChange} />}
     {!component && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
@@ -134,13 +140,47 @@ const ComponentPanel = ({
 }
 
 
-function PageSettings({ page, themes = [], onChange }) {
+function PageSettings({ page, application, themes = [], onChange, Confirm, onComponentImport }) {
   const { queryState } = React.useContext(AppStateContext);
+  const [imported, setImported] = React.useState(''); 
   const [param, setParam] = React.useState(''); 
   const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state
+
+  const importable = application.pages
+  .filter(f => f.ID !== page.ID)
+  .reduce((out, pg) => {
+    pg.components?.filter(f => !f.componentID).map(c => {
+      out.push ({
+        label: `${pg.PageName}.${c.ComponentName}`,
+        action: text => promptImport(pg.ID, page.ID, c)
+      });
+    })
+    return out;
+  }, []);
+
+
+  const promptImport = async (sourceID, destID, tag) => {
+
+    setImported('')
+    if (!tag) return;
+    const ok = await Confirm(<Stack>
+      <Text>Import component "{tag.ComponentName}" to this page? </Text>
+      <Text small>Process does not clone event mappings.</Text>
+    </Stack>)
+    if (!ok) return; 
+    onComponentImport(sourceID, destID, tag.ID)
+  }
+
+  const handleImport = text => {
+    setImported('')
+    if (!text) return;
+    const { action } = importable.find(f => f.label === text);
+    !!action && action()
+  }
+
   return <Stack spacing={1} sx={{p: 1}}>
-    <Text small>Page Name</Text>
+    <Text small>Page Name {page.ID}</Text>
     <TextInput value={PageName} label="Name" 
     onChange={e => setState(s => ({
       ...s, PageName: e.target.value, PagePath: e.target.value.toLowerCase().replace(/\s/g, '-')
@@ -157,77 +197,82 @@ function PageSettings({ page, themes = [], onChange }) {
          }}
          />
 
-
-    <Box sx={{pt: 2}}>
-      <Divider textAlign="left"><Text small>Path parameters</Text></Divider>
-      {/* <Text small>Add page parameters</Text> */}
-       <Flex sx={{pt: 1}}>
-        {/* <TextInput size="small" 
-        placeholder="Type parameter name"
-          value={param}
-          onChange={e => setParam(e.target.value)}
-        /> */}
-        <Spacer />
-        <PopoverPrompt endIcon={<Add />}  
-        label="Add page parameter"
-         onChange={(p) => {
-          const added ={
-            [p]: ''
-          }
-          setState(s => {
-            const updated = {
-              ...s, 
-              parameters: !s.parameters 
-                ? added
-                : {
-                  ...s.parameters,
-                  ...added
-                }
-            }; 
-            return updated
-          });
-          setParam('')
-         }} >Add</PopoverPrompt>
-       </Flex>
-
-       {!state.parameters && <Alert>
-        Click Add to include path parameters.
-        </Alert>}
-
-         {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex sx={{pt: 1}} key={paramKey}>
-
-          <Text sx={{width: 80, fontWeight: 600}} small>{paramKey}</Text>
-
-          <TextInput 
-            size="small"
-            value={state.parameters[paramKey]}
-            helperText={!(queryState.params && queryState.params[paramKey]) ? '' : `Set by caller to "${queryState.params[paramKey]}"`}
-            onChange={e => {
-              setState(s => ({
-                ...s,
-                parameters: {
-                  ...s.parameters,
-                  [paramKey]: e.target.value
-                }
-              }))
-            }}
-            />
-
-            <TinyButton icon={Delete}
-                onClick={e => {
-                  setState(s => {
-                    const obj = {...s};
-                    delete obj.parameters[paramKey] 
-                    // alert (JSON.stringify(obj.parameters))
-                    return obj;
-                  })
-                }}
-            />
-
-         </Flex>)}
+      <Box sx={{ pt: 2}}>
+        <Divider textAlign="left"><Text small>Import component</Text></Divider> 
+        <QuickSelect value={imported} options={importable.map(f => f.label)} onChange={handleImport} />
+      </Box>
 
 
-</Box>
+      <Box sx={{pt: 2}}>
+        <Divider textAlign="left"><Text small>Path parameters</Text></Divider>
+        {/* <Text small>Add page parameters</Text> */}
+        <Flex sx={{pt: 1}}>
+          {/* <TextInput size="small" 
+          placeholder="Type parameter name"
+            value={param}
+            onChange={e => setParam(e.target.value)}
+          /> */}
+          <Spacer />
+          <PopoverPrompt endIcon={<Add />}  
+          label="Add page parameter"
+          onChange={(p) => {
+            const added ={
+              [p]: ''
+            }
+            setState(s => {
+              const updated = {
+                ...s, 
+                parameters: !s.parameters 
+                  ? added
+                  : {
+                    ...s.parameters,
+                    ...added
+                  }
+              }; 
+              return updated
+            });
+            setParam('')
+          }} >Add</PopoverPrompt>
+        </Flex>
+
+        {!state.parameters && <Alert>
+          Click Add to include path parameters.
+          </Alert>}
+
+          {!!state.parameters && Object.keys(state.parameters).map(paramKey => <Flex sx={{pt: 1}} key={paramKey}>
+
+            <Text sx={{width: 80, fontWeight: 600}} small>{paramKey}</Text>
+
+            <TextInput 
+              size="small"
+              value={state.parameters[paramKey]}
+              helperText={!(queryState.params && queryState.params[paramKey]) ? '' : `Set by caller to "${queryState.params[paramKey]}"`}
+              onChange={e => {
+                setState(s => ({
+                  ...s,
+                  parameters: {
+                    ...s.parameters,
+                    [paramKey]: e.target.value
+                  }
+                }))
+              }}
+              />
+
+              <TinyButton icon={Delete}
+                  onClick={e => {
+                    setState(s => {
+                      const obj = {...s};
+                      delete obj.parameters[paramKey] 
+                      // alert (JSON.stringify(obj.parameters))
+                      return obj;
+                    })
+                  }}
+              />
+
+          </Flex>)}
+
+
+      </Box>
 
 
       <Flex sx={{pt: 4}}>

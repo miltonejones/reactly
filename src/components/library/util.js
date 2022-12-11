@@ -146,9 +146,32 @@ export const getStyles = styles => {
 }
 
 
+export const recurse = (page, selected, tag, open = false) => {
+  const kids = page?.components.filter(f => f.componentID === tag.ID);
+  if (kids?.length) {
+    const out = kids.map(kid => recurse(page, selected, kid, open || selected?.ID === kid.ID )) 
+    const ok = out.some(f => !!f);
+    return ok
+  }
+  return open;
+}
+
 export const getMax = array => array.reduce((count, res) => { 
   return Math.max(res, count);
 }, 0);
+
+export const getComponent = (page, component, matches = []) => { 
+  const res = page?.components.filter(f => f.componentID === component.ID);
+  matches.push(component)
+  if (res.length) {
+   res.map(t => {
+    getComponent(page, t, matches)
+    })
+  } 
+  return matches
+}
+ 
+
 
 
 export const uniqueId = () => Date.now().toString(36) + Math.random().toString(36).substring(2);

@@ -1,4 +1,5 @@
 import * as React from 'react'; 
+import { getComponent } from '../components/library/util';
 import { uniqueId } from '../components/library/util';
 import { getMax } from '../components/library/util';
 import { AppStateContext } from './AppStateContext';
@@ -234,7 +235,7 @@ export const useEditor = (apps) => {
  
       let maxOrder = getMax(page.components.map(f => f.order));
 
-      const box = {...component, ID: uniqueId(), order: maxOrder + 100}
+      const box = {...component, pageID, ID: uniqueId(), order: maxOrder + 100}
       
       if (after) {
         const nextID = page.components.find(f => f.order > order);
@@ -284,6 +285,43 @@ export const useEditor = (apps) => {
   const setPageProps = async (appID, pageID, props) => { 
     editPage(appID, pageID, async (page, app) => {
       Object.assign(page, props) 
+    });
+  }
+
+  const importComponent = async (appID, sourceID, destID, componentID) => { 
+    editComponent(appID, sourceID, componentID, async (component, sourcePage) => {
+      const dressed = getComponent(sourcePage, component);
+      const redressed = dressed.map(c => ({
+        ...c,
+        pageID: destID
+      }))
+
+      const dependentProps = redressed.reduce((out, comp) => {  
+        const props = comp.boundProps;
+        if (!props) return out;
+        props.map(({ boundTo }) => {
+          const state = sourcePage.state?.find(f => f.Key === boundTo);
+          !!state && out.push({...state, ID: uniqueId()});
+        });
+        return out;
+      }, [])
+
+      await app.Alert (<pre>{JSON.stringify(dependentProps,0,2)}</pre>)
+
+
+      editPage(appID, destID, async (page) => {
+        
+        page.components = (page.components||[])
+        .filter(c => !redressed.find(r => r.ID === c.ID))
+        .concat(redressed);
+
+        page.state = (page.state||[])
+        .filter(c => !dependentProps.find(r => r.Key === c.Key))
+        .concat(dependentProps);
+
+        console.log ({ redressed:  page.components })
+
+      }) 
     });
   }
 
@@ -385,6 +423,16 @@ export const useEditor = (apps) => {
         SettingName: key,
         SettingValue: value
       }
+
+      if (key === 'order') {
+        return Object.assign(component, { order: value});
+      }
+
+      // await app.Alert(<pre>
+      //   {JSON.stringify(setting, 0, 2)}
+      // </pre>)
+
+
       component.settings = component.settings.find(f => f.SettingName === key)
         ? component.settings.map((c) => c.SettingName === key ? setting : c)
         : component.settings.concat(setting);
@@ -483,7 +531,7 @@ export const useEditor = (apps) => {
 
   return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
-    dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource,
+    dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource, importComponent,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, setComponentCustomName,
     createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  setResourceEvent, dropResourceEvent };
 }

@@ -6,6 +6,7 @@ import ReactlyComponent, { Faux } from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { AppStateContext } from "../../../hooks/AppStateContext";
 import { getStyles } from '../util';
+import { recurse } from '../util';
  
   
 const ReactlyComponentDialog = ({ children, ...props }) => {
@@ -15,23 +16,9 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
   const { componentEditing, preview, ...rest } = props;
   const { selectedComponent, page } = queryState;
 
-
-  const recurse = (tag, open = false) => {
-    
-    const kids = page?.components.filter(f => f.componentID === tag.ID);
-    if (kids?.length) {
-      const out = kids.map(kid => recurse(kid, open || selectedComponent?.ID === kid.ID )) 
-      const ok = out.some(f => !!f);
-
-      console.log ({ out, ok })
-      return ok
-    }
  
-    console.log ({ returning: open })
-    return open;
-  }
 
-  const childOpen = recurse(props) ;// selectedComponent?.componentID === props.ID && preview;
+  const childOpen = recurse(page, selectedComponent, props) ; 
  
 
 

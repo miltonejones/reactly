@@ -11,6 +11,7 @@ import { AppStateContext } from '../../hooks/AppStateContext';
 import { TextBtn } from '../Control/Control';
 import { JsonView } from '../../colorize';
 import { uniqueId } from '../library/util';
+import { getComponent } from '../../connector/muiConnector';
 
 const sortByOrder = (a,b) => a.order > b.order ? 1 : -1;
 const conseq = (count, out = []) => { for (var e=0;++e<count + 1;out.push(e)); return out; };
@@ -163,11 +164,12 @@ export const useLibrary = () => {
     componentKey, 
     settingType, 
     childName,
-    props ) => {
+    props,
+    initialProps ) => {
 
       const settings = props.split(',').map(f => ({
         name: f,
-        [childName]: [],
+        [childName]: initialProps || [],
         ID: uniqueId()
       }))
 
@@ -680,12 +682,12 @@ Input type
     <Text small>Allow data binding</Text>
   </Flex>
 
-  <Flex nowrap sx={{width: 180}} onClick={e => {
+  {!types?.length && type !== 'boolean' && <Flex nowrap sx={{width: 180}} onClick={e => {
         saveSetting('free', !free)
       }}>
     <Switch checked={free} size="small"/>
     <Text small>Allow free text</Text>
-  </Flex>
+  </Flex>}
   {type === 'pill' && <Flex nowrap sx={{width: 280}} onClick={e => {
         saveSetting('image', !image)
       }}>
@@ -933,12 +935,24 @@ const ComponentRow = ({ Name, allowChildren, Icon,
       const [css, setCss] = React.useState('')
       const [adv, setAdv] = React.useState(false)
   const { Library , config} = React.useContext(AppStateContext);
-  const { setComponentProps } = useLibrary();
+  const { setComponentProps, addCategory } = useLibrary();
 
   const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s].toString()}`);
   const pre = Object.keys(Presets).map(s => `${s}: ${Presets[s].toString()}`);
   const allowableChildren = Object.keys(Library);
-  const selectorKeys = Object.keys(selectors)
+  const selectorKeys = Object.keys(selectors);
+
+  const mui = async(name) => {
+    const settings = await getComponent(name); 
+    alert (JSON.stringify(settings))
+    addCategory(Name, 'Settings', 'settings', 'Imported', settings.settings); 
+    // setTimeout(() => {
+    //   setComponentProps(Name, 'selectors', {
+    //     ...selectors,
+    //     ...settings.selectors
+    //   })
+    // }, 5999)
+  }
 
   return <><Grid container sx={{ml: 2, mt: 2}} spacing={2}>
 
@@ -950,12 +964,24 @@ const ComponentRow = ({ Name, allowChildren, Icon,
   renderOption={renderIconOption}
     onChange={val => !!val && setComponentProps(Name, 'Icon', val)}
     value={typeof Icon === 'string' ? Icon : 'unusable'} options={Object.keys(Icons)} />
+
+
+
+<PopoverPrompt 
+      endIcon={<Icons.Download />}
+      value={Name}
+      onChange={e => !!e && mui(e)}
+      label={<>Download settings as</>}
+      
+    >MUI</PopoverPrompt>
+
+
       </Flex>
     </Grid>
 
  
 
-  <Grid xs={9}>
+  <Grid xs={8}>
       <Flex> 
  {!!Settings?.categories && <QuickSelect disabled={!def?.length} label="Default settings" options={def} />}
  {!!Styles?.categories && <QuickSelect disabled={!pre?.length} label="Default styles" options={pre} />} 
@@ -1015,6 +1041,8 @@ const ComponentRow = ({ Name, allowChildren, Icon,
             }} onDelete={window.alert} 
             label={css || ` ${selectorKeys?.length || '0'} selectors`}
             />  
+
+
 
     </Flex>
 

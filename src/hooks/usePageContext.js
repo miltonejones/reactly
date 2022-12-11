@@ -118,10 +118,10 @@ export const usePageContext = () => {
       // call that function to get the client function
       const action = eval(`(${block})()`); 
       if (block.indexOf('async') > -1) { 
-        await action(selectedPage, opts) ;
+        return await action(selectedPage, opts) ;
       }
       // call the client function
-      action(selectedPage, opts)
+      return action(selectedPage, opts)
     } catch (ex) {
       Alert (ex.message);
     }

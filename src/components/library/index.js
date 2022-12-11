@@ -70,6 +70,7 @@ import ReactlySpeedDialAction from './ReactlySpeedDialAction/ReactlySpeedDialAct
 import ReactlySpeedDial from './ReactlySpeedDial/ReactlySpeedDial';
 import ReactlyVideoPlayer from './ReactlyVideoPlayer/ReactlyVideoPlayer';
 import ReactlyRating from './ReactlyRating/ReactlyRating';
+import ReactlyScrollText from './ReactlyScrollText/ReactlyScrollText';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -143,7 +144,8 @@ const ComponentList = {
   SpeedDialIcon: ReactlySpeedDialIcon,
   SpeedDialAction: ReactlySpeedDialAction,
   SpeedDial: ReactlySpeedDial,
-  Rating: ReactlyRating
+  Rating: ReactlyRating,
+  Marquee: ReactlyScrollText
 }
 
 

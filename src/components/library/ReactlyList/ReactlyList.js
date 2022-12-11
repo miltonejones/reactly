@@ -1,11 +1,17 @@
 import React from 'react';
-import { List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
+import { styled, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { FormatListBulleted } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import { PageStateContext } from '../../../hooks/usePageContext';
+
+const ListItem = styled(ListItemButton)(( {active, theme, selectedColor = 'primary' } ) => ({
+  fontWeight: active ? 500 : 400,
+  color: active ? 'white' :'#222',
+  backgroundColor: !active ? 'white' : (theme.palette[selectedColor]||theme.palette.primary).main
+}))
   
 const ReactlyComponentList = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(PageStateContext);
@@ -33,6 +39,10 @@ const ReactlyComponentList = ({ children, ...props }) => {
     }
   }
 
+  const selectedIndex = !args.selectedIndex 
+    ? -1
+    : args.selectedIndex - 1;
+
  return (
    <>
  {/* {JSON.stringify(parsed)} */}
@@ -40,7 +50,9 @@ const ReactlyComponentList = ({ children, ...props }) => {
  {parsed?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;
   const EndIcon = Icons[item.endIcon] ;
-  return <ListItemButton key={i}>
+  return <ListItem key={i} active={i === selectedIndex} 
+          selectedColor={args.selectedColor}
+          >
           {!!StartIcon &&   <ListItemIcon >
                 <StartIcon />
               </ListItemIcon>}
@@ -58,7 +70,7 @@ const ReactlyComponentList = ({ children, ...props }) => {
   }} >
   <EndIcon />
  </ListItemSecondaryAction>}
-      </ListItemButton>
+      </ListItem>
  }
  )}
  
@@ -67,76 +79,10 @@ const ReactlyComponentList = ({ children, ...props }) => {
  );
 }
 
-
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Heading',
-          label: 'heading' 
-        }, 
-        {
-          title: 'Dense',
-          label: 'dense' ,
-          type: 'boolean'
-        }, 
-        {
-          title: 'Disable Padding',
-          label: 'disablePadding' ,
-          type: 'boolean'
-        }, 
-      ]
-    }, 
-    {
-      name: 'Items', 
-      always: true,
-      settings: [  
-        {
-          title: 'Add items to list',
-          label: 'items' ,
-          type: 'listbuilder'
-        },  
-      ]
-    }, 
-    {
-      name: 'Data',  
-      settings: [  
-        {
-          title: 'Bind to data resource',
-          label: 'bindings' ,
-          type: 'listbinder'
-        },  
-      ]
-    }, 
-  ]
-}
-
-const Events =  [
-  {
-    name: 'onItemClick',
-    title: 'List item is clicked',
-    description: 'User clicks on an item in the list.'
-  }, 
-  {
-    name: 'onSecondaryClick',
-    title: 'List item is secondary icon is clicked',
-    description: 'User clicks on the icon at the right of a list item.'
-  }, 
-]
-
-
-const ReactlyList = {
-  Icon: FormatListBulleted,
+ 
+const ReactlyList = {  
   Component: ReactlyComponentList,
-  Settings,
-  Events,
-  Styles: GenericStyles, 
-  bindableProps: ['text', 'subtext'],
-  Defaults: { }
+  bindableProps: ['text', 'subtext'], 
 }
  
 

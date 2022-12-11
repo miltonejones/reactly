@@ -76,7 +76,6 @@ const ComponentTree = ({
     queryState = {},
     setQueryState,
     createBreadcrumbs, 
-
   } = React.useContext(AppStateContext);
   const { selectedComponent = {} } = queryState;
 
@@ -185,7 +184,7 @@ const ComponentTree = ({
             <link rel="apple-touch-icon" href={appContext.Photo}/>
           </Helmet>
         )}
-
+<Box sx={{position: 'relative'}}>
 
         {components.sort(componentOrder).map((c) => (
             <RenderComponent
@@ -198,6 +197,9 @@ const ComponentTree = ({
             />
           ))}
 
+
+
+</Box>
 
           <Menu 
             anchorEl={anchorEl}
@@ -237,11 +239,22 @@ const RenderComponent = ({
   const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
 
-  // console.log ({ Library, name: component.ComponentType })
+  function findMatches(tag,  matches = []) {  
+    const res = selectedPage?.components.filter(f => f.componentID === tag.ID);
+    matches.push(tag)
+    if (res.length) {
+     res.map(t => {
+        findMatches(t, matches)
+      })
+    } 
+    return matches
+  }
+
+  const desc = findMatches(component)
 
   return (
     <>
-      <Preview
+     {!settings.debug &&  <Preview
         on={on}
         selectedPage={selectedPage}
         component={Component}
@@ -265,10 +278,19 @@ const RenderComponent = ({
             ))}
           </>
         )}
-      </Preview>
-     {!!settings.debug && <pre>
- {JSON.stringify(component,0,2)}
- </pre>
+      </Preview>}
+
+
+     {!!settings.debug && <>
+ 
+       
+      <pre>
+      {JSON.stringify(component,0,2)}
+      </pre>
+
+
+     
+     </>
      }
     </>
   );

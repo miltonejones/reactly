@@ -169,7 +169,16 @@ function App() {
     : JSON.parse(appText);
 
   if (dynamoProgs) {
-    appData = dynamoProgs;
+    appData = dynamoProgs.map(app => ({
+      ...app,
+      pages: app.pages?.map(page => ({
+        ...page,
+        components: page.components?.map(component => ({
+          pageID: page.ID,
+          ...component,
+        }))
+      }))
+    }));
   }
 
   const createBreadcrumbs = React.useCallback((pages, node, items = []) => {

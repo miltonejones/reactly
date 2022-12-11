@@ -190,6 +190,7 @@ const Editor = ({ applications: apps = {} }) => {
     setConnection,
     setPage, 
     duplicatePage,
+    importComponent,
     dropPage,setTheme, dropTheme, setPageEvent,
     setResourceEvent, dropResourceEvent,
     setParameter, dropParameter,setComponentCustomName
@@ -320,6 +321,10 @@ const Editor = ({ applications: apps = {} }) => {
     }))
     ;
   };
+
+  const handleComponentImport = async (sourceID, destID, componentID) => {
+    importComponent(appData.ID, sourceID, destID, componentID);
+  }
 
   const handleScriptChange = async (scriptID, name, code, fn) => {
     const scriptName = name || await Prompt('Enter a name for the script', 'Name new script');
@@ -827,9 +832,11 @@ const Editor = ({ applications: apps = {} }) => {
                 themes={appData.themes}
                 application={appData}
                 onMove={handleMove}
+                Confirm={Confirm}
                 collapsed={collapsed.right}
                 selectedPage={queryState.page}
                 onPropChange={handlePropChange}
+                onComponentImport={handleComponentImport}
                 onThemeChange={handleThemeChange}
                 onStyleChange={handleStyleChange}
                 onSettingsChange={handleSettingsChange}

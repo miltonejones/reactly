@@ -74,9 +74,8 @@ const ReactlyComponent = ({
       settings = settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
     }) 
   }
-
-  const { page } = queryState;
-  const childComponents = page?.components?.filter(f => f.componentID === props.ID);
+ 
+  const childComponents = selectedPage?.components.filter(f => f.componentID === props.ID);
 
   const routeParams = useParams()
   const routes = getParams(queryState,  selectedPage, routeParams)
@@ -88,6 +87,7 @@ const ReactlyComponent = ({
   const style = getStyles(styles.filter(f => !f.selector));
  
     
+
 
   const made = {}
   
@@ -129,7 +129,7 @@ const ReactlyComponent = ({
  return (  
   <>
   {/* <pre>
-    {JSON.stringify(completed,0,2)}
+    {JSON.stringify(desc,0,2)}
   </pre> */}
  <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
     {children || fixed.children}
@@ -137,9 +137,25 @@ const ReactlyComponent = ({
    )
 } 
 
-export const Faux = styled(Paper)(( {open} ) => ({ 
-  display: !open ? 'none' : 'block' ,
-  margin: 16
-}))
+export const Faux = styled(Paper)(( {open, anchor} ) => {
+  const obj = { 
+    display: !open ? 'none' : 'block' ,
+    margin: 16,
+    backgroundColor: 'white'
+  }
+
+  if (anchor) {
+    Object.assign(obj, {
+      width: 'fit-content',
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      minHeight: '90vh',
+      maxHeight: '90vh'
+    })
+  }
+
+  return obj;
+})
   
 export default ReactlyComponent;

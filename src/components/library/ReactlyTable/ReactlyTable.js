@@ -4,6 +4,7 @@ import { Table, TableHead, TableRow, TableCell,
 import { GenericStyles } from '../styles'; 
 import { GridOn } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
+import { Icons } from '../icons';
 import { getSettings } from '../util';
 import { Flex } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
@@ -52,6 +53,9 @@ const ReactlyComponentTable = ({ children, ...props }) => {
     }
   }
 
+  const RowIcon = Icons[args.rowIcon || props.rowIcon]
+  const SelectedRowIcon = Icons[args.selectedRowIcon]
+
  return (
   <>  
    <ReactlyComponent component={Table} {...props}>
@@ -87,7 +91,11 @@ const ReactlyComponentTable = ({ children, ...props }) => {
                 })
               }}
               key={k} component="th" scope="row">
-              <Flex nowrap={args.nowrap}>{truncate(cell, args.truncate)}</Flex>
+              <Flex nowrap={args.nowrap}>
+                {k === 0 && !!RowIcon && !isSelected(row, i) && <RowIcon />}
+                {k === 0 && !!SelectedRowIcon && isSelected(row, i) && <SelectedRowIcon />}
+                
+                {truncate(cell, args.truncate)}</Flex>
             </Cell> )}
             
           </TableRow>

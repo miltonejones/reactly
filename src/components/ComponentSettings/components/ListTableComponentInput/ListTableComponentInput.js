@@ -219,10 +219,10 @@ const ListTableComponentInput = ({
           <TextBtn endIcon={<Save />} variant="contained" onClick={() => handleChange(state) }>save</TextBtn>
         </Flex>
 
-<pre>
+{/* <pre>
 
 [{JSON.stringify(state,0,2)}]
-</pre>
+</pre> */}
 
         {/* form for setting request variables, when needed  */}
         <Collapse sx={{mt: 2}} in={open}>

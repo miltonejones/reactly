@@ -211,9 +211,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
 
 
         {!!error && <Alert severity="error">{error}</Alert>}
-        {/* <QuickMenu options={api} onChange={setAssist} 
+       <QuickMenu options={api} onChange={v => window.prompt(v,v)} 
           value={assist} label={assist || 'methods'}/>
-          {!!assist && <TextBtn onChange={() => {
+          {/*  {!!assist && <TextBtn onChange={() => {
             scriptInsert(assist);
             setAssist('')
           }}>add</TextBtn>} */}

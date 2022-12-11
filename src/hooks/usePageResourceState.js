@@ -19,7 +19,7 @@ export const usePageResourceState = (settings) => {
     const id = bindingObject.resourceID;
     resource = pageResourceState.find(f => f.resourceID === bindingObject.resourceID);
     if (resource) {
-      console.log({ bindingObject })
+      // console.log({ bindingObject })
       dataRows = resource.records.map(record => {
         return columnMap.reduce((items, res) => {
           items[bindingObject.bindings[res]] = record[ res ]

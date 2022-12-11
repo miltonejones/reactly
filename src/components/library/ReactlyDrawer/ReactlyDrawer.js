@@ -4,12 +4,18 @@ import { GenericStyles } from '../styles';
 import { Inventory } from '@mui/icons-material';
 import ReactlyComponent, { Faux }  from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
+import { AppStateContext } from "../../../hooks/AppStateContext";
+import { recurse } from '../util';
   
 const ReactlyComponentDrawer = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
+  const { selectedComponent, page } = queryState;
 
 
+  const childOpen = recurse(page, selectedComponent, props) ; 
+ 
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
@@ -27,7 +33,7 @@ const ReactlyComponentDrawer = ({ children, ...props }) => {
    <ReactlyComponent 
    
    onClose={handleClose}
-   open={open || componentEditing} 
+   open={open || componentEditing || (childOpen && preview )} 
    {...rest}
    component={open || !preview ? Drawer : Faux} 
    >

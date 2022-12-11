@@ -8,6 +8,25 @@ import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
 import { RepeaterContext } from '../../../hooks/AppStateContext';
   
+const DEFAULT_IMAGE = 'https://www.sky-tunes.com/assets/default_album_cover.jpg';
+
+
+const useImageLoader = (src, defaultImage) => {
+  const [image, setImage] = React.useState(defaultImage || DEFAULT_IMAGE);
+
+  React.useEffect(() => {
+    if (src) {
+      const im = new Image()
+      im.onload = () => {
+        setImage(src);
+      }
+      im.src = src;
+    }
+  }, [image, src]);
+
+  return { image }
+}
+
 const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings = [], ...props }) => {
 
 
@@ -43,6 +62,8 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
   const on = index?.toString() === selectedIndex?.toString()
   const fontWeight = on ? 600 : 400
 
+  const { image } = useImageLoader(args.image, args.defaultImage)
+
   const titleBar = <CardHeader
         avatar={avatar}
         action={action}
@@ -69,7 +90,7 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
       }}
         component="img"
         height="194"
-        image={args.image}
+        image={image}
         alt={args.label}
       />}
 
@@ -85,121 +106,11 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
   </>
  );
 }
+ 
 
 
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Label',
-          label: 'label' ,
-          bindable: !0,
-        }, 
-        {
-          title: 'Place label below image',
-          label: 'below_image',
-          type: 'boolean' ,
-          when: p => p.use_image
-        } ,
-        {
-          title: 'Subtext',
-          label: 'subtext' ,
-          bindable: !0,
-        } ,
-        {
-          title: 'Card Description',
-          label: 'description' ,
-          bindable: !0,
-          multiline: !0
-        } ,
-
-      ]
-    },
-    {
-      name: 'Images',
-      settings: [ 
-      
-        {
-          title: 'Card Image',
-          label: 'image'  ,
-          bindable: !0,
-          when: p => p.use_image
-        } ,
-        {
-          title: 'Use Image',
-          label: 'use_image',
-          type: 'boolean' 
-        } ,
-        {
-          title: 'Avatar Image',
-          bindable: !0,
-          label: 'avatar_image'  ,
-          when: p => p.use_avatar
-        } ,
-        {
-          title: 'Avatar Text',
-          label: 'avatar_text' ,
-          when: p => p.use_avatar
-        } ,
-        {
-          title: 'Use Avatar',
-          label: 'use_avatar',
-          type: 'boolean' 
-        } ,
-      ]
-    },
-    {
-      name: 'Icons',
-      settings: [ 
-      
-        {
-          title: 'Action Icon',
-          label: 'action_icon',
-          bindable: !0,
-          ...iconSettings,
-          when: p => p.use_action
-        },
-
-        {
-          title: 'Use Card Action',
-          label: 'use_action',
-          type: 'boolean' 
-        } ,
-      ]
-    },
-  ]
-}
-
-
-const Events =  [
-  {
-    name: 'onCardClick',
-    title: 'Card is clicked',
-    description: 'User clicks on the card.',
-    emits: ['index', 
-    'ID',
-      'selectedIndex']
-  }, 
-  {
-    name: 'onMenuClick',
-    title: 'Menu icon in the card is clicked',
-    description: 'User clicks on the menu icon at the right of a card.'
-  }, 
-]
-
-
-
-const ReactlyInfoCard = {
-  Icon: ContactMail,
-  Component: ReactlyComponentInfoCard,
-  Settings,
-  Events, 
-  Styles: GenericStyles, 
-  Defaults: { }
+const ReactlyInfoCard = { 
+  Component: ReactlyComponentInfoCard, 
 }
  
 
