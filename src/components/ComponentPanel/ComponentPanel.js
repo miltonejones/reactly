@@ -183,10 +183,13 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
   }
 
   return <Stack spacing={1} sx={{p: 1}}>
-    <Text small>Page Name {page.ID}</Text>
+    <Text small>Page Name</Text>
     <TextInput value={PageName} label="Name" 
     onChange={e => setState(s => ({
-      ...s, PageName: e.target.value, PagePath: e.target.value.toLowerCase().replace(/\s/g, '-')
+      ...s, 
+      PageName: e.target.value, 
+      PagePath: e.target.value.toLowerCase().replace(/\s/g, '-'),
+      dirty: 1
     }))}
      helperText={`Path: ${PagePath}`} size="small"/>
 

@@ -36,6 +36,7 @@ export const PopoverPrompt = ({
     onChange, 
     helperText,
     component: Component = TextBtn, 
+    saveIcon = Save,
     children, 
     ...props 
   }) => { 
@@ -56,6 +57,7 @@ export const PopoverPrompt = ({
 
   <PopoverInput label={label} value={value}
   helperText={helperText}
+  saveIcon={saveIcon}
     onChange={text => {
       if (!text) return handleAliasClose();  
       onChange && onChange(text)
@@ -67,7 +69,17 @@ export const PopoverPrompt = ({
 }
 
 
-export const PopoverTextBox = ({ label, value, onChange, helperText, handlePopoverClose, ...props }) => {
+export const PopoverTextBox = ({ 
+      label, 
+      saveIcon: SaveIcon = Save, 
+      value, 
+      onChange, 
+      helperText, 
+      disabled,
+      handlePopoverClose, 
+      ...props 
+    
+    }) => {
   const [typedVal, setTypedVal] = React.useState(value);
   const handleChange = () => {
     !!typedVal && onChange && onChange(typedVal);
@@ -75,7 +87,7 @@ export const PopoverTextBox = ({ label, value, onChange, helperText, handlePopov
   }
   return <Stack sx={{p: 2, minWidth: 300}} {...props} spacing={1}>
     <Typography>{label}</Typography>
-    <TextField label={label} size="small" value={typedVal} onChange={ (e) => { 
+    <TextField disabled={disabled} label={label} size="small" value={typedVal} onChange={ (e) => { 
       setTypedVal(e.target.value) 
     } } autoComplete="off" autoFocus 
     helperText={helperText}
@@ -83,7 +95,7 @@ export const PopoverTextBox = ({ label, value, onChange, helperText, handlePopov
     <Flex> 
     <Spacer />
     <TinyButton icon={Close} onClick={handlePopoverClose} />
-    <TinyButton icon={Save} onClick={handleChange}/>
+    <TinyButton icon={SaveIcon} onClick={handleChange}/>
   </Flex>
 </Stack>
 }
@@ -96,7 +108,8 @@ export const PopoverInput = ( {
     anchorEl, 
     setAnchorEl, 
     children ,
-    helperText
+    helperText,
+    saveIcon = Save
   } ) => { 
   const { PopComponent, menuPos } = React.useContext(AppStateContext);
 
@@ -120,6 +133,7 @@ export const PopoverInput = ( {
       {children || <PopoverTextBox 
         label={label}
         value={value}
+        saveIcon={saveIcon}
         helperText={helperText}
         handlePopoverClose={handlePopoverClose}
         onChange={value => {

@@ -226,3 +226,86 @@ export const getParams = (state, page, route) => {
 
   
 }
+
+
+export const map = async (list, fn, index = 0, out = []) => {
+  if (index < list.length) {
+    const trigger  = list[index];
+    const res = await fn(trigger, index);
+    out.push(res)
+    return await map (list, fn, ++index, out );
+  }
+  return out;
+}
+
+
+  /**
+   * 
+   * @param {*} state current pageClientState
+   * @param {*} param1 { target - the ID of the event target, value - value passed into the event}
+   * @param {*} eventParams - data passed into the event
+   * @param {*} routeParams - currrent page parameters
+   * @returns parsed value
+   */
+  export const getPropertyValueFromString = (
+    state, 
+    { target, value }, 
+    eventParams, 
+    routeParams,
+    shout
+  ) => {
+
+    const regex = /\{([^}]+)\}/g;
+    const literal = regex.exec(value);
+
+    !!shout && shout({ target, state, eventParams, routeParams }, `getPropertyValueFromString: Checking value "${value}"`)
+
+    // literal values formatted as {value}
+    if (literal) { 
+      return literal[1];
+    }
+
+    if (!value && value !== 0) {
+      return ''
+    }
+ 
+    // transform 'dot' notation values
+    if (value?.indexOf('.') > 0) {
+
+      if (value.indexOf('parameters.') === 0) {
+        const [name, key] = value.split('.');
+        return routeParams[key]  
+      }  
+
+      // must have eventParams to transform values 
+      if (!eventParams) return value;
+
+      const values = value.split('.'); 
+
+      // values with 3 parts are data-bound
+      // values "[component].data.[fieldname]"
+      if (values.length === 3) {
+        const [key, prop, datum] = values;
+
+        // "eventParams" are the fields from the event
+        return eventParams[datum];
+      }
+
+      // values with 2 parts are pulled from the 
+      // event fired by the calling component
+      const [key, prop] = values;
+      return eventParams[prop]
+    }
+
+    // numbers and strings passed as literals
+    if (typeof value === 'number' || value?.indexOf('|') < 0) {
+      if (state[value]) {
+        return state[value];
+      }
+      return value;
+    }
+
+    // values with 2 parts are meant to toggle
+    const [trueProp, falseProp] = value.split('|');
+    return state[target] === trueProp ? falseProp : trueProp;
+  } 

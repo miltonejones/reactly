@@ -10,11 +10,19 @@ import {
   Avatar,
   MenuItem,
   Alert,
-  Menu,v
+  Menu,
+  Stack,
+  Collapse,
+  Switch
 } from "@mui/material";
+import {
+ Close,
+ Edit,
+ ExpandMore
+} from "@mui/icons-material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
-import { Flex } from ".."; 
+import { Flex, Text, Spacer, TinyButton } from ".."; 
 import { Json } from "../../colorize"; 
 import { objectReduce } from "../library/util";
 import { getSettings } from '../library/util';
@@ -24,30 +32,70 @@ const Layout = styled(Box)(({ theme }) => ({
   margin: 0,
 }));
 
+
+const PreviewPane = (props) => {
+  const [hover, setHover] = React.useState(false)
+  const { children, setQueryState, on, ...selectedComponent } = props;
+  if (props.preview) {
+    return <Box sx={{ position: 'relative' }}
+    onMouseEnter={() => setHover(true)}
+    onMouseLeave={() => setHover(false)}
+      
+      >
+      <Box 
+
+        onClick={() => { 
+          setQueryState(s => ({...s, selectedComponent: on ? null : selectedComponent}));
+        }}
+        sx={{
+          position: 'absolute',
+          right: 0,
+          top: 0,
+          backgroundColor: '#e0e0e0',
+          opacity: hover ? 0.25 : (on ? 1 : 0),
+          borderRadius: '50%',
+          transition: 'opacity 0.2s linear',
+          p: 1,
+          fontSize: '0.85rem',
+          cursor: 'pointer',
+          zIndex: 100,
+          '&:hover': {
+            opacity: 1,
+          }
+        }}
+      >{on ? <Close /> : <Edit />}</Box>
+      {children}
+    </Box>
+  }
+  return children;
+}
+
+
 const Preview = ({
   component: Component,
-  selectedPage,
-  on,
-  order,
-  children,
+  selectedPage, 
+  children, 
   name,
+  order,
   hilit,
   sx,
   ...props
 }) => {
   return (  
-      <Component
-      {...props}
-      selectedPage={selectedPage} 
-      componentEditing={on}
-      sx={{
-        ...sx,
-        outline: on || hilit ? "dotted 2px gray" : "none",
-        outlineOffset: 4,
-      }}
-    >
-      {children}
-    </Component> 
+    <PreviewPane {...props}>
+        <Component
+        {...props}
+        selectedPage={selectedPage} 
+        componentEditing={props.on}
+        sx={{
+          ...sx,
+          outline: props.on || hilit ? "dotted 2px gray" : "none",
+          outlineOffset: 4,
+        }}
+      >
+        {children}
+      </Component> 
+    </PreviewPane>
 );
 };
 
@@ -61,10 +109,10 @@ const ComponentTree = ({
   appContext,
   themes = [],
   hilit,
-
+  loud,
   pageClientState, 
   setPageClientState,
-  
+  setLoud,
   pageResourceState, 
   getPageResourceState,
   setPageResourceState,
@@ -77,6 +125,7 @@ const ComponentTree = ({
     queryState = {},
     setQueryState,
     createBreadcrumbs, 
+    Shout
   } = React.useContext(AppStateContext);
   const { selectedComponent = {} } = queryState;
 
@@ -84,6 +133,9 @@ const ComponentTree = ({
     ? null
     : objectReduce(selectedPage.state); 
 
+  const [messages, setMessages] = React.useState([]);
+  const [showTrace, setShowTrace] = React.useState(false);
+  const [pageError, setPageError] = React.useState(null);
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
   const [pageLoaded, setPageLoaded] = React.useState(0);
@@ -111,15 +163,19 @@ const ComponentTree = ({
 
   const defaultTheme = useTheme();
   React.useEffect(() => { 
-  if (!!pageClientState && Object.keys(pageClientState).length) return; 
-    !!stateProps && setPageClientState(s => ({...s, ...stateProps})); 
-  }, [stateProps, loaded, pageClientState]);
+  // if (!!pageClientState && Object.keys(pageClientState).length) return; 
+  //   if (pageLoaded) return;
+    // !!stateProps && setPageClientState(s => ({...s, ...stateProps})); 
+  }, [stateProps, pageLoaded, pageClientState]);
 
    const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
 
   // const getPageResourceState = () => pageResourceState
 
   const loadPage = () => { 
+    // alert (JSON.stringify(stateProps))
+    setPageError(null);
+    // setMessages([])
     !!stateProps && setPageClientState(s => stateProps); 
     setQueryState(qs => ({...qs, pageLoaded: true})) 
   }
@@ -148,6 +204,39 @@ const ComponentTree = ({
     </Flex>
   }
   
+  const shout =  async(j, m = 'message') => {
+    setMessages(s => s.concat({
+      json: j,
+      message: m
+    }))
+    if (loud) {
+      if (!window.confirm (m + '\n---\n'+JSON.stringify(j,0,2))) {
+        setLoud(false)
+      }
+      //   await Shout (<Stack>
+      //     {/* <Text>{m}</Text> */}
+      //     <pre>
+      //     {JSON.stringify(j,0,2)}
+      //     </pre>
+      // </Stack>, m)
+    }
+    console.log(m + '\n---\n'+JSON.stringify(j,0,2))
+  } 
+
+  if (pageError) {
+    return <>
+    <Alert severity="error">{pageError}</Alert> 
+      <hr />
+    {messages.map((msg, i) => <Box key={i}>
+      <Text small active>{msg.message}</Text>
+      <hr />
+      <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
+      <hr />
+    </Box>)}
+    </>
+  }
+
+
   return (
     <ThemeProvider theme={pageTheme}>
       <PageStateContext.Provider
@@ -156,19 +245,19 @@ const ComponentTree = ({
           // "persistent" state values
           pageModalState,
           setPageModalState,
-
+          shout,
           pageRefState,
           setPageRefState,
           handleClick,
           pageClientState,
           getPageClientState,
           setPageClientState,
-
+          setPageError,
           getPageResourceState,
           pageResourceState, 
           setPageResourceState,
-
-
+          loud,
+          Alert: Shout,
           selectedPage,
           appContext,
           setQueryState,
@@ -192,6 +281,7 @@ const ComponentTree = ({
               selectedPage={selectedPage}
               selectedComponent={selectedComponent}
               preview={preview}
+              setQueryState={setQueryState}
               key={c.ComponentName}
               component={c}
               hilit={hilit}
@@ -200,6 +290,21 @@ const ComponentTree = ({
           ))}
 
 
+{!preview && <Flex onClick={() => setShowTrace(!showTrace)}>
+   <Switch checked={showTrace} />
+  
+  <Text small>Show stack trace</Text>
+</Flex>}
+
+<Collapse in={showTrace}>
+  <Button onClick={() => setMessages([])}>clear stack trace</Button>
+  {messages.map((msg, i) => <Box key={i}>
+        <Text small active>{msg.message}</Text>
+        <hr />
+        <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
+        <hr />
+      </Box>)} 
+</Collapse>
 
 </Box>
 
@@ -226,6 +331,7 @@ const RenderComponent = ({
   hilit,
   selectedComponent,
   selectedPage,
+  setQueryState,
 }) => {
   const on = selectedComponent?.ID === component.ID;
   const kids = trees.filter((t) => t.componentID === component.ID);
@@ -262,11 +368,13 @@ const RenderComponent = ({
         selectedPage={selectedPage}
         component={Component}
         name={component.ComponentName}
+        setQueryState={setQueryState}
         preview={preview}
         hilit={hilit}
         {...component}
         {...eventMap}
       >
+
         {!!kids.length && (
           <>
             {kids.sort(componentOrder).map((c) => (
@@ -274,6 +382,7 @@ const RenderComponent = ({
                 <RenderComponent
                 hilit={hilit}
                   selectedPage={selectedPage}
+                  setQueryState={setQueryState}
                   selectedComponent={selectedComponent}
                   trees={trees}
                   key={c.ComponentName}
@@ -285,18 +394,15 @@ const RenderComponent = ({
         )}
       </Preview>}
 
-
-     {!!settings.debug && <>
- 
+     {!!settings.debug && <> 
        
-      <pre>
+      [<pre>
       {JSON.stringify(component,0,2)}
-      </pre>
-
-
-     
+      </pre> ]
      </>
      }
+
+
     </>
   );
 };

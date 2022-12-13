@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, IconButton, Link , Box, Divider, Tabs, Collapse, 
-  Alert,
+  Alert, LinearProgress,
   Switch, Grid, Stack, Typography, Chip } from '@mui/material';
 import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, 
     QuickSelect, DeleteConfirmMenu, QuickMenu, TinyButton, useClipboard } from '..' 
@@ -933,9 +933,10 @@ const ComponentRow = ({ Name, allowChildren, Icon,
     allowedChildren = [], Defaults = {}, Presets = {}, 
     modal, hidden}) => {
       
-      const [prop, setProp] = React.useState('')
-      const [css, setCss] = React.useState('')
-      const [adv, setAdv] = React.useState(false)
+  const [prop, setProp] = React.useState('');
+  const [css, setCss] = React.useState('');
+  const [busy, setBusy] = React.useState('')
+  const [adv, setAdv] = React.useState(false)
   const { Library , config} = React.useContext(AppStateContext);
   const { setComponentProps, addCategory } = useLibrary();
 
@@ -945,8 +946,12 @@ const ComponentRow = ({ Name, allowChildren, Icon,
   const selectorKeys = Object.keys(selectors);
 
   const mui = async(name) => {
-    const settings = await getComponent(name); 
-    alert (JSON.stringify(settings))
+    setBusy(true);
+    const settings = await getComponent(name);  
+    setBusy(false);
+    if (!settings.settings?.length) {
+      return alert (`No settings found for component "${name}"`)
+    }
     addCategory(Name, 'Settings', 'settings', 'Imported', settings.settings); 
     // setTimeout(() => {
     //   setComponentProps(Name, 'selectors', {
@@ -969,15 +974,6 @@ const ComponentRow = ({ Name, allowChildren, Icon,
 
 
 
-<PopoverPrompt 
-      endIcon={<Icons.Download />}
-      value={Name}
-      onChange={e => !!e && mui(e)}
-      label={<>Download settings as</>}
-      
-    >MUI</PopoverPrompt>
-
-
       </Flex>
     </Grid>
 
@@ -988,8 +984,22 @@ const ComponentRow = ({ Name, allowChildren, Icon,
  {!!Settings?.categories && <QuickSelect disabled={!def?.length} label="Default settings" options={def} />}
  {!!Styles?.categories && <QuickSelect disabled={!pre?.length} label="Default styles" options={pre} />} 
  {/* [{JSON.stringify(Styles)}] */}
+
+    <PopoverPrompt 
+      endIcon={<Icons.Download />}
+      disabled={busy}
+      saveIcon={Icons.Download}
+      value={Name}
+      onChange={e => !!e && mui(e)}
+      label={<>Download settings as</>}
+      
+    >MUI</PopoverPrompt>
+{busy && <Text small>Downloading settings...</Text>}
       </Flex>
     </Grid>
+ 
+{ busy && <LinearProgress sx={{width: '100%', mt: 2}} />}
+  
 
     <Collapse in={adv}>
     <Flex fullWidth  sx={{ p: 1 }} spacing={2}>

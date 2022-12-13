@@ -211,6 +211,7 @@ const Editor = ({ applications: apps = {} }) => {
     right: false,
   });
 
+  const [loud, setLoud] = React.useState(false);
   const [json, setJSON] = React.useState(false);
   const [showLib, setShowLib] = React.useState(false);
   const [contentFilter, setContentFilter] = React.useState('');
@@ -257,7 +258,8 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const componentTreeProps = {
-
+    loud,
+    setLoud,
     pageClientState, 
     setPageClientState,
     
@@ -403,14 +405,21 @@ const Editor = ({ applications: apps = {} }) => {
     setCollapsed((s) => ({ ...s, left: !showLib, right: !showLib }))
   }
 
+  const getMenuOption = () => {
+    const labels = menuOptions.filter(f => !!f.on);
+    return labels.map(label => label.name);
+  }
+
   const menuOptions = [
     {
       name: collapsed.left ? "Show Navigation Panel" : "Hide Navigation Panel",
       action: () => setCollapsed((s) => ({ ...s, left: !s.left })),
+      on: collapsed.left
     },
     {
       name: collapsed.right ? "Show Settings Panel" : "Hide Settings Panel",
       action: () => setCollapsed((s) => ({ ...s, right: !s.right })),
+      on: collapsed.right
     }, 
     {
       name: "-",
@@ -418,12 +427,20 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: `Hilight all components`,
       action: () => setHilit(!hilit),
+      on: hilit,
+    },
+    {
+      name: `Loud logging`,
+      action: () => setLoud(!loud),
+      on: loud,
     },
     {
       name: "Show client state",
-      action: () => Alert(<Json>
-        {JSON.stringify(pageClientState, 0, 2)}
-      </Json>)
+      action: () => {
+        const { records, ...rest} = pageClientState;
+        Alert(<Json>
+        {JSON.stringify(rest, 0, 2)}
+      </Json>)}
     },
     {
       name: "Show resource state",
@@ -609,6 +626,7 @@ const Editor = ({ applications: apps = {} }) => {
                 <QuickMenu
                   small
                   caret
+                  value={getMenuOption()}
                   options={menuOptions.map((f) => f.name)}
                   title="App Menu"
                   label="Menu"
