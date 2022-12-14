@@ -18,7 +18,8 @@ import {
 import {
  Close,
  Edit,
- ExpandMore
+ ExpandMore,
+ Settings
 } from "@mui/icons-material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
@@ -27,6 +28,7 @@ import { Json } from "../../colorize";
 import { objectReduce } from "../library/util";
 import { getSettings } from '../library/util';
 import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
+import { uniqueId } from "../library/util";
 
 const Layout = styled(Box)(({ theme }) => ({
   margin: 0,
@@ -89,7 +91,7 @@ const Preview = ({
         componentEditing={props.on}
         sx={{
           ...sx,
-          outline: props.on || hilit ? "dotted 2px gray" : "none",
+          outline: props.on || hilit ? "dotted 4px red" : "none",
           outlineOffset: 4,
         }}
       >
@@ -113,6 +115,8 @@ const ComponentTree = ({
   pageClientState, 
   setPageClientState,
   setLoud,
+  setEditorState,
+  editorState, 
   pageResourceState, 
   getPageResourceState,
   setPageResourceState,
@@ -132,19 +136,46 @@ const ComponentTree = ({
   const stateProps = !selectedPage?.state
     ? null
     : objectReduce(selectedPage.state); 
+    
+  // const [box, setOpenTraceLog] = React.useState({});
+  // const [disableLinks, setDisableLinks] = React.useState(false);
+  // const [showSettings, setShowSettings] = React.useState(false);
+  // const [messages, setMessages] = React.useState([]);
+  // const [showTrace, setShowTrace] = React.useState(false);
+  // const [pageError, setPageError] = React.useState(null);
+  // const [message, setMessage] = React.useState('Unknown action');
 
-  const [messages, setMessages] = React.useState([]);
-  const [showTrace, setShowTrace] = React.useState(false);
-  const [pageError, setPageError] = React.useState(null);
+
+  const [ 
+
+    setOpenTraceLog, 
+    setDisableLinks, 
+    setShowSettings, 
+    setShowTrace ,
+    setMessages, 
+
+    setMessage, 
+    setPageError
+  ] = !setEditorState ? [] : ['box', 'disableLinks', 'showSettings', 
+      'showTrace', 'messages', 'message', 
+      'pageError']
+    .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
+
+  const { box, disableLinks, showSettings, messages, message, showTrace, pageError } = editorState ?? {};
+
+
+
+
+
   const [pageModalState, setPageModalState] = React.useState({});
   const [pageRefState, setPageRefState] = React.useState({});
   const [pageLoaded, setPageLoaded] = React.useState(0);
-  const [message, setMessage] = React.useState('Unknown action');
   const [menuCommand, setMenuCommand] = React.useState(null);
-
-
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl) 
+
+
+  const open = Boolean(anchorEl) ;
+
   const handleClick = (event, data) => {
     setMessage(data.label);
     setMenuCommand(data.action)
@@ -174,10 +205,10 @@ const ComponentTree = ({
 
   const loadPage = () => { 
     // alert (JSON.stringify(stateProps))
-    setPageError(null);
+    setPageError && setPageError(null);
     // setMessages([])
     !!stateProps && setPageClientState(s => stateProps); 
-    setQueryState(qs => ({...qs, pageLoaded: true})) 
+    setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: true})) 
   }
 
 
@@ -205,22 +236,20 @@ const ComponentTree = ({
   }
   
   const shout =  async(j, m = 'message') => {
-    setMessages(s => s.concat({
+    setMessages && setMessages((messages || []).concat({
       json: j,
       message: m
     }))
     if (loud) {
-      if (!window.confirm (m + '\n---\n'+JSON.stringify(j,0,2))) {
-        setLoud(false)
-      }
-      //   await Shout (<Stack>
-      //     {/* <Text>{m}</Text> */}
-      //     <pre>
-      //     {JSON.stringify(j,0,2)}
-      //     </pre>
-      // </Stack>, m)
+      
+        await Shout (<Stack>
+          {/* <Text>{m}</Text> */}
+          <pre>
+          {JSON.stringify(j,0,2)}
+          </pre>
+      </Stack>, m)
     }
-    console.log(m + '\n---\n'+JSON.stringify(j,0,2))
+    console.log("%s\n------------------\n%o", m, j)
   } 
 
   if (pageError) {
@@ -228,7 +257,9 @@ const ComponentTree = ({
     <Alert severity="error">{pageError}</Alert> 
       <hr />
     {messages.map((msg, i) => <Box key={i}>
+      <Flex>
       <Text small active>{msg.message}</Text>
+      </Flex>
       <hr />
       <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
       <hr />
@@ -241,7 +272,7 @@ const ComponentTree = ({
     <ThemeProvider theme={pageTheme}>
       <PageStateContext.Provider
         value={{
-
+          disableLinks,
           // "persistent" state values
           pageModalState,
           setPageModalState,
@@ -274,9 +305,10 @@ const ComponentTree = ({
             <link rel="apple-touch-icon" href={appContext.Photo}/>
           </Helmet>
         )}
-<Box sx={{position: 'relative'}}>
 
-        {components.sort(componentOrder).map((c) => (
+        <Box sx={{position: 'relative'}}>
+
+          {components.sort(componentOrder).map((c) => (
             <RenderComponent
               selectedPage={selectedPage}
               selectedComponent={selectedComponent}
@@ -288,37 +320,46 @@ const ComponentTree = ({
               trees={componentTree}
             />
           ))}
+ 
+          <Collapse in={showTrace}>
+          {!!messages?.length && <Button onClick={() =>{
+            setMessages([]);
+            setOpenTraceLog({})
+          }}>clear stack trace</Button>}
+            {!!showTrace && messages.map((msg, i) => {
+              const id = 'key' + i
+              return <Box key={i}>
+                <Flex onClick={() => {
+                  setOpenTraceLog(s => ({
+                    ...s,
+                    [id]: !box[id]
+                  }))
+                }}>
+                  <TinyButton icon={ExpandMore} deg={box[id] ? 180 : 0} /> 
+                  <Text small active>{msg.message}</Text>
+                </Flex>
+              <hr />
+              <Collapse in={box[id]}>
+              <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
+              <hr />
+              </Collapse>
+                </Box>
+            })} 
+          </Collapse>
 
+        </Box>
 
-{!preview && <Flex onClick={() => setShowTrace(!showTrace)}>
-   <Switch checked={showTrace} />
-  
-  <Text small>Show stack trace</Text>
-</Flex>}
+        <Menu 
+          anchorEl={anchorEl}
+          anchor="bottom"
+          open={open}
+          onClose={() => handleClose()} 
+        >
 
-<Collapse in={showTrace}>
-  <Button onClick={() => setMessages([])}>clear stack trace</Button>
-  {messages.map((msg, i) => <Box key={i}>
-        <Text small active>{msg.message}</Text>
-        <hr />
-        <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
-        <hr />
-      </Box>)} 
-</Collapse>
+        <MenuItem onClick={handleCommand}>{message}</MenuItem>
+        <MenuItem>Edit component</MenuItem>
 
-</Box>
-
-          <Menu 
-            anchorEl={anchorEl}
-            anchor="bottom"
-            open={open}
-            onClose={() => handleClose()} 
-          >
-
-          <MenuItem onClick={handleCommand}>{message}</MenuItem>
-          <MenuItem>Edit component</MenuItem>
-
-          </Menu>
+        </Menu>
       </PageStateContext.Provider>
     </ThemeProvider>
   );

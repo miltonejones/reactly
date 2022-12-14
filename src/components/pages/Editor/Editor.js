@@ -193,7 +193,10 @@ const Editor = ({ applications: apps = {} }) => {
     importComponent,
     dropPage,setTheme, dropTheme, setPageEvent,
     setResourceEvent, dropResourceEvent,
-    setParameter, dropParameter,setComponentCustomName
+    setPageParent,
+    setParameter, 
+    dropParameter,
+    setComponentCustomName
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -201,24 +204,44 @@ const Editor = ({ applications: apps = {} }) => {
     connectOpen: false,
   });
 
-  const { handleResourceDelete, handleConnectionDelete } =
-    useConnectionEdit(apps);
-
+  const { handleResourceDelete, handleConnectionDelete } = useConnectionEdit(apps);
   const { copy, copied } = useClipboard();
-
-  const [collapsed, setCollapsed] = React.useState({
+  const [ collapsed, setCollapsed ] = React.useState({
     left: false,
     right: false,
   });
+  const [ popoverContent,  setPopoverContent ] = React.useState(null);
+  const [ anchorEl, setAnchorEl ] = React.useState(null);
 
-  const [loud, setLoud] = React.useState(false);
-  const [json, setJSON] = React.useState(false);
-  const [showLib, setShowLib] = React.useState(false);
-  const [contentFilter, setContentFilter] = React.useState('');
+  
+  const [ editorState, setEditorState ] = React.useState({
+    json: false,
+    loud: false,
+    showLib: false,
+    loaded: false,
+    hilit: false,
+    contentFilter: '',
+    box: {},  
+    disableLinks: false, 
+    showSettings: false, 
+    messages: [], 
+    message: 'Unknown action', 
+    showTrace: false, 
+    pageError: null,  
+  });
 
+  const [ 
+    setLoud, 
+    setJSON, 
+    setShowLib, 
+    setLoaded, 
+    setContentFilter ,
+    setHilit
+  ] = ['loud', 'json', 'showLib', 'loaded', 'contentFilter', 'hilit']
+    .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
+
+  const { json, loud, hilit, showLib, loaded, contentFilter } = editorState;
   const { stateOpen, scriptOpen, connectOpen } = drawerState;
-  const [loaded, setLoaded] = React.useState(false);
-
 
   const {
     queryState = {},
@@ -229,23 +252,17 @@ const Editor = ({ applications: apps = {} }) => {
     Alert,
     Confirm,
     Prompt,
-
     pageClientState, 
     setPageClientState,
-    
     pageResourceState, 
     getPageResourceState,
     setPageResourceState,
- 
     Library,
     commitProg,
     dirty,
     setDirty,
   } = React.useContext(AppStateContext);
 
-  const [hilit,  setHilit] = React.useState(false);
-  const [popoverContent,  setPopoverContent] = React.useState(null);
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
   const handlePopoverClick = (content) => (event) => {
@@ -257,17 +274,6 @@ const Editor = ({ applications: apps = {} }) => {
     setAnchorEl(null); 
   };
 
-  const componentTreeProps = {
-    loud,
-    setLoud,
-    pageClientState, 
-    setPageClientState,
-    
-    pageResourceState, 
-    getPageResourceState,
-    setPageResourceState,
- 
-  }
 
   if (!applications.find) {
     return <>error</>;
@@ -325,12 +331,16 @@ const Editor = ({ applications: apps = {} }) => {
     ;
   };
 
+  const handlePageMove = async (pageID) => {
+    setPageParent(appData.ID, queryState.page?.ID, pageID)
+  }
+
   const handleComponentImport = async (sourceID, destID, componentID) => {
     importComponent(appData.ID, sourceID, destID, componentID);
   }
 
-  const handleScriptChange = async (scriptID, name, code, fn) => {
-    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script');
+  const handleScriptChange = async (scriptID, name, code, fn, existingName) => {
+    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
     if (!scriptName) return;
     setPageScript(appData.ID, queryState.page?.ID, scriptID, scriptName, code, fn);
   };
@@ -527,6 +537,18 @@ const Editor = ({ applications: apps = {} }) => {
     center_state = '-left'
   }
 
+  const componentTreeProps = {
+    loud,
+    setLoud,
+    pageClientState, 
+    setPageClientState,
+    setEditorState,
+    editorState,
+    pageResourceState, 
+    getPageResourceState,
+    setPageResourceState, 
+  };
+
   const pageTree =  <PageTree
     tree={appData.pages}
     selected={queryState.page?.PageName}
@@ -553,7 +575,9 @@ const Editor = ({ applications: apps = {} }) => {
   />
 
   return (
-    <EditorStateContext.Provider value={{ appData }}>
+    <EditorStateContext.Provider value={{ 
+      appData 
+      }}>
 
       <Flex spacing={0} baseline fullWidth>
         <Stack
@@ -763,7 +787,7 @@ const Editor = ({ applications: apps = {} }) => {
 
               {!collapsed.left && (
                 <>
-                  <Box sx={{ border: "solid 1px gray", height: 240, p: 1 }}>
+                  <Box sx={{ border: "solid 1px gray", height: 240, overflow: 'auto', p: 1 }}>
                    {pageTree}
                   </Box>
                 </>
@@ -845,7 +869,11 @@ const Editor = ({ applications: apps = {} }) => {
               <ComponentPanel
                 onCollapse={() =>
                   setCollapsed((s) => ({ ...s, right: !collapsed.right }))
-                }
+                } 
+
+                setEditorState={setEditorState} 
+                editorState={editorState}
+                onPageMove={handlePageMove}
                 connections={appData.connections}
                 resources={appData.resources}
                 themes={appData.themes}

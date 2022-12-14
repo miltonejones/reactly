@@ -53,7 +53,8 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       act = <>Reset  "{obj.name} - {obj.method}"</>
       break;
     case 'openLink':
-      const href = pages.find(e => e.ID === action.target).PageName
+      const targetPage = pages.find(e => e.ID === action.target);
+      const href = targetPage?.PageName || <>Deleted page</>
       act = <>Open a link to "{href}"</>
       break;
     case 'methodCall':

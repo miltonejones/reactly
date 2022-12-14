@@ -7,6 +7,7 @@ body {
   --work-right-width: calc(100vw - 420px);
   --work-left-width: calc(100vw - 480px);
   --work-both-width: calc(100vw - 140px);
+  --header-small-height: 160px;
   --header-large-height: 320px;
   --scroll-offset: 0;
  

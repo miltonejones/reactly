@@ -479,6 +479,12 @@ export const useEditor = (apps) => {
     });
   }
 
+  const setPageParent = async (appID, childID, pageID) => {
+    editPage(appID, childID, async (page) => { 
+      Object.assign(page, { pageID }) ;
+    });
+  }
+
 
 
 
@@ -533,5 +539,6 @@ export const useEditor = (apps) => {
     setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource, importComponent,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, setComponentCustomName,
-    createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  setResourceEvent, dropResourceEvent };
+    createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  
+    setResourceEvent, dropResourceEvent, setPageParent };
 }

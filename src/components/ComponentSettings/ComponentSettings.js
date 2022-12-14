@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, Slider,
     Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material'; 
 import { AppStateContext } from '../../hooks/AppStateContext'; 
-import { QuickSelect, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Delete, Add, MoreVert } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
@@ -523,12 +523,12 @@ const OrderSlider = ({ ticks, value, onChange }) => {
 
   const marks = ticks.sort((a,b) => a.value > b.value ? 1 : -1)
 
-  function valuetext(value) {
+  function valuetext(value, name) {
     const Ico = Icons[value]
-    return <Ico sx={{width: 16, height: 16}}/>;
+    return <Tooltag component={Ico} sx={{width: 16, height: 16}} title={name} />;
   }
 
-  return   <Stack sx={{p: 0}}> 
+  return   <Stack sx={{p: 1}}> 
     <Text small>Order: {value}</Text>
     <Slider  
         step={1}
@@ -538,15 +538,15 @@ const OrderSlider = ({ ticks, value, onChange }) => {
         value={value}
         marks={marks.map(f => ({
           ...f,
-          label: valuetext(f.label)
+          label: valuetext(f.label, f.name)
         }))}
         valueLabelDisplay="auto"
       />
   </Stack>
 }
 
-const ComponentSettings = ({ selectedPage, component, onChange, resources }) => {
-  const [tick, setTick] = React.useState(false)
+const ComponentSettings = ({ selectedPage, component, onChange, showSettings, resources }) => {
+  const [tick, setTick] = React.useState(1)
   const { Library } = React.useContext(AppStateContext);
   if (!component?.settings) {
     return <Alert sx={{m: 1}}>This component has no configurable settings!!.</Alert>
@@ -560,25 +560,26 @@ const ComponentSettings = ({ selectedPage, component, onChange, resources }) => 
 
   const ticks = sibs?.map(d => ({ 
     label: Library[d.ComponentType].Icon,
-    value: d.order 
+    value: d.order ,
+    name: d.ComponentName
   }));
 
   const debug =  <>
-  <Flex sx={{p: 1}} 
+  <Flex sx={{ borderBottom: 1, borderColor: 'divider', pl: 1}}
     onClick={() => onChange(component.ID, 'debug', !args.debug )}
     >
-   <Text active={args.debug} small>Debug</Text>
-   <Spacer />
-   <Switch checked={args.debug} />
+   <Switch checked={args.debug} /> 
+   <Text active={args.debug} small>Debug mode</Text>
   </Flex>  
   </>
 
-  const orderer = !ticks ? null : <Box sx={{p: 1}}>
-  <Flex onClick={() => setTick(!tick)}>
-   <Text small active> Component order</Text>
+  const orderer = !ticks ? null : <Box>
+  <Flex onClick={() => setTick(!tick)} sx={{ borderBottom: 1, borderColor: 'divider', p: 1}}>
+   <Text small active> Change component order</Text>
    <Spacer />
    <TinyButton icon={ExpandMore} deg={tick ? 180 : 0} />
   </Flex>
+
   <Collapse in={tick}>
   
  <OrderSlider 
@@ -599,7 +600,11 @@ const ComponentSettings = ({ selectedPage, component, onChange, resources }) => 
     return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{orderer}{debug}</>
   }
   return <> 
+{showSettings && <>
 
+  {orderer}
+  {debug}
+</>}
 
   {categories
     .sort(sortByOrder)
@@ -612,8 +617,6 @@ const ComponentSettings = ({ selectedPage, component, onChange, resources }) => 
       args={args}
       key={category.name}
     />)} 
-  {debug}
-  {orderer}
  
  </>
 }

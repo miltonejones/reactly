@@ -11,7 +11,7 @@ import { RepeaterContext } from '../../../hooks/AppStateContext';
 const DEFAULT_IMAGE = 'https://www.sky-tunes.com/assets/default_album_cover.jpg';
 
 
-const useImageLoader = (src, defaultImage) => {
+export const useImageLoader = (src, defaultImage) => {
   const [image, setImage] = React.useState(defaultImage || DEFAULT_IMAGE);
 
   React.useEffect(() => {

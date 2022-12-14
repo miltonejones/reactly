@@ -9,6 +9,7 @@ export const useOpenLink = () => {
     pageClientState ,
     appContext, 
     setQueryState,
+    disableLinks,
     preview,
     shout,
     Alert
@@ -54,9 +55,33 @@ export const useOpenLink = () => {
 
           // if there is a 'dot', read the value from passed in options
           if (typeof triggerKey === 'string' && triggerKey.indexOf('.') > 0) {
+
+
+
+            const values = triggerKey.split('.'); 
+
+            // values with 3 parts are data-bound
+            // values "[component].data.[fieldname]"
+            if (values.length === 3) {
+              const [t, prop, datum] = values;
+
+              triggerProp = options[datum]; 
+              shout( { triggerProp, options  }, 'createPageParams: data bound values');
+              if (!!triggerProp ) {
+                Object.assign(params, {[key]: triggerProp  });
+              }
+            }
+
+
             const [t, optionKey] = triggerKey.split('.') ;
             triggerProp = options[optionKey]; 
             shout( { triggerProp, options  }, 'createPageParams: parsing options');
+            // pass the resulting value into page params
+            if (!!triggerProp ) {
+              Object.assign(params, {[key]: triggerProp  });
+            }
+          } else if (triggerProp) { 
+            shout( { triggerProp, options  }, 'createPageParams: passing state value');
             // pass the resulting value into page params
             if (!!triggerProp?.length ) {
               Object.assign(params, {[key]: triggerProp  });
@@ -106,7 +131,10 @@ export const useOpenLink = () => {
       return window.location.replace(path)
     } 
 
-       // return shout(params, 'stopping here');
+    if (disableLinks) {
+       return shout({  params }, 'stopping here');
+    }
+
 
     // otherwise pass parameters into page state
     setQueryState((s) => ({
@@ -115,7 +143,7 @@ export const useOpenLink = () => {
       pageLoaded: false,
       params ,
     }))
-  }, [appContext,  preview, setQueryState])
+  }, [appContext, disableLinks, preview, setQueryState])
 
 
   const openPath = React.useCallback(
@@ -136,7 +164,7 @@ export const useOpenLink = () => {
       return await openLink(targetPage.ID, parameters, options);
     }
     await shout (`Invalid path ${path}`, 'Could not find path')
-  }, [appContext, openLink])
+  }, [appContext, disableLinks, openLink])
 
   return { 
     openLink,

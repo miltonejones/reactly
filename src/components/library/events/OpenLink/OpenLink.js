@@ -13,10 +13,7 @@ const OpenLink = ({ event , page, component, handleSave, selectedEvent, resource
   const { appData  } = React.useContext(EditorStateContext);
   const [state, setState ] = React.useState({ ...event.action, type: 'openLink' });
 
-  const { pages } = appData;
-  const target = !event.action 
-    ? null
-    : pages.find(e => e.ID === event.action.target).PageName
+  const { pages } = appData; 
 
 
     const getOptionLabel =  (option ) => {

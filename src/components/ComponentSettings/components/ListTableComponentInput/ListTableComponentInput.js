@@ -51,21 +51,41 @@ const ListTableComponentInput = ({
  
 
     const bindings = state.bindings || {}; 
+    const defaultTypes = Object.keys(bindings).reduce((out, key) => {
+      out[key] = {
+        type: 'Text',
+        settings: {}
+      }
+      return out;
+    }, {})
+
     const columnNames = (state.columnMap || Object.keys(bindings));
-    const columnMap = columnNames.indexOf(name) > -1 
-    ? columnNames.filter(e => e !== name)
-    : columnNames.concat(name)
-    
+    const typeMap = (state.typeMap || defaultTypes);
+
+    if (typeMap[name]) {
+      delete typeMap[name]
+    } else {
+      typeMap[name] = {
+        type: 'Text',
+        settings: {}
+      }
+    }
+
     if (bindings?.[name]) {
       delete bindings[name]
     } else {
       Object.assign(bindings, {[name]: name})
     }
     
+    const columnMap = columnNames.indexOf(name) > -1 
+        ? columnNames.filter(e => e !== name)
+        : columnNames.concat(name);
+    
      setState(s => ({
       ...s,
       bindings ,
-      columnMap
+      columnMap,
+      typeMap
     }))
        
   }
@@ -100,6 +120,17 @@ const ListTableComponentInput = ({
   const getBindableByName = name => bindableProps.find(f => f.title === name);
 
 
+  const handleType = (type) => {
+    const typeMap = {
+      ...state.typeMap,
+      ...type
+    }
+
+    setState(s => ({
+      ...s,
+      typeMap
+    }));
+  }
 
 
   const handleMove = (key, offset) => {
@@ -170,23 +201,43 @@ const ListTableComponentInput = ({
 
         <Grid container sx={{mt: 0.5}} spacing={1}>
 
-          <Grid item xs={6}>
-            <Text small active>Name</Text>
-          </Grid>
-          
-          <Grid item xs={6}>
-            <Text small active>Label</Text> 
-          </Grid>
+          {!componentBound && <>
+            
+            <Grid item xs={6}>
+              <Text small active>Name</Text>
+            </Grid>
+            
+            <Grid item xs={6}>
+              <Text small active>Label</Text> 
+            </Grid>
+          </>}
 
-          {state.columnMap?.map((col, index) => {
+          {!componentBound && state.columnMap?.map((col, index) => {
+            const typeMap = state.typeMap
+            const type = !typeMap ? {} : typeMap[col]
             const args = {
               active: !0, addProp, componentBound, col,
-              bindableProps, getBindableByName, state, 
-              setState, onMove: handleMove, index } 
+              bindableProps, getBindableByName, state, handleType,
+              setState, onMove: handleMove, index , type
+              } 
 
             return <ListTableRow key={col} {...args} />
 
           })} 
+
+
+          
+          {!!componentBound && resource?.columns
+            .filter(col => colnames.indexOf(col) > -1)
+            .map((col, index) => { 
+            const args = {
+              active: !0, addProp , componentBound, col,
+              bindableProps, getBindableByName, state, 
+              setState } 
+
+            return <ListTableRow {...args} />
+          })}
+
 
         </Grid>
 
@@ -200,7 +251,7 @@ const ListTableComponentInput = ({
             .filter(col => colnames.indexOf(col) < 0)
             .map((col, index) => { 
             const args = {
-              active: !1, addProp, componentBound, col,
+              active: !1, addProp , componentBound, col,
               bindableProps, getBindableByName, state, 
               setState } 
 
@@ -219,10 +270,10 @@ const ListTableComponentInput = ({
           <TextBtn endIcon={<Save />} variant="contained" onClick={() => handleChange(state) }>save</TextBtn>
         </Flex>
 
-{/* <pre>
+<pre>
 
 [{JSON.stringify(state,0,2)}]
-</pre> */}
+</pre>
 
         {/* form for setting request variables, when needed  */}
         <Collapse sx={{mt: 2}} in={open}>

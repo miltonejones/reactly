@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, 
-  TableBody, Box, styled } from '@mui/material'; 
+  TableBody, Box, styled, Link, Typography, IconButton } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { GridOn } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -9,6 +9,7 @@ import { getSettings } from '../util';
 import { Flex } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { usePageResourceState } from '../../../hooks/usePageResourceState';
+import { useImageLoader } from '../ReactlyInfoCard/ReactlyInfoCard';
 
 const truncate = (value, length) => {
   try {
@@ -34,7 +35,8 @@ const ReactlyComponentTable = ({ children, ...props }) => {
     bindingObject,
     resource,
     dataRows,
-    columnMap
+    columnMap,
+    typeMap
   } = usePageResourceState(settings); 
 
   if (!dataRows.length && !componentEditing) {
@@ -94,8 +96,17 @@ const ReactlyComponentTable = ({ children, ...props }) => {
               <Flex nowrap={args.nowrap}>
                 {k === 0 && !!RowIcon && !isSelected(row, i) && <RowIcon />}
                 {k === 0 && !!SelectedRowIcon && isSelected(row, i) && <SelectedRowIcon />}
+
+                <CellContent value={cell} columnMap={columnMap} typeMap={typeMap}
+                   selected={isSelected(row, i)}
+                  displayKey={columnMap?.[k]}>
+                   {truncate(cell, args.truncate)}
+                </CellContent>
+                {/* {!!typeMap && !!columnMap && !!typeMap[ columnMap[k] ] && 
+                  <>{typeMap[ columnMap[k] ].type}</>} */}
+               
                 
-                {truncate(cell, args.truncate)}</Flex>
+                </Flex>
             </Cell> )}
             
           </TableRow>
@@ -109,11 +120,50 @@ const ReactlyComponentTable = ({ children, ...props }) => {
  );
 }
 
-const Cell = styled(TableCell)(({ selected, theme, color = 'primary' }) =>( {
+const CellContent = ({ columnMap, typeMap, value, displayKey,selected,  children, ...props}) => {
+
+
+  const displayType = typeMap?.[displayKey];
+
+  const { image } = useImageLoader(value, displayType?.settings?.default_image)
+
+
+  if (!(!!typeMap && !!columnMap && !!typeMap[ displayKey ])) {
+    return <>{children}</>
+  } 
+
+  if (displayType?.type === 'Text') {
+    return <Typography variant={displayType.settings.Variant || 'body2'}>{children}</Typography> 
+  }
+ 
+  if (displayType?.type === 'Link') {
+    return <Linked selected={selected} sx={{ cursor: 'pointer'}} {...displayType.settings}>
+      <Typography variant={displayType.settings.Variant || 'body2'}>{children}</Typography>
+    </Linked>
+  }
+ 
+
+  if (displayType?.type === 'Image') {
+    return <img src={image} style={{
+      width: displayType.settings.Width,
+      height: displayType.settings.Height,
+      borderRadius: displayType.settings.Radius
+    }}/>
+  }
+
+  return <>{children}</>
+}
+
+const colorize = ({ selected, theme, color = 'primary' }) =>( {
   fontWeight: selected ? 500 : 400,
   color: selected ? 'white' :'#222',
   backgroundColor: !selected ? 'white' : (theme.palette[color]||theme.palette.primary).main
-}))
+});
+
+
+
+const Linked = styled(Link)(colorize)
+const Cell = styled(TableCell)(colorize)
 
 
 const Settings = {

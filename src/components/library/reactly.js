@@ -129,10 +129,10 @@ const ReactlyComponent = ({
  return (  
   <>
   {/* <pre>
-    {JSON.stringify(desc,0,2)}
+    {JSON.stringify(fixed,0,2)}
   </pre> */}
  <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
-    {children || fixed.children}
+    {fixed.children || children}
  </Component></>
    )
 } 
@@ -146,12 +146,15 @@ export const Faux = styled(Paper)(( {open, anchor} ) => {
 
   if (anchor) {
     Object.assign(obj, {
-      width: 'fit-content',
-      position: 'absolute',
+      width: 440,
+      maxWidth: 440,
+      position: 'fixed',
       top: 0,
-      left: 0,
-      minHeight: '90vh',
-      maxHeight: '90vh'
+      left: 360,
+      height: '100%',
+      minHeight: '100vh',
+      // maxHeight: '90vh',
+      boxShadow: `0px 8px 10px -5px rgb(0 0 0 / 20%), 0px 16px 24px 2px rgb(0 0 0 / 14%), 0px 6px 30px 5px rgb(0 0 0 / 12%)`
     })
   }
 

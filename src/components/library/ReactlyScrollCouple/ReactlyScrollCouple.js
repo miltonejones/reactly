@@ -63,7 +63,7 @@ const ChildComponent = ({ component , page, ...props  }) => {
 }
 
  
-const ReactlyComponentScrollCouple = ({ small = 120, selectedPage, large = 400, children, ...props }) => {
+const ReactlyComponentScrollCouple = ({ small = 120, selectedPage, large = 320, children, ...props }) => {
 
   const args = getSettings(props.settings);  
   const offspring = selectedPage?.components?.filter(f => f.componentID === props.ID);

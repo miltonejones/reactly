@@ -28,8 +28,8 @@ const Content = styled(Box)(({ theme }) => ({
 }))
 
 const filterProp = filter => f =>  !filter || 
-f.ComponentName.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
-f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
+  f.ComponentName.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
+  f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
 
 const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, onCustomName, quickComponent }) => {
   const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);

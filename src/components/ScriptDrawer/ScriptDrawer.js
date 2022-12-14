@@ -73,7 +73,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     page.scripts?.map(js => {
       items.push({
         ...js,
-        action: () => handleChange (null, null, js.code, res => setSelected(res))
+        action: () => handleChange (null, null, js.code, res => setSelected(res), js.name)
       })
     })
     return items;

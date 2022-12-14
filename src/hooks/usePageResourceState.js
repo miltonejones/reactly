@@ -9,13 +9,14 @@ export const usePageResourceState = (settings) => {
   const { appContext, setPageResourceState, pageResourceState } = React.useContext(PageStateContext);
 
 
-  let bindingObject = {}, dataRows = [], resource, columnMap;
+  let bindingObject = {}, dataRows = [], resource, columnMap, typeMap;
 
 
   const componentProps = getSettings(settings);
   if (componentProps.bindings)  {
     bindingObject = JSON.parse(componentProps.bindings); 
     columnMap = bindingObject.columnMap || Object.keys(bindingObject.bindings) 
+    typeMap = bindingObject.typeMap || {}
     const id = bindingObject.resourceID;
     resource = pageResourceState.find(f => f.resourceID === bindingObject.resourceID);
     if (resource) {
@@ -89,6 +90,7 @@ export const usePageResourceState = (settings) => {
     resource,
     dataRows,
     columnMap,
+    typeMap,
     handleComponentRequest,
     executeComponentRequest,
     pageResourceState

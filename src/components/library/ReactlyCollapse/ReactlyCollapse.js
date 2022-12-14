@@ -4,12 +4,18 @@ import { GenericStyles } from '../styles';
 import { UnfoldLess } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
+import { AppStateContext } from "../../../hooks/AppStateContext";
+import { recurse } from '../util';
   
 const ReactlyComponentCollapse = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { queryState = {} } = React.useContext(AppStateContext); 
+  const { selectedComponent, page } = queryState;
   
   const { componentEditing, preview, ...rest } = props;
 
+  const childOpen = recurse(page, selectedComponent, props) ; 
+ 
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
@@ -27,7 +33,7 @@ const ReactlyComponentCollapse = ({ children, ...props }) => {
   {/* {props.ID}[{open?.toString()}]
   {JSON.stringify(Object.keys(pageModalState))} */}
   <ReactlyComponent component={Collapse} {...props}
-   in={open || componentEditing} 
+   in={open || componentEditing || (childOpen && preview )} 
   >
       {children}
    </ReactlyComponent>

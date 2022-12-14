@@ -1,6 +1,6 @@
 import React from 'react';
- import { styled, Box,  Stack, Tabs, Tab, Chip,
-  Typography, Divider, Alert } from '@mui/material'; 
+ import { styled, Box,  Stack, Tabs, Tab, Chip, Collapse,
+  Typography, Divider, Alert, Switch } from '@mui/material'; 
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect , PopoverPrompt} from '..';
@@ -29,6 +29,8 @@ const ComponentPanel = ({
     onPropChange,
     onThemeChange,
     onEventChange,
+    setEditorState,
+    editorState, 
     onMove,
     onCollapse,
     onEventDelete,
@@ -38,11 +40,29 @@ const ComponentPanel = ({
     connections,
     resources,
     application,
-    Confirm
+    Confirm,
+    onPageMove
  }) => {
  
+  const [ 
+    
+    setOpenTraceLog, 
+    setDisableLinks, 
+    setShowSettings, 
+    setShowTrace ,
+    setMessages, 
+ 
+  ] = ['box', 'disableLinks', 'showSettings',  'showTrace', 'messages']
+    .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
+
+  const { box, disableLinks, showSettings, message, showTrace } = editorState;
+
+
+  const { setQueryState  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
+
+
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
   const Panel = panels[value];
@@ -61,7 +81,7 @@ const ComponentPanel = ({
     if (!name) return;
     const [type, title] = name.split(':')
     const target = componentList.find(f => f.ComponentName === title.trim());
-    // return alert (target.ID)
+ 
     if (target) {
       return onMove && onMove(component.ID, target.ID) 
     } 
@@ -86,28 +106,37 @@ const ComponentPanel = ({
     connections:connections,
     resources:resources,
     themes:themes,
+    showSettings,
     application
   }
+  // setQueryState(s => ({...s, selectedComponent:on ? null :  component}))
+
+  const onDelete = () => {
+    if (!component) {
+      return setQueryState(s => ({ ...s, page: null }))
+    }
+    setQueryState(s => ({ ...s, selectedComponent: null }))
+  }
+
+  const sx = { borderBottom: 1, borderColor: 'divider'}
   
   return <Stack>
      <Flex sx={{ m: 1}}>
       {!collapsed && <>
-        <Chip variant="outlined" icon={<Article />} label={!!component 
-        ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} /> 
+        <Chip variant="outlined" size="small" icon={<Article />} label={!!component 
+        ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} 
+        deleteIcon={ <Close />} onDelete={onDelete}/> 
 
-
-        {!!others && !!component && <Box sx={{ml: 2}}>
-          <QuickMenu small options={others.map(f => `${f.ComponentType}: ${f.ComponentName}`).concat(
-            !component.componentID 
-              ? []
-              : ['-', 'Move to root level']
-          )} 
-          value={component?.ComponentName}
-          onChange={handleMove}
-           caret label="Move" icon={Input}/>
-        </Box>}
       <Spacer />
+       {!!component &&  <RotateButton deg={showSettings ? 90 : 270}  onClick={
+          () => setShowSettings(!showSettings)
+        }>
+             <Settings />
+        </RotateButton>}
+
+
       </>}
+       
         <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
              {collapsed ? <ExpandMore /> : <Close />}
         </RotateButton>
@@ -125,10 +154,44 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
+    <Collapse in={!!component && showSettings} sx={{mb: 0, pb: 0}}>
+        <Box sx={{p: 1}}>
+          <Flex sx={{...sx, p: 1}}>
+          <Text small active>Editor Settings</Text>
+          </Flex>
+
+
+        {!!others && !!component && <Flex sx={{...sx, p: 1}}>
+          <Text small>Move component</Text>
+          <Spacer />
+          <QuickMenu small options={others.map(f => `${f.ComponentType}: ${f.ComponentName}`).concat(
+            !component.componentID 
+              ? []
+              : ['-', 'Move to root level']
+          )} 
+          value={component?.ComponentName}
+          onChange={handleMove}
+           caret label="Move" icon={Input}/>
+        </Flex>}
+        
+        <Flex onClick={() => setDisableLinks(!disableLinks)} sx={sx}>
+          <Switch checked={disableLinks} /> 
+          <Text small>Disable links</Text> 
+        </Flex> 
+
+        <Flex onClick={() => setShowTrace(!showTrace)} sx={sx}>
+          <Switch checked={showTrace} /> 
+          <Text small>Show stack trace</Text>
+        </Flex>
+        
+        </Box>
+    </Collapse>
+
     {(!!component || value === 3) && <Panel  {...panelProps} />}
     {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
       onComponentImport={onComponentImport}
       Confirm={Confirm}
+      onPageMove={onPageMove}
       application={application} themes={themes} 
       page={selectedPage} onChange={onChange} />}
 
@@ -143,12 +206,14 @@ const ComponentPanel = ({
 }
 
 
-function PageSettings({ page, application, themes = [], onChange, Confirm, onComponentImport }) {
+function PageSettings({ page, application, themes = [], onChange, Confirm, onPageMove, onComponentImport }) {
   const { queryState } = React.useContext(AppStateContext);
   const [imported, setImported] = React.useState(''); 
   const [param, setParam] = React.useState('');  
   const [state, setState] = React.useState(page); 
-  const { PageName, PagePath} = state
+  const { PageName, PagePath} = state;
+
+  const parentPage = application.pages?.find(p => p.ID === page.pageID)
 
   const importable = application.pages
   .filter(f => f.ID !== page.ID)
@@ -182,6 +247,11 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
     !!action && action()
   }
 
+  const handlePageMove = text => {
+    const targetPage = application.pages?.find(p => p.PageName === text);
+    onPageMove(targetPage.ID) 
+  }
+
   return <Stack spacing={1} sx={{p: 1}}>
     <Text small>Page Name</Text>
     <TextInput value={PageName} label="Name" 
@@ -202,6 +272,16 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onCom
           }))
          }}
          />
+
+      <Box sx={{ pt: 2}}>
+        <Divider textAlign="left"><Text small>Move page</Text></Divider> 
+        <QuickSelect 
+          value={parentPage?.PageName}
+          options={application.pages?.filter(f => f.ID !== page.ID)
+              .map(f => f.PageName)}
+          onChange={handlePageMove}
+          />
+      </Box>
 
       <Box sx={{ pt: 2}}>
         <Divider textAlign="left"><Text small>Import component</Text></Divider> 

@@ -168,7 +168,7 @@ export const usePageContext = () => {
 
     const triggers = (events || component?.events).filter( e => e.event === name);
 
-    setPageError(null);
+    setPageError && setPageError(null);
 
     await map(triggers, async (trigger, index) => { 
 
