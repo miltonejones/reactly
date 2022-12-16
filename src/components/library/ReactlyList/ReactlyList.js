@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
+import { styled, Avatar, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { FormatListBulleted } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -18,19 +18,25 @@ const ReactlyComponentList = ({ children, ...props }) => {
   
   const {onItemClick, onSecondaryClick, settings} = props;
   const args = getSettings(settings);
-  let parsed = !!args?.items && typeof args?.items === 'string' 
-    ? JSON.parse(args?.items)
-    : args?.items;
+
+
+  const listItems = props.items || args?.items;
+ 
+
+
+  let dataRows = !!listItems && typeof listItems === 'string' 
+    ? JSON.parse(listItems)
+    : listItems;
 
   const header = !args.heading ? null : <ListSubheader>{args.heading}</ListSubheader>
 
   if (args.bindings)  {
     const obj = JSON.parse(args.bindings);
-    parsed = [];
+    dataRows = [];
     const id = obj.resourceID;
     const resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
     if (resource) {
-      parsed = resource.records.map(record => {
+      dataRows = resource.records.map(record => {
         return Object.keys(obj.bindings).reduce((items, res) => {
           items[res] = record[  obj.bindings[res] ]
           return items;
@@ -43,20 +49,25 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
   const selectedIndex = !index
     ? -1
-    : index - 1;
+    : index;
 
  return (
    <> 
    <ReactlyComponent component={List} {...props} subheader={header}> 
- {parsed?.map((item, i) => {
+ {dataRows?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;
   const EndIcon = Icons[item.endIcon] ;
   return <ListItem key={i} active={i === selectedIndex} 
           selectedColor={args.selectedColor}
           >
+          
+          {!!item.avatar && <Avatar sx={{mr: 1}} src={item.avatar} alt={item.text} />}
+
           {!!StartIcon &&   <ListItemIcon >
                 <StartIcon />
               </ListItemIcon>}
+
+
           <ListItemText  onClick={e => {
     onItemClick && onItemClick(e, {
       ...item,

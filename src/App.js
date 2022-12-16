@@ -261,7 +261,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
     }
   } 
 
-  const setAppData = data => setApplicationData(data); // store.setItem('page_dyno_items', JSON.stringify(data)); 
+  const setAppData = data => setApplicationData(s => data); // store.setItem('page_dyno_items', JSON.stringify(data)); 
 
 
 
