@@ -67,8 +67,8 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
   const titleBar = <CardHeader
         avatar={avatar}
         action={action}
-        title={<Typography sx={{fontWeight}}>{label?.substr(0, 15)}</Typography>}
-        subheader={subtext?.substr(0, 15)}
+        title={<Typography sx={{fontWeight}}>{typeof label !== 'string' ? `"object"` : label?.substr(0, 15)}</Typography>}
+        subheader={typeof subtext !== 'string' ? JSON.stringify(subtext) : subtext?.substr(0, 15)}
       />
       const header = args.below_image ? <i /> : titleBar;
       const footer = !args.below_image ? <i /> : titleBar;

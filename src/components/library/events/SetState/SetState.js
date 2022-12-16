@@ -6,8 +6,8 @@ import { getPropertyOptions } from '../../util';
   
 
 
-const StateValue = ({ Value, Type, handleChange, page, component, resources, selectedEvent, ...props }) => {
-  const options = getPropertyOptions(page,selectedEvent, component, resources)
+const StateValue = ({ Value, Type, handleChange, page, component, application, resources, selectedEvent, ...props }) => {
+  const options = getPropertyOptions(page, selectedEvent, component, resources, application?.state)
   const pills = [
     {
       name: 'true',
@@ -40,36 +40,60 @@ const StateValue = ({ Value, Type, handleChange, page, component, resources, sel
 
   if (options?.length) {
     return <>
+    [{Type}]
     <QuickSelect options={options} free onChange={handleChange} value={Value?.toString()} label="to"/>
-    {/* {JSON.stringify(Value)}{typeof(Value)} */}
+    {/* {JSON.stringify(application?.state)}{typeof(page)} */}
     </>
   }
 
   return <Stack>
 
-     
+     [{Type}]
   <Typography>to</Typography>
     <TextField helperText={helperText} size="small" label="enter value" {...props} value={Value} onChange={e => {
     handleChange && handleChange(e.target.value)
   }}  /></Stack>
 }
 
-const SetState = ({ event = {}, page, component, resources, handleSave, selectedEvent }) => {
+const SetState = ({ event = {}, application, page, component, resources, handleSave, selectedEvent }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'setState' });
   const { target, value } = state;
 
   const { parameters } = page;
 
-  if (!page.state && !parameters) {
+  if (!page.state && !parameters && !application.state) {
     return <>Page has no state variables</>
   }
 
-  const handled = !(page.state && event.action) 
-    ? {}
-    : page.state.find(f => f.Key === target);
+  // const handled = !((page.state || application.state) && event.action) 
+  //   ? {}
+  //   : (page.state.concat(application.state)).find(f => {
+  //     const [key,val] = state.target?.split('.');
+  //     if (val) {
+  //       return f.Key === val;
+  //     }
+  //     return f.Key === state.target 
+  //   });
 
-  const selectedState = page.state?.find(f => f.Key === target);
+  const stateList = ((page.state||[]).concat(application.state||[]));
+
+console.log ({ stateList, target: state.target })
+
+  const selectedState = !state.target ? {} : stateList?.find(f => {
+    const [key,val] = state.target?.split('.');
+    if (val) {
+      return f.Key === val;
+    }
+    return f.Key === state.target
+  });
+  
   const options = !page.state ? [] : page.state.map(d => d.Key);
+
+
+  !!application.state && application.state.map(s => {
+    return options.push(`application.${s.Key}`);
+  })
+
  return (
   <>
   <Card sx={{p: 1, mt: 2, mb: 2}}>
@@ -79,19 +103,21 @@ const SetState = ({ event = {}, page, component, resources, handleSave, selected
 
      <QuickSelect options={options} value={target} 
             onChange={value => setState(s => ({...s, target: value}))}/>
-      
  
       <StateValue 
-        {...handled} 
+        {...selectedState} 
         resources={resources}
         Type={selectedState?.Type}
         Value={value}
+        application={application}
         component={component}
         selectedEvent={selectedEvent}
         page={page}
         handleChange={value => setState(s => ({...s, value}))}
       />
 
+[{JSON.stringify(event)}] 
+{state.target}
 
       <Flex>
         <Spacer />

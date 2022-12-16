@@ -8,13 +8,16 @@ import { AppStateContext } from "../../../hooks/AppStateContext";
 import { recurse } from '../util';
   
 const ReactlyComponentCollapse = ({ children, ...props }) => {
-  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext); 
   const { selectedComponent, page } = queryState;
   
   const { componentEditing, preview, ...rest } = props;
 
-  const childOpen = recurse(page, selectedComponent, props) ; 
+  const childOpen = recurse({
+    page,
+    app
+  }, selectedComponent, props) ; 
  
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;

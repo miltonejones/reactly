@@ -58,7 +58,7 @@ const Modal = ({
  
  footer: FooterComponent = ModalFooter,
  
- maxWidth = 420,
+ maxWidth = 640,
  minWidth = 360,
  
  anchor = 'right',

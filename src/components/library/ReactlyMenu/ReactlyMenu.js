@@ -6,6 +6,7 @@ import { PageStateContext } from '../../../hooks/usePageContext';
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import ReactlyComponent, { Faux } from '../reactly';
+import { AppStateContext } from '../../../hooks/AppStateContext';
 
 const FauxMenu = styled(MenuList)(({ open }) => ({
   maxWidth: 300,
@@ -20,7 +21,7 @@ const ReactlyMenuItem = styled(MenuItem)(({ selected}) => ({
 }))
   
 const ReactlyComponentMenu = ({ children, ...props }) => {
-  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
   const { onMenuClick } = props;
 
   const open = Object.keys(pageModalState)

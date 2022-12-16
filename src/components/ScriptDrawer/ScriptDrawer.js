@@ -5,6 +5,7 @@ import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
 import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu } from '..';
 import { Close, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
+import { AppStateContext } from "../../hooks/AppStateContext";
  
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -34,6 +35,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
   const [error, setError] = React.useState('')
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { ID, name, code } = selected;
+  const { 
+    appBusy
+  } = React.useContext(AppStateContext);
 
   const setCode = text => {
      try {
@@ -93,6 +97,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     'execRefByName',
     'moment'
   ]
+
+  if (appBusy) {
+    return <>loading...</>
+  }
 
  return (
 

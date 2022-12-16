@@ -7,11 +7,15 @@ import ReactlyButton from '../ReactlyButton/ReactlyButton';
   
  
 const ReactlyAvatarComponent = ({ children, ...props}) => {
+  const [loaded, setLoaded] = React.useState(false)
   const { onImageLoad } = props;
+  React.useEffect(() => {
+    !loaded && onImageLoad && onImageLoad(props);
+    setLoaded(true)
+  }, [onImageLoad, props, loaded])
+
   return (
-   <ReactlyComponent component={Avatar} {...props} onLoad={() => onImageLoad && onImageLoad({
-    ...props
-   })}> 
+   <ReactlyComponent component={Avatar} {...props}> 
      {children}
    </ReactlyComponent> 
   );

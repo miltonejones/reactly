@@ -14,6 +14,7 @@ export const useEditor = (apps) => {
 
   const updateProg = (prog) =>{
     const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
+  
     setApplications(updated);
     app.setAppData(updated)
     app.setDirty(true)
@@ -22,13 +23,18 @@ export const useEditor = (apps) => {
   const editProg = async (ID, edit) => {
     const app = findProg(ID);
     const res = await edit(app);
+ 
     updateProg(app);
     return res;
   };
 
   const editPage = async (appID, pageID, edit) => {
     const res = editProg(appID, async (app) => {
+ 
       const page = app.pages.find((c) => c.ID === pageID);
+      if (!page) {
+        return edit(app);
+      }
       await edit(page, app);
       app.pages = app.pages.map((c) => c.ID === pageID ? page : c);
       return page;
@@ -48,7 +54,14 @@ export const useEditor = (apps) => {
 
   const editComponent = async (appID, pageID, componentID, edit) => {
     const res = editPage(appID, pageID, async (page, app) => {
+
       const component = page.components.find((c) => c.ID === componentID);
+
+      // if (!component) {
+      //   return edit (page, app);
+      // }
+      
+
       await edit(component, page, app);
       page.components = page.components.map((c) => c.ID === componentID ? component : c);
       return component;
@@ -80,10 +93,12 @@ export const useEditor = (apps) => {
   }
 
 
-  const setProgProps = async (appID, props) => {
-
-    editProg(appID, async (app) => {
-      Object.assign(app, { ...props });
+  const setProgProps = async (appID, props) => { 
+    editProg(appID, async (app) => { 
+      app = {
+        ...app,
+        ...props
+      }
     })
   }
 
@@ -132,11 +147,10 @@ export const useEditor = (apps) => {
 
   const setResource = async(appID, resource) => { 
     editProg(appID, async (app) => {
-      
-      const maxID = getMax(app.resources.map(f => f.ID)); 
+       
       app.resources = app.resources.find(f => f.ID === resource.ID)
         ? app.resources.map((c) => c.ID === resource.ID ? {...resource, ID: resource.ID} : c)
-        : app.resources.concat({...resource, ID: maxID + 1});
+        : app.resources.concat({...resource, ID: uniqueId()});
     })
   }
 
@@ -168,18 +182,20 @@ export const useEditor = (apps) => {
   
   const setConnection = async(appID, connection) => { 
     editProg(appID, async (app) => {
-      
-      const maxID = getMax(app.connections.map(f => f.ID)); 
+       
       app.connections = app.connections.find(f => f.ID === connection.ID)
         ? app.connections.map((c) => c.ID === connection.ID ? {...connection, ID: connection.ID} : c)
-        : app.connections.concat({...connection, ID: maxID + 1});
+        : app.connections.concat({...connection, ID: uniqueId()});
     })
   }
 
-  const dropComponent = async (appID, pageID, componentID) => {
-    editPage(appID, pageID, async (page) => {
-      page.components = page.components.filter(f => f.ID !== componentID) 
-    });
+  const dropComponent = async (appID, pageID, componentID) => { 
+
+    const command = async (object) => {
+      object.components = object.components.filter(f => f.ID !== componentID) 
+    }
+ 
+    editPage(appID, pageID, command);
   }
 
   const dropPage = async(appID, pageID) => {
@@ -214,37 +230,33 @@ export const useEditor = (apps) => {
   const addComponent = async (appID, pageID, component, options) => {
     const { order, after, before, fn } = options ?? {}
     
-    
-    const res = editPage(appID, pageID, async (page, app) => { 
-      if (!Library) {
-        console.warn(app);
+    const command = async (object) => { 
+
+
+      if (!Library) { 
         return alert ('App has no lib!!')
       }
       const item = Library[component.ComponentType];
-      if (!item) {
-        console.warn (Library)
+      if (!item) { 
         return alert (`Could not find component ${component.ComponentType}`)
       }
+
       const settings = item.Defaults;
       const styles = item.Presets;
-  
-      if (!app.components) {
-        Object.assign(app, {components: []})
-      }
-
+   
  
-      let maxOrder = getMax(page.components.map(f => f.order));
+      let maxOrder = getMax(object.components.map(f => f.order));
 
       const box = {...component, pageID, ID: uniqueId(), order: maxOrder + 100}
       
       if (after) {
-        const nextID = page.components.find(f => f.order > order);
+        const nextID = object.components.find(f => f.order > order);
         const diff = order + parseInt((nextID.order - order) / 2);
         
         Object.assign(box, {order: diff});
  
       } else if (before) {
-        const previousIDs = page.components.filter(f => f.order < order);
+        const previousIDs = object.components.filter(f => f.order < order);
         const previousID = getMax(previousIDs.map(f => f.order)); 
 
         const diff = order - parseInt((order - previousID) / 2);
@@ -270,15 +282,17 @@ export const useEditor = (apps) => {
           })
         }) 
       }
-
-       console.log ({ box })
+ 
       
-      page.components = page.components.concat(box);
+      object.components = object.components.concat(box);
 
       fn && fn(box)
 
       return box;
-    });
+    }
+ 
+    
+    const res = editPage(appID, pageID, command);
     return res;
   };
   
@@ -292,9 +306,11 @@ export const useEditor = (apps) => {
     editComponent(appID, sourceID, componentID, async (component, sourcePage) => {
       const dressed = getComponent(sourcePage, component);
       const redressed = dressed.map(c => ({
-        ...c,
+        ...c, 
         pageID: destID
       }))
+      
+      // alert (JSON.stringify(redressed))
 
       const dependentProps = redressed.reduce((out, comp) => {  
         const props = comp.boundProps;
@@ -358,33 +374,34 @@ export const useEditor = (apps) => {
     
     if (!key) return;
 
-    editPage(appID, pageID, async (page) => {
+    const command = async (object) => {
       const setting = {
         Key: key,
         Value: value || "",
         Type: type || "string"
       }
 
-      if (!page.state) {
-        Object.assign(page, {state: []})
-      }
-//  alert (JSON.stringify({stateID, setting}))
-//  alert (JSON.stringify({key, stateID, val: page.state[key]}))
+      if (!object.state) {
+        Object.assign(object, {state: []})
+      } 
 
-      Object.assign(page, { state: page.state.find(f => f.ID === stateID)
-        ? page.state.map((c) => c.ID === stateID ? {...setting, ID: stateID} : c)
-        : page.state.concat({...setting, ID: uniqueId() }) })
+      Object.assign(object, { state: object.state.find(f => f.ID === stateID)
+        ? object.state.map((c) => c.ID === stateID ? {...setting, ID: stateID} : c)
+        : object.state.concat({...setting, ID: uniqueId() }) })
         
-      fn && fn(page)
-  // app.Alert (<pre>{JSON.stringify(page.state,0,2)}</pre>)
-//  alert (JSON.stringify({key, val: page.state[key]}))
-    });
+      fn && fn(object) 
+    };
+ 
+
+    editPage(appID, pageID, command);
   }
 
   const dropPageState = async (appID, pageID, stateID) => {
-    editPage(appID, pageID, async (page) => {
+    const command = async (page) => {
       page.state = page.state.filter(f => f.ID !== stateID) 
-    });
+    } 
+
+    editPage(appID, pageID, command);
   }
 
   const setComponentBinding = async(appID, pageID, componentID, binding, key) => {
@@ -440,7 +457,9 @@ export const useEditor = (apps) => {
   }
 
   const dropComponentEvent = async (appID, pageID, componentID, eventID) => {
-    editComponent(appID, pageID, componentID, async (component) => { 
+    editComponent(appID, pageID, componentID, async (component, page) => { 
+      if (!component) return app.Alert(<>Component {componentID} not found on {page?.PageName}</>)
+      app.Alert (<pre>{JSON.stringify({ appID, pageID, eventID, events: component?.events }, 0, 2)}</pre>)
       Object.assign(component, { events: component.events.filter(f => f.ID !== eventID)   }) ;
     });
   }
@@ -513,12 +532,11 @@ export const useEditor = (apps) => {
 
   const setComponentEvent = async (appID, pageID, componentID, event) => {
     editComponent(appID, pageID, componentID, async (component) => {
-     
-      const maxID = getMax(component.events.map(f => f.ID));
+      
 
       component.events = component.events.find(f => f.ID === event.ID)
         ? component.events.map((c) => c.ID === event.ID ? event : c)
-        : component.events.concat({...event, ID: maxID + 1});
+        : component.events.concat({...event, ID: uniqueId()});
     });
   }
 

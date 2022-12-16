@@ -16,7 +16,8 @@ import {
   Divider,
   Typography,
   Snackbar,
-  Avatar
+  Avatar,
+  Switch
 } from "@mui/material";
 import { Flex, TextBtn, QuickMenu, Spacer, ContentTree, PageTree } from "./components";
 import { AppData } from "./data";
@@ -30,26 +31,49 @@ import Modal, { useModal } from "./components/Modal/Modal";
 
 import Library from "./components/library";
 import { expandLibrary, config } from "./components/library";
+import { objectReduce } from "./components/library/util";
 import useDynamoStorage from "./hooks/DynamoStorage";
 import LibraryTree from "./components/LibraryTree/LibraryTree";
 import { reduceComponent } from "./components/library/library";
+import { useAppParams } from "./hooks/AppStateContext";
+import { uniqueId } from "./components/library/util";
+  
  
 
-function ChildRoute({ pages, path, appData })  {
-  const routes = pages
-    .filter(f => !!f.parameters).reduce((items, pg) => {
-      const path = Object.keys(pg.parameters).map(e => `:${e}`).join('/')
-      items.push([`/apps/${path}/${pg.path}`, path].join('/'))
-      return items;
-  }, []);
+function App() { 
+ 
+  return (
+    <BrowserRouter>
+      <Routes>
 
-  return routes.map(path => <Route path={path} element={<Renderer applications={appData} />} />  ) 
+
+        <Route path="/" element={<RenderComponent component={Home} />} />  
+        <Route path="/library" element={<RenderComponent component={LibraryTree}  />} />  
+        <Route path="/library/:appname" element={<RenderComponent component={LibraryTree}  />} />  
+        <Route path="/edit/:appname" element={<RenderComponent preview component={Editor}  />} />  
+        <Route path="/info/:appname" element={<RenderComponent component={Detail}  />} />  
+        <Route path="/apps/:appname" element={<RenderComponent component={Renderer} />} />  
+
+        <Route path="/apps/:appname/:pagename" element={<RenderComponent component={Renderer} />} /> 
+        <Route path="/apps/:appname/:pagename/*" element={<RenderComponent component={Renderer}   />} />  
+      </Routes>
+  </BrowserRouter>
+  );
 }
-
-function App() {
+ 
+function RenderComponent({ preview, component: Component, ...props}) {
   const appHistory = useAppHistory();
-  const { appname } = useParams()
 
+  const params =  useParams ();
+  const { appname, pagename } = params;
+  
+  const [ pageError,  setPageError ] = React.useState(null)
+  const [loud, setLoud] = React.useState(false);
+  const [jsonLog, setMessages] = React.useState([]);
+  const [pageRefState, setPageRefState] = React.useState({}); 
+  
+  const [disableLinks, setDisableLinks] = React.useState(false);
+  const [openTraceLog, setOpenTraceLog] = React.useState({});
   const [dynamoProgs, setDynamoProgs] = React.useState(null)
   const [supportedEvents, setSupportedEvents] = React.useState([])
   const [dbItems, setDbItems] = React.useState({});
@@ -57,24 +81,48 @@ function App() {
   const [hydratedLibrary, setHydratedLibrary] = React.useState({});
   const [libraryLoaded, setLibraryLoaded] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
-  const [pageClientState, setPageClientState] = React.useState({});
+  const [applicationClientState, setApplicationClientState] = React.useState({});
+
+  const [applicationData, setApplicationData] = React.useState(null)
+
+  const [pageModalState, setPageModalState] = React.useState({});
+  // const [pageClientState, setPageClientState] = React.useState({});
   const [pageResourceState, setPageResourceState] = React.useState([]);
   const [queryState, setQueryState] = React.useState({
     loaded: false,
     data: null,
+    appLoaded: true,
   });
   const [dirty, setDirty] = React.useState(false);
 
   const store = useLocalStorage({
     menu_pos: "bottom",
     use_menus: "1",
-    page_db_items: JSON.stringify(AppData),
+    page_dyno_items: JSON.stringify(AppData),
     app_library: '{}',
     page_resource_state: '[]'
   });
 
-  const commitProg = async (app) => {
+  const commitProg = async (app) => { 
+    setBusy(`Committing changes...`)
     await setProgItem(`app-${app.ID}`, JSON.stringify(app))
+    await refreshProgs()
+   }
+
+
+   const udpateLocalProgs = updated => {
+    const converted =  updated.map(app => ({
+      ...app, 
+      pages: app.pages?.map(page => ({
+        ...page,
+        components: page.components?.map(component => ({
+          pageID: page.ID,
+          ...component, 
+        }))
+      }))
+    }));
+    setApplicationData(converted)
+    setDynamoProgs(updated)
    }
   
    const refreshProgs = async () => { 
@@ -86,7 +134,7 @@ function App() {
       return out;
     }, []);
     console.log(converted)
-    setDynamoProgs(converted)
+    udpateLocalProgs(converted)
     setBusy(false)
     return converted;
   }
@@ -129,7 +177,7 @@ function App() {
 
   
 
-    setHydratedLibrary(lib)  
+    setHydratedLibrary(s => lib)  
   }
 
   const updateLib = async (conf) => {
@@ -156,7 +204,6 @@ function App() {
 
   const menuPos = store.getItem("menu_pos");
   const useMenus = store.getItem("use_menus");
-  const appText = store.getItem("page_db_items");
   const appLib = store.getItem("app_library");
   const PopComponent = useMenus === "1" ? Popover : Drawer;
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
@@ -164,103 +211,87 @@ function App() {
   const { setItem, getItems,  removeProgItem, getProgItems, setProgItem } = useDynamoStorage()
 
 
-  let appData = appText === null || appText === 'null' 
-    ? AppData 
-    : JSON.parse(appText);
+ 
+  const [pageClientState, setPageClientState] = React.useState({});
 
-  if (dynamoProgs) {
-    appData = dynamoProgs.map(app => ({
-      ...app,
-      pages: app.pages?.map(page => ({
-        ...page,
-        components: page.components?.map(component => ({
-          pageID: page.ID,
-          ...component,
-        }))
-      }))
-    }));
-  }
+
 
   const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
     if (!pages) return items.concat('huh');
-    const selectedPage  = pages.find(f => f.ID === node.pageID);
+    const currentPage  = pages.find(f => f.ID === node.pageID);
 
-    if (selectedPage) {
-      return createBreadcrumbs(pages, selectedPage).concat(node.PageName);
+    if (currentPage) {
+      return createBreadcrumbs(pages, currentPage).concat(node.PageName);
     }
 
     return items.concat(node.PageName); //.concat(node.PageName)
-  } , [ appData ])
+  } , [  ])
    
+
+  if (!applicationData) {
+    return <>Loading application data</>
+   }
+
+  const appContext = applicationData?.find(f => f.path === appname);
+  const selectedPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : appContext?.pages?.[0];
+
+  const stateProps = !selectedPage?.state
+    ? {}
+    : objectReduce(selectedPage.state); 
+     
+
   
 
-  const setAppData = data => store.setItem('page_db_items', JSON.stringify(data)); 
-  const getPageResourceState = () => pageResourceState
-  let routes = []
-
-
-  if (queryState.path) {
-     routes = queryState.pages
-      .filter(f => !!f.parameters).reduce((items, pg) => {
-        const path = Object.keys(pg.parameters).map(e => `:${e}`).join('/')
-        items.push([`/apps/${queryState.path}/:pagename`, path].join('/'))
-        return items;
-    }, []);
-
+  const shout =  async( j, m = 'message') => {
+      setMessages(msgs => msgs.concat({
+        json: j,
+        message: m
+      })
     
+    )
+    if (loud) {
+      
+        await modal.Alert (<Stack>
+          {/* <Text>{m}</Text> */}
+          <pre>
+          {JSON.stringify(j,0,2)}
+          </pre>
+      </Stack>, m)
+      console.log("%s\n------------------\n%o", m, j)
+    }
+  } 
+
+  const setAppData = data => setApplicationData(data); // store.setItem('page_dyno_items', JSON.stringify(data)); 
+
+
+
+  const getPageResourceState = () => pageResourceState;
+
+  const sessionID = uniqueId();
  
-  }
-
   if (!dynamoProgs) {
-
-   
-
+ 
     return <Flex sx={{width: '100vw', height: '100vh', justifyContent: 'center'}}>
      <Avatar className="App-logo" src="/logo192.png" alt="loader" >A</Avatar>
     Loading application info from database...
      </Flex>
   }
+ 
+  // const current_state = JSON.parse(store.state.page_dyno_items);
 
-  // return <>
-  // return <>
-  //   <pre>
-  //     {JSON.stringify(dynamoProgs,0,2)}
-  //   </pre>
-  // </>
-  // <Flex sx={{p: 2}} wrap spacing={2}>
-
-  // {Object.keys(config).map(c => <Box key={c}>
-  //   <Button 
-  //   variant={!!dbItems && !!dbItems[`reactly-${c}`] ? "contained" : 'outlined'}
-  //   onClick={async () => {
-  //     await setItem(`reactly-${c}`, JSON.stringify(config[c]))
-  //     const items = await getItems();
-  //     setDbItems(items)
-  //   }}>Add {c}</Button>
-
-  //   </Box>)}
-  // </Flex>
-     
-  // <pre>
-  // {JSON.stringify(hydratedLibrary.Button,0,2)}
-  // </pre>
-  // </>
-
-  // return <pre>{Object.keys(hydratedLibrary).map(key => <>
-  //  {key}[ {hydratedLibrary[key].Icon}]
-  //  <br />
-  // </>)}</pre>
+ // return <pre>{JSON.stringify(current_state,0,12)}</pre>
 
   return (
     <AppStateContext.Provider
       value={{
-
+        applicationClientState, 
+        setApplicationClientState,
         Library: hydratedLibrary,
         setHydratedLibrary,
         config: libraryJSON,
         updateLib,
         commitComponent,
-        appData,
+        appData: applicationData,
         setAppData,
         queryState,
         setQueryState,
@@ -268,7 +299,23 @@ function App() {
         refreshLib,
         commitProg,
         refreshProgs,
+        appBusy: busy,
+        appContext,
+        selectedPage,
+        preview,
+
         // "persistent" state values 
+        setPageError, 
+        pageError ,
+        shout,
+        openTraceLog, 
+        setOpenTraceLog,
+        jsonLog, 
+        setMessages,
+        loud, 
+        setLoud,
+        pageRefState, 
+        setPageRefState,
 
         pageClientState, 
         setPageClientState,
@@ -278,8 +325,10 @@ function App() {
         pageResourceState, 
         getPageResourceState,
         setPageResourceState,
-
-
+        
+        pageModalState, 
+        setPageModalState,
+        sessionID,
         ...appHistory,  
         ...modal,
         menuPos,
@@ -291,25 +340,10 @@ function App() {
       }}
     > 
 
-      <BrowserRouter>
-        <Routes>
+  
  
-
-          <Route path="/" element={<Home appData={appData} />} />  
-          <Route path="/library" element={<LibraryTree appData={appData} />} />  
-          <Route path="/library/:appname" element={<LibraryTree appData={appData} />} />  
-          <Route path="/edit/:appname" element={<Editor applications={appData} />} />  
-          <Route path="/info/:appname" element={<Detail applications={appData} />} />  
-          <Route path="/apps/:appname" element={<Renderer applications={appData} />} />  
-
-
+      <Component {...props} appData={applicationData} applications={applicationData} />
  
-   
-          
-          <Route path="/apps/:appname/:pagename" element={<Renderer applications={appData} />} /> 
-          <Route path="/apps/:appname/:pagename/*" element={<Renderer applications={appData} />} />  
-        </Routes>
-      </BrowserRouter>
       <Modal {...modal.modalProps}/>
       <Snackbar message={busy.toString()} open={busy} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} >
 
@@ -317,5 +351,8 @@ function App() {
     </AppStateContext.Provider>
   );
 }
+ 
+
+
  
 export default App;

@@ -32,48 +32,75 @@ export const eventTypes =  [
 
 export const usePageContext = () => { 
   const { 
-    pageClientState, 
-    setPageClientState, 
-    pageRefState, 
-    setPageRefState,
-    pageModalState, 
-    setPageModalState,
-    selectedPage, 
-    appContext, 
-    setQueryState,
-    getPageClientState,
+    
+
     preview,
-    pageResourceState, 
-    setPageResourceState,
-    getPageResourceState,
+
     handleClick,
-    setPageError,
-    shout,
     loud
+
   } = React.useContext(PageStateContext);
 
  const {
+
+    setPageError,
+    pageResourceState, 
+    setPageResourceState,
+    getPageResourceState,
+
+    pageModalState, 
+    setPageModalState,
+ 
+    shout,
+
+    pageRefState, 
+    setPageRefState,
+ 
+    setQueryState,
+    pageClientState, 
+    setPageClientState, 
+    // getPageClientState,
+
+    appContext,
+    selectedPage,
+
     Alert,
     queryState,
     Library,
+    setApplicationClientState,
+    applicationClientState,
     supportedEvents
  } = React.useContext(AppStateContext);
 
   const { openLink, openPath, createPageParams } = useOpenLink();
   const { getRefByName, execRefByName, getRef } = usePageRef();
+
   const {
     executeScriptByName,
     executeScript
   } = useRunScript();
+
   const {
     getResourceByName,
     execResourceByName
   } = useDataResource();
 
+  // const applicationScope = !getPageClientState_
+
+  // const getPageClientState = () => applicationScope
+  //   ? pageClientState
+  //   : applicationClientState
+
 
   const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
   const routeParams = useParams()
   const navigate = useNavigate();
+
+  const hello = async (json, msg) => {
+    if (!shout) return console.log({shoutless: json});
+    await shout(json, msg)
+  }
+
 
   const drillPath = (object, path) => {
     const arr = path.split('.');
@@ -93,7 +120,7 @@ export const usePageContext = () => {
     const url = new URL(path, connection.root); 
     const endpoint = `${url}${slash}${qs}`; 
 
-    await shout ({ endpoint, connection, path, qs })
+    await hello ({ endpoint, connection, path, qs })
 
     if (events) {
       events.filter(e => e.event === 'loadStarted').map(e => { 
@@ -134,7 +161,7 @@ export const usePageContext = () => {
   } 
 
   const handleComponentRequest = (qs, resource) => {
-
+ 
     executeComponentRequest(appContext.connections, qs, resource)
     .then(records => { 
       setPageResourceState(s => s.filter(e => e.resourceID !== resource.ID)
@@ -147,7 +174,7 @@ export const usePageContext = () => {
    
   } 
  
-  const getApplicationScripts = () => {
+  const getApplicationScripts = () => { 
     return appContext.pages.reduce((out, page) => {
       out = out.concat(page.scripts || []);
       return out;
@@ -162,14 +189,16 @@ export const usePageContext = () => {
       sources, 
       connect , 
       stateProps 
-    } = eventProps;
-     
+    } = eventProps; 
+    
+  
+
     if (!(events || component?.events)) return;
 
     const triggers = (events || component?.events).filter( e => e.event === name);
 
     setPageError && setPageError(null);
-
+ 
     await map(triggers, async (trigger, index) => { 
 
       // temporary logging
@@ -180,14 +209,19 @@ export const usePageContext = () => {
                 trigger, {
                   caller: event?.currentTarget
                 });
-
  
-        const routes = getParams(queryState, selectedPage, routeParams)
+
+        const { page: previewPage } = queryState; 
+        const targetPage = preview ? previewPage : selectedPage;
+
+        const {  selectedComponent, ...rest} = queryState;
+ 
+        const routes = getParams(queryState, targetPage, routeParams, shout)
         const pageParameters = createPageParams(trigger.action.params, options)
  
-        const {page, selectedComponent, ...rest} = queryState;
 
-        await shout ({ routes, pageParameters, queryState: rest}, 
+
+        await hello ({ trigger, routes, pageParameters, queryState: rest}, 
               `Trigger ${index}. ${trigger.event}.${trigger.action.type} [${trigger.action.target}]`)
       
         switch(trigger.action.type) {
@@ -203,17 +237,27 @@ export const usePageContext = () => {
             }, trigger.action.delay || 2)
             break;
           case "setState":   
-            setPageClientState(state => ({ 
+
+            const {
+              boundTo, 
+              stateSetter
+            } = getPropertyScope(trigger.action.target);
+
+            stateSetter(state => ({ 
               ...state, 
-              [trigger.action.target]: trigger.action.value === 'toggle' 
-                ? !state[trigger.action.target]
-                : getPropertyValueFromString(state, trigger.action, 
-                      options, pageParameters, shout) }))
+              [boundTo]: trigger.action.value === 'toggle' 
+                ? !state[boundTo]
+                : getPropertyValueFromString(state, {...trigger.action, target: boundTo}, 
+                      options, pageParameters, hello) }))
             break;
           case "modalOpen":   
 
-  
-              const component = selectedPage?.components?.find(f => f.ID === trigger.action.target);
+              
+
+              const componentList = (targetPage?.components||[]).concat(appContext.components||[])
+              const component = componentList?.find(f => f.ID === trigger.action.target);
+
+
               if (component) {
                 
 
@@ -227,8 +271,20 @@ export const usePageContext = () => {
                   } ))
 
 
+                  hello({ trigger }, `${trigger.action.open?'Opened':'Closed'} modal ${component.ComponentName} on ${selectedPage?.PageName}`)
+
               } else {
-                console.log ( { skipping: {...trigger.action} } )
+
+                const existing = appContext.pages.reduce((out, pg) => {
+                  const modal = pg.components && pg.components.find(f => f.ID === trigger.action.target);
+                  if (!modal) return out;
+                  return {...modal, page: pg.PageName, selectedPage: selectedPage?.PageName};
+                }, false)
+
+
+                hello({ trigger, existing, preview, previewPage: previewPage?.PageName }, 'Modal does not exist')
+                // console.log ( { appContext, trigger } )
+                // Alert(<>Could not find modal {trigger.action.target}</>)
               }
               
 
@@ -287,14 +343,25 @@ export const usePageContext = () => {
               },
               options,
               routes,
-              shout
+              hello
             )
+
+            const trueProp = val => {
+              if (isNaN(val)) return val;
+              return parseInt(val)
+            }
 
             const valid = Object.keys(trigger.action.terms).reduce((ok, term) => {
               const property = getProp(trigger.action.terms[term]) ; 
+              const comparison = resource.values?.find(f => f.key === term);
+              const type1 = typeof trueProp(comparison?.value);
+              const type2 = typeof trueProp(property);
+              
+              const mismatch = !!comparison && typeof trueProp(comparison.value) !== typeof trueProp(property);
               console.log ('validating %s:  %s', term, property)
-              shout ({ term, property}, 'Validating fields')
-              if (!property) ok.push(term)
+              hello ({ term, property }, 'Validating fields')
+              if (!property) ok.push(`${term} is missing`)
+              if (mismatch) ok.push(`${term} (${JSON.stringify(trueProp(property))}) is ${type2} when type ${type1} was expected.`)
               return ok
             }, [])
 
@@ -308,11 +375,11 @@ export const usePageContext = () => {
               const plural = valid.length !== 1 ? 's are' : ' is'
               const msg = <div>
                 Could not complete "{resource.name}" request because {valid.length} 
-                {" "}field{plural}{" "}missing: {valid.map(f => <b>{f}</b>)}
+                {" "}field{plural}{" "}has problems: {valid.map(f => <b>{f}</b>)}
               
               </div>
-              setPageError(msg);
-              return await Alert(msg, 'Request cancelled');//shout({ qs, valid }, 'API path')
+              return setPageError && setPageError(msg);
+              // return await Alert(msg, 'Request cancelled'); 
             }
 
 
@@ -326,7 +393,7 @@ export const usePageContext = () => {
                   name: resource.name,
                   records
                 }
-                await shout (resource, 'data received')
+                await hello (resource, 'data received')
                 if (!pageResourceState) { 
                   return setPageResourceState([datum])
                 }
@@ -336,7 +403,7 @@ export const usePageContext = () => {
             
             break;
           case "scriptRun":  
-            executeScript(trigger.action.target, options);  
+            executeScript(trigger.action.target, options, trigger );  
             break;
           default:
             // do nothing
@@ -346,30 +413,44 @@ export const usePageContext = () => {
 
 
   } 
+
+  const getPropertyScope = scopeKey => {
+
+    if (!scopeKey) {
+      return { }
+    }
+    const [scope, key] = scopeKey.split('.');
+    const isApplicationScope = scope === 'application' 
+
+    const boundTo = isApplicationScope 
+      ? key 
+      : scopeKey;
+
+
+    const clientState = isApplicationScope 
+      ? applicationClientState
+      : pageClientState 
+
+    const stateSetter = isApplicationScope 
+      ? setApplicationClientState 
+      : setPageClientState
+
+    return {
+      isApplicationScope,
+      boundTo,
+      clientState,
+      stateSetter
+    }
+  }
  
   const attachEventHandlers = React.useCallback ( component => {
     const { settings, events, boundProps } = component;
-    const { Methods } = Library[component.ComponentType] ?? {};
-
-    // const calls = []
-    // Methods?.map(method => {
-    //   const observer = new Observer(method.name)
-    //   calls.push({
-    //     observer,
-    //     action_title: method.name,
-    //     callee: component.ID,
-    //     ...method
-    //   })
-    // })
+    const { Methods } = Library[component.ComponentType] ?? {}; 
 
 
-    // !!Methods && setPageRefState(refState => { 
-    //   return {
-    //     ...refState,
-    //     calls
-    //   };
-    // });
-
+    const { page: previewPage } = queryState; 
+    const targetPage = preview ? previewPage : selectedPage;
+ 
 
     const eventHandlers = includedEvents.map(e => e.name).reduce((handlers, eventName) => {
       
@@ -384,7 +465,7 @@ export const usePageContext = () => {
           pageClientState,
           
           // get current state at the time the event fires
-          state: getPageClientState(),
+          state: pageClientState,
           options,
           api: { getRef, getRefByName, openLink, openPath }
         });  
@@ -394,29 +475,38 @@ export const usePageContext = () => {
 
    
 
-    // Object.assign(eventHandlers, { calls });
+    // Object.assign(eventHandlers, { boundProps });
    
     if (boundProps) {
 
       // get current state at the time the component renders
-      const clientState = getPageClientState();
       boundProps.map(boundProp => {
-        const { attribute, boundTo } = boundProp;    
+        const { attribute, boundTo: boundKey } = boundProp;    
+        const {
+          boundTo,
+          clientState,
+          stateSetter
+        } = getPropertyScope(boundKey);
+
+    
+
   
         if (attribute && clientState ) { 
 
-          const routes = getParams(queryState, selectedPage, routeParams)
+          const routes = getParams(queryState, targetPage, routeParams)
 
           //  console.log ({ routes })
 
-          const attributeProp = fixText(pageClientState[boundTo], clientState, routes)
+          const attributeProp = fixText(clientState[boundTo], clientState, routes)
           
+          // console.log ( { attributeProp, boundTo })
+        
           Object.assign(eventHandlers, {
             // set current component value to client state
             [attribute]: attributeProp,
           });
 
-          if (attributeProp?.indexOf && attributeProp.indexOf('.') > 0) {
+          if (attributeProp?.indexOf && attributeProp?.split && attributeProp.indexOf('.') > 0) {
             const [type, val] = attributeProp.split('.');
             if (type === 'parameters') {
 
@@ -437,7 +527,7 @@ export const usePageContext = () => {
               // add onChange event to update client state
               onChange: e => {
             
-                setPageClientState(s => ({...s, [boundTo]: !e.target ? e : e.target.value}))
+                stateSetter(s => ({...s, [boundTo]: !e.target ? e : e.target.value}))
               }
 
             })
@@ -450,12 +540,14 @@ export const usePageContext = () => {
 
   }, [
     pageClientState, 
-    getPageClientState, 
+    // getPageClientState, 
     getRef, 
     getRefByName, 
     handleComponentEvent, 
     openLink, 
     openPath, 
+    selectedPage,
+    queryState,
     setPageClientState
   ])
 

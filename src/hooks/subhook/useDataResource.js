@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { AppStateContext } from '../AppStateContext';
 import { PageStateContext } from '../PageStateContext';
 import moment from 'moment';
 import { useOpenLink } from '.';
@@ -6,15 +7,15 @@ import { usePageRef } from '.';
 
 
 export const useDataResource = () => {
- 
-  const {
-    setPageResourceState, 
-    getPageResourceState, 
-    shout,
-    Alert,
-  } = React.useContext(PageStateContext);
-
   
+  
+  const {  
+    Alert,
+    setPageResourceState, 
+    getPageResourceState,
+    pageResourceState,
+  } = React.useContext(AppStateContext); 
+
 
   const execResourceByName =  (name, fn) => { 
     setPageResourceState(resourceState => { 

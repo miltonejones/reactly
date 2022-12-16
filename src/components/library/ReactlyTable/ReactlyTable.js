@@ -58,8 +58,13 @@ const ReactlyComponentTable = ({ children, ...props }) => {
   const RowIcon = Icons[args.rowIcon || props.rowIcon]
   const SelectedRowIcon = Icons[args.selectedRowIcon]
 
+  const selected_indicator_col = args.selected_indicator_col || 0;
+
  return (
   <>  
+ {/* <pre>
+ {JSON.stringify(args,0,8)}
+ </pre> */}
    <ReactlyComponent component={Table} {...props}>
 
       {!!columnMap && <TableHead>
@@ -73,14 +78,18 @@ const ReactlyComponentTable = ({ children, ...props }) => {
         {dataRows.map((row, i) => (
           <TableRow key={i}  >
             {Object.values(row).map((cell, k) => <Cell 
-            color={args['row-color']}
-                selected={isSelected(row, i)}
+              columnMap={columnMap} 
+              typeMap={typeMap}
+              displayKey={columnMap?.[k]}
+              color={args['row-color']}
+              selected={isSelected(row, i)}
               onClick={e => {
                 
                 onCellClick && onCellClick(e, {
                   ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                   row: i,
                   cell: k,
+                  ...resource,
                   ...resource.records[i]
                 });
 
@@ -88,23 +97,28 @@ const ReactlyComponentTable = ({ children, ...props }) => {
                 onRowClick && onRowClick(e, {
                   ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                   row: i, 
+                  ...resource,
                   ...resource.records[i]
                 })
 
               }}
               key={k} component="th" scope="row">
               <Flex nowrap={args.nowrap}>
-                {k === 0 && !!RowIcon && !isSelected(row, i) && <RowIcon />}
-                {k === 0 && !!SelectedRowIcon && isSelected(row, i) && <SelectedRowIcon />}
 
-                <CellContent value={cell} columnMap={columnMap} typeMap={typeMap}
+
+                {k === selected_indicator_col && !!RowIcon && !isSelected(row, i) && <RowIcon />}
+                {k === selected_indicator_col && !!SelectedRowIcon && isSelected(row, i) && <SelectedRowIcon />}
+
+                <CellContent value={cell} 
+                   color={args['row-color']}
                    selected={isSelected(row, i)}
-                  displayKey={columnMap?.[k]}>
+                   columnMap={columnMap} 
+                   typeMap={typeMap}
+                   displayKey={columnMap?.[k]}
+                   >
                    {truncate(cell, args.truncate)}
                 </CellContent>
-                {/* {!!typeMap && !!columnMap && !!typeMap[ columnMap[k] ] && 
-                  <>{typeMap[ columnMap[k] ].type}</>} */}
-               
+             
                 
                 </Flex>
             </Cell> )}
@@ -120,7 +134,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
  );
 }
 
-const CellContent = ({ columnMap, typeMap, value, displayKey,selected,  children, ...props}) => {
+const CellContent = ({ columnMap, typeMap, displayKey, value, selected,  children, ...props}) => {
 
 
   const displayType = typeMap?.[displayKey];
@@ -137,7 +151,7 @@ const CellContent = ({ columnMap, typeMap, value, displayKey,selected,  children
   }
  
   if (displayType?.type === 'Link') {
-    return <Linked selected={selected} sx={{ cursor: 'pointer'}} {...displayType.settings}>
+    return <Linked { ...props} selected={selected} sx={{ cursor: 'pointer'}} {...displayType.settings}>
       <Typography variant={displayType.settings.Variant || 'body2'}>{children}</Typography>
     </Linked>
   }
@@ -154,11 +168,26 @@ const CellContent = ({ columnMap, typeMap, value, displayKey,selected,  children
   return <>{children}</>
 }
 
-const colorize = ({ selected, theme, color = 'primary' }) =>( {
-  fontWeight: selected ? 500 : 400,
-  color: selected ? 'white' :'#222',
-  backgroundColor: !selected ? 'white' : (theme.palette[color]||theme.palette.primary).main
-});
+const colorize = ({ selected, theme, color = 'primary', columnMap, typeMap, displayKey }) => {
+  const displayType = typeMap?.[displayKey];
+
+  const obj =  {
+    fontWeight: selected ? 500 : 400,
+    color: selected ? 'white' :'#222',
+    backgroundColor: !selected ? 'white' : (theme.palette[color]||theme.palette.primary).main
+  }
+
+
+  if (displayType?.type === 'Image') {
+    Object.assign(obj, {
+      width: displayType.settings.Width
+    }) 
+  }
+
+
+  return obj;
+
+};
 
 
 

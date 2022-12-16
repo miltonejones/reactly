@@ -4,25 +4,30 @@ import moment from 'moment';
 import { useOpenLink } from '.';
 import { usePageRef } from '.';
 import { useDataResource } from '.';
+import { AppStateContext } from '../AppStateContext';
 
 
 export const useRunScript = () => {
  
-  const {
-    setPageClientState,
-    selectedPage,
+  const { 
+    setApplicationClientState ,
+    queryState,
+    Alert,
     shout,
+    setPageClientState,
     getPageResourceState,
     pageResourceState,
-    Alert,
-  } = React.useContext(PageStateContext);
+    appContext,
+    selectedPage
+  } = React.useContext(AppStateContext); 
+ 
 
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
   const { getResourceByName, execResourceByName } = useDataResource()
 
 
-  const handleScriptRequest = async (block, opts) => {
+  const handleScriptRequest = async (block, opts, title) => { 
 
     try {
 
@@ -34,44 +39,64 @@ export const useRunScript = () => {
       // call the client function
       return action(selectedPage, opts)
     } catch (ex) {
-      Alert (ex.message);
+      Alert (ex.message, 'Script error in ' + title);
     }
   }
 
-  const executeScriptByName = (scriptName, options) => {
-    const scr = selectedPage.scripts?.find(f => f.name === scriptName);
+  const executeScriptByName = (scriptName, options) => { 
+
+
+    const scr = appContext.pages.reduce((out, pg) => {
+      const script = pg.scripts && pg.scripts.find(f => f.name === scriptName);
+      if (!script) return out;
+      return script;
+    }, false)
+ 
+    if (!scr) {
+      return Alert(`Could not find script "${scriptName}"`)
+    }
+
+    // const scr = page.scripts?.find(f => f.name === scriptName);
     return executeScript(scr.ID, options)
   }
 
-  const executeScript = (scriptID, options) => {
+  const executeScript = (scriptID, options, trigger) => {
 
-    const scr = selectedPage.scripts?.find(f => f.ID === scriptID);
 
-    const scripts = selectedPage.scripts.reduce((out, s) => {
-      out[s.name.replace(/\s/g, '_')] = (args) => executeScriptByName(s.name, args)
-      return out;
-    }, { scripts: 1 });
+    const { appContext } = queryState;
 
-    // console.log ('scripts', { scripts })
+    if (!appContext) {
+      return alert ('No appContext!')
+    } 
+
+    const scr = appContext.pages.reduce((out, pg) => {
+      const script = pg.scripts && pg.scripts.find(f => f.ID === scriptID);
+      if (!script) return out;
+      return script;
+    }, false)
+ 
 
     const opts = {
       state: {} ,
       setState: setPageClientState, 
       data: options,
+      application: {
+        setState: setApplicationClientState
+      },
+
       api: { 
         getPageResourceState,
         pageResourceState,
-        Alert,
+        Alert: (message) => Alert(message, scr.name + ' alert'),
 
-        executeScriptByName,
-        scripts,
+        executeScriptByName, 
 
         openLink, 
         openPath,
 
         getRef, 
         getRefByName, 
-        execRefByName,
+        execRefByName: (name, fn) => execRefByName(name, fn, scr.name),
 
         getResourceByName ,
         execResourceByName,
@@ -83,9 +108,10 @@ export const useRunScript = () => {
     if (scr) {  
       return handleScriptRequest(`function runscript() {
         return  ${scr.code}
-      }`, opts)
+      }`, opts, scr.name)
     } 
     console.log ('Could not find script') 
+    shout ({ scriptID, trigger }, 'Script does not exist');
   }
 
   return {

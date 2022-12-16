@@ -7,7 +7,9 @@ import {
 import { Flex, TextBtn, ComponentTree, QuickMenu, Spacer, ContentTree, PageTree } from "../..";
 import { Launch, Save, Sync, Add } from "@mui/icons-material";
 import { AppStateContext } from '../../../hooks/AppStateContext';
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
+import { ApplicationTree } from "../..";
+import { uniqueId } from '../../library/util';
   
  
 const Renderer = ({ applications: apps = {} }) => { 
@@ -15,10 +17,11 @@ const Renderer = ({ applications: apps = {} }) => {
   const { appname, pagename } =params;
   const { 
     
-    pageResourceState, 
-    getPageResourceState,
-    setPageResourceState,
- 
+  pageResourceState, 
+  getPageResourceState,
+  setPageResourceState,
+  appContext,
+  selectedPage,
   queryState = {}, 
   setQueryState ,
   pageClientState,  
@@ -30,26 +33,27 @@ const Renderer = ({ applications: apps = {} }) => {
     ? apps 
     : JSON.parse(apps)
 
-
+    const location = useLocation();
+    const [refresh, setRefresh] = React.useState(location.state?.refresh);
   const appData = applications.find(f => f.path === appname);
   const firstpage = !!pagename ? appData.pages.find(f => f.PagePath === pagename) : appData.pages[0];
   ; 
 
-  const createBreadcrumbs = React.useCallback((node, items = []) => {
-    const selectedPage = appData.pages.find(f => f.ID === node.pageID);
+  // const createBreadcrumbs = React.useCallback((node, items = []) => {
+  //   const selectedPage = appData.pages.find(f => f.ID === node.pageID);
 
-    if (selectedPage) {
-      return createBreadcrumbs(selectedPage).concat([{
-        text: node.PageName,
-        href: `/apps/${appname}/` + node.PagePath
-      }]);
-    }
+  //   if (selectedPage) {
+  //     return createBreadcrumbs(selectedPage).concat([{
+  //       text: node.PageName,
+  //       href: `/apps/${appname}/` + node.PagePath
+  //     }]);
+  //   }
 
-    return items.concat({
-      text: node.PageName,
-      href: `/apps/${appname}/` + node.PagePath
-    })
-  } , [ appname])
+  //   return items.concat({
+  //     text: node.PageName,
+  //     href: `/apps/${appname}/` + node.PagePath
+  //   })
+  // } , [ appname])
  
 
   const componentTreeProps = {
@@ -63,11 +67,25 @@ const Renderer = ({ applications: apps = {} }) => {
  
   }
 
+  const applicationTreeProps = {   
+    preview: false,
+    queryState,
+    setQueryState, 
+    application: appData
+  }
+
  
+  React.useEffect(() => {  
+    if(!refresh) return 
+    setQueryState(qs => ({...qs, rendered: true, page: firstpage, appContext: appData})) 
+    setRefresh(false)
+  }, [firstpage, refresh, queryState, setQueryState, appData]);
 
-  const breadcrumbs = createBreadcrumbs(firstpage);
+     
 
-  // if (!queryState.loaded) {
+  // const breadcrumbs = createBreadcrumbs(firstpage);
+
+  // if (!queryState.rendered) {
   //   return <>{JSON.stringify(queryState)}</>
   // }
 
@@ -84,12 +102,16 @@ const Renderer = ({ applications: apps = {} }) => {
       : <Typography key={o} sx={{ fontWeight: 600 }} variant="body2">{crumb.text}</Typography>)}
   </Breadcrumbs> */} 
 
-  <ComponentTree 
+{/* [{JSON.stringify(selectedPage.parameters)}] */}
+<ApplicationTree {...applicationTreeProps}  />
+
+{!!selectedPage && appContext && <ComponentTree 
+                  loadID={uniqueId()}
       loaded={loaded} 
       {...componentTreeProps} 
       setLoaded={setLoaded} 
-      appContext={appData} 
-      selectedPage={firstpage} />
+      appContext={appContext} 
+      selectedPage={selectedPage} />}
   
 </>
  );

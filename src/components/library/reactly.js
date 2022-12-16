@@ -25,6 +25,8 @@ export const ChildComponent = ({ component, children  }) => {
 
 
 
+const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
+
 
 export const useTextBind = (settings, selectedPage) => {
   const { 
@@ -60,7 +62,7 @@ const ReactlyComponent = ({
   ...props 
 }) => {
 
-  const { queryState = {} , Library} = React.useContext(AppStateContext);
+  const { queryState = {}, appContext , applicationClientState, Library} = React.useContext(AppStateContext);
   const { row } = React.useContext(RepeaterContext);
   const { 
     pageClientState,   
@@ -75,7 +77,7 @@ const ReactlyComponent = ({
     }) 
   }
  
-  const childComponents = selectedPage?.components.filter(f => f.componentID === props.ID);
+  const childComponents = ((selectedPage?.components||[]).concat(appContext.components||[])).filter(f => f.componentID === props.ID);
 
   const routeParams = useParams()
   const routes = getParams(queryState,  selectedPage, routeParams)
@@ -105,11 +107,11 @@ const ReactlyComponent = ({
     ...made
   }
 
-
+  const state = !props.pageID ? applicationClientState : pageClientState
 
   const fixed = Object.keys(args)
     .map(arg => {
-      const val = fixText(args[arg], pageClientState, routes);
+      const val = fixText(args[arg], state, routes);
       return {
         arg,
         val: val || 'arg'
@@ -119,18 +121,22 @@ const ReactlyComponent = ({
       items[prop.arg] = prop.val 
       return items
     }, {})
+
  
   if (childComponents?.length && Library[props.ComponentType].allowedChildren ) {
     return  <Component {...fixed} {...props}  style={completed} sx={{...props.sx, ...style, ...extra}}> 
-            { childComponents.map(guy => <ChildComponent component={guy} key={guy.ID} />)}
+            { childComponents.sort(componentOrder).map(guy => <>
+        
+              <ChildComponent component={guy} key={guy.ID} />
+            </>)}
           </Component>
   }
 
  return (  
   <>
-  {/* <pre>
-    {JSON.stringify(fixed,0,2)}
-  </pre> */}
+{/* [  <pre>
+    {JSON.stringify(props.pageID,0,2)}
+  </pre>] */}
  <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
     {fixed.children || children}
  </Component></>
@@ -146,13 +152,14 @@ export const Faux = styled(Paper)(( {open, anchor} ) => {
 
   if (anchor) {
     Object.assign(obj, {
-      width: 440,
-      maxWidth: 440,
+      width: 400,
+      maxWidth: '400px !important',
       position: 'fixed',
       top: 0,
       left: 360,
       height: '100%',
       minHeight: '100vh',
+      zIndex: 1000,
       // maxHeight: '90vh',
       boxShadow: `0px 8px 10px -5px rgb(0 0 0 / 20%), 0px 16px 24px 2px rgb(0 0 0 / 14%), 0px 6px 30px 5px rgb(0 0 0 / 12%)`
     })

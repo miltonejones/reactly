@@ -9,6 +9,7 @@ import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { Text } from '../Control/Control';
+import { ApplicationForm } from '..';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -45,20 +46,20 @@ const ComponentPanel = ({
  }) => {
  
   const [ 
-    
-    setOpenTraceLog, 
+     
     setDisableLinks, 
     setShowSettings, 
-    setShowTrace ,
-    setMessages, 
+    setShowTrace 
  
-  ] = ['box', 'disableLinks', 'showSettings',  'showTrace', 'messages']
+  ] = [ 'disableLinks', 'showSettings',  'showTrace']
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const { box, disableLinks, showSettings, message, showTrace } = editorState;
+  const {   disableLinks, showSettings,  showTrace } = editorState;
 
 
-  const { setQueryState  } = React.useContext(AppStateContext);
+  const { setQueryState, 
+    setMessages, 
+    setOpenTraceLog,  jsonLog, appData  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
 
@@ -71,9 +72,9 @@ const ComponentPanel = ({
     setValue(newValue);
   };
 
-  if (!selectedPage) {
-    return <>TBD</>
-  }
+  // if (!selectedPage) {
+  //   return <>TBD</>
+  // }
 
   const componentList = selectedPage?.components || application.components || [];
 
@@ -99,8 +100,8 @@ const ComponentPanel = ({
 
   const panelProps = {
     onEventDelete:onEventDelete, 
-    component:component, 
-    selectedPage:selectedPage, 
+    component:component,  
+    selectedPage:selectedPage || application, 
     onChange:onChange, 
     onThemeChange:onThemeChange,
     connections:connections,
@@ -119,21 +120,58 @@ const ComponentPanel = ({
   }
 
   const sx = { borderBottom: 1, borderColor: 'divider'}
+
+  const showApp = !collapsed && !(!!component || selectedPage);
+
+
+  const importable = application.pages
+  .filter(f => f.ID !== selectedPage?.ID)
+  .reduce((out, pg) => {
+    pg.components?.filter(f => !f.componentID).map(c => {
+      out.push ({
+        label: `${pg.PageName}.${c.ComponentName}`,
+        action: text => promptImport(pg.ID, selectedPage?.ID, c)
+      });
+    })
+    return out;
+  }, []);
+
+
+  const promptImport = async (sourceID, destID, tag) => {  
+    if (!tag) return;
+    const ok = await Confirm(<Stack>
+      <Text>Import component "{tag.ComponentName}" to this page? </Text>
+      <Text small active error>Process does not clone event mappings.</Text>
+    </Stack>)
+    if (!ok) return; 
+    onComponentImport(sourceID, destID, tag.ID);
+  }
+
+
+
   
   return <Stack>
      <Flex sx={{ m: 1}}>
-      {!collapsed && <>
+
+      {showApp && <>
+      
+        <Chip label={application.Name} />
+          <Spacer />
+      </>}
+
+      {!collapsed && (!!component || selectedPage) && <>
+
         <Chip variant="outlined" size="small" icon={<Article />} label={!!component 
         ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} 
         deleteIcon={ <Close />} onDelete={onDelete}/> 
 
       <Spacer />
-       {!!component &&  <RotateButton deg={showSettings ? 90 : 270}  onClick={
+   
+ <RotateButton deg={showSettings ? 90 : 270}  onClick={
           () => setShowSettings(!showSettings)
         }>
              <Settings />
-        </RotateButton>}
-
+        </RotateButton>
 
       </>}
        
@@ -142,7 +180,7 @@ const ComponentPanel = ({
         </RotateButton>
      </Flex>
 
-      {!collapsed && <>
+      {!collapsed && (!!component || selectedPage) && <>
       
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
@@ -154,7 +192,7 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
-    <Collapse in={!!component && showSettings} sx={{mb: 0, pb: 0}}>
+    <Collapse in={showSettings} sx={{mb: 0, pb: 0}}>
         <Box sx={{p: 1}}>
           <Flex sx={{...sx, p: 1}}>
           <Text small active>Editor Settings</Text>
@@ -184,13 +222,23 @@ const ComponentPanel = ({
           <Text small>Show stack trace</Text>
         </Flex>
         
+        <Flex onClick={() => setShowTrace(!showTrace)} sx={sx}>
+           <TextBtn onClick={() =>{
+            setMessages([]);
+            setOpenTraceLog({})
+          }}>clear stack trace ({jsonLog?.length})</TextBtn>
+        </Flex>
+        
         </Box>
     </Collapse>
 
     {(!!component || value === 3) && <Panel  {...panelProps} />}
+
     {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
       onComponentImport={onComponentImport}
       Confirm={Confirm}
+      importable={importable}
+      promptImport={promptImport}
       onPageMove={onPageMove}
       application={application} themes={themes} 
       page={selectedPage} onChange={onChange} />}
@@ -200,13 +248,16 @@ const ComponentPanel = ({
 
       </>}
 
+    {showApp && <ApplicationForm applications={appData} 
+      importable={importable}/> }
+
 
     </Stack>
  
 }
 
 
-function PageSettings({ page, application, themes = [], onChange, Confirm, onPageMove, onComponentImport }) {
+function PageSettings({ page, application, themes = [], onChange, importable, onPageMove, onComponentImport }) {
   const { queryState } = React.useContext(AppStateContext);
   const [imported, setImported] = React.useState(''); 
   const [param, setParam] = React.useState('');  
@@ -214,31 +265,7 @@ function PageSettings({ page, application, themes = [], onChange, Confirm, onPag
   const { PageName, PagePath} = state;
 
   const parentPage = application.pages?.find(p => p.ID === page.pageID)
-
-  const importable = application.pages
-  .filter(f => f.ID !== page.ID)
-  .reduce((out, pg) => {
-    pg.components?.filter(f => !f.componentID).map(c => {
-      out.push ({
-        label: `${pg.PageName}.${c.ComponentName}`,
-        action: text => promptImport(pg.ID, page.ID, c)
-      });
-    })
-    return out;
-  }, []);
-
-
-  const promptImport = async (sourceID, destID, tag) => {
-
-    setImported('')
-    if (!tag) return;
-    const ok = await Confirm(<Stack>
-      <Text>Import component "{tag.ComponentName}" to this page? </Text>
-      <Text small>Process does not clone event mappings.</Text>
-    </Stack>)
-    if (!ok) return; 
-    onComponentImport(sourceID, destID, tag.ID);
-  }
+ 
 
   const handleImport = text => {
     setImported('')

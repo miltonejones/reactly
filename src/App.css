@@ -39,6 +39,9 @@ body {
   .App-logo {
     animation: App-logo-spin infinite 2s linear;
   }
+  .spin {
+    animation: App-logo-spin infinite 2s linear;
+  }
 }
 
 .App-header {
@@ -65,9 +68,18 @@ body {
   }
 }
 
- pre { 
+@keyframes App-logo-left {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+pre { 
   line-height: 1.5;
- }
+}
 
 .string { color: green; }
 .number { color: darkorange; }

@@ -4,13 +4,13 @@ import { GenericStyles, LayoutStyles } from '../styles';
 import { Loop } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
-import { PageStateContext } from '../../../hooks/usePageContext';
+import { AppStateContext } from '../../../hooks/AppStateContext';
 import { RepeaterContext } from '../../../hooks/AppStateContext';
 
 
 
 const ReactlyComponentRepeater = ({ children, ...props }) => {
-  const { pageResourceState } = React.useContext(PageStateContext); 
+  const { pageResourceState } = React.useContext(AppStateContext); 
   const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
   
   const args = getSettings(settings);
@@ -46,11 +46,7 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
           ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
          }}
       >
-        {/* <Card sx={{width: 200, height: 200, overflow: 'auto'}}>
-       <pre>
-       {JSON.stringify(row,0,2)}
-       </pre>
-        </Card> */}
+     
         <Box sx={{width: '100%' }}>
      {children} 
 

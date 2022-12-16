@@ -1,19 +1,33 @@
 import * as React from 'react';
-import { PageStateContext } from '../PageStateContext';
+import { AppStateContext } from '../AppStateContext'; 
+import { useNavigate  } from "react-router-dom"; 
 
 
 export const useOpenLink = () => {
-  
+   
+
+
+    const navigate =  useNavigate();
+  // const navigate = (path) => window.location.replace(path);
   const {
-    setPageClientState,
-    pageClientState ,
-    appContext, 
-    setQueryState,
+    appContext,
+    selectedPage,
     disableLinks,
     preview,
+
     shout,
+    queryState,
+    setPageClientState,
+    pageClientState ,
+    setQueryState,
     Alert
-  } = React.useContext(PageStateContext);
+ 
+  } = React.useContext(AppStateContext);
+
+  const hello = async (json, msg) => {
+    if (!shout) return console.log({shoutless: json});
+    await shout(json, msg)
+  }
 
 
   const createPageParams = React.useCallback(
@@ -30,7 +44,7 @@ export const useOpenLink = () => {
 
       setPageClientState(state => {
         const { records, ...rest} = state;
-        shout ({ parameters, options: op, pageClientState: rest }, 'createPageParams')
+        hello ({ parameters, options: op, pageClientState: rest }, 'createPageParams')
         return state
       })
 
@@ -48,7 +62,7 @@ export const useOpenLink = () => {
           let triggerProp = state[ triggerKey ];
 
 
-          shout({ triggerKey, stateProp, triggerProp},  `createPageParams: parsing param "${key}"`)
+          hello({ triggerKey, stateProp, triggerProp},  `createPageParams: parsing param "${key}"`)
           if (stateProp) {
             return Object.assign(params, {[key]: stateProp  });
           }
@@ -66,7 +80,7 @@ export const useOpenLink = () => {
               const [t, prop, datum] = values;
 
               triggerProp = options[datum]; 
-              shout( { triggerProp, options  }, 'createPageParams: data bound values');
+              hello( { triggerProp, options  }, 'createPageParams: data bound values');
               if (!!triggerProp ) {
                 Object.assign(params, {[key]: triggerProp  });
               }
@@ -75,19 +89,19 @@ export const useOpenLink = () => {
 
             const [t, optionKey] = triggerKey.split('.') ;
             triggerProp = options[optionKey]; 
-            shout( { triggerProp, options  }, 'createPageParams: parsing options');
+            hello( { triggerProp, options  }, 'createPageParams: parsing options');
             // pass the resulting value into page params
             if (!!triggerProp ) {
               Object.assign(params, {[key]: triggerProp  });
             }
           } else if (triggerProp) { 
-            shout( { triggerProp, options  }, 'createPageParams: passing state value');
+            hello( { triggerProp, options  }, 'createPageParams: passing state value');
             // pass the resulting value into page params
             if (!!triggerProp?.length ) {
               Object.assign(params, {[key]: triggerProp  });
             }
           } else {
-            shout( { triggerKey, parameters  }, 'createPageParams: parsing parameters');
+            hello( { triggerKey, parameters  }, 'createPageParams: parsing parameters');
             Object.assign(params, {[key]: triggerKey  });
           }
 
@@ -109,9 +123,10 @@ export const useOpenLink = () => {
      * @param {*} parameters JSON object of the page parameters
      * @param {*} options - other options to pass to the link 
      */
-    async (ID, parameters, options) => {
-      const { records, ...rest} = pageClientState;
-    await shout ({ ID, parameters, options, pageClientState: rest || {
+    async (ID, parameters = {}, options) => {
+      const { records, ...rest} = pageClientState; 
+
+    await hello ({ ID, parameters, options, pageClientState: rest || {
       error: 'No current state'
     } }, 'openLink')
 
@@ -121,18 +136,19 @@ export const useOpenLink = () => {
     // parse page parameters if present,
     const params = createPageParams(parameters, options);
 
-    await shout ({ params }, 'openLink params')
+    await hello ({ params }, 'openLink params')
 
     if (!preview) {
       const value = `/apps/${appContext.path}/${targetPage.PagePath}`;
-      const path = [value, Object.values(params).join('/')].join('/'); 
-
+      const path = [value, Object.values(params).join('/')].join('/');  
+      
+      navigate(path, { state: { refresh: 1 }})
       // when in live mode, navigate to page
-      return window.location.replace(path)
+      return
     } 
 
     if (disableLinks) {
-       return shout({  params }, 'stopping here');
+       return hello({  params }, 'stopping here');
     }
 
 
@@ -141,9 +157,10 @@ export const useOpenLink = () => {
       ...s,
       page: targetPage,
       pageLoaded: false,
+      // appLoaded: false,
       params ,
     }))
-  }, [appContext, disableLinks, preview, setQueryState])
+  }, [queryState, disableLinks, preview, setQueryState])
 
 
   const openPath = React.useCallback(
@@ -156,15 +173,16 @@ export const useOpenLink = () => {
      */
     async (path, parameters, options) => {
 
-    await shout ({ path, parameters, options }, 'openPath')
+    const { appContext } = queryState;
+    await hello ({ path, parameters, options }, 'openPath')
 
     // look up the path ID
     const targetPage = appContext.pages.find((f) => f.PagePath === path); 
     if (targetPage) {
       return await openLink(targetPage.ID, parameters, options);
     }
-    await shout (`Invalid path ${path}`, 'Could not find path')
-  }, [appContext, disableLinks, openLink])
+    await hello (`Invalid path ${path}`, 'Could not find path')
+  }, [queryState, disableLinks, openLink])
 
   return { 
     openLink,

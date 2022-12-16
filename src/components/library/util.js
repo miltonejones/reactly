@@ -1,7 +1,8 @@
  
 
-export const getPropertyOptions = (page, event, component, resources) => {
+export const getPropertyOptions = (page, event, component, resources, app) => {
   const options = !page?.state ? [] : page.state.map(d => d.Key);
+  const appstate = !app? [] : app.map(d => `application.${d.Key}`);
 
 
   !!page?.parameters && Object.keys(page.parameters).map(paramKey => {
@@ -29,7 +30,7 @@ export const getPropertyOptions = (page, event, component, resources) => {
   }
 
 
-  return options;
+  return options.concat(appstate);
 }
 
 const gridTransform = (value) => {
@@ -68,7 +69,7 @@ const colorTransform = (prop) => {
 };
  
 export const getSettings = (settings = []) => settings.reduce((items, res) => {
-    items[res.SettingName] = res.SettingValue;
+    items[res.SettingName] = isNaN(res.SettingValue) ? res.SettingValue : Number(res.SettingValue);
     return items;
   }, {});
 
@@ -146,10 +147,15 @@ export const getStyles = styles => {
 }
 
 
-export const recurse = (page, selected, tag, open = false) => {
-  const kids = page?.components.filter(f => f.componentID === tag.ID);
+export const recurse = ({
+  page,
+  app
+}, selected, tag, open = false) => {
+  const parents = (page?.components||[]).concat(app?.components||[]);
+  
+  const kids = parents.filter(f => f.componentID === tag.ID);
   if (kids?.length) {
-    const out = kids.map(kid => recurse(page, selected, kid, open || selected?.ID === kid.ID )) 
+    const out = kids.map(kid => recurse({ page, app }, selected, kid, open || selected?.ID === kid.ID )) 
     const ok = out.some(f => !!f);
     return ok
   }
@@ -186,7 +192,7 @@ export const fixText = (str, options, parameters) => {
   const test = /\{([^}]+)\}/g
   let out = str;
 
-  findMatches(test, str).map(match => {
+  !!options && findMatches(test, str).map(match => {
     let prop;   
     if (match[1].indexOf('parameters.') === 0) {
       const [name, key] = match[1].split('.');
@@ -198,9 +204,19 @@ export const fixText = (str, options, parameters) => {
 }
 
 
-export const getParams = (state, page, route) => { 
+export const css = (o) =>
+  Object.keys(o)
+    .filter((f) => !!o[f])
+    .join(" ");
+
+
+export const getParams = (state, page, route, shout) => { 
   const params = {};
   const vals = route['*'];
+
+  const { appContext, ...rest} = state ?? {}
+  shout && shout({state: rest, route, parameters: page?.parameters}, 'getParams' );
+
 
   // console.log ({state, route}, page?.parameters)
 
@@ -228,13 +244,23 @@ export const getParams = (state, page, route) => {
 }
 
 
-export const map = async (list, fn, index = 0, out = []) => {
-  if (index < list.length) {
-    const trigger  = list[index];
-    const res = await fn(trigger, index);
-    out.push(res)
-    return await map (list, fn, ++index, out );
-  }
+// export const map = async (list, fn, index = 0, out = []) => {
+//   if (index < list.length) {
+//     const trigger  = list[index];
+//     const res = await fn(trigger, index);
+//     out.push(res)
+//     return await map (list, fn, ++index, out );
+//   }
+//   return out;
+// }
+
+
+export const map = async (list, fn) => {
+  const out = [];
+  for (var index = 0; index < list.length; index++) {
+    const res =  await fn(list[index], index)
+    out.push(res);
+  } 
   return out;
 }
 
@@ -267,6 +293,10 @@ export const map = async (list, fn, index = 0, out = []) => {
 
     if (!value && value !== 0) {
       return ''
+    }
+
+    if (typeof value === 'boolean') {
+      return value;
     }
  
     // transform 'dot' notation values

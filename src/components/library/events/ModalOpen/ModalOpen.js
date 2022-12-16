@@ -7,7 +7,7 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const ModalOpen = ({ event = {}, page, handleSave }) => {
+const ModalOpen = ({ event = {}, page, handleSave, application }) => {
   const { Library } = React.useContext(AppStateContext);
   const [state, setState ] = React.useState({ ...event.action, type: 'modalOpen' });
 
@@ -17,7 +17,9 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
   const modals = Object.keys(Library)
     .filter(f => !!Library[f].modal)
     .reduce((items, key) => {
-        items = items.concat(page.components.filter(f => f.ComponentType === key))
+        const appModals = application.components?.filter(f => f.ComponentType === key);
+        const pageModals = !!page.PageName ? page.components.filter(f => f.ComponentType === key) : []
+        items = items.concat(pageModals).concat(appModals.map(app => ({...app, prefix: 'application.'})))
         return items;
       }, []);   
  
@@ -27,20 +29,20 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
       return <Box {...props}>- none -</Box>
     }
      
-    return <Box {...props}>
-{option.ComponentName }  
-    </Box>
+    return <Box {...props}>{option.prefix}{option.ComponentName}</Box>
   }
        
  const getOptionLabel =  (option ) => {
   if (typeof option === 'string') {
-    const found = page.components?.find(f => f.ID === option)
+    const found = modals?.find(f => f.ID === (option.ID || option))
     if (found) {
-      return found.ComponentName;
+      return (found.prefix||'') +  found.ComponentName;
     }
   }
   
-  return option?.ComponentName + (typeof option); 
+  return option?.pageID 
+    ? option?.ComponentName
+    : ('application.'+option?.ComponentName); // + (typeof option); 
 }
 
   const pills = [
@@ -58,8 +60,11 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
   },
 ]
 
+const drawer = modals?.find(f => f.ID === state.target);
+
  return (
    <Layout data-testid="test-for-ModalOpen">
+    
    <Text small>Select component:</Text>  
 
    <QuickSelect 
@@ -101,9 +106,9 @@ const ModalOpen = ({ event = {}, page, handleSave }) => {
         })}>Save</TextBtn>
       </Flex>
     
-    <pre>
-    {JSON.stringify(state,0,2)}
-    </pre>
+   [ <pre>
+    {JSON.stringify(drawer,0,2)}
+    </pre>]
 
    </Layout>
  );

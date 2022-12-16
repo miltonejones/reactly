@@ -146,6 +146,8 @@ const Detail = ({ applications, onConnect }) => {
           </Grid>
           <Grid item xs={12}>
         <Collapse in={index === 4}> 
+
+
          <Stack  sx={{p: 2, width: 400}}>
             <Text small>
               Application Name
@@ -177,6 +179,8 @@ const Detail = ({ applications, onConnect }) => {
               disabled={!settings.dirty}>Save</TextBtn>
             </Flex>
          </Stack>
+
+         
         </Collapse>
           </Grid>
     </Grid>

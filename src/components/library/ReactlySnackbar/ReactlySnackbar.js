@@ -2,12 +2,12 @@ import React from 'react';
 import { Snackbar } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { Icecream } from '@mui/icons-material';
-import ReactlyComponent from '../reactly';
-import { PageStateContext } from '../../../hooks/usePageContext';
+import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
+import { AppStateContext } from '../../../hooks/AppStateContext';
   
 const ReactlyComponentSnackbar = ({ children, ...props }) => {
-  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;

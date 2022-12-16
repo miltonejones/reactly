@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Collapse, Box, Alert, Card, Stack, Typography } from '@mui/material'; 
+import { styled, Collapse, Box, Alert, Link, Card, Stack, Typography } from '@mui/material'; 
 import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
-import { Add, Close, Delete } from "@mui/icons-material";
+import { Add, Close, Delete , Error} from "@mui/icons-material";
 import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
 import { EditorStateContext, AppStateContext } from '../../hooks/AppStateContext'; 
@@ -28,7 +28,7 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
   </Card>
 }
 
-const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, onDelete  }) => {
+const HandlerCard = ({ ID, event: eventName, action, application, page, selected, onSelect, onDelete  }) => {
   const { appData  } = React.useContext(EditorStateContext);
   const { supportedEvents } = React.useContext(AppStateContext);
   const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
@@ -63,13 +63,20 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
       break;
     case 'modalOpen':
       const dialogName = page?.components?.find(e => e.ID === action.target)
-      act = <>{action.open ? 'Open' : 'Close'} component <b>{dialogName?.ComponentName}</b></>
-      ok = !!dialogName;
+      const appModal = application?.components.find(e => e.ID === action.target)
+      const modalLabel = dialogName?.ComponentName || `application.${appModal?.ComponentName}`;
+      act = <>{action.open ? 'Open' : 'Close'} component <b>{modalLabel}</b></>
+      ok = !!dialogName || !! appModal;
       break;
     case 'scriptRun':
-      const scr = page.scripts && page.scripts.find(f => f.ID === action.target);
+      const scr = application.pages.reduce((out, pg) => {
+        const script = pg.scripts && pg.scripts.find(f => f.ID === action.target);
+        if (!script) return out;
+        return <><b>{pg.PageName}.</b>{script.name}</>;
+      }, false)
+      // const scr = page.scripts && page.scripts.find(f => f.ID === action.target);
       if (scr) {
-        act = <>Run script "{scr.name}"</>
+        act = <>Run script {scr}</>
       } else {
         act = <>Could not find script {action.target}</>
         ok = false;
@@ -80,7 +87,30 @@ const HandlerCard = ({ ID, event: eventName, action, page, selected, onSelect, o
   }
 
   if (!ok) {
-    return <i />
+    return <Card sx={{p: 2, cursor: 'pointer', mb: 1, }} 
+      elevation={2}  
+     > <Stack><Flex ><Tiny icon={Error} /> <Text small active error >missing definition ({ID})</Text>
+
+<Spacer />
+
+     <Tiny icon={Delete} onClick={() => onDelete && onDelete(ID)}/> </Flex>
+   
+     <Flex wrap> <Text small>
+     The target for the  "{eventName}.{action.type}" cannot be found. Replace it or  
+      
+      </Text>
+      
+       </Flex>
+      
+      <Flex>
+
+      <Spacer />
+
+      <TextBtn color="error" variant="contained" size="small" onClick={() => onDelete && onDelete(ID)}> delete 
+       event trigger</TextBtn>
+      </Flex>
+       
+       </Stack></Card>
   }
 
   return <Card sx={{p: 2, cursor: 'pointer', mb: 1,
@@ -157,16 +187,20 @@ const ComponentEvents = ({
     {
       name: 'Set state value',
       value: 'setState',
-      when: () => !!selectedPage?.state?.length
+      when: () => !!selectedPage?.state?.length || !!application.state?.length
     },
     {
       name: 'Execute client script',
       value: 'scriptRun',
-      when: () => !!selectedPage?.scripts?.length
+      when: () => application.pages?.some(pg => pg.scripts?.length) // !!selectedPage?.scripts?.length
     } ,
     {
       name: 'Call a component method',
       value: 'methodCall', 
+    } ,
+    {
+      name: 'Open or close a modal component',
+      value: 'modalOpen'
     } ,
     {
       name: 'Link to page',
@@ -180,10 +214,7 @@ const ComponentEvents = ({
   {
     name: 'Reset data resource',
     value: 'dataReset'
-  } ]: []).concat(modalsExist ? {
-    name: 'Open or close a modal component',
-    value: 'modalOpen'
-  } : []).filter(f => !f.when || !!f.when());
+  } ]: []).filter(f => !f.when || !!f.when());
 
   const forms = {
     setState: SetState,
@@ -221,7 +252,7 @@ const ComponentEvents = ({
           setSelectedType(null)
         }}  {...d} key={d.name} />)} 
     </Collapse>
-
+ 
     {/* events that have handlers  */}
     {!!eventOwner.events?.length && !selectedEvent &&  <>    
       <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1, mt: 2 }}>
@@ -230,6 +261,7 @@ const ComponentEvents = ({
       {eventOwner.events?.map(e => <HandlerCard 
         selected={selectedHandler} 
         page={selectedPage}
+        application={application}
         onSelect={(key, id) => {
         setSelectedEvent(key)
         setSelectedHandler(id)

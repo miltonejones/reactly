@@ -2,10 +2,11 @@ import React from 'react';
 import { Alert, Stack, IconButton } from '@mui/material';
 import { QuickSelect, QuickMenu } from '../../..';
 import {
-  AppStateContext, 
+  AppStateContext, EditorStateContext
 } from "../../../../hooks/AppStateContext";
 import { useEditor } from "../../../../hooks/useEditor";
 import { MoreVert } from "@mui/icons-material";
+import { PageStateContext } from '../../../../hooks/usePageContext';
   
 const NEW_STATE_TEXT = 'New state variable...'
  
@@ -21,19 +22,25 @@ const StateComponentInput = ({
 
   const { 
     Prompt ,
-    appData
+    appData,
+    queryState,
+    appContext
   } = React.useContext(AppStateContext);
+  const {  
+    appData: application
+  } = React.useContext(EditorStateContext);
   const { 
     setPageState, 
   } = useEditor(appData);
+ 
 
   const onChange = React.useCallback(async (value) => {  
     handleChange(value, binding)
   }, [binding, handleChange])
 
   
-  if (!selectedPage.state && !selectedPage.parameters) {
-    return <i/>
+  if (!selectedPage.state && !selectedPage.parameters && !appContext.state) {
+    return <i>[{JSON.stringify(application.state) }]</i>
   }
 
   const Component = menu ? QuickMenu : QuickSelect;
@@ -41,6 +48,10 @@ const StateComponentInput = ({
   const options = !selectedPage.state ? [] : selectedPage.state.map(d => d.Key);
   !!selectedPage.parameters && Object.keys(selectedPage.parameters).map(paramKey => {
     return options.push(`parameters.${paramKey}`);
+  })
+
+  !!appContext.state && appContext.state.map(s => {
+    return options.push(`application.${s.Key}`);
   })
   return <Stack>
     {header}

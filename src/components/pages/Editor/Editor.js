@@ -63,6 +63,9 @@ import { TextInput } from "../..";
 import { Icons } from "../../library/icons";
 import { JsonView } from "../../../colorize";
 import { ChipBox } from "../..";
+import { ApplicationTree } from "../..";
+import StatusPane from "../../StatusPane/StatusPane";
+import { uniqueId } from "../../library/util";
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
@@ -223,27 +226,27 @@ const Editor = ({ applications: apps = {} }) => {
     contentFilter: '',
     box: {},  
     disableLinks: false, 
-    showSettings: false, 
-    messages: [], 
+    showSettings: false,  
     message: 'Unknown action', 
     showTrace: false, 
     pageError: null,  
   });
 
   const [ 
-    setLoud, 
     setJSON, 
     setShowLib, 
     setLoaded, 
     setContentFilter ,
     setHilit
-  ] = ['loud', 'json', 'showLib', 'loaded', 'contentFilter', 'hilit']
+  ] = [ 'json', 'showLib', 'loaded', 'contentFilter', 'hilit']
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const { json, loud, hilit, showLib, loaded, contentFilter } = editorState;
+  const { json, hilit, showLib, loaded, contentFilter } = editorState;
   const { stateOpen, scriptOpen, connectOpen } = drawerState;
 
   const {
+    loud,
+    setLoud, 
     queryState = {},
     setQueryState,
     setAppData,
@@ -257,6 +260,7 @@ const Editor = ({ applications: apps = {} }) => {
     pageResourceState, 
     getPageResourceState,
     setPageResourceState,
+    applicationClientState, 
     Library,
     commitProg,
     dirty,
@@ -405,7 +409,8 @@ const Editor = ({ applications: apps = {} }) => {
       setQueryState((s) => ({
         ...s,
         page: pg,
-        pageLoaded: false
+        pageLoaded: false,
+        appLoaded: false
       }))
     });
   }
@@ -447,16 +452,27 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "Show client state",
       action: () => {
-        const { records, ...rest} = pageClientState;
+        const { records, ...rest} = queryState.page ? pageClientState : applicationClientState;
         Alert(<Json>
         {JSON.stringify(rest, 0, 2)}
-      </Json>)}
+      </Json>, queryState.page?.PageName + ' Client State')}
+    },
+    {
+      name: "Show application state",
+      action: () => { 
+        Alert(<Json>
+        {JSON.stringify(applicationClientState, 0, 2)}
+      </Json>, 'Application Client State')}
     },
     {
       name: "Show resource state",
       action: () => Alert(<Json>
         {JSON.stringify(pageResourceState, 0, 2)}
       </Json>)
+    },
+    {
+      name: "Status Pane",
+      action: () => Alert(<StatusPane />)
     },
   ]; 
 
@@ -559,10 +575,19 @@ const Editor = ({ applications: apps = {} }) => {
       setQueryState((s) => ({
         ...s,
         page: appData.pages.find((f) => f.PageName === name),
-        pageLoaded: false
+        pageLoaded: false,
+       // appLoaded: false
       }))
     }
   />;
+
+  const applicationTreeProps = {  
+    selectedComponent: queryState.selectedComponent,
+    preview: true,
+    queryState,
+    setQueryState,  
+    hilit
+  }
 
   const contentTree =  <ContentTree
     filter={contentFilter}
@@ -845,18 +870,24 @@ const Editor = ({ applications: apps = {} }) => {
             </Collapse>
  
             <Collapse in={!json && !showLib}>
-              <ComponentTree
-                 
-                {...componentTreeProps}
-                hilit={hilit}
-                themes={appData?.themes || []}
-                appContext={appData}
-                loaded={loaded}
-                setLoaded={setLoaded}
-                preview
-                selectedPage={queryState.page}
+ 
+                <ComponentTree
+                  
+                  {...componentTreeProps}
+                  loadID={uniqueId()}
+                  onEventDelete={handledEventDelete}
+                  hilit={hilit}
+                  themes={appData?.themes || []}
+                  appContext={appData}
+                  loaded={loaded}
+                  setLoaded={setLoaded}
+                  preview
+                  selectedPage={queryState.page}
 
-              />
+                />
+                
+            <ApplicationTree {...applicationTreeProps} application={appData} />
+
             </Collapse>
           </Pane>
           <Pane
@@ -968,6 +999,8 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
     handlePopoverClose ()
   }
 
+  const { appLoaded, pageLoaded} = queryState
+
   const startAdornment = <InputAdornment position="start">URL</InputAdornment>;
 
   const adornment = {
@@ -978,8 +1011,14 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
         onClick={handleButtonClick}
         position="end"
       >
+        <>
+        <Text small active error={!pageLoaded}>Loaded</Text>
+        <Switch size="small" checked={appLoaded} />app  
+        <Switch size="small" checked={pageLoaded} />page 
+        </>
         <Launch />
         Open
+
       </InputAdornment>
     ),
   };

@@ -3,15 +3,15 @@ import { Box, Alert } from "@mui/material";
 import ReactlyComponent from "../reactly"; 
 import { getStyles, getSettings } from "../util";
 import { PageStateContext } from "../../../hooks/usePageContext";
+import { AppStateContext } from "../../../hooks/AppStateContext";
 import { usePageResourceState } from "../../../hooks/usePageResourceState"; 
 import moment from "moment";
 
 const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {  
   const {
     pageRefState,
-    setPageRefState,
-    pageClientState, 
-  } = React.useContext(PageStateContext);
+    setPageRefState, 
+  } = React.useContext(AppStateContext);
 
   const {
     onPlayerStart,
@@ -22,6 +22,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
   } = props;
   const ref = React.useRef(null);
   const [listeners, setListeners] = React.useState([]);
+  const [source, setSource] = React.useState(null);
 
   const args = getSettings(settings);
   const style = getStyles(styles);
@@ -34,11 +35,23 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
  
   React.useEffect(() => { 
 
-    if (pageRefState[props.ID] || !ref.current) {
+    if (ref.current && !!src && source !== src) {
+      setSource(s => {
+        setTimeout(() => {
+          ref.current.play()
+        },99)
+        return src;
+      })
+    }
+
+    if (listeners.length) {
+      return; 
+    }
+    if ((!ref.current) && !listeners.length) {
       return; 
     }
 
-    setPageRefState(s => ({
+    setPageRefState && setPageRefState(s => ({
       ...s,
       [props.ID]: ref.current,
     }));
@@ -46,7 +59,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
     const handlePlay = () => { 
       onPlayerStart && onPlayerStart(ref.current);
     };
-    const handleEnd = () => { 
+    const handleEnd = () => {  
       onPlayerEnded &&
         onPlayerEnded(ref.current, {
           ...args,
@@ -87,11 +100,9 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
         ref.current.addEventListener("timeupdate", handleTimeUpdate);
         console.log("added event listeners", listeners);
       }
-
- 
       return listen.concat("ended");
     });
-  }, [onProgress, onPlayerStop, args, onPlayerStart]);
+  }, [onProgress, source,src, onPlayerStop, args, onPlayerStart]);
 
   if (video) {
     return (
@@ -105,7 +116,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
   return (
     <Box sx={{ width: "fit-content" }} {...props}>
       <audio {...args} src={src} ref={ref}></audio>
-      {args.debug && <pre>{JSON.stringify(args,0,2)}</pre> } 
+      {args.debug && <pre>{JSON.stringify(args,0,2)}</pre> }   
     </Box>
   );
 };

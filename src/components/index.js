@@ -14,6 +14,8 @@ import PillMenu, { Pill } from "./PillMenu/PillMenu";
 import ConnectionDrawer from "./ConnectionDrawer/ConnectionDrawer";
 import StateDrawer from "./StateDrawer/StateDrawer";
 import ScriptDrawer from "./ScriptDrawer/ScriptDrawer";
+import ApplicationTree from "./ApplicationTree/ApplicationTree";
+import ApplicationForm from "./ApplicationForm/ApplicationForm";
 import LibraryTree from "./LibraryTree/LibraryTree";
 import PageTree from './PageTree/PageTree'
 
@@ -29,6 +31,7 @@ export {
   ChipBox,
   TabButton,
   LibraryTree,
+  ApplicationForm,
   DeleteConfirmMenu,
   ConnectionModal,
   PopoverPrompt,
@@ -67,6 +70,7 @@ export {
   ComponentPanel,
   ComponentSettings,
   Text,
+  ApplicationTree,
   DATA_TYPES,
   TextInput
 }

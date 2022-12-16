@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from 'react-router-dom';
 import {
   createTheme,
   useTheme,
@@ -23,12 +24,17 @@ import {
 } from "@mui/icons-material";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Helmet } from "react-helmet";
-import { Flex, Text, Spacer, TinyButton } from ".."; 
+import { Flex, Text, Spacer, DeleteConfirmMenu, TinyButton } from ".."; 
 import { Json } from "../../colorize"; 
 import { objectReduce } from "../library/util";
 import { getSettings } from '../library/util';
 import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
 import { uniqueId } from "../library/util";
+import Observer from "../../util/Observer";
+import { Icons } from '../library/icons';
+
+export const propertiesLoadedEvent = new Observer("scroll");
+
 
 const Layout = styled(Box)(({ theme }) => ({
   margin: 0,
@@ -44,14 +50,14 @@ const PreviewPane = (props) => {
     onMouseLeave={() => setHover(false)}
       
       >
-      <Box 
-
+      <TinyButton 
+        icon={on ? Close : Edit}
         onClick={() => { 
           setQueryState(s => ({...s, selectedComponent: on ? null : selectedComponent}));
         }}
         sx={{
           position: 'absolute',
-          right: 0,
+          right: 40,
           top: 0,
           backgroundColor: '#e0e0e0',
           opacity: hover ? 0.25 : (on ? 1 : 0),
@@ -65,7 +71,7 @@ const PreviewPane = (props) => {
             opacity: 1,
           }
         }}
-      >{on ? <Close /> : <Edit />}</Box>
+            />
       {children}
     </Box>
   }
@@ -103,6 +109,7 @@ const Preview = ({
 
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
+
 const ComponentTree = ({
   selectedPage,
   preview,
@@ -111,17 +118,15 @@ const ComponentTree = ({
   appContext,
   themes = [],
   hilit,
-  loud,
   pageClientState, 
   setPageClientState,
-  setLoud,
   setEditorState,
   editorState, 
   pageResourceState, 
   getPageResourceState,
   setPageResourceState,
-
-   
+  onEventDelete,
+  loadID
 
 }) => {
   const componentTree = selectedPage?.components;
@@ -129,49 +134,64 @@ const ComponentTree = ({
     queryState = {},
     setQueryState,
     createBreadcrumbs, 
-    Shout
-  } = React.useContext(AppStateContext);
-  const { selectedComponent = {} } = queryState;
-
-  const stateProps = !selectedPage?.state
-    ? null
-    : objectReduce(selectedPage.state); 
-    
-  // const [box, setOpenTraceLog] = React.useState({});
-  // const [disableLinks, setDisableLinks] = React.useState(false);
-  // const [showSettings, setShowSettings] = React.useState(false);
-  // const [messages, setMessages] = React.useState([]);
-  // const [showTrace, setShowTrace] = React.useState(false);
-  // const [pageError, setPageError] = React.useState(null);
-  // const [message, setMessage] = React.useState('Unknown action');
-
-
-  const [ 
-
-    setOpenTraceLog, 
-    setDisableLinks, 
-    setShowSettings, 
-    setShowTrace ,
+    Shout,
+    shout,
+    jsonLog, 
+    loud,
+    setLoud,
+    pageRefState, 
+    setPageRefState,
+    sessionID,
+    openTraceLog, 
     setMessages, 
+    setOpenTraceLog,
+    setPageError, 
+    pageError ,
+    setDisableLinks,
+    disableLinks,
+    appBusy
+  } = React.useContext(AppStateContext);
+  const { page, selectedComponent = {} } = queryState;
 
+  const targetPage = preview ? page : selectedPage;
+  
+
+  const stateProps = !targetPage?.state
+    ? null
+    : objectReduce(targetPage.state); 
+     
+  const [   
+    setShowSettings, 
+    setShowTrace ,  
     setMessage, 
-    setPageError
-  ] = !setEditorState ? [] : ['box', 'disableLinks', 'showSettings', 
-      'showTrace', 'messages', 'message', 
-      'pageError']
+  ] = !setEditorState ? [] : [
+     'showSettings', 
+      'showTrace', 'message']
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const { box, disableLinks, showSettings, messages, message, showTrace, pageError } = editorState ?? {};
+  const { showSettings,  message, showTrace} = editorState ?? {};
 
 
-
+  const location = useLocation()
 
 
   const [pageModalState, setPageModalState] = React.useState({});
-  const [pageRefState, setPageRefState] = React.useState({});
+  // const [pageRefState, setPageRefState] = React.useState({});
   const [pageLoaded, setPageLoaded] = React.useState(0);
   const [menuCommand, setMenuCommand] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const [loadState, setLoadState] = React.useState({
+    editorID: null,
+    editorChanges: 0,
+    applicationID: null,
+    applicationChanges: 0,
+  })
+
+  const { editorID, editorChanges ,
+    applicationID,
+    applicationChanges
+  } = loadState;
 
 
   const open = Boolean(anchorEl) ;
@@ -193,72 +213,88 @@ const ComponentTree = ({
   const { handleComponentEvent } = usePageContext(); 
 
   const defaultTheme = useTheme();
-  React.useEffect(() => { 
-  // if (!!pageClientState && Object.keys(pageClientState).length) return; 
-  //   if (pageLoaded) return;
-    // !!stateProps && setPageClientState(s => ({...s, ...stateProps})); 
-  }, [stateProps, pageLoaded, pageClientState]);
+  
+
+  React.useEffect(() => {
+    // runs on location, i.e. route, change
+    console.log('handle route change here', location)
+    setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
+  }, [location])
+
+  React.useEffect(() => {   
+     
+
+    if (queryState.pageLoaded) return 
+
+    setPageClientState(state => {     
+      if ( !!stateProps && !!Object.keys(stateProps).length ) {  
+        return stateProps;
+      } 
+      return state;
+    });
+
+    setQueryState(qs => ({...qs, appContext, pageLoaded: true}))  ;
+
+  }, [
+    stateProps, 
+    appContext,
+    propertiesLoadedEvent,
+    queryState.pageLoaded,    
+    pageClientState
+  ]);
 
    const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
 
   // const getPageResourceState = () => pageResourceState
 
-  const loadPage = () => { 
+  const loadPage = React.useCallback(() => { 
+
+    console.log ({ 
+      pageRefState
+    })
     // alert (JSON.stringify(stateProps))
     setPageError && setPageError(null);
-    // setMessages([])
-    !!stateProps && setPageClientState(s => stateProps); 
+    // setMessages([]) 
+    !!stateProps && setPageClientState(s => stateProps);   
+    
     setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: true})) 
-  }
+  }, [pageLoaded, setPageError, stateProps,  setPageClientState])
 
 
   let path;
-  if (selectedPage) {
-    path = createBreadcrumbs(appContext.pages, selectedPage);
+  if (targetPage) {
+    path = createBreadcrumbs(appContext.pages, targetPage);
   }
 
-  if (!componentTree)
-    return <Alert sx={{ m: 1 }}>Select a page to see its components</Alert>;
+  // if (appBusy) {
+  //   return <>Updating component set...</>
+  // }
+
+  if (!queryState.pageLoaded || appBusy) {
+    return <>Loading...</>
+  }
+
+  // if (!componentTree)
+  //   return <Alert sx={{ m: 1 }}>Select a page to see its components</Alert>;
 
   // components with no parents
-  const components = componentTree.filter((f) => !f.componentID);
+  const components = componentTree?.filter((f) => !f.componentID);
 
   // setting themes
-  const selectedTheme = themes.find((f) => f.name === selectedPage?.ThemeName);
-  const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
+  const selectedTheme = themes.find((f) => f.name === targetPage?.ThemeName);
+  const theme = !targetPage?.ThemeName ? defaultTheme : selectedTheme;
   const pageTheme = createTheme(theme);
- 
-  if (!queryState.pageLoaded) {
-    return <Flex sx={{ width: '100vw', height: '100vh', justifyContent: 'center'}}>
-    <Avatar className="App-logo" onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
-    Loading....
-    </Flex>
-  }
   
-  const shout =  async(j, m = 'message') => {
-    setMessages && setMessages((messages || []).concat({
-      json: j,
-      message: m
-    }))
-    if (loud) {
-      
-        await Shout (<Stack>
-          {/* <Text>{m}</Text> */}
-          <pre>
-          {JSON.stringify(j,0,2)}
-          </pre>
-      </Stack>, m)
-    }
-    console.log("%s\n------------------\n%o", m, j)
-  } 
-
   if (pageError) {
     return <>
     <Alert severity="error">{pageError}</Alert> 
+      <Close onClick={() => setPageError && setPageError(null)} />
       <hr />
-    {messages.map((msg, i) => <Box key={i}>
+    {jsonLog.map((msg, i) => <Box key={i}>
       <Flex>
       <Text small active>{msg.message}</Text>
+      <Spacer />
+
       </Flex>
       <hr />
       <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
@@ -267,33 +303,52 @@ const ComponentTree = ({
     </>
   }
 
+  const renderComponentProps = { 
+    selectedPage: targetPage,
+    selectedComponent,
+    preview,
+    queryState,
+    setQueryState, 
+    queryState, 
+    loadPage,
+    hilit
+  }
 
   return (
     <ThemeProvider theme={pageTheme}>
       <PageStateContext.Provider
         value={{
+
+
           disableLinks,
+
           // "persistent" state values
+          
+          handleClick,
+          setPageError,
+          loud,
+          shout,
+
+
+          Alert: Shout,
+          selectedPage: targetPage,
+          appContext,
+
+
           pageModalState,
           setPageModalState,
-          shout,
           pageRefState,
           setPageRefState,
-          handleClick,
           pageClientState,
           getPageClientState,
           setPageClientState,
-          setPageError,
           getPageResourceState,
           pageResourceState, 
           setPageResourceState,
-          loud,
-          Alert: Shout,
-          selectedPage,
-          appContext,
           setQueryState,
           queryState,
           preview
+
         }}
       >
         {/* document title  */}
@@ -305,41 +360,48 @@ const ComponentTree = ({
             <link rel="apple-touch-icon" href={appContext.Photo}/>
           </Helmet>
         )}
-
+  
         <Box sx={{position: 'relative'}}>
 
-          {components.sort(componentOrder).map((c) => (
-            <RenderComponent
-              selectedPage={selectedPage}
-              selectedComponent={selectedComponent}
-              preview={preview}
-              setQueryState={setQueryState}
-              key={c.ComponentName}
-              component={c}
-              hilit={hilit}
-              trees={componentTree}
-            />
-          ))}
+            {components?.sort(componentOrder).map((c) => (
+              <RenderComponent
+                key={c.ComponentName}
+
+                {...renderComponentProps}
+
+
+                componentList={componentTree}
+                component={c}
+
+              />
+            ))}
+
  
           <Collapse in={showTrace}>
-          {!!messages?.length && <Button onClick={() =>{
+          {!!jsonLog?.length && <Button onClick={() =>{
             setMessages([]);
             setOpenTraceLog({})
           }}>clear stack trace</Button>}
-            {!!showTrace && messages.map((msg, i) => {
+            {!!showTrace && jsonLog.map((msg, i) => {
               const id = 'key' + i
               return <Box key={i}>
-                <Flex onClick={() => {
+                <Flex>
+                  <TinyButton icon={ExpandMore} deg={openTraceLog[id] ? 180 : 0} /> 
+                  <Text onClick={() => {
                   setOpenTraceLog(s => ({
                     ...s,
-                    [id]: !box[id]
+                    [id]: !openTraceLog[id]
                   }))
-                }}>
-                  <TinyButton icon={ExpandMore} deg={box[id] ? 180 : 0} /> 
-                  <Text small active>{msg.message}</Text>
+                }} small active>{msg.message}</Text>
+
+                {!!msg.json?.trigger &&  <DeleteConfirmMenu 
+                    message={`Delete "${msg.json.trigger.event}.${msg.json.trigger.action?.type}"?`}    
+                  onDelete={e =>  onEventDelete(msg.json.trigger.resourceID, msg.json.trigger.ID, 'connection', true) } /> }
+
+
                 </Flex>
               <hr />
-              <Collapse in={box[id]}>
+              <Collapse in={openTraceLog[id]}>
               <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
               <hr />
               </Collapse>
@@ -363,22 +425,27 @@ const ComponentTree = ({
       </PageStateContext.Provider>
     </ThemeProvider>
   );
-};
+}; 
 
-const RenderComponent = ({
+
+export const RenderComponent = ({
   component,
-  trees = [],
+  componentList = [],
   preview,
   hilit,
   selectedComponent,
   selectedPage,
   setQueryState,
 }) => {
+  const [loaded, setLoaded] = React.useState(!1);
+
   const on = selectedComponent?.ID === component.ID;
-  const kids = trees.filter((t) => t.componentID === component.ID);
+  const kids = componentList.filter((t) => t.componentID === component.ID);
   const { Library } = React.useContext(AppStateContext);
 
   const { attachEventHandlers } = usePageContext();
+ 
+
   if (! Library[component.ComponentType]) {
     return <Alert sx={{m: 2}}>Waiting for {component?.ComponentType} definition...</Alert>
   }
@@ -392,7 +459,7 @@ const RenderComponent = ({
   function findMatches(tag,  matches = []) {  
     const res = selectedPage?.components.filter(f => f.componentID === tag.ID);
     matches.push(tag)
-    if (res.length) {
+    if (res?.length) {
      res.map(t => {
         findMatches(t, matches)
       })
@@ -400,7 +467,11 @@ const RenderComponent = ({
     return matches
   }
 
-  const desc = findMatches(component)
+  const desc = findMatches(component);
+
+
+
+
 
   return (
     <>
@@ -425,7 +496,7 @@ const RenderComponent = ({
                   selectedPage={selectedPage}
                   setQueryState={setQueryState}
                   selectedComponent={selectedComponent}
-                  trees={trees}
+                  componentList={componentList}
                   key={c.ComponentName}
                   component={c}
                 />
@@ -437,6 +508,9 @@ const RenderComponent = ({
 
      {!!settings.debug && <> 
        
+      [<pre>
+      {JSON.stringify(settings,0,2)}
+      </pre> ]
       [<pre>
       {JSON.stringify(component,0,2)}
       </pre> ]

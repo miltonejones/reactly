@@ -39,13 +39,14 @@ const ReactlyComponentList = ({ children, ...props }) => {
     }
   }
 
-  const selectedIndex = !args.selectedIndex 
+  const index = props.selectedIndex || args.selectedIndex;
+
+  const selectedIndex = !index
     ? -1
-    : args.selectedIndex - 1;
+    : index - 1;
 
  return (
-   <>
- {/* {JSON.stringify(parsed)} */}
+   <> 
    <ReactlyComponent component={List} {...props} subheader={header}> 
  {parsed?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;

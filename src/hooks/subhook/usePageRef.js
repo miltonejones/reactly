@@ -1,47 +1,64 @@
 import * as React from 'react';
 import { PageStateContext } from '../PageStateContext'; 
+import { AppStateContext } from '../AppStateContext';
 
 
 export const usePageRef = () => {
-
-  const {
+ 
+  const { 
+    Alert,
+    queryState,
     pageRefState, 
-    setPageRefState,
     selectedPage,
-    preview,
-    shout,
-    Alert
-  } = React.useContext(PageStateContext);
-
+    appContext,
+    setPageRefState,
+  } = React.useContext(AppStateContext); 
+ 
 
   const getRef = React.useCallback((ID) => {
     return pageRefState[ID]
   }, [pageRefState])
 
 
-  const execRefByName = React.useCallback((name, fn) => {
+  const execRefByName = React.useCallback((name, fn, scriptName = 'unknown') => { 
+    if (!name) {
+      return Alert(<>
+      Component cannot be referenced without a name
+      <pre>
+        {fn?.toString()}
+      </pre>
+      </>)
+    }
     setPageRefState(refState => {
-      const component = selectedPage.components.find(f => f.ComponentName === name);
+      const component = ((selectedPage?.components||[]).concat((appContext?.components||[])) )
+          .find(f => f.ComponentName === name);
       if (component) {
         const ref = refState[component.ID]
-        fn(ref);
+        fn && fn(ref);
       } else {
-        Alert ('Could not find component ' + name);
-        console.log ({ refState })
+        Alert (<>
+          Could not find component {name} on page {selectedPage?.PageName}
+        <pre>
+          {fn?.toString()}
+        </pre>
+        </>, scriptName + '.execRefByName');
+        console.log ({ refState, appContext })
       }
       return refState;
     });
     
-  }, [selectedPage])
+  }, [queryState])
  
 
-  const getRefByName = React.useCallback((name) => {
+  const getRefByName = React.useCallback((name) => { 
     const component = selectedPage.components.find(f => f.ComponentName === name);
     if (component) {
       return getRef(component.ID)
     }
-    Alert ('Could not find component ' + name)
-  }, [selectedPage, getRef])
+    Alert (<>
+    Could not find component {name} on page {selectedPage?.PageName}
+    </>, 'getRefByName'); 
+  }, [queryState, getRef])
 
 
   return {

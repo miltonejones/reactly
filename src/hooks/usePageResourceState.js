@@ -1,12 +1,12 @@
 import React from 'react';
-import { PageStateContext } from "./usePageContext";
+import { AppStateContext } from "./AppStateContext";
 import { getSettings } from '../components/library/util';
 
 
 
 
 export const usePageResourceState = (settings) => {
-  const { appContext, setPageResourceState, pageResourceState } = React.useContext(PageStateContext);
+  const { appContext, setPageResourceState, pageResourceState } = React.useContext(AppStateContext);
 
 
   let bindingObject = {}, dataRows = [], resource, columnMap, typeMap;

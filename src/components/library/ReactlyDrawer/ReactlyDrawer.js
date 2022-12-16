@@ -8,13 +8,16 @@ import { AppStateContext } from "../../../hooks/AppStateContext";
 import { recurse } from '../util';
   
 const ReactlyComponentDrawer = ({ children, ...props }) => {
-  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
   const { selectedComponent, page } = queryState;
 
 
-  const childOpen = recurse(page, selectedComponent, props) ; 
+  const childOpen = recurse({
+    page,
+    app
+  }, selectedComponent, props) ; 
  
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
@@ -30,6 +33,7 @@ const ReactlyComponentDrawer = ({ children, ...props }) => {
   
 
  return (
+ 
    <ReactlyComponent 
    
    onClose={handleClose}
@@ -38,7 +42,7 @@ const ReactlyComponentDrawer = ({ children, ...props }) => {
    component={open || !preview ? Drawer : Faux} 
    >
       {children}
-   </ReactlyComponent>
+   </ReactlyComponent> 
  );
 }
 

@@ -4,7 +4,7 @@ import { AppStateContext } from './AppStateContext';
 import { PageStateContext } from './usePageContext';
 
 export const useModalComponent = (props) => {
-  const { pageModalState, setPageModalState } = React.useContext(PageStateContext);
+  const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
   const { selectedComponent } = queryState;

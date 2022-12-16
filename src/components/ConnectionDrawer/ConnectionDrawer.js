@@ -567,13 +567,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
             />
 
-{/* selectedPage, 
-    component, 
-    onEventDelete, 
-    onChange, 
-    addedEvents,
-    connections, 
-    resources */}
+ 
           </Box>
         </Grid>} 
 
