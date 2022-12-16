@@ -22,7 +22,7 @@ import {
  ExpandMore,
  Settings
 } from "@mui/icons-material";
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext } from "../../hooks/AppStateContext"; 
 import { Helmet } from "react-helmet";
 import { Flex, Text, Spacer, DeleteConfirmMenu, TinyButton } from ".."; 
 import { Json } from "../../colorize"; 
@@ -110,7 +110,10 @@ const Preview = ({
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
 
-const ComponentTree = ({
+
+
+
+const ComponentTreeBranch = ({
   selectedPage,
   preview,
   loaded,
@@ -126,7 +129,7 @@ const ComponentTree = ({
   getPageResourceState,
   setPageResourceState,
   onEventDelete,
-  loadID
+  observer
 
 }) => {
   const componentTree = selectedPage?.components;
@@ -219,8 +222,18 @@ const ComponentTree = ({
     // runs on location, i.e. route, change
     console.log('handle route change here', location)
     setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
-  }, [location])
+  }, [location]);
 
+
+  React.useEffect(() => {
+    if (!observer) return;
+    const sub = observer.subscribe(val => window.alert(val));
+    // alert ('subscribed!')
+    return () => sub.unsubscribe()
+  }, [observer]);
+
+
+  
   React.useEffect(() => {   
      
 
@@ -427,6 +440,20 @@ const ComponentTree = ({
   );
 }; 
 
+
+class ComponentTree extends React.Component {
+
+  observer = new Observer('appload')
+  componentDidMount() {
+    // alert ('loaded!')
+    this.observer.next('loaded??!')
+  }
+
+
+  render() {
+    return <ComponentTreeBranch {...this.props}  observer={this.observer}/>;
+  }
+}
 
 export const RenderComponent = ({
   component,

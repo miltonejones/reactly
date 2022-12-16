@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { PageStateContext } from '../PageStateContext';
+import { Box } from '@mui/material'; 
 import moment from 'moment';
 import { useOpenLink } from '.';
 import { usePageRef } from '.';
@@ -11,6 +12,7 @@ export const useRunScript = () => {
  
   const { 
     setApplicationClientState ,
+    applicationClientState,
     queryState,
     Alert,
     shout,
@@ -26,11 +28,50 @@ export const useRunScript = () => {
   const { getRefByName, execRefByName, getRef } = usePageRef();
   const { getResourceByName, execResourceByName } = useDataResource()
 
+  
+  const getApplicationScripts = () => {
+    return appContext.pages.reduce((out, pg) => {
+      if (!pg.scripts?.length) {
+        return out;
+      }
+      out.push({
+        label: pg.PageName
+      })
+      out = out.concat((pg.scripts || []).map(s => ({
+        ...s,
+        label: s.name,
+        page: pg.PageName,
+        ID: s.ID
+      })));
+      return out;
+    }, [])
+  }
+
+  const scriptList = getApplicationScripts()
+
+
+  const applicationScriptRenderOption = (props, option) => {  
+    if (!option.page) {
+      return <Box {...props}><b>{option.label}</b></Box>
+    }
+    return <Box {...props} sx={{ml: 2}}>{option.label}</Box>
+  }
+ 
+  const applicationScriptOptionLabel =  (option) => {
+    const js = scriptList.find(s => s.ID === (option.ID || option));
+    if (js?.page) {
+      return `${js.page}.${js.label}`
+    }
+    return '--none--' + JSON.stringify(option)
+  }
+
+ 
+
+
 
   const handleScriptRequest = async (block, opts, title) => { 
 
-    try {
-
+    try { 
       // call that function to get the client function
       const action = eval(`(${block})()`); 
       if (block.indexOf('async') > -1) { 
@@ -60,7 +101,7 @@ export const useRunScript = () => {
     return executeScript(scr.ID, options)
   }
 
-  const executeScript = (scriptID, options, trigger) => {
+  const executeScript = async (scriptID, options, trigger) => {
 
 
     const { appContext } = queryState;
@@ -81,7 +122,8 @@ export const useRunScript = () => {
       setState: setPageClientState, 
       data: options,
       application: {
-        setState: setApplicationClientState
+        setState: setApplicationClientState,
+        state: applicationClientState
       },
 
       api: { 
@@ -104,9 +146,11 @@ export const useRunScript = () => {
         moment
       }
     }
+
+
     // console.log ({opts, index})
     if (scr) {  
-      return handleScriptRequest(`function runscript() {
+      return await handleScriptRequest(`function runscript() {
         return  ${scr.code}
       }`, opts, scr.name)
     } 
@@ -116,6 +160,11 @@ export const useRunScript = () => {
 
   return {
     executeScriptByName,
-    executeScript
+    executeScript,
+    handleScriptRequest,
+    getApplicationScripts,
+    applicationScriptRenderOption,
+    applicationScriptOptionLabel,
+    scriptList
   }
 }

@@ -165,6 +165,11 @@ const CellContent = ({ columnMap, typeMap, displayKey, value, selected,  childre
     }}/>
   }
 
+  if (displayType?.type === 'Icon') {
+    const Icon = Icons[children];
+    return !Icon ? <>heart</> : <Icon />
+  }
+
   return <>{children}</>
 }
 

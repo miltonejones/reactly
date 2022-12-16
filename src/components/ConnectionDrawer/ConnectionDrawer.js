@@ -7,6 +7,7 @@ import { Json } from '../../colorize';
 import { useEditor } from '../../hooks/useEditor';
 import ComponentEvents from '../ComponentEvents/ComponentEvents';
 import { JsonModal } from '../../colorize';
+import { useRunScript } from '../../hooks/subhook/useRunScript';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -126,9 +127,16 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
 
 const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
     onTermDrop, onTermAdd, onChange, setDirty, resourceCommit }) => {
-  const { ID, connectionID, name, path, format, method, values, columns, node } = resource;
+  const { ID, connectionID, name, path, format, method, values, columns, transform, node } = resource;
   const handleChange = key => e => onChange(key, !e.target ? e : e.target.value);
 
+
+  const {
+    getApplicationScripts,
+    applicationScriptRenderOption,
+    applicationScriptOptionLabel,
+    scriptList
+  } = useRunScript()
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -162,6 +170,16 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
            
           <Grid item xs={9}>
               <PillMenu options={['rest', 'querystring']} onChange={handleChange('format')} value={format} />
+          </Grid>
+
+          <Grid item xs={12}>     
+          <QuickSelect 
+                value={transform}
+                options={scriptList} 
+                getOptionLabel={applicationScriptOptionLabel} 
+                renderOption={applicationScriptRenderOption}  
+                onChange={handleChange('transform')} 
+              />
           </Grid>
         </Grid>
 
@@ -286,8 +304,13 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
   const [dirty, setDirty] = React.useState(null)
   const [answer, setAnswer] = React.useState(null)
   const [fields, setFields] = React.useState([])
-  const { ID, connectionID, path, format, method, values, columns, node } = selected;
+  const { ID, connectionID, path, format, method, transform, values, columns, node } = selected;
  
+    const {
+      executeScript,
+      getApplicationScripts 
+    } = useRunScript()
+
 
   
   const previewConnectionRequest = async (format) => {
@@ -301,10 +324,23 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
 
     const endpoint = `${url}${slash}${qs}`;
-    // return alert(endpoint)
+
 
     const response = await fetch(endpoint); 
     const json = await response.json();
+
+    if (transform) {
+      const scriptList = getApplicationScripts()
+      const script = scriptList?.find(f => f.ID === transform.ID);
+ 
+      const res = await executeScript( script.ID, json )
+ 
+      return setAnswer(res); 
+
+    }
+
+
+    // return alert(endpoint)
     setAnswer(json);
     
   }

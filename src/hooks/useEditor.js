@@ -306,7 +306,8 @@ export const useEditor = (apps) => {
       const dressed = getComponent(sourcePage, component);
       const redressed = dressed.map(c => ({
         ...c, 
-        pageID: destID
+        pageID: destID,
+        events: []
       }))
       
       // alert (JSON.stringify(redressed))

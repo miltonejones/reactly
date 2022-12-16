@@ -34,8 +34,6 @@ export const usePageContext = () => {
   const { 
     
 
-    preview,
-
     handleClick,
     loud
 
@@ -47,6 +45,8 @@ export const usePageContext = () => {
     pageResourceState, 
     setPageResourceState,
     getPageResourceState,
+
+    preview,
 
     pageModalState, 
     setPageModalState,
@@ -76,6 +76,7 @@ export const usePageContext = () => {
   const { getRefByName, execRefByName, getRef } = usePageRef();
 
   const {
+    getApplicationScripts,
     executeScriptByName,
     executeScript
   } = useRunScript();
@@ -114,8 +115,8 @@ export const usePageContext = () => {
     return node;
   }
   
-  const executeComponentRequest = async (connections,  qs, res, slash = '?') => {
-    const  { events, connectionID, path, node, columns } = res;
+  const executeComponentRequest = async (connections, qs, res, slash = '?') => {
+    const  { events, connectionID, path, node, columns, transform } = res;
     const connection = connections.find(f => f.ID === connectionID);
     const url = new URL(path, connection.root); 
     const endpoint = `${url}${slash}${qs}`; 
@@ -137,7 +138,19 @@ export const usePageContext = () => {
 
 
     const response = await fetch(endpoint); 
-    const json = await response.json();
+    let json = await response.json();
+
+    
+    if (transform) {
+      const scriptList = getApplicationScripts()
+      const script = scriptList?.find(f => f.ID === transform.ID);
+ 
+      json = await executeScript( script.ID, json )
+ 
+     console.log ({json})
+    }
+
+
 
     const rows = !node ? json : drillPath(json, node);
 
@@ -173,13 +186,7 @@ export const usePageContext = () => {
     })
    
   } 
- 
-  const getApplicationScripts = () => { 
-    return appContext.pages.reduce((out, page) => {
-      out = out.concat(page.scripts || []);
-      return out;
-    }, [])
-  } 
+  
 
   const handleComponentEvent = async (event, eventProps, events, over) => {
     const { 
@@ -384,24 +391,42 @@ export const usePageContext = () => {
             }
 
 
-            executeComponentRequest(connect || appContext.connections, 
+            // executeComponentRequest(connect || appContext.connections, 
+            //   qs, resource, resource.format === 'rest' 
+            //   ? '/'
+            //   : '?')
+            //   .then(async (records) => {  
+            //     const datum = {
+            //       resourceID: resource.ID,
+            //       name: resource.name,
+            //       records
+            //     }
+            //     await hello (resource, 'data received')
+            //     if (!pageResourceState) { 
+            //       return setPageResourceState([datum])
+            //     }
+            //     setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
+            //       .concat(datum)) 
+            //   })
+
+            const records = await executeComponentRequest(connect || appContext.connections, 
               qs, resource, resource.format === 'rest' 
               ? '/'
               : '?')
-              .then(async (records) => {  
-                const datum = {
-                  resourceID: resource.ID,
-                  name: resource.name,
-                  records
-                }
-                await hello (resource, 'data received')
-                if (!pageResourceState) { 
-                  return setPageResourceState([datum])
-                }
-                setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
-                  .concat(datum)) 
-              })
-            
+           
+            const datum = {
+              resourceID: resource.ID,
+              name: resource.name,
+              records
+            }
+          
+            await hello (resource, 'data received')
+            if (!pageResourceState) { 
+              return setPageResourceState([datum])
+            }
+            setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
+              .concat(datum)) 
+              
             break;
           case "scriptRun":  
             executeScript(trigger.action.target, options, trigger );  
