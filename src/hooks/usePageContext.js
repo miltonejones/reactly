@@ -220,9 +220,10 @@ export const usePageContext = () => {
         const pageParameters = createPageParams(trigger.action.params, options)
  
 
-
-        await hello ({ trigger, routes, pageParameters, queryState: rest}, 
-              `Trigger ${index}. ${trigger.event}.${trigger.action.type} [${trigger.action.target}]`)
+        if (trigger.event !== 'onProgress') {
+          await hello ({ trigger, routes, pageParameters, queryState: rest}, 
+                `Trigger ${index}. ${trigger.event}.${trigger.action.type} [${trigger.action.target}]`)
+        }
       
         switch(trigger.action.type) {
           case "methodCall": 

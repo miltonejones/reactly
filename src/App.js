@@ -243,26 +243,25 @@ function RenderComponent({ preview, component: Component, ...props}) {
   
 
   const shout =  async( j, m = 'message') => {
-      setMessages(msgs => msgs.concat({
-        json: j,
-        message: m
-      })
-    
-    )
     if (loud) {
       
-        await modal.Alert (<Stack>
-          {/* <Text>{m}</Text> */}
-          <pre>
-          {JSON.stringify(j,0,2)}
-          </pre>
-      </Stack>, m)
+      setMessages(msgs => msgs.concat({
+        json: j,
+            message: m
+          }) 
+        )
+      //   await modal.Alert (<Stack>
+      //     {/* <Text>{m}</Text> */}
+      //     <pre>
+      //     {JSON.stringify(j,0,2)}
+      //     </pre>
+      // </Stack>, m)
       console.log("%s\n------------------\n%o", m, j)
     }
   } 
 
   const setAppData = data => setApplicationData(s => data); // store.setItem('page_dyno_items', JSON.stringify(data)); 
-
+ 
 
 
   const getPageResourceState = () => pageResourceState;

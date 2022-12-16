@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Avatar, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
+import { styled, Box, Avatar, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { FormatListBulleted } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
@@ -50,6 +50,13 @@ const ReactlyComponentList = ({ children, ...props }) => {
   const selectedIndex = props.selectedIndex === undefined 
     ? args.selectedIndex 
     : props.selectedIndex;
+
+
+ if (!dataRows?.length) {
+  return <Box sx={{m: 2}}>
+    {args.empty_message}
+  </Box>
+ }  
 
 
  return (
