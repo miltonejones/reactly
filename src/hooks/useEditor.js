@@ -13,8 +13,9 @@ export const useEditor = (apps) => {
   const findProg = ID => applications.find(a => a.ID === ID);
 
   const updateProg = (prog) =>{
+    
     const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
-  
+ 
     setApplications(updated);
     app.setAppData(updated)
     app.setDirty(true)
@@ -57,9 +58,9 @@ export const useEditor = (apps) => {
 
       const component = page.components.find((c) => c.ID === componentID);
 
-      // if (!component) {
-      //   return edit (page, app);
-      // }
+      if (!component) {
+        return edit (page, app);
+      }
       
 
       await edit(component, page, app);
@@ -95,12 +96,10 @@ export const useEditor = (apps) => {
 
   const setProgProps = async (appID, props) => { 
     editProg(appID, async (app) => { 
-      app = {
-        ...app,
-        ...props
-      }
+      Object.assign(app, props)  
     })
   }
+ 
 
   const setTheme = (appID, theme, name) => {
     editProg(appID, async (app) => {

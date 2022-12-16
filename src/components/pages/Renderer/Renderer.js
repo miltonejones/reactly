@@ -110,6 +110,7 @@ const Renderer = ({ applications: apps = {} }) => {
       loaded={loaded} 
       {...componentTreeProps} 
       setLoaded={setLoaded} 
+      themes={appContext?.themes || []}
       appContext={appContext} 
       selectedPage={selectedPage} />}
   

@@ -14,7 +14,8 @@ const ApplicationForm = ({ applications, importable }) => {
   const {
     removeProgItem,
     queryState,
-    appContext
+    appContext,
+    setQueryState
   } = React.useContext(AppStateContext)
  
   const [settings, setSettings] = React.useState({
@@ -81,6 +82,7 @@ Home Page
       const { dirty, ...props } = settings;
       editor.setProgProps(appContext.ID, props)
       setSettings({ ...settings, dirty: !dirty });
+      setQueryState(s => ({...s, appLoaded: false}))
     }} endIcon={<Save />} variant="contained"
     disabled={!settings.dirty}>Save</TextBtn>
   </Flex>
