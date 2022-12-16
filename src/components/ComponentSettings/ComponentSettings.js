@@ -204,23 +204,7 @@ export const ComponentInputBody = (props) => {
 
   const { bindableProps }  = Library [component.ComponentType]
   const header = <>  
-{/* <Stack>
-<pre>
- {JSON.stringify({node},0,2)}
- </pre> 
- <pre>
- {JSON.stringify({args: args[label]},0,2)}
- </pre>
- <pre>
- {JSON.stringify({selector},0,2)}
- </pre> 
-</Stack> */}
-{/* <pre>
- {JSON.stringify({initialProp},0,2)}
- </pre> 
-<pre>
- {JSON.stringify({value},0,2)}
- </pre>  */}
+ 
   <Text small>{title}</Text>
   </>
 
@@ -257,21 +241,7 @@ export const ComponentInputBody = (props) => {
   if (CustomInput) {
     return <>
     <CustomInput {...inputProps} />
-    {/* <pre>
- {JSON.stringify({initialProp},0,2)}
- </pre> 
-<pre>
- {JSON.stringify({value},0,2)}
- </pre> 
-<pre>
-[ {JSON.stringify({node},0,2)}]
- </pre> 
-<pre>
- {JSON.stringify({css},0,2)}
- </pre> 
-<pre>
- {JSON.stringify({selector},0,2)}
- </pre>  */}
+ 
     </> 
   } 
 
@@ -333,8 +303,7 @@ export const ComponentInputBody = (props) => {
     value={attempt(value)} 
     placeholder={title}
   />
-  {/* [{JSON.stringify(args)}]
- [{JSON.stringify(value)}] */}
+ 
   {!!chip && <StateComponentInput menu {...inputProps}
     handleChange={val => handleChange(`${attempt(value)} {${val}} `)}
     header={<i />}/>}

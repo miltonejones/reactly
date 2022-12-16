@@ -116,8 +116,8 @@ console.log ({ stateList, target: state.target })
         handleChange={value => setState(s => ({...s, value}))}
       />
 
-[{JSON.stringify(event)}] 
-{state.target}
+{/* [{JSON.stringify(event)}] 
+{state.target} */}
 
       <Flex>
         <Spacer />

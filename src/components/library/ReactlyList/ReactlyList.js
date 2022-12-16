@@ -47,17 +47,20 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
   const index = props.selectedIndex || args.selectedIndex;
 
-  const selectedIndex = !index
-    ? -1
-    : index;
+  const selectedIndex = props.selectedIndex === undefined 
+    ? args.selectedIndex 
+    : props.selectedIndex;
+
 
  return (
    <> 
+
+  {/* [ {index}/{props.selectedIndex}/{args.selectedIndex}] */}
    <ReactlyComponent component={List} {...props} subheader={header}> 
  {dataRows?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;
   const EndIcon = Icons[item.endIcon] ;
-  return <ListItem key={i} active={i === selectedIndex} 
+  return <ListItem key={i} active={i === Number(selectedIndex)} 
           selectedColor={args.selectedColor}
           >
           

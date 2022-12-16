@@ -176,8 +176,8 @@ const ListTableComponentInput = ({
     }
     return <pre>
       
-      [[{JSON.stringify(columnRes,0,2)}]]
-      [[{JSON.stringify(resources.map(f => f.ID),0,2)}]]
+      {/* [[{JSON.stringify(columnRes,0,2)}]]
+      [[{JSON.stringify(resources.map(f => f.ID),0,2)}]] */}
     
     </pre>
   }
@@ -272,7 +272,7 @@ const ListTableComponentInput = ({
 
 <pre>
 
-[{JSON.stringify(state,0,2)}]
+{/* [{JSON.stringify(state,0,2)}] */}
 </pre>
 
         {/* form for setting request variables, when needed  */}

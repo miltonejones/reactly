@@ -106,9 +106,9 @@ const drawer = modals?.find(f => f.ID === state.target);
         })}>Save</TextBtn>
       </Flex>
     
-   [ <pre>
+   {/* [ <pre>
     {JSON.stringify(drawer,0,2)}
-    </pre>]
+    </pre>] */}
 
    </Layout>
  );
