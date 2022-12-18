@@ -193,16 +193,30 @@ export const Tiny = ({icon: Icon, hidden, ...props}) => {
 }
   
 
-export const Flex = styled(Box)(({ theme, nowrap, baseline, fullWidth, fullHeight, direction="row", wrap, spacing = 1 }) => ({
- display: "flex",
- height: fullHeight ? "100%" : '',
- width: fullWidth ? '100%' : 'inherit',
- alignItems: baseline ? "baseline" : "center",
- flexDirection: direction,
- gap: theme.spacing(spacing),
- whiteSpace: nowrap ? 'nowrap' : 'inherit',
- flexWrap: wrap ? "wrap" : "nowrap",
-}));
+export const Flex = styled(Box)(({ theme, maxWidth, nowrap, baseline, fullWidth, fullHeight, direction="row", 
+wrap, spacing = 1 }) => {
+  const obj = {
+    display: "flex",
+    height: fullHeight ? "100%" : '',
+    width: fullWidth ? '100%' : 'inherit',
+    alignItems: baseline ? "baseline" : "center",
+    flexDirection: direction,
+    gap: theme.spacing(spacing),
+    whiteSpace: nowrap ? 'nowrap' : 'inherit',
+    flexWrap: wrap ? "wrap" : "nowrap",
+   };
+
+   if (maxWidth) {
+    Object.assign(obj, {
+      width: maxWidth,
+      maxWidth,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis'
+    })
+   }
+
+   return obj;
+});
  
 export const Pane = styled(Card)(({ collapsed, theme }) => ({
  width: collapsed ? `calc(25% - 8px)` : `calc(100% - ${theme.spacing(8)})`,
@@ -405,9 +419,13 @@ export const TextInput = ({ sx, prompt, ...props }) => {
       {...props}
       component={Text}
       label={props.label}
-      onChange={value => props.onChange({ target: { value }})}
+      onChange={value => !!value && props.onChange({ target: { value }})}
 
-      >{props.value||props.label||props.placeholder}</PopoverPrompt>
+      >
+        <Flex maxWidth={300} nowrap
+        sx={{ '&:hover': {textDecoration: 'underline'} }}
+        >{!!props.value ? <b>"{props.value}"</b> :  (props.label||props.placeholder)}</Flex>
+      </PopoverPrompt>
   }
   return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>
 }

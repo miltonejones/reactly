@@ -2,9 +2,9 @@ import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, Slider,
     Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material'; 
 import { AppStateContext } from '../../hooks/AppStateContext'; 
-import { QuickSelect, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
-import { ExpandMore, Delete, Add, MoreVert } from "@mui/icons-material";
+import { ExpandMore, Remove, Add, MoreVert } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
 import { Icons } from '../library/icons';
 import { SketchPicker } from 'react-color';
@@ -251,7 +251,7 @@ export const ComponentInputBody = (props) => {
   const { bindableProps }  = Library [component.ComponentType]
   const header = <>  
  
-  <Text small>{title}</Text>
+  <Text sx={{textTransform: 'capitalize'}} small>{title}</Text>
   </>
 
   const inputProps = {
@@ -297,15 +297,20 @@ export const ComponentInputBody = (props) => {
       ? Object.keys(Icons)
       : types;
 
+    const MenuComponent = typeList?.length > 32 
+        ? QuickSelect
+        : QuickMenu  
     return <Stack>
       {header} 
-      <Flexible on={colorProp || free}>
+      <Flexible nowrap on={colorProp || free || typeList?.length < 32  }>
  
-        <QuickSelect helperText={helperText} 
+        <MenuComponent helperText={helperText} 
+        caret
           getOptionLabel={getOptionLabel} 
           renderOption={renderOption} 
           options={typeList}  
           value={value} 
+          label={value || <Text small><em>set {title} value</em></Text>}
           onChange={handleChange} />
 
         {!!colorProp && <Pill round backgroundColor={attempt(value)} />} 
@@ -334,12 +339,16 @@ export const ComponentInputBody = (props) => {
   const chip = type === 'chip' ;
   const Component = type === 'chip' 
     ? ChipBox
-    : KeypressTextBox;
+    : TextInput;
+
+  const usePrompt = ['width','top','left','bottom', 'height', 'right'].some(f => !!title && title.toLowerCase().indexOf(f) > -1)
+    || type == 'prompt';
 
   return <Stack>
   {header} 
       <Flexible on={free || chip}>
   <Component 
+    prompt={usePrompt}
     multiline={!!multiline}
     rows={4}
     autoComplete="off"
@@ -347,6 +356,7 @@ export const ComponentInputBody = (props) => {
     onChange={e => handleChange(e.target.value)} 
     size="small" 
     value={attempt(value)} 
+    label={usePrompt ? <Text small><em>Set {title}</em></Text> : ''}
     placeholder={title}
   />
  
@@ -505,7 +515,7 @@ export const ComponentCollapse = ({
       <Flex>
       <Text small><b>{name}</b></Text>
       <Spacer />
-      {!always && <TinyButton icon={!active ? Icon : Delete } deg={on || active  ? 180 : 0} />}
+      {!always && <TinyButton icon={!active ? Icon : Remove } deg={on || active  ? 180 : 0} />}
       </Flex>
     </Box> 
 
