@@ -11,11 +11,7 @@ const ListLabel  = ({ active, addProp, onMove, children, onSettings }) => {
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis' }
 
-  const menu = [
-    {
-      name: 'Settings',
-      action: () => onSettings()
-    },
+  const menu = [ 
     {
       name: 'Move up',
       action: () => onMove(children, -1)
@@ -179,7 +175,7 @@ const ListTableRow = ( {
 
         <Flex fullHeight sx={{mb: 1}}>
           <Text small>Display as</Text>
-          <QuickMenu label={type?.type||'Choose type'} caret value={type?.type} onChange={value => !!value && handleType({
+          <QuickMenu small label={type?.type||'Choose type'} caret value={type?.type} onChange={value => !!value && handleType({
              [col]: {
               type: value,
               settings: {
@@ -220,7 +216,7 @@ const ListTableRow = ( {
 const TypeInput = ({ label, types, value, type, onChange }) => {
 
   if (types) {
-    return <QuickMenu caret options={types} value={value} label={value || label} onChange={w => !!w && onChange(w)}/>
+    return <QuickMenu small caret options={types} value={value} label={value || label} onChange={w => !!w && onChange(w)}/>
   }
 
   return <TextInput small prompt size="small" value={value} fullWidth label={`Set value for ${label}`} caret onChange={e => onChange(e.target.value)} />

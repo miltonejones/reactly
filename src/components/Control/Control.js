@@ -412,9 +412,10 @@ export const TextInput = ({ sx, prompt, ...props }) => {
   return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>
 }
  
-export const Text = styled(Box)(({ theme, active, small, error, spacing = 1 }) => ({
+export const Text = styled(Box)(({ theme, active, small, error, link, spacing = 1 }) => ({
   display: 'flex',
-  color: error ? theme.palette.error.main : theme.palette.black,
+  color: error ? theme.palette.error.main : (link ? theme.palette.primary.main : theme.palette.black),
+  textDecoration: link ? 'underline' : 'none',
   gap: theme.spacing(spacing) ,
   alignItems: 'center',
   // borderBottom: small || error ? '' : 'solid 1px gray',

@@ -4,7 +4,7 @@ import { Table, TableHead, TableRow, TableCell,
 import ReactlyComponent from '../reactly';
 import { Icons } from '../icons';
 import { getSettings } from '../util';
-import { Flex } from '../..';
+import { Flex , Text } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { usePageResourceState } from '../../../hooks/usePageResourceState';
 import { useImageLoader } from '../ReactlyInfoCard/ReactlyInfoCard';
@@ -27,7 +27,7 @@ const truncate = (value, length) => {
   
 const ReactlyComponentTable = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(PageStateContext);
-  const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
+  const { componentEditing, preview, onHeadClick, onRowClick, onCellClick, settings} = props;
  
 
 
@@ -70,7 +70,16 @@ const ReactlyComponentTable = ({ children, ...props }) => {
 
       {!!columnMap && <TableHead>
         <TableRow>
-          {columnMap.map( t => <TableCell key={t}>{bindingObject.bindings[t]}</TableCell>)} 
+          {columnMap.map( (t, i) => <TableCell 
+            onClick={e => {
+
+              onHeadClick && onHeadClick(e, { 
+                value: t,
+                cell: i,  
+              });
+
+            }}
+            key={t}><Text active link={!!onHeadClick}>{bindingObject.bindings[t]}</Text></TableCell>)} 
         </TableRow>
       </TableHead>
 }
