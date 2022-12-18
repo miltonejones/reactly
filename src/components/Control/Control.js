@@ -398,10 +398,19 @@ export const TinyButton = ({icon: Icon, ...props}) => <RotateButton {...props}  
   <Icon sx={{width: 16, height: 16}} />
 </RotateButton>
 
-export const TextInput = styled(TextField)(() => ({
-  // height: '1.em',
-  fontSize: '0.85rem'
-}))
+export const TextInput = ({ sx, prompt, ...props }) => {
+  if (prompt) {
+    return <PopoverPrompt
+
+      {...props}
+      component={Text}
+      label={props.label}
+      onChange={value => props.onChange({ target: { value }})}
+
+      >{props.value||props.label||props.placeholder}</PopoverPrompt>
+  }
+  return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>
+}
  
 export const Text = styled(Box)(({ theme, active, small, error, spacing = 1 }) => ({
   display: 'flex',

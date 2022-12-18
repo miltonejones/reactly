@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, IconButton, Drawer,  
  Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
-import {  Flex, Spacer, TextBtn, QuickSelect, SearchBox, TextInput } from '..';
+import {  Flex, Spacer, TextBtn, QuickSelect, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
 import { Close, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
@@ -21,7 +21,9 @@ export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }
       }} 
     />
   }
-  return <TextInput tabIndex={tab} {...props} value={Value} onChange={e => {
+  return <TextInput prompt tabIndex={tab} {...props} label={
+    <Text small><em>Set value for "{Key}"</em></Text>
+  } value={Value} onChange={e => {
     handleChange && handleChange(ID, Key, Type ===  'number' ? parseInt(e.target.value) : e.target.value, Type)
   }}  />
 }
@@ -103,36 +105,55 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
           onChange={e => setFilter(e.target.value)}
           onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>
       </Flex>
+
+              <Flex>
+
+                <Flex sx={{width: 140}}>
+                  <Text small active>Variable</Text>
+                </Flex>
+                  
+                <Flex sx={{width: 140}}>
+                  <Text small active>Type</Text>
+                </Flex>
+                  
+                <Flex>
+                  <Text small active>Default value</Text>
+                </Flex>
         
-        {visible.map((item, k) => <Flex key={k} sx={{mb: 1}}>
+              </Flex>
+        {visible.map((item, k) => <Flex key={k} sx={{mb: 0}}>
 
           {/* state property name  */}
-          <Stack>
+          <Stack sx={{width: 140}}>
             {/* <Typography>Key</Typography> */}
-            <TextInput {...args} value={item.Key}  label="Key" onChange={e => {
+            <TextInput prompt {...args} value={item.Key}  label="Set key name" onChange={e => {
               handleChange && handleChange(item.ID, e.target.value, item.Value, item.Type)
             }} />
           </Stack>  
 
-          <Stack>
+          <Flex nowrap sx={{width: 140}}>
             {/* <Typography>Type</Typography> */}
-            <QuickSelect options={['string', 'object', 'array', 'number', 'boolean']}
-            label="Type"
+            <QuickMenu options={['string', 'object', 'array', 'number', 'boolean']}
+            title="Set data type"
+            label={item.Type || 'choose type'} caret
                 value={item.Type || 'string'} onChange={value => {
                   handleChange && handleChange(item.ID, item.Key, item.Value, value)
                 }} />
-          </Stack>
+          </Flex>
 
           {/* state property value  */}
-          <Stack>
+          <Stack sx={{width: 200}}>
             {/* <Typography>Value</Typography> */}
             <StateValue {...args} tab={k} {...item} handleChange={handleChange}  />
           </Stack>
 
           <Box>
-            <IconButton onClick={() => handleDrop && handleDrop(item.ID)}>
+          <DeleteConfirmMenu message={`Delete key "${item.Key}"?`}    
+              onDelete={e =>  !!e && handleDrop(item.ID) } /> 
+
+            {/* <IconButton onClick={() => handleDrop && handleDrop(item.ID)}>
               <Delete />
-            </IconButton>
+            </IconButton> */}
           </Box>
     
         </Flex>)}
@@ -141,7 +162,7 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
 
 
       <Grid item xs={6}>
-        <Card sx={{p: 2, m: 1, minHeight: '25vh'}}>
+        <Card sx={{p: 2, m: 1, minHeight: '25vh', maxHeight: '300px', overflow: 'auto'}}>
             <Json>
               {JSON.stringify(props, 0, 2)}
             </Json>

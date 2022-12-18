@@ -1,8 +1,6 @@
 import React from 'react';
 import { Table, TableHead, TableRow, TableCell, 
-  TableBody, Box, styled, Link, Typography, IconButton } from '@mui/material'; 
-import { GenericStyles } from '../styles'; 
-import { GridOn } from '@mui/icons-material';
+  TableBody, Box, styled, Link, Typography, IconButton } from '@mui/material';  
 import ReactlyComponent from '../reactly';
 import { Icons } from '../icons';
 import { getSettings } from '../util';
@@ -20,7 +18,10 @@ const truncate = (value, length) => {
     const over = value?.length && value.length > length;
     return `${value.substr(0, length)}${over ? '...' : ''}`
   } catch (ex) {
-    return typeof value;
+    if (!value) {
+      return ''
+    }
+    return JSON.stringify (value);
   }
 }
   
@@ -167,7 +168,7 @@ const CellContent = ({ columnMap, typeMap, displayKey, value, selected,  childre
 
   if (displayType?.type === 'Icon') {
     const Icon = Icons[children];
-    return !Icon ? <>heart</> : <Icon />
+    return !Icon ? <i /> : <Icon />
   }
 
   return <>{children}</>
@@ -198,127 +199,11 @@ const colorize = ({ selected, theme, color = 'primary', columnMap, typeMap, disp
 
 const Linked = styled(Link)(colorize)
 const Cell = styled(TableCell)(colorize)
+ 
 
 
-const Settings = {
-  categories: [ 
-    {
-      name: 'General',
-      always: true,
-      settings: [ 
-        {
-          title: 'Message to display when empty',
-          label: 'emptyMessage',
-          type: 'chip'
-        }, 
-      ]
-    },
-    {
-      name: 'Appearance', 
-      settings: [  
-        {
-          title: 'Size',
-          label: 'size',
-          types: [ 'medium', 'small'], 
-        } ,
-        {
-          title: 'padding',
-          label: 'padding',
-          types: [ 	'checkbox','none','normal'], 
-        } , 
-        {
-          title: 'Active Row Color',
-          label: 'row-color',
-          types: ['primary', 'secondary', 'warning', 'error', 'success']
-        },
-      ]
-    },
-    {
-      name: 'Data',  
-      settings: [  
-        {
-          title: 'Bind to data resource',
-          label: 'bindings' ,
-          type: 'listtable'
-        },  
-      ]
-    }, 
-    {
-      name: 'Selection', 
-      settings: [   
-        {
-          title: 'Selected Row',
-          label: 'selectedIndex',
-          bindable:  !0  ,
-          when: p => !p.use_id
-        } ,
-        {
-          title: 'Selected ID',
-          label: 'selectedID'  ,
-          bindable:  !0  ,
-          when: p => p.use_id
-        } ,
-        {
-          title: 'Select by ID',
-          label: 'use_id'  ,
-          type: 'boolean'
-        } ,
-        {
-          title: 'ID Column',
-          label: 'selectedColumn' ,
-          type: 'tablecolumn'  ,
-          when: p => p.use_id
-        } ,
-      ]
-    }, 
-    {
-      name: 'Behavior', 
-      settings: [   
-        {
-          title: 'Truncate Cell Text',
-          label: 'truncate' ,
-          xs:6
-        } ,
-        {
-          title: 'Sticky Header',
-          label: 'stickyHeader',
-          type:  'boolean', 
-        } ,
-        {
-          title: 'Disable text wrap',
-          label: 'nowrap' ,
-          type:  'boolean', 
-        } 
-      ]
-    },
-  ]
-}
-
-const Events =  [
-  {
-    name: 'onRowClick',
-    title: 'List row is clicked',
-    description: 'User clicks on a row in the list.',
-    emits: ['row', 'ID']
-  }, 
-  {
-    name: 'onCellClick',
-    title: 'List cell is clicked',
-    description: 'User clicks on a cell in a row.',
-    emits: ['row', 'cell', 'ID']
-  }, 
-]
-
-
-const ReactlyTable = {
-  Icon: GridOn,
-  Component: ReactlyComponentTable,
-  Events,
-  Settings,
-  Styles: GenericStyles, 
-  Defaults: {
-    emptyMessage: 'No records to display.'
-   }
+const ReactlyTable = { 
+  Component: ReactlyComponentTable, 
 }
  
 

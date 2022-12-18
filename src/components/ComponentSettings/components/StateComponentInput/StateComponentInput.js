@@ -35,18 +35,20 @@ const StateComponentInput = ({
  
 
   const onChange = React.useCallback(async (value) => {  
-    handleChange(value, binding)
+    handleChange && handleChange(value, binding)
   }, [binding, handleChange])
 
   
-  if (!selectedPage.state && !selectedPage.parameters && !appContext.state) {
+  if (!selectedPage?.state && !selectedPage?.parameters && !appContext.state) {
     return <i>[{JSON.stringify(application.state) }]</i>
   }
 
   const Component = menu ? QuickMenu : QuickSelect;
 
-  const options = !selectedPage.state ? [] : selectedPage.state.map(d => d.Key);
-  !!selectedPage.parameters && Object.keys(selectedPage.parameters).map(paramKey => {
+  const options = !selectedPage?.state ? [] : selectedPage.state.map(d => d.Key);
+
+
+  !!selectedPage?.parameters && Object.keys(selectedPage?.parameters).map(paramKey => {
     return options.push(`parameters.${paramKey}`);
   })
 

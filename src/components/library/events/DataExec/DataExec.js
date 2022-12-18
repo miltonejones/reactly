@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Divider, Typography , Stack} from '@mui/material'; 
+import { styled, Box, Divider, Typography , Collapse, Switch, Stack} from '@mui/material'; 
 import { QuickSelect, Flex, Text, Spacer, TextBtn } from '../../..';
  
 const Layout = styled(Box)(({ theme }) => ({
@@ -29,6 +29,8 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
     return options.push(`event.${paramKey}`);
   })
 
+  const triggerName = resources?.find(f => f.ID === state.triggers)
+
  return (
    <Layout data-testid="test-for-DataExec">
 
@@ -47,7 +49,7 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
     </Flex>
     </Stack>
 
-{/* [{target}][{state.target}] */}
+ 
       {!actionReset && !! resource?.values && resource.values.map(val => <Box sx={{mt: 1}} key={val.key}>
         <QuickSelect 
         free
@@ -63,6 +65,27 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
       />
       </Box>)}
 
+      <Flex onClick={() => setState(s => ({
+        ...s,
+        triggers: !!s.triggers ? null : 'null'
+      }))}>
+        <Text small>Refresh</Text>
+        <Spacer checked={!!state.triggers} />
+        <Switch  />
+      </Flex>
+
+      <Collapse in={!!state.triggers}>
+
+    {!!state.triggers && <QuickSelect  options={resources.map(d => d.name)} value={triggerName?.name}
+      onChange={value => setState(s => ({...s, triggers: resources.find(d => d.name === value).ID}))}
+    />}
+
+
+      </Collapse>
+
+<pre>
+{JSON.stringify(state, 0, 2)}
+</pre>
 
     <Flex sx={{mt: 2}}>
         <Spacer />

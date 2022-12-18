@@ -6,8 +6,10 @@ import ReactlyComponent, { Faux }  from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { AppStateContext } from "../../../hooks/AppStateContext";
 import { recurse } from '../util';
+import { getSettings } from '../util';
   
 const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
+  const args = getSettings(props.settings);
   const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
@@ -20,7 +22,7 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
   }, selectedComponent, props) ; 
  
   const open = Object.keys(pageModalState)
-    .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  || props.open ;
+    .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  || props.open || args.open ;
 
     const handleClose = () => {
       onModalClose && onModalClose (1)
@@ -31,19 +33,27 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
       setPageModalState(state)
      }
   
-  
+  const drawerOpen = open || componentEditing || (childOpen && preview );
 
  return (
- 
-   <ReactlyComponent 
-   
-   onClose={handleClose}
-   open={open || componentEditing || (childOpen && preview )} 
-   {...rest}
-   component={open || !preview ? Drawer : Faux} 
-   >
+ <>
+ {/* <hr />
+ <pre>
+  {JSON.stringify(open || !preview,0,2)}
+ </pre>
+ <pre>
+  {JSON.stringify(drawerOpen,0,2)}
+ </pre> */}
+  <ReactlyComponent 
+    onClose={handleClose}
+    open={drawerOpen} 
+    {...rest}
+    component={open || !preview ? Drawer : Faux} 
+    >
       {children}
    </ReactlyComponent> 
+ </>
+  
  );
 }
 

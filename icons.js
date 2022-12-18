@@ -69,21 +69,7 @@ function setPlayerProgress (page, options) {
 
 
 
-
-
-// function findMatches(regex, str, matches = []) { 
-//   const res = regex.exec(str)  
-//   res && matches.push(res) && findMatches(regex, str, matches)
-//   return matches
-// }
-
-// const fixText = (str, options) => {
-//   const test = /\{([^}]+)\}/g
-//   let out = str;
-//   findMatches(test, str).map(match => out = out.replace(match[0], values[match[1]]))
-//   return out;
-// }
-
+ 
 
 // const values = {
 //   name: 'tony',
@@ -94,9 +80,6 @@ function setPlayerProgress (page, options) {
 // const str = '{name} is the man from {address}';
 // const ok = 'milton is the man from here';
  
-
-// let out = fixText(str, values);
-// let good = fixText(ok, values);
  
 
 // console.log (str)

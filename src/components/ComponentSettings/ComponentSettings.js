@@ -19,6 +19,52 @@ import {
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
 
+const KeypressTextBox = ({ onChange, ...props }) => {
+  const [dir, setDir] = React.useState(false);
+
+  React.useEffect(() => {
+    const { value } = props;
+    if (!value || isNaN(value)) {
+      return;
+    }
+    
+    !!dir && onChange && onChange({ target: { value: value + dir}})
+    !!dir && console.log ({value: value + dir})
+
+  }, [dir, props])
+
+  const trigger = (dir) => {
+    const { value } = props;
+    if (!value || isNaN(value)) {
+      return;
+    }
+    
+    !!dir && onChange && onChange({ target: { value: value + dir}})
+    !!dir && console.log ({value: value + dir})
+
+  }
+
+  const handlePress = e => {
+    switch(e.keyCode) {
+      case 38:
+        trigger(1)
+        break;
+      case 40:
+        trigger(-1)
+        break;
+      default:
+        // do nothing
+    }
+  }
+
+  return <TextInput {...props} 
+  onChange={onChange}
+  onKeyDown={handlePress}
+  onKeyUp={() => setDir(false)}
+    
+    />
+}
+
 const ColorInput = ({ title, color, onChange }) => {
   const [hue, setHue] = React.useState(color)
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -288,7 +334,7 @@ export const ComponentInputBody = (props) => {
   const chip = type === 'chip' ;
   const Component = type === 'chip' 
     ? ChipBox
-    : TextInput;
+    : KeypressTextBox;
 
   return <Stack>
   {header} 

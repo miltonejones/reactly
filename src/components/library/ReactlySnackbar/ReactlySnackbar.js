@@ -1,20 +1,25 @@
 import React from 'react';
-import { Snackbar } from '@mui/material'; 
+import { Snackbar, Alert, IconButton } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { Icecream } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
+import { Flex, Spacer } from '../..';
 import { AppStateContext } from '../../../hooks/AppStateContext';
+import { useTextTransform } from '../../../hooks/useTextTransform';
+import { Icons } from '../icons';
   
 const ReactlyComponentSnackbar = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
+  const { interpolateText } = useTextTransform();
+ 
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
   const args = getSettings(props.settings);
 
-  const { vertical, horizontal } = args;
+  const { vertical, horizontal, color } = args;
 
   const handleClose = (event, reason) => {
 
@@ -27,18 +32,45 @@ const ReactlyComponentSnackbar = ({ children, ...props }) => {
     setPageModalState(state)
    }
 
+   const Icon = Icons[args.action]
+
+   const action = !args.action && !!Icon
+    ? <i />
+    : <IconButton>
+        <Icon  />
+      </IconButton> 
+
  return (
   <>
    <ReactlyComponent component={Snackbar} {...props}
     anchorOrigin={{ vertical, horizontal }}
     onClose={handleClose}
-    open={open || componentEditing} 
+    open={open || componentEditing}  
 >
-   {children}
+
+<Flex>
+      <Alert severity={args.color}>
+        {interpolateText(args.message)}
+      </Alert> {action}
+    </Flex>
+
 </ReactlyComponent>
   
   </>
  );
+}
+
+const SnackbarContent = ({ color, children, action }) => {
+  if (!color) {
+    return <Flex>{children}<Spacer /> {action}</Flex>;
+  }
+
+  return <Flex>
+      <Alert severity={color}>
+        {children}
+      </Alert> {action}
+    </Flex>
+
 }
 
 

@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { useNavigate, useParams } from "react-router-dom"; 
-import { fixText, getParams } from '../components/library/util';
+import { useNavigate, useParams } from "react-router-dom";  
 import { AppStateContext } from './AppStateContext';
 import moment from 'moment';
 import Observer from '../util/Observer';
@@ -11,6 +10,7 @@ import { useDataResource } from './subhook';
 import { useRunScript } from './subhook';
 import { getPropertyValueFromString } from '../components/library/util';
 import { map } from '../components/library/util';
+import { useTextTransform } from './useTextTransform';
 
  
 
@@ -92,6 +92,11 @@ export const usePageContext = () => {
   //   ? pageClientState
   //   : applicationClientState
 
+  const { 
+    interpolateText,
+    getParametersInScope,
+    getPropertyScope
+    } = useTextTransform();
 
   const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
   const routeParams = useParams()
@@ -115,13 +120,17 @@ export const usePageContext = () => {
     return node;
   }
   
-  const executeComponentRequest = async (connections, qs, res, slash = '?') => {
-    const  { events, connectionID, path, node, columns, transform } = res;
+  const executeComponentRequest = async (connections, querystring, res, delimiter = '?') => {
+    const  { events, connectionID, method, path, node, columns, transform } = res;
     const connection = connections.find(f => f.ID === connectionID);
-    const url = new URL(path, connection.root); 
-    const endpoint = `${url}${slash}${qs}`; 
+    const url = new URL(path, connection.root);  
 
-    await hello ({ endpoint, connection, path, qs })
+    const isGetRequest = method === 'GET';
+
+    const endpoint = isGetRequest ? `${url}${delimiter}${querystring}` : url;
+
+    await hello ({ endpoint, connection, path, querystring })
+
 
     if (events) {
       events.filter(e => e.event === 'loadStarted').map(e => { 
@@ -137,24 +146,35 @@ export const usePageContext = () => {
 
 
 
-    const response = await fetch(endpoint); 
+    let requestOptions = null
+    const scriptList = getApplicationScripts()
+
+    if (transform && !isGetRequest) {
+      const script = scriptList?.find(f => f.ID === transform.ID);
+      querystring = await executeScript( script.ID, querystring );
+
+      requestOptions = {
+        method,
+        body: JSON.stringify(querystring),
+        headers: { 'Content-Type': 'application/json' },
+      };
+    }
+
+
+    const response = await fetch(endpoint, requestOptions); 
     let json = await response.json();
 
     
-    if (transform) {
-      const scriptList = getApplicationScripts()
+    if (transform && isGetRequest) { 
       const script = scriptList?.find(f => f.ID === transform.ID);
- 
       json = await executeScript( script.ID, json )
- 
-     console.log ({json})
     }
 
 
 
     const rows = !node ? json : drillPath(json, node);
 
-    const collated = rows.map(row => columns.reduce((items, res) => { 
+    const collated = !isGetRequest ? json : rows.map(row => columns.reduce((items, res) => { 
       items[res] = row[res]
       return items
     }, {})); 
@@ -173,9 +193,9 @@ export const usePageContext = () => {
     return collated ;
   } 
 
-  const handleComponentRequest = (qs, resource) => {
+  const handleComponentRequest = (querystring, resource) => {
  
-    executeComponentRequest(appContext.connections, qs, resource)
+    executeComponentRequest(appContext.connections, querystring, resource)
     .then(records => { 
       setPageResourceState(s => s.filter(e => e.resourceID !== resource.ID)
         .concat({
@@ -188,7 +208,7 @@ export const usePageContext = () => {
   } 
   
 
-  const handleComponentEvent = async (event, eventProps, events, over) => {
+  const handleComponentEvent = async (event, eventProps, events) => {
     const { 
       component,
       name , 
@@ -200,7 +220,7 @@ export const usePageContext = () => {
     
   
 
-    if (!(events || component?.events)) return;
+    if (!(events || component?.events)) return console.log('No events in the component');
 
     const triggers = (events || component?.events).filter( e => e.event === name);
 
@@ -209,12 +229,13 @@ export const usePageContext = () => {
     await map(triggers, async (trigger, index) => { 
 
       // temporary logging
-      !!loud && trigger.event !== 'onProgress' && 
+        !!loud &&   trigger.event !== 'onProgress' && 
         console.log ('%s, triggering "%s" script on %s', index, 
             trigger.action.type, 
             trigger.action.target, 
                 trigger, {
-                  caller: event?.currentTarget
+                  caller: event?.currentTarget,
+                  eventProps
                 });
  
 
@@ -223,12 +244,12 @@ export const usePageContext = () => {
 
         const {  selectedComponent, ...rest} = queryState;
  
-        const routes = getParams(queryState, targetPage, routeParams, shout)
+        const currentParameters = getParametersInScope()
         const pageParameters = createPageParams(trigger.action.params, options)
  
 
         if (trigger.event !== 'onProgress') {
-          await hello ({ trigger, routes, pageParameters, queryState: rest}, 
+          await hello ({ trigger, currentParameters, pageParameters, queryState: rest}, 
                 `Trigger ${index}. ${trigger.event}.${trigger.action.type} [${trigger.action.target}]`)
         }
       
@@ -327,22 +348,21 @@ export const usePageContext = () => {
               Alert (JSON.stringify(sources))
               return Alert ('no resources were found to  meet this request.')
             }
+
+            const { triggers } = trigger.action;
             
             const resource = resources.find(f => f.ID === trigger.action.target); 
+
+            // set state source to read values from
             const clientState = !pageClientState ? stateProps : pageClientState;  
-            const slash = resource.format === 'rest' ? '/' : '&'; 
+            
+            // set URL delimiter
+            const delimiter = resource.format === 'rest' ? '/' : '&'; 
 
-            // TODO: fix validation method
-            const validate = Object.keys(trigger.action.terms).filter(term => {
-              return !clientState[trigger.action.terms[term]];
-            });
-
-            if (validate.length) {
-              console.log ({ clientState, validate })
-              // return Alert (`Could not complete request because 
-              // the fields ${validate.join(' and ')} is/are missing`)
-            } 
-
+            let querystring;
+ 
+            
+            // quick method to get a property value from a term key
             const getProp = value => getPropertyValueFromString(
               clientState,
               {
@@ -350,67 +370,59 @@ export const usePageContext = () => {
                 value 
               },
               options,
-              routes,
+              currentParameters,
               hello
             )
 
+            // returns a number if value is not isNaN
             const trueProp = val => {
               if (isNaN(val)) return val;
               return parseInt(val)
             }
-
-            const valid = Object.keys(trigger.action.terms).reduce((ok, term) => {
-              const property = getProp(trigger.action.terms[term]) ; 
-              const comparison = resource.values?.find(f => f.key === term);
-              const type1 = typeof trueProp(comparison?.value);
-              const type2 = typeof trueProp(property);
+            
+            // validate querystring if there is one
+            // TODO: make this its own method
+            if (resource.method === 'GET') {
               
-              const mismatch = !!comparison && typeof trueProp(comparison.value) !== typeof trueProp(property);
-              console.log ('validating %s:  %s', term, property)
-              hello ({ term, property }, 'Validating fields')
-              if (!property) ok.push(`${term} is missing`)
-              if (mismatch) ok.push(`${term} (${JSON.stringify(trueProp(property))}) is ${type2} when type ${type1} was expected.`)
-              return ok
-            }, [])
+              const valid = Object.keys(trigger.action.terms).reduce((ok, term) => {
+                const property = getProp(trigger.action.terms[term]) ; 
+                const comparison = resource.values?.find(f => f.key === term);
+                const type1 = typeof trueProp(comparison?.value);
+                const type2 = typeof trueProp(property);
+                
+                const mismatch = !!comparison && typeof trueProp(comparison.value) !== typeof trueProp(property);
+                console.log ('validating %s:  %s', term, property)
+                hello ({ term, property }, 'Validating fields')
+                if (!property) ok.push(`${term} is missing`)
+                if (mismatch) ok.push(`${term} (${JSON.stringify(trueProp(property))}) is ${type2} when type ${type1} was expected.`)
+                return ok
+              }, [])
 
-            // build query string from trigger params
-            const qs = Object.keys(trigger.action.terms).map(term => { 
-              const property = getProp(trigger.action.terms[term]) ; 
-              return resource.format === 'rest' ? property : `${term}=${property}`
-            }).join(slash);
+              // build query string from trigger params
+               querystring = Object.keys(trigger.action.terms).map(term => { 
+                const property = getProp(trigger.action.terms[term]) ; 
+                return resource.format === 'rest' ? property : `${term}=${property}`
+              }).join(delimiter);
 
-            if (valid.length) {
-              const plural = valid.length !== 1 ? 's are' : ' is'
-              const msg = <div>
-                Could not complete "{resource.name}" request because {valid.length} 
-                {" "}field{plural}{" "}has problems: {valid.map(f => <b>{f}</b>)}
-              
-              </div>
-              return setPageError && setPageError(msg);
-              // return await Alert(msg, 'Request cancelled'); 
+              if (valid.length) {
+                const plural = valid.length !== 1 ? 's are' : ' is'
+                const msg = <div>
+                  Could not complete "{resource.name}" request because {valid.length} 
+                  {" "}field{plural}{" "}has problems: {valid.map(f => <b>{f}</b>)}
+                
+                </div>
+                return setPageError && setPageError(msg);
+                // return await Alert(msg, 'Request cancelled'); 
+              }
+  
+            } else {
+              querystring = options; 
             }
+             
 
-
-            // executeComponentRequest(connect || appContext.connections, 
-            //   qs, resource, resource.format === 'rest' 
-            //   ? '/'
-            //   : '?')
-            //   .then(async (records) => {  
-            //     const datum = {
-            //       resourceID: resource.ID,
-            //       name: resource.name,
-            //       records
-            //     }
-            //     await hello (resource, 'data received')
-            //     if (!pageResourceState) { 
-            //       return setPageResourceState([datum])
-            //     }
-            //     setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
-            //       .concat(datum)) 
-            //   })
 
             const records = await executeComponentRequest(connect || appContext.connections, 
-              qs, resource, resource.format === 'rest' 
+              querystring, resource, resource.format === 'rest' 
               ? '/'
               : '?')
            
@@ -422,10 +434,28 @@ export const usePageContext = () => {
           
             await hello (resource, 'data received')
             if (!pageResourceState) { 
-              return setPageResourceState([datum])
+               setPageResourceState([datum])
+            } else {
+              setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
+                .concat(datum)) 
             }
-            setPageResourceState(s => (s||[]).filter(e => e.resourceID !== trigger.action.target)
-              .concat(datum)) 
+
+            // const eventsOnPage = targetPage.components?.reduce((out, part) => {
+            //   const items = part.items?.filter(f => f.action.type === 'dataExec')
+            //   return out.concat(items);
+            // }, []);
+
+            // const triggered = eventsOnPage?.find(f => !!f && f.action.triggers === resource.ID)
+
+            // console.log ({ eventsOnPage,
+            //     id: resource.ID,
+            //     triggered })
+
+            // if (triggered) {
+            //   Alert (<pre>{JSON.stringify(triggered, 0, 2)}</pre>)
+            //   console.log ('%ctriggered %o', 'color:lime', { triggered })
+            //   handleComponentEvent({}, {options: triggered, magically: 1}, eventsOnPage)
+            // }
               
             break;
           case "scriptRun":  
@@ -439,35 +469,6 @@ export const usePageContext = () => {
 
 
   } 
-
-  const getPropertyScope = scopeKey => {
-
-    if (!scopeKey) {
-      return { }
-    }
-    const [scope, key] = scopeKey.split('.');
-    const isApplicationScope = scope === 'application' 
-
-    const boundTo = isApplicationScope 
-      ? key 
-      : scopeKey;
-
-
-    const clientState = isApplicationScope 
-      ? applicationClientState
-      : pageClientState 
-
-    const stateSetter = isApplicationScope 
-      ? setApplicationClientState 
-      : setPageClientState
-
-    return {
-      isApplicationScope,
-      boundTo,
-      clientState,
-      stateSetter
-    }
-  }
  
   const attachEventHandlers = React.useCallback ( component => {
     const { settings, events, boundProps } = component;
@@ -519,11 +520,11 @@ export const usePageContext = () => {
   
         if (attribute && clientState ) { 
 
-          const routes = getParams(queryState, targetPage, routeParams)
+          const currentParameters = getParametersInScope()
 
-          //  console.log ({ routes })
+          //  console.log ({ currentParameters })
 
-          const attributeProp = fixText(clientState[boundTo], clientState, routes)
+          const attributeProp = interpolateText(clientState[boundTo])
           
           // console.log ( { attributeProp, boundTo })
         
@@ -532,13 +533,14 @@ export const usePageContext = () => {
             [attribute]: attributeProp,
           });
 
+
           if (attributeProp?.indexOf && attributeProp?.split && attributeProp.indexOf('.') > 0) {
             const [type, val] = attributeProp.split('.');
             if (type === 'parameters') {
 
               Object.assign(eventHandlers, {
                 // set current component value to client state
-                [attribute]: routes[val],
+                [attribute]: currentParameters[val],
               });
     
             }

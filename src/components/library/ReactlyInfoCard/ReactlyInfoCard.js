@@ -89,7 +89,7 @@ const ReactlyComponentInfoCard = ({ children, onCardClick, onMenuClick, settings
         })
       }}
         component="img"
-        height="194"
+        height={args.image_height || 200}
         image={image}
         alt={args.label}
       />}

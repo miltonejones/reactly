@@ -8,8 +8,8 @@ import {
  Box,
 } from "@mui/material";
 import { Flex, Tooltag, Spacer, TextBtn, TextBox, QuickMenu, DATA_TYPES } from "..";
-import { Business, Close, Announcement , Help, Info  } from "@mui/icons-material";
-import { ComponentModal } from './components';
+import { Business, Close, Announcement, Code , Help, Info, CheckCircle, Save  } from "@mui/icons-material";
+import { ComponentModal, CodeEditor } from './components';
 
 
  
@@ -115,10 +115,13 @@ const ModalFooter = ({
  handleClose,
  enableSave,
  modalState,
- submitClicked,
+ submitClicked, 
  title,
+ okayText = 'okay',
+ deleteText = 'delete',
+ okIcon: Icon = CheckCircle,
 }) => (
- <Flex sx={{ p: 2, borderTop: "solid 1px #cdcdcd" }}>
+ <Flex sx={{ p: 2, borderTop: 1, borderColor: 'divider' }}>
     {/* Close button */}
     {!!handleDelete && <Tooltag
       component={TextBtn}
@@ -127,7 +130,7 @@ const ModalFooter = ({
       color="error"
       onClick={() => handleDelete(modalState)}
     >
-      delete
+      {deleteText}
     </Tooltag>}
 
    <Spacer />
@@ -150,9 +153,10 @@ const ModalFooter = ({
        disabled={!enableSave && !modalState}
        title={title}
        variant="contained"
+       endIcon={<Icon />}
        onClick={() => submitClicked && submitClicked(enableSave || modalState)}
      >
-       Okay
+       {okayText}
      </Tooltag>
    )}
  </Flex>
@@ -282,7 +286,7 @@ export const useModal = () => {
     handleDelete: !0,
     required: ['name', 'expression']
   });
-
+  
   const CreateComponent = (components) => 
   createModalMethod({
     message: 'Add Component',
@@ -292,6 +296,21 @@ export const useModal = () => {
     minWidth: 720,
     maxWidth: 720,
     required: ['name']
+  });
+
+  const EditCode = (code) => 
+  createModalMethod({
+    message: 'Code Editor',
+    title: 'Code Editor',
+    code,
+    okayText: "Save",
+    deleteText: "import",
+    handleDelete: !0,
+    component: CodeEditor, 
+    minWidth: 720,
+    maxWidth: 720, 
+    okayIcon: Save,
+    icon: Code
   });
 
  const [modalProps, setModelProps] = React.useState({ open: false });
@@ -347,6 +366,7 @@ export const useModal = () => {
    Alert,
    Confirm,
    Prompt,
+   EditCode,
    ExpressionModal,
    createModalMethod,
    CreateComponent,

@@ -1,7 +1,9 @@
 import React from 'react';
 import { styled, Box, Typography } from '@mui/material'; 
-import { QuickSelect, Flex, Spacer, TextBtn, Text } from '../../..';
+import { QuickSelect, Flex, Spacer, TextBtn, TinyButton, Text } from '../../..';
 import { useRunScript } from '../../../../hooks/subhook/useRunScript';
+import { AppStateContext } from "../../../../hooks/AppStateContext";
+import { Edit } from "@mui/icons-material";  
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(2, 0)
@@ -20,12 +22,23 @@ const Layout = styled(Box)(({ theme }) => ({
 const RunScript = ({ event = {}, page, application, handleSave }) => {
   const [state, setState ] = React.useState({ ...event.action, type: 'scriptRun' });
 
+  const {  
+    EditCode
+  } = React.useContext(AppStateContext);
+
   const {
     getApplicationScripts,
     applicationScriptRenderOption,
     applicationScriptOptionLabel,
     scriptList
   } = useRunScript()
+
+  const handleEdit = React.useCallback(ID => {
+    const script = scriptList.find(s => s.ID === ID)
+    if (script) {
+      EditCode(script.code)
+    }
+  }, [scriptList])
 
   if (!application) {
     return <>Could not connect to application</>
@@ -61,20 +74,26 @@ const RunScript = ({ event = {}, page, application, handleSave }) => {
   //   return '--none--' + JSON.stringify(option)
   // }
 
-  const target = !event.action 
-    ? null
-    : page.scripts?.find(e => e.ID === event.action.target).name
+ 
  return (
    <Layout data-testid="test-for-RunScript">
     <Text small>Run client script:</Text> 
+    <Flex>
+
     <QuickSelect 
+    fullWidth
       options={scriptList} 
       getOptionLabel={applicationScriptOptionLabel} 
       renderOption={applicationScriptRenderOption} value={state.target}
       onChange={value => {  
         !!value.ID && setState(s => ({...s, target: value.ID}))
       }}
-    />
+    /> 
+
+<TinyButton icon={Edit} onClick={() => handleEdit(state.target)} />
+
+
+    </Flex>
 {/* [ {state.target}] */}
 
     <Flex sx={{mt: 2}}>

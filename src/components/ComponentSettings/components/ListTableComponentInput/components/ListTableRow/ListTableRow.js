@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, Grid, Divider } from '@mui/material';
-import { Flex, Text, Tiny, QuickSelect, QuickMenu, TextInput } from '../../../../..';
-import { CheckCircle, CheckCircleOutline } from "@mui/icons-material"; 
+import { Flex, Text, Tiny, QuickSelect, TinyButton, QuickMenu, TextInput } from '../../../../..';
+import { CheckCircle, Settings, CheckCircleOutline } from "@mui/icons-material";  
  
 const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
  
@@ -39,7 +39,7 @@ const ListLabel  = ({ active, addProp, onMove, children, onSettings }) => {
   }
 
   if (active) {
-    return <QuickMenu options={menu.map(e => e.name)} 
+    return <QuickMenu small options={menu.map(e => e.name)} 
       onChange={handleMenu}  label={<b>{children}</b>}/>
   }
 
@@ -93,10 +93,12 @@ const ListTableRow = ( {
       Link: [
         {
           label: 'Variant',
-          types: variants
+          types: variants,
+          xs: 6
         },
         { 
           label: "underline",
+          xs: 6,
           types: [
             "always",
             "hover",
@@ -110,15 +112,21 @@ const ListTableRow = ( {
     const displayTypes = Object.keys(displayConf);
     const selectedProp = displayConf[typeName]
 
+    const args = {
+      xs: 6,
+      sx: active ? { borderBottom: 1, borderColor: 'divider' } : {}
+    }
 
  return (
    < >
     
         
           
-    <Grid item xs={6} key={col} >
+    <Grid item {...args} key={col} >
       <Flex fullHeight>
-        <Check on={active} />  
+       
+        {!active &&  <Check on={active} />  }
+        {!!active && <TinyButton onClick={() => setSettings(!settings)}  deg={settings ? 0 : 729} icon={Settings} />}
         <ListLabel onMove={onMove} active={active} small onSettings={() => setSettings(!settings)} addProp={addProp} > 
           {col}
         </ListLabel>
@@ -127,13 +135,14 @@ const ListTableRow = ( {
     </Grid>
 
 
-    <Grid item xs={6}>  
- 
+    <Grid item {...args}>  
+  
       {!!componentBound && <QuickSelect 
         label={`Bind ${col} to`} 
         value={!state.bindings[col] ? '' : state.bindings[col].title}
         onChange={e => {
           setState(s => ({
+            dirty: 1,
             ...s,
             bindings: {
               ...s.bindings,
@@ -144,10 +153,13 @@ const ListTableRow = ( {
         options={bindableProps.map(f => f.title)} />}
 
       {!componentBound && active && <TextInput 
+        prompt
+        small
         disabled={!active}
         value={state.bindings[col]}
         onChange={e => {
           setState(s => ({
+            dirty: 1,
             ...s,
             bindings: {
               ...s.bindings,
@@ -155,7 +167,9 @@ const ListTableRow = ( {
             }
           }))
       }} 
-      size="small" placeholder={`Label for ${col}`}/>}
+      size="small" label={
+        <Text small><em>set label for {col}</em></Text>
+      }/>}
 
     </Grid>
 
@@ -163,9 +177,9 @@ const ListTableRow = ( {
         
         <Divider sx={{mb: 1}} />
 
-        <Flex fullHeight>
+        <Flex fullHeight sx={{mb: 1}}>
           <Text small>Display as</Text>
-          <QuickSelect value={type?.type} onChange={value => handleType({
+          <QuickMenu label={type?.type||'Choose type'} caret value={type?.type} onChange={value => !!value && handleType({
              [col]: {
               type: value,
               settings: {
@@ -181,8 +195,8 @@ const ListTableRow = ( {
         {!!selectedProp && settings && <Grid xs={12} item sx={{pb: 1}}>
           <Grid container spacing={1}>
             {selectedProp.map(prop => <Grid key={prop.label} item xs={prop.xs || 12}>
-              <Text small>{prop.title || prop.label} </Text>
-              <TypeInput {...prop} value={type?.settings[prop.label]} onChange={value => handleType({
+              <Text active small>{prop.title || prop.label} </Text>
+              <TypeInput {...prop} value={type?.settings[prop.label]} onChange={value => !!value && handleType({
                 [col]: {
                   ...type,
                   settings: {
@@ -206,10 +220,10 @@ const ListTableRow = ( {
 const TypeInput = ({ label, types, value, type, onChange }) => {
 
   if (types) {
-    return <QuickSelect options={types} value={value} label={label} onChange={onChange}/>
+    return <QuickMenu caret options={types} value={value} label={value || label} onChange={w => !!w && onChange(w)}/>
   }
 
-  return <TextInput size="small" value={value} fullWidth label={label} onChange={e => onChange(e.target.value)} />
+  return <TextInput small prompt size="small" value={value} fullWidth label={`Set value for ${label}`} caret onChange={e => onChange(e.target.value)} />
 }
 
 const variants = [

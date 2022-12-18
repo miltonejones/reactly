@@ -1,11 +1,12 @@
 import React from 'react';
 import {  useParams } from "react-router-dom"; 
-import { Paper, styled } from '@mui/material'; 
+import { Paper, Box, styled } from '@mui/material'; 
 import { getStyles, getSettings , fixText} from './util';
 import { RepeaterContext, AppStateContext } from '../../hooks/AppStateContext'; 
 import { PageStateContext } from '../../hooks/usePageContext';
 import { usePageContext } from "../../hooks/usePageContext";
 import { getParams } from './util';
+import { useTextTransform } from '../../hooks/useTextTransform';
 
 
 
@@ -13,9 +14,11 @@ export const ChildComponent = ({ component, children  }) => {
   const { Library } = React.useContext(AppStateContext);
   const { Component } = Library[component.ComponentType];
   const { attachEventHandlers } = usePageContext();
+  const styles = getStyles(component.styles)
   const eventMap = attachEventHandlers(component);
 
   return  <Component 
+    style={styles}
     {...component}
     {...eventMap}
     >
@@ -29,16 +32,17 @@ const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
 
 export const useTextBind = (settings, selectedPage) => {
-  const { 
-    pageClientState,  
-  } = React.useContext(PageStateContext);
-  const { queryState = {} } = React.useContext(AppStateContext);
+ 
+  const { interpolateText } = useTextTransform();
+  const { queryState = {},
+  pageClientState,
+  applicationClientState } = React.useContext(AppStateContext);
 
 
   const args = getSettings(settings); 
   const fixed = Object.keys(args)
     .map(arg => {
-      const val = fixText(args[arg], pageClientState, queryState.params || selectedPage?.parameters);
+      const val = interpolateText(args[arg], pageClientState);
       return {
         arg,
         val: val || 'arg'
@@ -76,6 +80,8 @@ const ReactlyComponent = ({
       settings = settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
     }) 
   }
+
+  const { interpolateText } = useTextTransform();
  
   const childComponents = ((selectedPage?.components||[]).concat(appContext.components||[])).filter(f => f.componentID === props.ID);
 
@@ -103,6 +109,7 @@ const ReactlyComponent = ({
   })
 
   const completed = {
+    position: 'relative',
     ...style,
     ...made
   }
@@ -111,7 +118,7 @@ const ReactlyComponent = ({
 
   const fixed = Object.keys(args)
     .map(arg => {
-      const val = fixText(args[arg], state, routes);
+      const val = interpolateText(args[arg], state);
       return {
         arg,
         val: val || 'arg'
@@ -123,11 +130,11 @@ const ReactlyComponent = ({
     }, {})
 
  
-  if (childComponents?.length && Library[props.ComponentType].allowedChildren ) {
+  if (childComponents?.length && Library[props.ComponentType].allowedChildren) {
     return  <Component {...fixed} {...props}  style={completed} sx={{...props.sx, ...style, ...extra}}> 
             { childComponents.sort(componentOrder).map(guy => <>
         
-              <ChildComponent component={guy} key={guy.ID} />
+              <ChildComponent component={guy} key={guy.ID}  />
             </>)}
           </Component>
   }
@@ -143,7 +150,7 @@ const ReactlyComponent = ({
    )
 } 
 
-export const Faux = styled(Paper)(( {open, anchor} ) => {
+export const Faux = styled(Paper)(({ open, anchor }) => {
   const obj = { 
     display: !open ? 'none' : 'block' ,
     margin: 16,

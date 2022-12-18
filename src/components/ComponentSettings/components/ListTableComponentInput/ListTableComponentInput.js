@@ -83,6 +83,7 @@ const ListTableComponentInput = ({
     
      setState(s => ({
       ...s,
+      dirty: 1,
       bindings ,
       columnMap,
       typeMap
@@ -128,6 +129,7 @@ const ListTableComponentInput = ({
 
     setState(s => ({
       ...s,
+      dirty: 1,
       typeMap
     }));
   }
@@ -139,6 +141,7 @@ const ListTableComponentInput = ({
     arraymove(columnMap, index, index + offset);
     setState(s => ({
       ...s,
+      dirty: 1,
       columnMap
     })) 
   }
@@ -193,13 +196,14 @@ const ListTableComponentInput = ({
       <QuickSelect value={resource?.name} options={resources.map(f => f.name)} onChange={value => {
         const res = resources.find(f => f.name === value);
         if (!res) return;
-        setState(s => ({...s, resourceID: res.ID}))
+        setState(s => ({...s, 
+          dirty: 1, resourceID: res.ID}))
       }}/>
 
       <Box sx={{mt: 2}}>
         <Text small variant="caption">Bound Fields</Text> 
 
-        <Grid container sx={{mt: 0.5}} spacing={1}>
+        <Grid container sx={{mt: 0.5}} spacing={0}>
 
           {!componentBound && <>
             
@@ -267,7 +271,12 @@ const ListTableComponentInput = ({
           {/* <TextBtn color="warning" variant="contained" onClick={() => setOpen(!open) }>test</TextBtn> */}
           <Spacer />
 
-          <TextBtn endIcon={<Save />} variant="contained" onClick={() => handleChange(state) }>save</TextBtn>
+          <TextBtn endIcon={<Save />} variant="contained" 
+            disabled={!state.dirty}
+            onClick={() => {
+              handleChange(state);
+              setState(s => ({ ...s, dirty: false}))
+            } }>save</TextBtn>
         </Flex>
 
 <pre>

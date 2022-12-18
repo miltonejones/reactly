@@ -232,9 +232,9 @@ const ComponentPanel = ({
         </Box>
     </Collapse>
 
-    {(!!component || value === 3) && <Panel  {...panelProps} />}
+    {(!!component?.ComponentName || value === 3) && <Panel  {...panelProps} />}
 
-    {!component && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
+    {!component?.ComponentName && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
       onComponentImport={onComponentImport}
       Confirm={Confirm}
       importable={importable}
@@ -244,7 +244,7 @@ const ComponentPanel = ({
       page={selectedPage} onChange={onChange} />}
 
 
-    {!component && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
+    {!component?.ComponentName && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
 

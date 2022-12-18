@@ -65,7 +65,36 @@ export const useRunScript = () => {
     return '--none--' + JSON.stringify(option)
   }
 
+ /**async function transformMusic (page, options) {
+  const { api, data, application, setState } = options; 
  
+  let transformed = data;
+
+  const transform = fn => {
+
+    application.setState(state => {
+      fn(state.playlist_db);
+      return state;
+    })
+
+  }
+
+  transform(playlist_db => {
+     if (playlist_db) {
+       transformed = {
+         ...data,
+         records: data.records.map(rec => ({
+           ...rec,
+           favorite: playlist_db.indexOf(rec.FileKey) > -1 ? 'Favorite' : 'FavoriteBorder'
+          }))
+       }
+     } else console.log ('NO PLAYLIST IN MEMORY')
+   })  ;
+  
+
+  return transformed;
+}
+ */
 
 
 

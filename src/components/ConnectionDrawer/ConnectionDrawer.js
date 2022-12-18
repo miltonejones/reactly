@@ -1,13 +1,17 @@
 import React from 'react';
 import { styled, Box, IconButton, Drawer, TextField, Link,
-  Divider, Typography, Stack, Grid, Card, Switch } from '@mui/material';
-import { Tiny, PopoverInput, Flex, Text, Spacer, TextBtn ,QuickSelect, QuickMenu, DeleteConfirmMenu, TextBox, PillMenu} from '..';
-import { Close, RecentActors, Add, Code, Biotech, DatasetLinked, AutoStories, Delete, Save, CheckCircleOutline, CheckCircle } from "@mui/icons-material";  
+  Divider, Typography, Stack, Collapse, Grid, Card, Switch } from '@mui/material';
+import { Tiny, TinyButton, PopoverInput, Flex, Text, Spacer, TextBtn ,PopoverPrompt,
+  QuickSelect, QuickMenu, DeleteConfirmMenu, TextBox, PillMenu} from '..';
+import { Close, RecentActors, Add, Code, Bolt, DatasetLinked, Settings,
+    AutoStories, Delete, Save, CheckCircleOutline, CheckCircle, Edit } from "@mui/icons-material";  
 import { Json } from '../../colorize'; 
 import { useEditor } from '../../hooks/useEditor';
 import ComponentEvents from '../ComponentEvents/ComponentEvents';
 import { JsonModal } from '../../colorize';
 import { useRunScript } from '../../hooks/subhook/useRunScript';
+import { StateComponentInput } from '../ComponentSettings/components';
+import { AppStateContext } from "../../hooks/AppStateContext";
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -15,6 +19,8 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
  
   
+const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
+
 
 const ConnectionNode = ({ 
     ID, 
@@ -127,9 +133,13 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
 
 const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
     onTermDrop, onTermAdd, onChange, setDirty, resourceCommit }) => {
+
   const { ID, connectionID, name, path, format, method, values, columns, transform, node } = resource;
   const handleChange = key => e => onChange(key, !e.target ? e : e.target.value);
 
+  const {  
+    EditCode
+  } = React.useContext(AppStateContext);
 
   const {
     getApplicationScripts,
@@ -138,6 +148,7 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
     scriptList
   } = useRunScript()
 
+  const [showTransform, setShowTransform] = React.useState(false);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleAliasOpen = event => {
@@ -148,38 +159,104 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
     setAnchorEl(null)
   } 
 
+  const handleEdit = React.useCallback(ID => {
+    const script = scriptList.find(s => s.ID === ID)
+    if (script) {
+      EditCode(script.code)
+    }
+  }, [scriptList])
+
+  const isGetRequest = method === 'GET';
 
   return <>
 
-<JsonModal json={resource} />
-      <Typography sx={{pl: 1}} variant="caption"><b>Configure Resource</b></Typography>
-      <Divider  sx={{mb: 2}}/>
-      <Box sx={{mr: 2, ml: 2}}>
+    <JsonModal json={resource} />
+    <Typography sx={{pl: 1}} variant="caption"><b>Configure Resource</b></Typography>
+    <Divider  sx={{mb: 2}}/>
+    <Box sx={{mr: 2, ml: 2}}>
 
-        <Grid container spacing={2}>  
+        <Grid container spacing={1}>  
           <Grid item xs={6}>
             <TextField label="Name" fullWidth onChange={handleChange('name')} value={name} size="small" />
           </Grid> 
           <Grid item xs={6}>
             <TextField label="Path" fullWidth onChange={handleChange('path')} value={path} size="small" />
           </Grid>
-          <Grid item xs={3}>     
-            <QuickMenu caret label={method || 'Method'} onChange={handleChange('method')} options={['GET','POST','PUT','DELETE',]}
-                value={method}/>  
+
+          <Grid item xs={4}  >     
+            <Flex fullHeight sx={{mt: isGetRequest ? 0 : 0.5}}>
+            <Text small>Method</Text>
+              <QuickMenu caret label={method || 'Method'} onChange={handleChange('method')} options={['GET','POST','PUT','DELETE',]}
+                  value={method}/>  
+            </Flex>
           </Grid>
            
-          <Grid item xs={9}>
-              <PillMenu options={['rest', 'querystring']} onChange={handleChange('format')} value={format} />
-          </Grid>
+          {isGetRequest && <Grid item xs={7}>
+              
+ 
+              <PillMenu options={['rest', 'querystring']} 
+              onChange={handleChange('format')} value={format} /> 
+             
+          </Grid> }
 
+          <Grid item xs={isGetRequest ? 1 : 8}>
+            <Flex fullHeight sx={{mt: isGetRequest ? 0 : 0.5}} >
+              <Spacer />
+              {method !== 'GET' && <>
+              
+                <TextBtn 
+                  disabled={!dirty} 
+                  variant="contained" 
+                  size="small"
+                  endIcon={<Save />}
+                  onClick={resourceCommit} 
+                  >Save</TextBtn>
+
+                <TextBtn 
+                  variant={!! answer ? "outlined" : "contained"}  
+                  size="small"
+                  endIcon={!!answer ? <Close /> : <Bolt />}
+                  onClick={() => {
+                    if(!!answer) {
+                      return setAnswer(null)
+                    }
+                    onPreview(format)
+                  }} 
+                color="warning">{!!answer ? "Clear" : "Test"}</TextBtn>
+
+
+              </>}
+              <TinyButton icon={Settings} onClick={() => setShowTransform(!showTransform)} />
+            </Flex>
+          </Grid>
+           
           <Grid item xs={12}>     
-          <QuickSelect 
-                value={transform}
-                options={scriptList} 
-                getOptionLabel={applicationScriptOptionLabel} 
-                renderOption={applicationScriptRenderOption}  
-                onChange={handleChange('transform')} 
-              />
+            <Collapse in={showTransform || !!transform}>
+
+              <Flex  sx={{mb: 2}}>
+                  <Tiny icon={Code} />
+                  
+              <Text active small>Transform {isGetRequest ? "incoming data" : "outgoing request"}</Text>
+              </Flex>
+               
+               <Flex fullWidth >
+                  
+
+               <QuickSelect fullWidth
+                label="Choose transform script"
+                    value={transform}
+                    options={scriptList} 
+                    getOptionLabel={applicationScriptOptionLabel} 
+                    renderOption={applicationScriptRenderOption}  
+                    onChange={handleChange('transform')} 
+                  />
+                 
+               
+               <TinyButton icon={Edit} onClick={() => handleEdit(transform.ID)} />
+
+
+               </Flex>
+            </Collapse>
           </Grid>
         </Grid>
 
@@ -187,27 +264,48 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
       
 
       <Flex sx={{pl: 1, pr: 1, mt: 2}}>
+
+
+       {isGetRequest && <>
         <JsonModal json={values} />
         <Typography 
-            variant="caption"><b>Values</b></Typography>
-        <TextBtn onClick={handleAliasOpen}  endIcon={<Add />}>add</TextBtn>
+              variant="caption"><b>Values</b></Typography>
+          <TextBtn onClick={handleAliasOpen}  endIcon={<Add />}>add</TextBtn>
+        </>}
+
+
         <Spacer />
-        <TextBtn disabled={!dirty} variant="contained" size="small"
-        endIcon={<Save />}
-                onClick={resourceCommit} >Save</TextBtn>
-        <TextBtn variant={!! answer ? "outlined" : "contained"}  size="small"
-          endIcon={!!answer ? <Close /> : <Biotech />}
-                onClick={() => {
-                  if(!!answer) {
-                    return setAnswer(null)
-                  }
-                  onPreview(format)
-                }} color="warning">{!!answer ? "Clear" : "Test"}</TextBtn>
+
+      {isGetRequest && <>
+      
+        <TextBtn 
+          disabled={!dirty} 
+          variant="contained" 
+          size="small"
+          endIcon={<Save />}
+          onClick={resourceCommit} 
+          >Save</TextBtn>
+
+        <TextBtn 
+          variant={!! answer ? "outlined" : "contained"}  
+          size="small"
+          endIcon={!!answer ? <Close /> : <Bolt />}
+          onClick={() => {
+            if(!!answer) {
+              return setAnswer(null)
+            }
+            onPreview(format)
+          }} 
+        color="warning">{!!answer ? "Clear" : "Test"}</TextBtn>
+
+      </>}
+
+
       </Flex>
 
       <Divider  sx={{mb: 2, mt: 1}}/>
 
-      <Grid sx={{ml: 1}} container spacing={2}>
+      {isGetRequest && <Grid sx={{ml: 1}} container spacing={0}>
         
         <Grid item xs={2}>
         <JsonModal json={terms} />
@@ -220,28 +318,48 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
  
 
 
-        {values?.map(prop => <>
+        {isGetRequest && values?.map(prop => <>
 
-            <Grid item xs={2}>
-              {prop.key}
-            </Grid>
-            <Grid item xs={8}>
-              <TextField placeholder={`Enter ${prop.key} value`}  value={terms[prop.key]} 
-              autoComplete="off"
-                onChange={e => {
-                  setTerms(s => ({...s, [prop.key]: e.target.value}));
-                  setDirty(true)
-                }}
-              size="small" />
-            </Grid>
-            <Grid item xs={1}>
-             <Box onClick={() => onTermDrop(prop.key)}>
-              <Tiny sx={{mt: 2}} icon={Close} />
-             </Box>
-            </Grid>
+          <Grid item xs={2}>
+<Flex fullHeight>
+  <PopoverPrompt 
+  small
+  value={terms[prop.key]}
+  component={Text}
+  onChange={e => {
+    setTerms(s => ({...s, [prop.key]: e}));
+    setDirty(true)
+  }} 
+  label={<>Set value for "{prop.key}"</>}
+  
+>{prop.key}</PopoverPrompt>
+</Flex>
+          </Grid>
+          <Grid item xs={8}>
+<Flex fullHeight>
+  <Text small active>
+{terms[prop.key]} 
+  </Text>
 
-          </>)}
-      </Grid>
+</Flex>
+            {/* <TextField placeholder={`Enter ${prop.key} value`}  value={terms[prop.key]} 
+            autoComplete="off"
+              onChange={e => {
+                setTerms(s => ({...s, [prop.key]: e.target.value}));
+                setDirty(true)
+              }}
+            size="small" /> */}
+
+
+          </Grid>
+          <Grid item xs={1}>
+            <Box onClick={() => onTermDrop(prop.key)}>
+            <Tiny sx={{mt: 2}} icon={Close} />
+            </Box>
+          </Grid>
+
+        </>)}
+      </Grid>}  
 
       <PopoverInput label="Add a query string value" 
         onChange={value => {
@@ -252,8 +370,6 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
 
   </>
 }
-
-const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
 
 const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) => {
   if (!nodes || !resource) {
@@ -302,16 +418,21 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
   const [selectedConnection, setSelectedConnection] = React.useState({})
   const [terms, setTerms] = React.useState({});
   const [dirty, setDirty] = React.useState(null)
+  const [useClient, setUseClient] = React.useState(null)
   const [answer, setAnswer] = React.useState(null)
   const [fields, setFields] = React.useState([])
-  const { ID, connectionID, path, format, method, transform, values, columns, node } = selected;
+  const { ID, connectionID, path, format, method, transform, 
+    values, columns, body, node, contentID } = selected;
  
+    const { 
+      Alert, 
+    } = React.useContext(AppStateContext);
     const {
       executeScript,
       getApplicationScripts 
     } = useRunScript()
-
-
+ 
+    const isGetRequest = method === 'GET';
   
   const previewConnectionRequest = async (format) => {
     const connection = connections.find(f => f.ID === connectionID);
@@ -323,13 +444,21 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
       : Object.keys(terms).map(t => `${t}=${terms[t]}`).join('&');
 
 
-    const endpoint = `${url}${slash}${qs}`;
+    const requestOptions = isGetRequest ? null : {
+      method,
+      body,
+      headers: { 'Content-Type': 'application/json' },
+    }; 
 
 
-    const response = await fetch(endpoint); 
+    const endpoint = isGetRequest ? `${url}${slash}${qs}` : url;
+
+    const response = await fetch(endpoint, requestOptions); 
+
+
     const json = await response.json();
 
-    if (transform) {
+    if (transform && method === 'GET') {
       const scriptList = getApplicationScripts()
       const script = scriptList?.find(f => f.ID === transform.ID);
  
@@ -339,8 +468,12 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
     }
 
+    if (!isGetRequest) {
+      return Alert(<pre>
+        {JSON.stringify(json,0,2)}
+      </pre>)
+    }
 
-    // return alert(endpoint)
     setAnswer(json);
     
   }
@@ -463,6 +596,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     }, 
   ]
   
+
  return (
   <Drawer open={open} anchor="bottom"> 
     <Layout data-testid="previewConnectionRequest-for-ConnectionDrawer">
@@ -502,32 +636,35 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
       </Flex>
       <Divider />
      
-    <Grid container sx={{height: 400}}>
+    <Grid container>
       
       <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <JsonModal json={connections} />
         <Typography sx={{pl: 1}} variant="caption">
           <b>Connections</b></Typography>
         <Divider  sx={{mb: 2}}/>
+        <Box sx={{height: 400, overflow: 'auto'}}>
 
-        {connections.map (connection => <ConnectionNode 
-              resources={resources} 
-              resource={selected}
-              resourceCommit={handleResourceCommit}
-              connectionCommit={() => {
-                handleConnectionCommit()
-                setDirty(false)
-              }}
-              resourceClick={setSelectedResource}
-              selectedResourceID={selected?.ID}
-              selectedConnectionID={selectedConnection?.ID}
-              connectionClick={(e) => setSelectedConnectionByID(e)}
-              key={connection.ID} 
-              resourceDrop={dropResource}
-              connectionDrop={dropConnection}
-              dirty={dirty}
-              {...connection} />)}
+          {connections.map (connection => <ConnectionNode 
+                resources={resources} 
+                resource={selected}
+                resourceCommit={handleResourceCommit}
+                connectionCommit={() => {
+                  handleConnectionCommit()
+                  setDirty(false)
+                }}
+                resourceClick={setSelectedResource}
+                selectedResourceID={selected?.ID}
+                selectedConnectionID={selectedConnection?.ID}
+                connectionClick={(e) => setSelectedConnectionByID(e)}
+                key={connection.ID} 
+                resourceDrop={dropResource}
+                connectionDrop={dropConnection}
+                dirty={dirty}
+                {...connection} />)}
 
+          
+        </Box>
              
       </Grid>
 
@@ -540,10 +677,10 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
         {!!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <ResourceForm 
-          setDirty={setDirty}
-              dirty={dirty}
-              answer={answer}
-              setAnswer={setAnswer}
+            setDirty={setDirty}
+            dirty={dirty}
+            answer={answer}
+            setAnswer={setAnswer}
             resource={selected} 
             resourceCommit={handleResourceCommit}
             onChange={handleSelectedResourceChange}
@@ -565,7 +702,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
           </Box>
         </Grid>}
 
-        {!!selected.columns && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+        {!!selected.columns && isGetRequest && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Selected columns</b></Typography>
           <Divider  sx={{mb: 2}}/>
           <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
@@ -574,6 +711,44 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
               <Spacer />
               <Tiny onClick={() => addProp(col, selected.node)} icon={Close} />
             </Text>)}
+          </Box>
+        </Grid>} 
+
+        {!isGetRequest && !!selected?.ID && <Grid item xs={3} 
+            sx={{borderRight: 1, borderColor: 'divider'}}>
+          <Typography sx={{pl: 1}} variant="caption"><b>Request Body</b></Typography>
+          <Divider  sx={{mb: 2}}/>
+          <Box sx={{height: 400, overflow: 'auto', pr: 2, pl: 2}}>
+            <Flex onClick={() => setUseClient(!useClient)}>
+              <Text small>
+              Use client variable
+              </Text>
+              <Spacer />
+              <Switch size="small" disabled={!!contentID} checked={useClient || !!contentID}/>
+            </Flex>
+
+            <Collapse in={useClient || !!contentID}>
+            <StateComponentInput value={contentID} selectedPage={selectedPage}
+              handleChange={(value) => handleSelectedResourceChange('contentID',  value)}
+              header={<Text small>Choose JSON variable</Text>}/>
+
+            </Collapse>
+
+
+            <Collapse in={!contentID && !useClient}>
+            <TextBox 
+              fullWidth
+              value={body}
+              onChange={e => handleSelectedResourceChange('body', e.target.value)}
+              multiline
+              rows={15}
+              placeholder="Type or paste request content"
+              />
+              </Collapse>
+
+
+
+
           </Box>
         </Grid>} 
 

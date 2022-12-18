@@ -1,8 +1,8 @@
 import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
-  Divider, Typography, Stack, Grid, Card, Switch, Alert } from '@mui/material';
-import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu } from '..';
+  Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
+import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
 import { Close, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
@@ -18,7 +18,7 @@ const Bar = styled(Box)(({ theme, active, big }) => ({
   gap: theme.spacing(1) ,
   alignItems: 'center',
   borderBottom: 'solid 1px ' +  theme.palette.divider,
-  width: big ? 360 : 500,
+  width: big ? 360 : '90%',
   padding: theme.spacing(0.5, 0),
   fontWeight: active? 600 : 400,
   cursor: 'pointer',
@@ -26,7 +26,13 @@ const Bar = styled(Box)(({ theme, active, big }) => ({
 }));
  
 const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDrop, handleClose, handleChange }) => {
+
+  
+
+
   const ref = React.useRef(null)
+  const [page, setPage] = React.useState(1);
+  const [filter, setFilter] = React.useState('');
   const [assist, setAssist] = React.useState('')
   const [selected, setSelected] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
@@ -35,9 +41,15 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
   const [error, setError] = React.useState('')
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { ID, name, code } = selected;
+
   const { 
-    appBusy
+    appBusy,
+    queryState,
+    appContext,
+    EditCode
   } = React.useContext(AppStateContext);
+
+  const { page: targetPage } = queryState;
 
   const setCode = text => {
      try {
@@ -70,14 +82,27 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     }
   }
 
-  const scriptMenu = application.pages?.reduce ((items, page) => {
+  const editJS = async (js, pageID) =>  {
+    const script = await EditCode(js.code);
+    if (!script) return;
+    if (script === -1) {
+      return handleChange (null, null, js.code, res => setSelected(res), js.name)
+    }
+
+    
+    return handleChange (js.ID, js.name, script, res => alert(js.name + ' was saved!'), js.name, pageID)
+   
+  }
+
+  const scriptMenu = application.pages?.filter(f => f.ID !== targetPage?.ID)
+    .reduce ((items, page) => {
     !!page.scripts?.length && items.push({
       name: <b>{page.PageName}</b>
     })
     page.scripts?.map(js => {
       items.push({
         ...js,
-        action: () => handleChange (null, null, js.code, res => setSelected(res), js.name)
+        action: () => editJS(js, page.ID), // handleChange (null, null, js.code, res => setSelected(res), js.name)
       })
     })
     return items;
@@ -98,6 +123,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     'moment'
   ]
 
+  const page_size = big ? 18 : 8;
+  const filtered = scripts
+    .filter(f => !filter || f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+  const pageCount = Math.ceil(filtered?.length / page_size);
+  const startSlice = (page - 1) * page_size;
+  const visible = filtered.slice(startSlice, startSlice + page_size)
+
   if (appBusy) {
     return <>loading...</>
   }
@@ -115,7 +147,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
 
       <QuickMenu 
-      title="Import script"
+        title="Import script"
         options={scriptMenu.map(m => m.name)}
         label={<TextBtn endIcon={<MoreVert />}>Import</TextBtn>}
         onChange={(val) => {
@@ -127,13 +159,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
 
       <Spacer />
       <IconButton
-              color="inherit" 
-              onClick={() => {
-                handleSwitch({ connectOpen: 1, scriptOpen: false})
-              }}
-            >
-              <AutoStories />
-            </IconButton>
+        color="inherit" 
+        onClick={() => {
+          handleSwitch({ connectOpen: 1, scriptOpen: false})
+        }}
+      >
+        <AutoStories />
+      </IconButton>
       <IconButton disabled>
         <Code />
       </IconButton>
@@ -152,23 +184,46 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     <Divider />
      
     <Grid container>
-      <Grid item xs={big ? 3 : 6} sx={{pt: 3, pl: 2}}>
+      <Grid item xs={big ? 3 : 6} sx={{pt: 0, pl: 0}}>
         <Typography variant="caption"><b>Available scripts</b></Typography>
-        {scripts.map(s => <Bar big={big}
-        active={s.ID === ID}
-         ><Tiny icon={Code} /> <Text small
-         sx={{fontWeight: s.ID === ID ? 600 : 400}}
-         onClick={() => setSelected(s)}>{s.name}</Text>
-         <Spacer />
-        {s.ID === ID && dirty && <TinyButton onClick={() => {
-            setDirty(false);
-          handleChange( ID, name, code)
-        }}  icon={Save}  onClick={() =>  setSelected( {code: ''} ) } /> }
-        {s.ID === ID && <TinyButton icon={Close}  onClick={() =>  {
-          setSelected( {code: ''} ) ;
-          setDirty(false)
-        }} /> }
-         <TinyButton icon={Delete}  onClick={() => handleDrop && handleDrop(s.ID)} /> 
+        
+        <Divider sx={{mb: 1}} />
+
+        {/* pagination  */}
+        <Flex sx={{ mb: 1 }}>
+        {pageCount > 1 && <Pagination count={pageCount} color="primary" variant="rounded" 
+          sx={{mb: 2}} page={page} onChange={(e, p) => setPage(p)}/>}
+        <Spacer />
+
+        {/* search box  */}
+        {!big && <SearchBox 
+         placeholder="Filter script name"
+          onChange={e => setFilter(e.target.value)}
+          onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>}
+        </Flex>
+
+        {/* big view search box  */}
+        {!!big && <SearchBox 
+         placeholder="Filter script name"
+          onChange={e => setFilter(e.target.value)}
+          onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>}
+
+        {/* script list  */}
+        {visible.map(s => <Bar big={big}
+            active={s.ID === ID}
+          ><Tiny icon={Code} /> <Text small
+          sx={{fontWeight: s.ID === ID ? 600 : 400}}
+          onClick={() => setSelected(s)}>{s.name}</Text>
+          <Spacer />
+          {s.ID === ID && dirty && <TinyButton onClick={() => {
+              setDirty(false);
+            handleChange( ID, name, code)
+          }}  icon={Save}  onClick={() =>  setSelected( {code: ''} ) } /> }
+          {s.ID === ID && <TinyButton icon={Close}  onClick={() =>  {
+            setSelected( {code: ''} ) ;
+            setDirty(false)
+          }} /> }
+          <TinyButton icon={Delete}  onClick={() => handleDrop && handleDrop(s.ID)} /> 
          </Bar>)}
 
       </Grid>
@@ -199,7 +254,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
           disabled={!name}
           multiline
           fullWidth
-          rows={big ? 32 : 12}
+          rows={big ? 32 : 14}
           onChange={e => {
             setCode(e.target.value)
             setDirty(true);
@@ -240,7 +295,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
           > 
           save script
         </TextBtn>
-        <IconButton onClick={() => setBig(!big)}>
+        <IconButton onClick={() => {
+           setBig(!big);
+           setPage(1)
+        }}>
           {big ? <CloseFullscreen /> : <OpenInFull />}
         </IconButton>
         </Flex>

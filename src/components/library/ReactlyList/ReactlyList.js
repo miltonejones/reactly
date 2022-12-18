@@ -21,6 +21,7 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
 
   const listItems = props.items || args?.items;
+  const autoSort = props.autosort || args?.autosort;
  
 
 
@@ -59,12 +60,14 @@ const ReactlyComponentList = ({ children, ...props }) => {
  }  
 
 
+ const sortRows = !autoSort ? dataRows : dataRows.sort((a,b) => a.text > b.text ? 1 : -1);
+
  return (
    <> 
 
   {/* [ {index}/{props.selectedIndex}/{args.selectedIndex}] */}
    <ReactlyComponent component={List} {...props} subheader={header}> 
- {dataRows?.map((item, i) => {
+ {sortRows?.map((item, i) => {
   const StartIcon = Icons[item.startIcon] ;
   const EndIcon = Icons[item.endIcon] ;
   return <ListItem key={i} active={i === Number(selectedIndex)} 
