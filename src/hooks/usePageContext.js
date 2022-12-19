@@ -241,7 +241,22 @@ export const usePageContext = () => {
 
     setPageError && setPageError(null);
 
+    // const triggerLog = {}
+
+    console.log ('Found %c%s %s events', 'color: cyan', triggers.length, name);
+
     await map(triggers, async (trigger, index) => {
+
+      // if (triggerLog[trigger.ID]) {
+      //   return console.log ("SKipping repeat trigger %s: %s", index, trigger.ID)
+      // }
+
+      // Object.assign(triggerLog, {
+      //   [trigger.ID]: true
+      // });
+
+      // console.log({index, triggerLog})
+
       const speakable =
         !!listening(trigger.action.type) && !!listening(trigger.event);
 // shout ({
@@ -250,7 +265,7 @@ export const usePageContext = () => {
 //   trigger
 // })
       // temporary logging
-      speakable &&
+      // speakable &&
         console.log(
           '%s, triggering "%s" script on %s',
           index,
@@ -558,7 +573,9 @@ export const usePageContext = () => {
         // do nothing
       }
     });
+
   };
+ 
 
   const attachEventHandlers = React.useCallback(
     (component) => {
@@ -568,37 +585,44 @@ export const usePageContext = () => {
       const { page: previewPage } = queryState;
       const targetPage = preview ? previewPage : selectedPage;
 
-      const eventHandlers = includedEvents
-        .map((e) => e.name)
-        .reduce((handlers, eventName) => {
+     // console.log ( `%cattachEventHandle  ${component.ComponentName || component.name}`, 'color: yellow') 
+
+// console.log ({ 
+//   names: includedEvents
+//   .map((e) => e.namer, 
+// })
+      const eventHandlers = includedEvents 
+        .reduce((handlers, event) => {
+          const eventName = event.name;
           const supported = events?.find((f) => f.event === eventName);
-          if (!supported) return handlers;
+          if (!supported || !!handlers[eventName]) return handlers;
+ 
+ 
+ 
+          // console.log ( ` %cattaching "${eventName}" to  
+          //   ${component.ComponentName || component.name}`, 'color: red') 
 
-          // if (listening('attachEventHandlers')) {
-          //   shout({, eventName }, 
-          //       `attaching "${eventName}" to  ${component.ComponentName || component.name}`)
-          // }
+          handlers[eventName] = (e, options) => {
 
+            // console.log ('%c%s calling %c%s', 'font-weight:600,color: lime',
+            //       component.ComponentName || component.name, 'color: yellow', eventName);
+            if (listening('attachEventHandlers')) {
+              shout({ component: component.ComponentName || component.name, eventName }, 
+                  `calling ${component.ComponentName || component.name}.${eventName}`)
+            }
+            return handleComponentEvent(e, {
+              name: eventName,
+              component,
+              pageClientState,
 
-          handlers[eventName] = (function (state) {
-            return (e, options) => {
-              // console.log ('%s calling %s', component.ComponentName || component.name, eventName);
-              if (listening('attachEventHandlers')) {
-                shout({ component: component.ComponentName || component.name, eventName }, 
-                    `calling ${component.ComponentName || component.name}.${eventName}`)
-              }
-              return handleComponentEvent(e, {
-                name: eventName,
-                component,
-                pageClientState,
+              // get current state at the time the event fires
+              state: pageClientState,
+              options,
+              api: { getRef, getRefByName, openLink, openPath },
+            });
+          };
+ 
 
-                // get current state at the time the event fires
-                state: pageClientState,
-                options,
-                api: { getRef, getRefByName, openLink, openPath },
-              });
-            };
-          })(pageClientState);
           return handlers;
         }, {});
 
@@ -664,6 +688,15 @@ export const usePageContext = () => {
           }
         });
       }
+
+      // Object.keys(eventHandlers).map (key => console.log (key, typeof eventHandlers[key]))
+
+      // Object.keys(eventHandlers).length && console.log ({ 
+      //   eventHandlers,
+      //   keys: Object.keys(eventHandlers) 
+      // })
+ 
+
       return eventHandlers;
     },
     [

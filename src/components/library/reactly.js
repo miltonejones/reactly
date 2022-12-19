@@ -96,6 +96,8 @@ const ReactlyComponent = ({
  
     
 
+  const eventMap = attachEventHandlers(props);
+
 
   const made = {}
   
@@ -144,7 +146,8 @@ const ReactlyComponent = ({
 {/* [  <pre>
     {JSON.stringify(props.pageID,0,2)}
   </pre>] */}
- <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
+ <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} 
+    {...eventMap} > 
     {fixed.children || children}
  </Component></>
    )

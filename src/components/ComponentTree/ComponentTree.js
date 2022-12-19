@@ -465,14 +465,14 @@ export const RenderComponent = ({
   selectedComponent,
   selectedPage,
   setQueryState,
-}) => {
-  const [loaded, setLoaded] = React.useState(!1);
+}) => { 
 
   const on = selectedComponent?.ID === component.ID;
   const kids = componentList.filter((t) => t.componentID === component.ID);
   const { Library } = React.useContext(AppStateContext);
 
   const { attachEventHandlers } = usePageContext();
+ 
  
 
   if (! Library[component.ComponentType]) {
@@ -482,14 +482,14 @@ export const RenderComponent = ({
   const { Component } = Library[component.ComponentType];
 
 
-  const eventMap = attachEventHandlers(component);
+  // const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
 
 
 
   return (
-    <>
+    <> 
      {!settings.debug &&  <Preview
         on={on}
         selectedPage={selectedPage}
@@ -498,8 +498,7 @@ export const RenderComponent = ({
         setQueryState={setQueryState}
         preview={preview}
         hilit={hilit}
-        {...component}
-        {...eventMap}
+        {...component} 
       >
 
         {!!kids.length && (

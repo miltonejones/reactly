@@ -107,7 +107,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
 
     allowedChildren = !tree ? null : Library[tree.ComponentType].allowedChildren;
   } catch (ex) {
-    console.log ({ ex })
+    // console.log ({ ex })
   }
 
   const baseIcon = expanded ? Remove : Add;
