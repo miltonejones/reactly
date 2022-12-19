@@ -150,7 +150,7 @@ export const useTextTransform = () => {
     { target: eventTarget, value: propertyValue }, 
     eventProps,  
   ) => {
-
+//avatar_open,avatar_closed,photo_open
     const regex = /\[([^}]+)\]/g;
     const literal = regex.exec(propertyValue);
 

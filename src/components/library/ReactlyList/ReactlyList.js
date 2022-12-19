@@ -74,7 +74,7 @@ const ReactlyComponentList = ({ children, ...props }) => {
           selectedColor={args.selectedColor}
           >
           
-          {!!item.avatar && <Avatar sx={{mr: 1}} src={item.avatar} alt={item.text} />}
+          {!!(item.avatar||args.default_image) && <Avatar sx={{mr: 1}} src={item.avatar || args.default_image} alt={item.text} />}
 
           {!!StartIcon &&   <ListItemIcon >
                 <StartIcon />

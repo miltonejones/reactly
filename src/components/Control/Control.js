@@ -423,8 +423,15 @@ export const TextInput = ({ sx, prompt, ...props }) => {
 
       >
         <Flex maxWidth={300} nowrap
-        sx={{ '&:hover': {textDecoration: 'underline'} }}
-        >{!!props.value ? <b>"{props.value}"</b> :  (props.label||props.placeholder)}</Flex>
+        sx={{ 
+          '&:hover': {
+            textDecoration: 'underline',
+            borderRadius: 0.25,
+            outline: 'solid 1px',
+            outlineColor: '#bdbdbd', 
+            outlineOffset: 4,
+          } }}
+        >{!!props.value ? <u>{props.value}</u> :  (props.label||props.placeholder)}</Flex>
       </PopoverPrompt>
   }
   return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>

@@ -66,6 +66,7 @@ import { ChipBox } from "../..";
 import { ApplicationTree } from "../..";
 import StatusPane from "../../StatusPane/StatusPane";
 import { uniqueId } from "../../library/util";
+import { ConsoleDrawer } from "../..";
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
@@ -261,10 +262,15 @@ const Editor = ({ applications: apps = {} }) => {
     getPageResourceState,
     setPageResourceState,
     applicationClientState, 
+    pageModalState,
     Library,
     commitProg,
     dirty,
     setDirty,
+     
+    setShowTrace,
+    showTrace,
+
   } = React.useContext(AppStateContext);
 
   const open = Boolean(anchorEl);
@@ -467,7 +473,7 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "Show resource state",
       action: () => Alert(<Json>
-        {JSON.stringify(pageResourceState, 0, 2)}
+        {JSON.stringify(pageModalState, 0, 2)}
       </Json>)
     },
     {
@@ -846,8 +852,10 @@ const Editor = ({ applications: apps = {} }) => {
                   )}
                   {!!componentParent?.components && <>
                   
-                  <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
-                      sx={{mb: 1}} value={contentFilter} />
+                 <Box sx={{mb: 1}}>
+                 <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
+                      value={contentFilter} />
+                 </Box>
                   {contentTree}
                   </>
                     
@@ -896,6 +904,7 @@ const Editor = ({ applications: apps = {} }) => {
             state={collapsed.right ? "-off" : ""}
             sx={{ borderLeft: 1, borderColor: "divider" }}
           >
+ 
             {!!componentParent && (
               <ComponentPanel
                 onCollapse={() =>
@@ -926,6 +935,9 @@ const Editor = ({ applications: apps = {} }) => {
           </Pane>
         </Grid>
       </Flex>
+      <ConsoleDrawer
+        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
+       />
 
       <ScriptDrawer
         scripts={componentParent?.scripts}

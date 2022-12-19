@@ -71,7 +71,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const [loud, setLoud] = React.useState(false);
   const [jsonLog, setMessages] = React.useState([]);
   const [pageRefState, setPageRefState] = React.useState({}); 
-  
+   
+  const [showTrace, setShowTrace] = React.useState(false);
   const [disableLinks, setDisableLinks] = React.useState(false);
   const [openTraceLog, setOpenTraceLog] = React.useState({});
   const [dynamoProgs, setDynamoProgs] = React.useState(null)
@@ -83,6 +84,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const [busy, setBusy] = React.useState(false);
   const [applicationClientState, setApplicationClientState] = React.useState({});
 
+  const [monitoredEvents, setMonitoredEvents] = React.useState([])
   const [applicationData, setApplicationData] = React.useState(null)
 
   const [pageModalState, setPageModalState] = React.useState({});
@@ -94,6 +96,9 @@ function RenderComponent({ preview, component: Component, ...props}) {
     appLoaded: true,
   });
   const [dirty, setDirty] = React.useState(false);
+
+
+  const monitorEvent = eventName => setMonitoredEvents(e => e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName) )
 
   const store = useLocalStorage({
     menu_pos: "bottom",
@@ -209,18 +214,24 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const MenuComponent = useMenus === '1' ? Menu : Drawer;
   const modal = useModal();
   const { setItem, getItems,  removeProgItem, getProgItems, setProgItem } = useDynamoStorage()
-
-
+  
  
   const [pageClientState, setPageClientState] = React.useState({});
 
 
+  const getPageClientStateAsync = fn => {
+    setPageClientState( state => fn(state) );
+  }
+
+  const getApplicationClientStateAsync = fn => {
+    setApplicationClientState( state => fn(state) );
+  }
 
   const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
     if (!pages) return items.concat('huh');
     const currentPage  = pages.find(f => f.ID === node.pageID);
 
-    if (currentPage) {
+    if (currentPage) {  
       return createBreadcrumbs(pages, currentPage).concat(node.PageName);
     }
 
@@ -246,7 +257,6 @@ function RenderComponent({ preview, component: Component, ...props}) {
   
 
   const shout =  async( j, m = 'message') => {
-    if (loud) {
       
       setMessages(msgs => msgs.concat({
         json: j,
@@ -259,6 +269,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
       //     {JSON.stringify(j,0,2)}
       //     </pre>
       // </Stack>, m)
+    if (loud) {
       console.log("%s\n------------------\n%o", m, j)
     }
   } 
@@ -305,7 +316,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
         appContext,
         selectedPage,
         preview,
-
+        showTrace, 
+        setShowTrace,
         // "persistent" state values 
         setPageError, 
         pageError ,
@@ -321,8 +333,13 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
         pageClientState, 
         setPageClientState,
-        
+        getPageClientStateAsync,
+        getApplicationClientStateAsync,
         removeProgItem,
+        monitorEvent,
+        
+        monitoredEvents, 
+        setMonitoredEvents,
 
         pageResourceState, 
         getPageResourceState,

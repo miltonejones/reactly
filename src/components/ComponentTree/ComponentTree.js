@@ -413,6 +413,8 @@ const ComponentTreeBranch = ({
 
 
                 </Flex>
+
+                
               <hr />
               <Collapse in={openTraceLog[id]}>
               <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
@@ -482,21 +484,7 @@ export const RenderComponent = ({
 
   const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
-
-  function findMatches(tag,  matches = []) {  
-    const res = selectedPage?.components.filter(f => f.componentID === tag.ID);
-    matches.push(tag)
-    if (res?.length) {
-     res.map(t => {
-        findMatches(t, matches)
-      })
-    } 
-    return matches
-  }
-
-  const desc = findMatches(component);
-
-
+ 
 
 
 

@@ -16,7 +16,7 @@ export const Pill = styled(Box)(({ theme, square , round, selected, backgroundCo
  
 const PillMenu = ( { options = [], value, image, onChange }) => {
  return (
-   <Flex data-testid="test-for-PillMenu"> 
+   <Flex fullWidth sx={{  justifyContent: 'flex-end'}} data-testid="test-for-PillMenu"> 
      {options.map(o => <Pill selected={o === value} onClick={() => onChange && onChange(o)} key={o}>
       {image 
         ? <Tooltip title={o}><img alt={o} src={`/icon/${o}.png`} /></Tooltip>

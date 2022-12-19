@@ -43,7 +43,7 @@ function syntaxHighlight(json, css) {
   }).replace(css ? /"/g : '', '');
 }
 
-const JsonView = ({ json, initial = 1 }) => {
+const JsonView = ({ json, initial = 1,  ...props }) => {
   const [index, setIndex] = React.useState(initial);
   const handleChange = (event, newValue) => {
     setIndex(newValue);
@@ -54,7 +54,7 @@ const JsonView = ({ json, initial = 1 }) => {
         <TabButton label="Raw JSON" /> 
       </Tabs>
     <Box sx={{mt: 2}}>
-      {index === 0 && <JsonTree json={json} />}
+      {index === 0 && <JsonTree {...props } json={json} />}
       {index === 1 && <Json>{JSON.stringify(json,0,2)}</Json>}
     </Box>
       
@@ -77,7 +77,7 @@ const JsonLink = ({ edit, children: innerText, value, path, onOpen}) => {
   </>
 }
 
-const JsonTree = ({onChange, ...props}) => {
+const JsonTree = ({onChange,  ...props}) => {
 
   const [hue, setHue] = React.useState('')
   const [dots, setDots] = React.useState(null)
@@ -146,7 +146,7 @@ const JsonLinkorOptions = (props) => {
   return <JsonLink {...props}>{children}</JsonLink>
 }
 
-const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, indent = 2, handlePopoverClick }) => {
+const JsonTreeBody = ( { path = [], short, edit, json, options, string, label, handleChange, indent = 2, handlePopoverClick }) => {
 
 
   const [expanded, setExpanded] = React.useState([])
@@ -180,8 +180,8 @@ const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, in
        if (Array.isArray(json[node])) {
         return <>
           <Text onClick={() => expand(node)} sx={{ml:  indent}} small key={node}
-            ><Icon on={expanded.indexOf(node) > -1} /><b>{node}</b></Text>
-          {json[node].map(child => <Collapse in={expanded.indexOf(node) > -1}>
+            ><Icon on={expanded.indexOf(node) > -1} /><b>{node}</b> {!!short && <>({json[node].length})</>}</Text>
+          { !short && json[node].map(child => <Collapse in={expanded.indexOf(node) > -1}>
             <JsonTreeBody options={options}
               handlePopoverClick={handlePopoverClick} 
               edit={edit} 
@@ -198,8 +198,8 @@ const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, in
        if (typeof (json[node]) === 'object') {
         return <>
         <Text onClick={() => expand(node)} sx={{ml:  indent}} small key={node}
-          ><Icon on={expanded.indexOf(node) > -1} /><b>{node}</b></Text> 
-          {!!json[node] && Object.keys(json[node]).map(child => <Collapse in={expanded.indexOf(node) > -1}>
+          ><Icon on={expanded.indexOf(node) > -1} /><b>{node}</b> {!!short && <>({ Object.keys(json[node]).length })</>}</Text> 
+          {!!json[node] && !short && Object.keys(json[node]).map(child => <Collapse in={expanded.indexOf(node) > -1}>
             <JsonTreeBody handlePopoverClick={handlePopoverClick}
               path={path.concat([node, child])} options={options}
               handleChange={handleChange}
@@ -214,7 +214,7 @@ const JsonTreeBody = ( { path = [], edit, json, options, label, handleChange, in
       ><TinyButton icon={RadioButtonUnchecked} /> <JsonLinkorOptions 
         options={options} name={node}
               handleChange={handleChange}
-          path={path.concat(node)} onOpen={handlePopoverClick} value={json[node]} edit={edit}>{node}</JsonLinkorOptions>: {json[node]} 
+          path={path.concat(node)} onOpen={handlePopoverClick} value={json[node]} edit={edit}>{node}</JsonLinkorOptions>: {string ? JSON.stringify(json[node]) : json[node]}  
       </Text>
       </Flex>
     })}

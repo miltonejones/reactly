@@ -15,7 +15,7 @@ const BooleanComponentInput = ({
   ? value === trueProp 
   : value) || !!bindingValue
 
-  return <Flex onClick={() => handleChange(!checked)}>
+  return <Flex fullWidth onClick={() => handleChange(!checked)}>
     {header} 
  
   <Spacer />

@@ -254,7 +254,7 @@ export const map = async (list, fn, index = 0, out = []) => {
       return await map (list, fn, ++index, out );
 
 
-    }, index * 499)
+    }, index * 49)
   }
   return out;
 }
@@ -289,31 +289,41 @@ export const map = async (list, fn, index = 0, out = []) => {
     const regex = /\{([^}]+)\}/g;
     const literal = regex.exec(value);
 
-    !!shout && shout({ target, state, eventParams, routeParams }, `getPropertyValueFromString: Checking value "${value}"`)
+    const logData = { target, state, eventParams, routeParams }
 
     // literal values formatted as {value}
     if (literal) { 
+
+
+    !!shout && shout(logData, `getPropertyValueFromString: Resolved "${value}" as "${literal[1]}"`)
       return literal[1];
     }
 
-    if (!value && value !== 0) {
-      return ''
-    }
-
     if (typeof value === 'boolean') {
+      !!shout && shout(logData, `getPropertyValueFromString: Resolved "${value}" as boolean "${value.toString()}"`)
       return value;
     }
  
+    if (!value && value !== 0) {
+      !!shout && shout(logData, `getPropertyValueFromString: Resolved "${value}" as empty string`)
+      return ''
+    }
+
     // transform 'dot' notation values
     if (value?.indexOf('.') > 0) {
 
       if (value.indexOf('parameters.') === 0) {
         const [name, key] = value.split('.');
+        !!shout && shout({name, key, ...logData}, `getPropertyValueFromString: Resolved "${value}" as parameter "${routeParams[key] }"`)
         return routeParams[key]  
       }  
 
       // must have eventParams to transform values 
-      if (!eventParams) return value;
+      if (!eventParams) {
+
+        !!shout && shout(logData, `getPropertyValueFromString: No event params. Returning "${value}""`)
+        return value;
+      } 
 
       const values = value.split('.'); 
 
@@ -322,6 +332,7 @@ export const map = async (list, fn, index = 0, out = []) => {
       if (values.length === 3) {
         const [key, prop, datum] = values;
 
+        !!shout && shout({key, prop, datum, ...logData}, `getPropertyValueFromString: Data bound value "${eventParams[datum]}""`)
         // "eventParams" are the fields from the event
         return eventParams[datum];
       }
@@ -329,18 +340,23 @@ export const map = async (list, fn, index = 0, out = []) => {
       // values with 2 parts are pulled from the 
       // event fired by the calling component
       const [key, prop] = values;
+      !!shout && shout({key, prop, ...logData}, `getPropertyValueFromString: Event data "${eventParams[prop]}""`)
       return eventParams[prop]
     }
 
     // numbers and strings passed as literals
     if (typeof value === 'number' || value?.indexOf('|') < 0) {
       if (state[value]) {
+        !!shout && shout(logData, `getPropertyValueFromString: state data "${state[value]}""`)
         return state[value];
       }
+      !!shout && shout(logData, `getPropertyValueFromString: literal data "${value}""`)
       return value;
     }
-
     // values with 2 parts are meant to toggle
     const [trueProp, falseProp] = value.split('|');
-    return state[target] === trueProp ? falseProp : trueProp;
+    const res = state[target] === trueProp ? falseProp : trueProp;
+
+    !!shout && shout(logData, `getPropertyValueFromString: toggle data "${res}""`)
+    return res
   } 

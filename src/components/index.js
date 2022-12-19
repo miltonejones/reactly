@@ -5,6 +5,7 @@ import QuickMenu, { DeleteConfirmMenu } from './QuickMenu/QuickMenu';
 import QuickSelect from './QuickSelect/QuickSelect';
 import ContentTree from './ContentTree/ContentTree'
 import ComponentTree from "./ComponentTree/ComponentTree";
+import ConsoleDrawer from "./ConsoleDrawer/ConsoleDrawer";
 import ThemePanel from "./ThemePanel/ThemePanel";
 import ComponentPanel, { TabButton } from "./ComponentPanel/ComponentPanel";
 import ComponentSettings, { ComponentCollapse, ComponentInput, ComponentPanelSettings } from "./ComponentSettings/ComponentSettings";
@@ -70,6 +71,7 @@ export {
   ComponentPanel,
   ComponentSettings,
   Text,
+  ConsoleDrawer,
   ApplicationTree,
   DATA_TYPES,
   TextInput

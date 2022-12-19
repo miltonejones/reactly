@@ -20,13 +20,14 @@ export const useRunScript = () => {
     getPageResourceState,
     pageResourceState,
     appContext,
-    selectedPage
+    selectedPage,
+ 
   } = React.useContext(AppStateContext); 
  
 
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
-  const { getResourceByName, execResourceByName } = useDataResource()
+  const { getResourceByName } = useDataResource()
 
   
   const getApplicationScripts = () => {
@@ -113,7 +114,7 @@ export const useRunScript = () => {
     }
   }
 
-  const executeScriptByName = (scriptName, options) => { 
+  const executeScriptByName = (scriptName, options, execResourceByName) => { 
 
 
     const scr = appContext.pages.reduce((out, pg) => {
@@ -127,10 +128,10 @@ export const useRunScript = () => {
     }
 
     // const scr = page.scripts?.find(f => f.name === scriptName);
-    return executeScript(scr.ID, options)
+    return executeScript(scr.ID, options, execResourceByName)
   }
 
-  const executeScript = async (scriptID, options, trigger) => {
+  const executeScript = async (scriptID, options, execResourceByName) => {
 
 
     const { appContext } = queryState;
@@ -160,7 +161,7 @@ export const useRunScript = () => {
         pageResourceState,
         Alert: (message) => Alert(message, scr.name + ' alert'),
 
-        executeScriptByName, 
+        executeScriptByName: (scriptName, options) => executeScriptByName(scriptName, options, execResourceByName), 
 
         openLink, 
         openPath,
@@ -168,6 +169,7 @@ export const useRunScript = () => {
         getRef, 
         getRefByName, 
         execRefByName: (name, fn) => execRefByName(name, fn, scr.name),
+        shout,
 
         getResourceByName ,
         execResourceByName,
@@ -184,7 +186,7 @@ export const useRunScript = () => {
       }`, opts, scr.name)
     } 
     console.log ('Could not find script') 
-    shout ({ scriptID, trigger }, 'Script does not exist');
+    shout ({ scriptID }, 'Script does not exist');
   }
 
   return {

@@ -4,7 +4,7 @@ import { styled, Card, Grid, FormControlLabel, Collapse, Slider,
 import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
-import { ExpandMore, Remove, Add, MoreVert } from "@mui/icons-material";
+import { ExpandMore, Remove, Add, MoreVert, AddLink, LinkOff } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
 import { Icons } from '../library/icons';
 import { SketchPicker } from 'react-color';
@@ -166,16 +166,21 @@ export const ComponentInput = props => {
       : props;
             
 
-    return <>
+    return <Flex  baseline>
  
       <ComponentInputBody {...inputProps} /> 
-      {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>}
-    </>
+      <Spacer />
+      {!!bindable && <TinyButton onClick={() => {
+        alert(JSON.stringify(isBound));
+       onChange( label, { attribute: isBound ? false : label } )
+      }} icon={isBound ? LinkOff : AddLink} />}
+      {/* {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>} */}
+    </Flex>
 }
 
 const Flexible = ({ on, children, ...props}) => {
   if (on) {
-    return <Flex {...props}>{children}</Flex>
+    return <Flex fullWidth {...props}>{children}</Flex>
   }
   return children;
 }
@@ -251,7 +256,7 @@ export const ComponentInputBody = (props) => {
   const { bindableProps }  = Library [component.ComponentType]
   const header = <>  
  
-  <Text sx={{textTransform: 'capitalize'}} small>{title}</Text>
+  <Typography sx={{whiteSpace: 'nowrap', fontSize: '0.85rem', textTransform: 'capitalize'}} small>{title}</Typography>
   </>
 
   const inputProps = {
@@ -297,12 +302,19 @@ export const ComponentInputBody = (props) => {
       ? Object.keys(Icons)
       : types;
 
-    const MenuComponent = typeList?.length > 32 
+    const isMenu = typeList?.length < 32 ;
+
+    const MenuComponent = !isMenu
         ? QuickSelect
         : QuickMenu  
-    return <Stack>
+
+    const Host = !isMenu ? Stack : Flex;
+    return <Host fullWidth>
       {header} 
-      <Flexible nowrap on={colorProp || free || typeList?.length < 32  }>
+
+      {isMenu && <Spacer />}
+
+      <Flexible  nowrap on={colorProp || free || typeList?.length < 32  }>
  
         <MenuComponent helperText={helperText} 
         caret
@@ -314,12 +326,12 @@ export const ComponentInputBody = (props) => {
           onChange={handleChange} />
 
         {!!colorProp && <Pill round backgroundColor={attempt(value)} />} 
-     {!!free && <CustomSwitch args={args} label={label} onChange={onChange}/>} 
+          {!!free && <CustomSwitch args={args} label={label} onChange={onChange}/>} 
 
       </Flexible>
 
        
-    </Stack>
+    </Host>
   }
 
   if (customProp) {

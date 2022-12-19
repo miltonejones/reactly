@@ -2,10 +2,11 @@ import React from 'react';
 import { styled, Box, IconButton, Drawer,  
  Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
 import {  Flex, Spacer, TextBtn, QuickSelect, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
-import { Close, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
+import { Close, Gamepad, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
 import { objectReduce } from '../library/util';
+import { AppStateContext } from "../../hooks/AppStateContext";
  
 const Layout = styled(Box)(({ theme }) => ({
  padding: theme.spacing(2),
@@ -37,6 +38,10 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
     sx: { mr: 1 }
   };
 
+  const {  
+    setShowTrace
+  } = React.useContext(AppStateContext);
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleAliasOpen = event => {
     setAnchorEl(event.currentTarget)
@@ -67,6 +72,17 @@ const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange,
       </Typography>
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
       <Spacer />
+
+      <IconButton  
+          color="inherit" 
+          onClick={() => { 
+            handleSwitch({  stateOpen: false});
+            setShowTrace(true);
+          }}
+      >
+        <Gamepad />
+      </IconButton>
+
 
           <IconButton
               color="inherit" 

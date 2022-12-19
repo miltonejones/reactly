@@ -42,24 +42,26 @@ const ComponentPanel = ({
     resources,
     application,
     Confirm,
-    onPageMove
+    onPageMove,
  }) => {
  
   const [ 
      
     setDisableLinks, 
-    setShowSettings, 
-    setShowTrace 
+    setShowSettings,  
  
-  ] = [ 'disableLinks', 'showSettings',  'showTrace']
+  ] = [ 'disableLinks', 'showSettings', ]
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const {   disableLinks, showSettings,  showTrace } = editorState;
+  const {   disableLinks, showSettings } = editorState;
 
 
   const { setQueryState, 
     setMessages, 
-    setOpenTraceLog,  jsonLog, appData  } = React.useContext(AppStateContext);
+    setOpenTraceLog,  
+    setShowTrace,
+    showTrace,
+    jsonLog, appData  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
 

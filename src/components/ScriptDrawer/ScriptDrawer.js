@@ -3,7 +3,7 @@ import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
   Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
 import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
-import { Close, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
+import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
  
@@ -46,7 +46,8 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     appBusy,
     queryState,
     appContext,
-    EditCode
+    EditCode,
+    setShowTrace
   } = React.useContext(AppStateContext);
 
   const { page: targetPage } = queryState;
@@ -158,6 +159,19 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
 
 
       <Spacer />
+
+
+      <IconButton  
+          color="inherit" 
+          onClick={() => { 
+            handleSwitch({  scriptOpen: false});
+            setShowTrace(true);
+          }}
+      >
+        <Gamepad />
+      </IconButton>
+
+
       <IconButton
         color="inherit" 
         onClick={() => {

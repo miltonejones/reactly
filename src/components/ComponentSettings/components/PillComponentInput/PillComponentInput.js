@@ -13,7 +13,7 @@ const PillComponentInput = ({
   value,
   handleChange
 }) => {
-  return <Flex>
+  return <Flex fullWidth  nowrap>
     {header}
     <Spacer />
     <PillMenu image={image} options={types} value={value} onChange={handleChange} />
