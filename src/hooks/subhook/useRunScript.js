@@ -30,8 +30,19 @@ export const useRunScript = () => {
   const { getResourceByName } = useDataResource()
 
   
-  const getApplicationScripts = () => {
-    return appContext.pages.reduce((out, pg) => {
+  const getApplicationScripts = () => { 
+    const appScripts = !appContext.scripts 
+      ? []
+      : [{
+        label: 'Application'
+      }].concat(appContext.scripts.map(s => ({
+        ...s,
+        label: s.name,
+        page: 'application',
+        ID: s.ID
+      })))
+
+    return appScripts.concat(appContext.pages.reduce((out, pg) => {
       if (!pg.scripts?.length) {
         return out;
       }
@@ -45,7 +56,7 @@ export const useRunScript = () => {
         ID: s.ID
       })));
       return out;
-    }, [])
+    }, []))
   }
 
   const scriptList = getApplicationScripts()
@@ -113,15 +124,12 @@ export const useRunScript = () => {
       Alert (ex.message, 'Script error in ' + title);
     }
   }
+ 
 
   const executeScriptByName = (scriptName, options, execResourceByName) => { 
 
-
-    const scr = appContext.pages.reduce((out, pg) => {
-      const script = pg.scripts && pg.scripts.find(f => f.name === scriptName);
-      if (!script) return out;
-      return script;
-    }, false)
+    const scriptList = getApplicationScripts();
+    const scr = scriptList.find(f => f.name === scriptName); 
  
     if (!scr) {
       return Alert(`Could not find script "${scriptName}"`)
@@ -140,11 +148,8 @@ export const useRunScript = () => {
       return alert ('No appContext!')
     } 
 
-    const scr = appContext.pages.reduce((out, pg) => {
-      const script = pg.scripts && pg.scripts.find(f => f.ID === scriptID);
-      if (!script) return out;
-      return script;
-    }, false)
+    const scriptList = getApplicationScripts();
+    const scr = scriptList.find(f => f.ID === scriptID); 
  
 
     const opts = {

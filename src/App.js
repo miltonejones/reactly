@@ -54,10 +54,15 @@ function App() {
         <Route path="/" element={<RenderComponent component={Home} />} />  
         <Route path="/library" element={<RenderComponent component={LibraryTree}  />} />  
         <Route path="/library/:appname" element={<RenderComponent component={LibraryTree}  />} />  
+        
         <Route path="/edit/:appname" element={<RenderComponent preview component={Editor}  />} />  
-        <Route path="/info/:appname" element={<RenderComponent component={Detail}  />} />  
-        <Route path="/apps/:appname" element={<RenderComponent component={Renderer} />} />  
+        <Route path="/edit/:appname/:pagename" element={<RenderComponent preview component={Editor}  />} />  
+        <Route path="/edit/:appname/:pagename/*" element={<RenderComponent preview component={Editor}  />} />  
 
+        <Route path="/info/:appname" element={<RenderComponent component={Detail}  />} />  
+
+
+        <Route path="/apps/:appname" element={<RenderComponent component={Renderer} />} />  
         <Route path="/apps/:appname/:pagename" element={<RenderComponent component={Renderer} />} /> 
         <Route path="/apps/:appname/:pagename/*" element={<RenderComponent component={Renderer}   />} />  
       </Routes>
@@ -256,7 +261,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const appContext = applicationData?.find(f => f.path === appname);
   const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : appContext?.pages?.[0];
    
-  const selectedPage = preview && queryState.page ? queryState.page : targetPage;
+  const selectedPage = (preview && (!pagename || !!queryState.page))  ? queryState.page : targetPage;
 
 
   const stateProps = !selectedPage?.state
@@ -302,7 +307,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
  
   // const current_state = JSON.parse(store.state.page_dyno_items);
 
- // return <pre>{JSON.stringify(current_state,0,12)}</pre>
+//  return <pre>{JSON.stringify({preview,page: !!queryState.page, pg:pagename},0,2)}</pre>
 
   return (
     <AppStateContext.Provider

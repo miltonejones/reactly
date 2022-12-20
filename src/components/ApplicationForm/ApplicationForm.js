@@ -87,9 +87,9 @@ Home Page
     disabled={!settings.dirty}>Save</TextBtn>
   </Flex>
 
-  <pre>
+  {/* <pre>
     {JSON.stringify(settings,0,2)}
-  </pre>
+  </pre> */}
 </Stack>
 
  );

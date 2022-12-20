@@ -227,6 +227,72 @@ export const usePageContext = () => {
       }
     );
   };
+ 
+
+  const executeTerms = async (  
+      terms, 
+      payload,
+      connections,
+      resource,  
+      getProp
+    ) => {
+
+    let querystring;
+    const delimiter = resource.format === "rest" ? "/" : "&";
+
+    // await Alert (<pre>{JSON.stringify(terms,0,2)}</pre>);
+
+    if (resource.method === "GET") {
+      // build query string from trigger params
+      querystring = Object.keys(terms)
+        .filter(f => !!terms[f])
+        .map((term) => {
+          const [scope, key] = term.split('.');
+          const property = !key 
+            ? getProp(terms[term])
+            : terms[term];
+
+          return resource.format === "rest"
+            ? property
+            : `${key || term}=${property}`;
+        })
+        .join(delimiter);
+  
+    } else {
+
+      // for non-GET requests
+      querystring = payload;
+    }
+
+    // await Alert (querystring);
+
+
+    const records = await executeComponentRequest(
+      connections,
+      querystring,
+      resource,
+      resource.format === "rest" ? "/" : "?"
+    );
+
+    const datum = {
+      resourceID: resource.ID,
+      name: resource.name,
+      records,
+    };
+
+    if (!pageResourceState) {
+      setPageResourceState([datum]);
+    } else {
+      setPageResourceState((s) =>
+        (s || [])
+          .filter((e) => e.resourceID !== resource.ID)
+          .concat(datum)
+      );
+    }
+
+
+  }
+
 
   const handleComponentEvent = async (event, eventProps, events) => {
     const { component, name, options, sources, connect, stateProps } =
@@ -283,9 +349,7 @@ export const usePageContext = () => {
           { trigger, options },
           `Trigger ${index}. ${trigger.action.type} on ${trigger.action.target}`
         );
-
-      const { page: previewPage } = queryState;
-      const targetPage = preview ? previewPage : selectedPage;
+ 
 
       const { selectedComponent, ...rest } = queryState;
 
@@ -332,7 +396,7 @@ export const usePageContext = () => {
           });
           break;
         case "modalOpen":
-          const componentList = (targetPage?.components || []).concat(
+          const componentList = (selectedPage?.components || []).concat(
             appContext.components || []
           );
           const component = componentList?.find(
@@ -377,7 +441,7 @@ export const usePageContext = () => {
                   trigger,
                   existing,
                   preview,
-                  previewPage: previewPage?.PageName,
+                  previewPage: selectedPage?.PageName,
                 },
                 "Modal does not exist"
               );
@@ -456,8 +520,19 @@ export const usePageContext = () => {
             return parseInt(val);
           };
 
+          const execute = async (terms) => await executeTerms(
+            terms,
+            options,
+            connect || appContext.connections,
+            resource,
+            getProp
+          );
+
+
+
           // validate querystring if there is one
           // TODO: make this its own method
+
           if (resource.method === "GET") {
             const valid = Object.keys(trigger.action.terms).reduce(
               (ok, term) => {
@@ -473,12 +548,19 @@ export const usePageContext = () => {
 
                     
 
-                if (!property) ok.push(`${term} is missing`);
-                if (mismatch)
+                if (!property) {
+                  ok.push({
+                    ...comparison,
+                    error: `${term} is missing`
+                  });
+                } else if (mismatch)
                   ok.push(
-                    `${term} (${JSON.stringify(
-                      trueProp(property)
-                    )}) is ${type2} when type ${type1} was expected.`
+                    {
+                      ...comparison,
+                      error: `${term} (${JSON.stringify(
+                        trueProp(property)
+                      )}) is ${type2} when type ${type1} was expected.`
+                    }
                   );
 
                 if (listening("dataExec")) {
@@ -493,78 +575,40 @@ export const usePageContext = () => {
               },
               []
             );
-
-            // build query string from trigger params
-            querystring = Object.keys(trigger.action.terms)
-              .map((term) => {
-                const property = getProp(trigger.action.terms[term]);
-                return resource.format === "rest"
-                  ? property
-                  : `${term}=${property}`;
-              })
-              .join(delimiter);
-
             if (valid.length) {
-              const plural = valid.length !== 1 ? "s are" : " is";
+              const plural = valid.length !== 1 ? "s have" : " has";
               const msg = (
                 <div>
                   Could not complete "{resource.name}" request because{" "}
-                  {valid.length} field{plural} has problems:{" "}
+                  {valid.length} field{plural} problems:{" "}
                   {valid.map((f) => (
-                    <b>{f}</b>
+                    <li>{f.error}</li>
                   ))}
                 </div>
               );
-              return setPageError && setPageError(msg);
+              return setPageError && setPageError({
+              
+                message: msg,
+                fields: valid,
+                execute: async (missing) => {
+                  await execute({
+                    ...trigger.action.terms,
+                    ...missing
+                  })
+                }
+              
+              });
               // return await Alert(msg, 'Request cancelled');
             }
-          } else {
-            querystring = options;
-          }
 
-          const records = await executeComponentRequest(
-            connect || appContext.connections,
-            querystring,
-            resource,
-            resource.format === "rest" ? "/" : "?"
-          );
+ 
 
-          const datum = {
-            resourceID: resource.ID,
-            name: resource.name,
-            records,
-          };
 
-          if (listening("dataExec")) {
-            await hello(resource, "data received");
-          }
-          if (!pageResourceState) {
-            setPageResourceState([datum]);
-          } else {
-            setPageResourceState((s) =>
-              (s || [])
-                .filter((e) => e.resourceID !== trigger.action.target)
-                .concat(datum)
-            );
-          }
+          } 
+       
 
-          // const eventsOnPage = targetPage.components?.reduce((out, part) => {
-          //   const items = part.items?.filter(f => f.action.type === 'dataExec')
-          //   return out.concat(items);
-          // }, []);
-
-          // const triggered = eventsOnPage?.find(f => !!f && f.action.triggers === resource.ID)
-
-          // console.log ({ eventsOnPage,
-          //     id: resource.ID,
-          //     triggered })
-
-          // if (triggered) {
-          //   Alert (<pre>{JSON.stringify(triggered, 0, 2)}</pre>)
-          //   console.log ('%ctriggered %o', 'color:lime', { triggered })
-          //   handleComponentEvent({}, {options: triggered, magically: 1}, eventsOnPage)
-          // }
-
+          await execute( trigger.action.terms )
+ 
           break;
         case "scriptRun":
           executeScript(trigger.action.target, options, execResourceByName);
@@ -581,9 +625,7 @@ export const usePageContext = () => {
     (component) => {
       const { settings, events, boundProps } = component;
       const { Methods } = Library[component.ComponentType] ?? {};
-
-      const { page: previewPage } = queryState;
-      const targetPage = preview ? previewPage : selectedPage;
+ 
 
      // console.log ( `%cattachEventHandle  ${component.ComponentName || component.name}`, 'color: yellow') 
 

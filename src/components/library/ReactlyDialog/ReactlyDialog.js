@@ -11,15 +11,15 @@ import { recurse } from '../util';
   
 const ReactlyComponentDialog = ({ children, ...props }) => {
   const args = getStyles(props.styles);
-  const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
+  const { pageModalState, setPageModalState, selectedPage, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
-  const { selectedComponent, page } = queryState;
+  const { selectedComponent  } = queryState;
 
  
 
   const childOpen = recurse({
-    page,
+    selectedPage,
     app
   }, selectedComponent, props) ; 
  

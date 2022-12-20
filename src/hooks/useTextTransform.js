@@ -63,22 +63,19 @@ export const useTextTransform = () => {
    * @returns parameters object
    */
   const getParametersInScope = React.useCallback(() => { 
-
-    const { page: previewPage } = queryState; 
-
-    // in preview mode find the page in the queryState prop
-    const targetPage = preview ? previewPage : selectedPage;
+ 
+ 
 
     const parameters = {};
     const routeProps = routeParams['*'];
    
   
     // when route props are populated use those values
-    if (routeProps && targetPage?.parameters) {
+    if (routeProps && selectedPage?.parameters) {
   
       // assign values from route path to parameters object
       const routeProp = routeProps.split('/')
-      Object.keys(targetPage.parameters).map((parameterKey, i) => {
+      Object.keys(selectedPage.parameters).map((parameterKey, i) => {
         parameters[parameterKey] = routeProp[i]
       } );
     

@@ -24,7 +24,7 @@ import {
 } from "@mui/icons-material";
 import { AppStateContext } from "../../hooks/AppStateContext"; 
 import { Helmet } from "react-helmet";
-import { Flex, Text, Spacer, DeleteConfirmMenu, TinyButton } from ".."; 
+import { Flex, Text, Spacer, DeleteConfirmMenu, TextBtn, TextInput, TinyButton } from ".."; 
 import { Json } from "../../colorize"; 
 import { objectReduce } from "../library/util";
 import { getSettings } from '../library/util';
@@ -154,14 +154,13 @@ const ComponentTree = ({
     disableLinks,
     appBusy
   } = React.useContext(AppStateContext);
-  const { page, selectedComponent = {} } = queryState;
-
-  const targetPage = preview ? page : selectedPage;
+  const { selectedComponent = {} } = queryState;
+ 
   
 
-  const stateProps = !targetPage?.state
+  const stateProps = !selectedPage?.state
     ? null
-    : objectReduce(targetPage.state); 
+    : objectReduce(selectedPage.state); 
      
   const [   
     setShowSettings, 
@@ -224,21 +223,13 @@ const ComponentTree = ({
     setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
   }, [location]);
 
-
-  React.useEffect(() => {
-    if (!observer) return;
-    const sub = observer.subscribe(val => window.alert(val));
-    // alert ('subscribed!')
-    return () => sub.unsubscribe()
-  }, [observer]);
-
-
+ 
   
   React.useEffect(() => {   
      
 
     if (queryState.pageLoaded) return 
-console.log ('loading...')
+ 
     setPageClientState(state => {     
       if ( !!stateProps && !!Object.keys(stateProps).length ) {  
         return stateProps;
@@ -275,8 +266,8 @@ console.log ('loading...')
 
 
   let path;
-  if (targetPage) {
-    path = createBreadcrumbs(appContext.pages, targetPage);
+  if (selectedPage) {
+    path = createBreadcrumbs(appContext.pages, selectedPage);
   }
 
   // if (appBusy) {
@@ -294,15 +285,39 @@ console.log ('loading...')
   const components = componentTree?.filter((f) => !f.componentID);
 
   // setting themes
-  const selectedTheme = themes.find((f) => f.name === targetPage?.ThemeName);
-  const theme = !targetPage?.ThemeName ? defaultTheme : selectedTheme;
+  const selectedTheme = themes.find((f) => f.name === selectedPage?.ThemeName);
+  const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
   const pageTheme = createTheme(theme);
   
   if (pageError) {
     return <>
-    <Alert severity="error">{pageError}</Alert> 
-      <Close onClick={() => setPageError && setPageError(null)} />
-      <hr />
+    <Alert severity="error">
+      <Flex baseline fullWidth>
+
+        {pageError.message}
+        <Spacer />
+        <Close onClick={() => setPageError && setPageError(null)} />
+  
+
+      </Flex>
+    </Alert> 
+
+{pageError.fields.map(field => <Flex sx={{m: 1}}>
+
+  <Text small>{field.key}</Text>
+
+  <TextInput size="small" label={field.key} value={field.value}/>
+
+</Flex>)}
+
+<TextBtn variant="contained"
+  onClick={() => pageError.execute({
+    ['term.param']: 'zaz',
+    param: null
+  })}
+  >Retry</TextBtn>
+
+      {/* <hr />
     {jsonLog.map((msg, i) => <Box key={i}>
       <Flex>
       <Text small active>{msg.message}</Text>
@@ -312,12 +327,14 @@ console.log ('loading...')
       <hr />
       <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
       <hr />
-    </Box>)}
+
+      
+    </Box>)} */}
     </>
   }
 
   const renderComponentProps = { 
-    selectedPage: targetPage,
+    selectedPage,
     selectedComponent,
     preview,
     queryState,
@@ -344,7 +361,7 @@ console.log ('loading...')
 
 
           Alert: Shout,
-          selectedPage: targetPage,
+          selectedPage,
           appContext,
 
 

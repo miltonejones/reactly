@@ -144,16 +144,9 @@ export const useOpenLink = () => {
     // parse page parameters if present,
     const params = createPageParams(parameters, options);
 
-    listening('openLink')  && hello ({ params }, 'openLink params')
+    listening('openLink')  && hello ({ params }, 'openLink params');
 
-    if (!preview) {
-      const value = `/apps/${appContext.path}/${targetPage.PagePath}`;
-      const path = [value, Object.values(params).join('/')].join('/');  
-      
-      navigate(path, { state: { refresh: 1 }})
-      // when in live mode, navigate to page
-      return
-    } 
+    const prefix = preview ? 'edit': 'apps';
 
     if (disableLinks) {
       if (!listening('openLink')  ) return
@@ -161,14 +154,23 @@ export const useOpenLink = () => {
     }
 
 
-    // otherwise pass parameters into page state
-    setQueryState((s) => ({
-      ...s,
-      page: targetPage,
-      pageLoaded: false,
-      // appLoaded: false,
-      params ,
-    }))
+  
+    const value = `/${prefix}/${appContext.path}/${targetPage.PagePath}`;
+    const path = [value, Object.values(params).join('/')].join('/');  
+    
+    navigate(path, { state: { refresh: 1 }}) 
+    return
+
+    // // otherwise pass parameters into page state
+    // setQueryState((s) => ({
+    //   ...s,
+    //   page: targetPage, 
+    //   pageLoaded: false,
+    //   // appLoaded: false,
+    //   params ,
+    // }))
+
+    
   }, [queryState, disableLinks, preview, setQueryState])
 
 

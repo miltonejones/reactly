@@ -67,6 +67,7 @@ import { ApplicationTree } from "../..";
 import StatusPane from "../../StatusPane/StatusPane";
 import { uniqueId } from "../../library/util";
 import { ConsoleDrawer } from "../..";
+import { useNavigate  } from "react-router-dom";
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
@@ -145,12 +146,12 @@ export const useResourceEdit = (apps) => {
     setComponentEvent,
     dropComponentEvent, 
   } = useEditor(apps);
-  const { Confirm, queryState } = React.useContext(AppStateContext);
+  const { Confirm, queryState , selectedPage} = React.useContext(AppStateContext);
 
   const appData = applications.find((f) => f.path === appname);
 
   const handleEventChange = (componentID, event) => {
-    setComponentEvent(appData.ID, queryState.page?.ID, componentID, event);
+    setComponentEvent(appData.ID, selectedPage?.ID, componentID, event);
   };
 
   const handledEventDelete = async (componentID, eventID, confirmed) => {
@@ -159,7 +160,7 @@ export const useResourceEdit = (apps) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropComponentEvent(appData.ID, queryState.page?.ID, componentID, eventID);
+    dropComponentEvent(appData.ID, selectedPage?.ID, componentID, eventID);
   };
 
   return {
@@ -208,6 +209,7 @@ const Editor = ({ applications: apps = {} }) => {
     connectOpen: false,
   });
 
+  const navigate = useNavigate();
   const { handleResourceDelete, handleConnectionDelete } = useConnectionEdit(apps);
   const { copy, copied } = useClipboard();
   const [ collapsed, setCollapsed ] = React.useState({
@@ -248,6 +250,7 @@ const Editor = ({ applications: apps = {} }) => {
   const {
     loud,
     setLoud, 
+    selectedPage,
     queryState = {},
     setQueryState,
     setAppData,
@@ -267,7 +270,7 @@ const Editor = ({ applications: apps = {} }) => {
     commitProg,
     dirty,
     setDirty,
-     
+    setPageError,
     setShowTrace,
     showTrace,
 
@@ -294,17 +297,17 @@ const Editor = ({ applications: apps = {} }) => {
   }
   const appData = applications.find((f) => f.path === appname);
 
-  const componentParent = queryState.page || appData;
+  const componentParent = selectedPage || appData;
 
   const path = ["apps", appData.path].concat(
-    !queryState.page?.PagePath ? [] : queryState.page.PagePath
+    !selectedPage?.PagePath ? [] : selectedPage.PagePath
   );
 
   const handleStyleChange = (componentID, label, value, selector) => {
     // alert (selector) //white
     setComponentStyle(
       appData.ID,
-      queryState.page?.ID,
+      selectedPage?.ID,
       componentID,
       label,
       value,
@@ -314,7 +317,7 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleSettingsChange = (componentID, label, value) => {
   // alert(JSON.stringify({label, value}, 0, 2))
-    setComponentProp(appData.ID, queryState.page?.ID, componentID, label, value);
+    setComponentProp(appData.ID, selectedPage?.ID, componentID, label, value);
   };
   const handleNameChange = async (componentID, old) => {
     const name = await Prompt(
@@ -323,14 +326,14 @@ const Editor = ({ applications: apps = {} }) => {
       old
     );
     if (!name) return;
-    setComponentName(appData.ID, queryState.page?.ID, componentID, name);
+    setComponentName(appData.ID, selectedPage?.ID, componentID, name);
   };
 
   const handleStateChange = (stateID, label, value, type) => { 
     const update =  {}
  
     label?.split(',').map(key => {
-      setPageState(appData.ID, queryState.page?.ID, stateID, key, value, type, pg => {
+      setPageState(appData.ID, selectedPage?.ID, stateID, key, value, type, pg => {
         setQueryState(s => ({
           ...s,
           page: pg
@@ -346,7 +349,7 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handlePageMove = async (pageID) => {
-    setPageParent(appData.ID, queryState.page?.ID, pageID)
+    setPageParent(appData.ID, selectedPage?.ID, pageID)
   }
 
   const handleComponentImport = async (sourceID, destID, componentID) => {
@@ -356,14 +359,14 @@ const Editor = ({ applications: apps = {} }) => {
   const handleScriptChange = async (scriptID, name, code, fn, existingName, pageID) => {
     const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
     if (!scriptName) return;
-    setPageScript(appData.ID, pageID || queryState.page?.ID, scriptID, scriptName, code, fn);
+    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn);
   };
 
   const handlePropChange = (props, state) => {
     if (state) {
-      return setPageEvent(appData.ID, queryState.page?.ID, state); //alert (JSON.stringify(state))
+      return setPageEvent(appData.ID, selectedPage?.ID, state); //alert (JSON.stringify(state))
     }
-    setPageProps(appData.ID, queryState.page?.ID, props);
+    setPageProps(appData.ID, selectedPage?.ID, props);
   };
 
   const handleEventChange = (componentID, event, type) => {
@@ -371,7 +374,7 @@ const Editor = ({ applications: apps = {} }) => {
       ? setResourceEvent
       : setComponentEvent
       // alert (command.toString())
-      command(appData.ID, queryState.page?.ID, componentID, event);
+      command(appData.ID, selectedPage?.ID, componentID, event);
   };
 
   const handledEventDelete = async (componentID, eventID, type, confirmed) => {
@@ -383,7 +386,7 @@ const Editor = ({ applications: apps = {} }) => {
       "Confirm delete"
     );
     if (!ok) return;
-    command(appData.ID, queryState.page?.ID, componentID, eventID);
+    command(appData.ID, selectedPage?.ID, componentID, eventID);
   };
 
   const handleThemeChange = async (themeID, themeName, theme) => {
@@ -393,17 +396,17 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handleStateDrop = (stateID) => {
-    dropPageState(appData.ID, queryState.page?.ID, stateID);
+    dropPageState(appData.ID, selectedPage?.ID, stateID);
   };
 
   const handleMove = (componentID, parentID) => {
-    setComponentParent(appData.ID, queryState.page?.ID, componentID, parentID);
+    setComponentParent(appData.ID, selectedPage?.ID, componentID, parentID);
   };
 
   const handleCustomName = async (componentID) => {
     const customName = await Prompt('Enter name for custom component', 'Name component');
     if (!customName) return 
-    setComponentCustomName(appData.ID, queryState.page?.ID, componentID, customName);
+    setComponentCustomName(appData.ID, selectedPage?.ID, componentID, customName);
   }
 
   const createPage = async (pageID, pageName) => {
@@ -420,7 +423,8 @@ const Editor = ({ applications: apps = {} }) => {
         ...s,
         page: pg,
         pageLoaded: false,
-        appLoaded: false
+        appLoaded: false,
+        pageError: false
       }))
     });
   }
@@ -462,10 +466,10 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "Show client state",
       action: () => {
-        const { records, ...rest} = queryState.page ? pageClientState : applicationClientState;
+        const { records, ...rest} = selectedPage ? pageClientState : applicationClientState;
         Alert(<Json>
         {JSON.stringify(rest, 0, 2)}
-      </Json>, queryState.page?.PageName + ' Client State')}
+      </Json>, selectedPage?.PageName + ' Client State')}
     },
     {
       name: "Show application state",
@@ -492,7 +496,7 @@ const Editor = ({ applications: apps = {} }) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropPageScript(appData.ID, queryState.page?.ID, scriptID);
+    dropPageScript(appData.ID, selectedPage?.ID, scriptID);
   };
 
   const handlePageDelete = async (pageID, confirmed) => {
@@ -510,7 +514,7 @@ const Editor = ({ applications: apps = {} }) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropComponent(appData.ID, queryState.page?.ID, componentID);
+    dropComponent(appData.ID, selectedPage?.ID, componentID);
   };
 
   const quickComponent = async (selected, componentID) => {
@@ -537,7 +541,7 @@ const Editor = ({ applications: apps = {} }) => {
       scripts: [],
       data: [],
     };
-   const res = addComponent(appData.ID, queryState.page?.ID, component, {...options, 
+   const res = addComponent(appData.ID, selectedPage?.ID, component, {...options, 
     fn: (comp) => {
       // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
       setQueryState(s => ({...s, selectedComponent: comp}));
@@ -577,17 +581,23 @@ const Editor = ({ applications: apps = {} }) => {
 
   const pageTree =  <PageTree
     tree={appData.pages}
-    selected={queryState.page?.PageName}
+    selected={selectedPage?.PageName}
     setPage={createPage}
     dropPage={handlePageDelete}
     duplicatePage={id => duplicatePage(appData.ID, id)}
-    onClick={(name) =>
-      setQueryState((s) => ({
-        ...s,
-        page: appData.pages.find((f) => f.PageName === name),
-        pageLoaded: false,
-       // appLoaded: false
-      }))
+    onClick={(name) =>{
+      const clickedPage = appData.pages.find((f) => f.PageName === name);
+      if (!clickedPage) return navigate(`/edit/${appData.path}`);
+      navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
+        // setQueryState((s) => ({
+        //   ...s,
+        //   page: appData.pages.find((f) => f.PageName === name),
+        //   pageLoaded: false,
+        //   pageError: false
+        // // appLoaded: false
+        // }))
+        setPageError(null)
+      }
     }
   />;
 
@@ -704,7 +714,7 @@ const Editor = ({ applications: apps = {} }) => {
               <Addressbox value={`/${path.join("/")}`}  
                 queryState={queryState}
                 setQueryState={setQueryState}
-                selectedPage={queryState.page}
+                selectedPage={selectedPage}
               />
 
               <FormControlLabel
@@ -764,7 +774,7 @@ const Editor = ({ applications: apps = {} }) => {
                       caret
                       options={appData.pages.map((f) => f.PageName)}
                       title="Choose Page"
-                      label={queryState.page?.PageName || "none selected"}
+                      label={selectedPage?.PageName || "none selected"}
                       onChange={(p) => {
                         setQueryState((s) => ({
                           ...s,
@@ -894,7 +904,7 @@ const Editor = ({ applications: apps = {} }) => {
                   loaded={loaded}
                   setLoaded={setLoaded}
                   preview
-                  selectedPage={queryState.page}
+                  selectedPage={selectedPage}
 
                 />
                 
@@ -925,7 +935,7 @@ const Editor = ({ applications: apps = {} }) => {
                 onMove={handleMove}
                 Confirm={Confirm}
                 collapsed={collapsed.right}
-                selectedPage={queryState.page}
+                selectedPage={selectedPage}
                 onPropChange={handlePropChange}
                 onComponentImport={handleComponentImport}
                 onThemeChange={handleThemeChange}
@@ -958,7 +968,7 @@ const Editor = ({ applications: apps = {} }) => {
       <ConnectionDrawer
         appID={appData.ID}
         application={appData}
-        selectedPage={queryState.page}
+        selectedPage={selectedPage}
         dropResource={handleResourceDelete}
         dropConnection={handleConnectionDelete}
         setResource={setResource}

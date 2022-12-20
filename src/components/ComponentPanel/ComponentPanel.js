@@ -10,6 +10,7 @@ import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material
 import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
+import { useTextTransform } from '../../hooks/useTextTransform';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -123,7 +124,7 @@ const ComponentPanel = ({
 
   const sx = { borderBottom: 1, borderColor: 'divider'}
 
-  const showApp = !collapsed && !(!!component || selectedPage);
+  const showApp = !collapsed && !(!!component?.ComponentName || selectedPage?.PageName);
 
 
   const importable = application.pages
@@ -158,10 +159,13 @@ const ComponentPanel = ({
       {showApp && <>
       
         <Chip label={application.Name} />
-          <Spacer />
-      </>}
 
-      {!collapsed && (!!component || selectedPage) && <>
+      <Spacer />
+
+      </>} 
+
+
+      {!collapsed && (!!component?.ComponentName || selectedPage?.PageName) && <>
 
         <Chip variant="outlined" size="small" icon={<Article />} label={!!component 
         ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} 
@@ -169,7 +173,7 @@ const ComponentPanel = ({
 
       <Spacer />
    
- <RotateButton deg={showSettings ? 90 : 270}  onClick={
+        <RotateButton deg={showSettings ? 90 : 270}  onClick={
           () => setShowSettings(!showSettings)
         }>
              <Settings />
@@ -266,6 +270,8 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
   const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state;
 
+  const { getParametersInScope } = useTextTransform();
+  const pageParams = getParametersInScope();
   const parentPage = application.pages?.find(p => p.ID === page.pageID)
  
 
@@ -297,7 +303,9 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
          value={state.ThemeName} 
          onChange={value => {
           setState(s => ({
-            ...s, ThemeName: value
+            ...s, 
+            ThemeName: value,
+            dirty: 1
           }))
          }}
          />
@@ -362,7 +370,7 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
             <TextInput 
               size="small"
               value={state.parameters[paramKey]}
-              helperText={!(queryState.params && queryState.params[paramKey]) ? '' : `Set by caller to "${queryState.params[paramKey]}"`}
+              helperText={!(pageParams && pageParams[paramKey]) ? '' : `Set by caller to "${pageParams[paramKey]}"`}
               onChange={e => {
                 setState(s => ({
                   ...s,

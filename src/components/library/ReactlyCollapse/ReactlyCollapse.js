@@ -9,15 +9,15 @@ import { recurse } from '../util';
 import { getSettings } from '../util';
   
 const ReactlyComponentCollapse = ({ children, ...props }) => {
-  const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
+  const { pageModalState, setPageModalState, selectedPage, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext); 
-  const { selectedComponent, page } = queryState;
+  const { selectedComponent } = queryState;
   
   const { componentEditing, preview, ...rest } = props;
   const args = getSettings(props.settings);
 
   const childOpen = recurse({
-    page,
+    selectedPage,
     app
   }, selectedComponent, props) ; 
  

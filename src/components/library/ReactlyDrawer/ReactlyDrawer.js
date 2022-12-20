@@ -10,14 +10,14 @@ import { getSettings } from '../util';
   
 const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
   const args = getSettings(props.settings);
-  const { pageModalState, setPageModalState, appContext: app } = React.useContext(AppStateContext);
+  const { pageModalState, setPageModalState, selectedPage, appContext: app } = React.useContext(AppStateContext);
   const { queryState = {} } = React.useContext(AppStateContext);
   const { componentEditing, preview, ...rest } = props;
-  const { selectedComponent, page } = queryState;
+  const { selectedComponent } = queryState;
 
 
   const childOpen = recurse({
-    page,
+    selectedPage,
     app
   }, selectedComponent, props) ; 
  

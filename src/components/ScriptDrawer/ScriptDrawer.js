@@ -49,10 +49,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     queryState,
     appContext,
     EditCode,
-    setShowTrace
+    setShowTrace,
+    selectedPage: targetPage
   } = React.useContext(AppStateContext);
-
-  const { page: targetPage } = queryState;
+ 
 
   const setCode = text => {
      try {
@@ -130,7 +130,8 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
   const filtered = scripts
     .filter(f => !filter || f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
   const pageCount = Math.ceil(filtered?.length / page_size);
-  const startSlice = (page - 1) * page_size;
+  const startPage = Math.min(page, pageCount)
+  const startSlice = (startPage - 1) * page_size;
   const visible = filtered.slice(startSlice, startSlice + page_size)
 
   if (appBusy) {
@@ -208,7 +209,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
         {/* pagination  */}
         <Flex sx={{ mb: 1, mr: 10 }}>
         {pageCount > 1 && <Pagination count={pageCount} color="primary" variant="rounded" 
-          sx={{mb: 2}} page={page} onChange={(e, p) => setPage(p)}/>}
+          sx={{mb: 2}} page={Math.min(page, pageCount)} onChange={(e, p) => setPage(p)}/>}
         <Spacer />
 
         {/* search box  */}
