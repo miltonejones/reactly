@@ -108,6 +108,8 @@ export const useTextTransform = () => {
     
     const scopeParams = getParametersInScope();
 
+
+
     const bracketTest = /\{([^}]+)\}/g
     let deterpolatedText = interpolatedText;
   
@@ -115,25 +117,24 @@ export const useTextTransform = () => {
     findMatches(bracketTest, interpolatedText).map(match => {
       const [wholeText, foundText] = match;
       const { clientState, boundTo, scope } = getPropertyScope(foundText);
-
       // derived from key name used when no scope is defined
       const textScope = innerState || clientState;
-
-      // console.log ({ scopeParams, boundTo })
 
       // set inner text based on scope
       const innerText = scope === 'parameters'
 
         // for parameter strings, pull from current PARAMETERS scope
-        ? (!scopeParams ? 'unknown' : scopeParams[boundTo] || `${boundTo} is not defined in the ${scope} scope!`)
+        ? (!scopeParams ? 'unknown' : scopeParams[boundTo] || `---`)
 
         // otherwise pull from CLIENT or APPLICATION scope
-        : textScope[boundTo] || `"${foundText}" is not defined`;    
+        : textScope[boundTo] || `...`;    
+  
+
+       deterpolatedText = deterpolatedText.replace(wholeText, innerText)
  
-      return deterpolatedText = deterpolatedText.replace(wholeText, innerText)
     }) 
 
-
+ 
     return deterpolatedText;
   }
   

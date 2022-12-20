@@ -71,7 +71,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
 
     const handleTimeUpdate = () => {
       if (!ref.current) return;
-     //  if (ref.current.currentTime !== parseInt(ref.current.currentTime)) return;
+      // if (ref.current.currentTime !== parseInt(ref.current.currentTime)) return;
        const ms = (ref.current.currentTime / ref.current.duration) ;
        const progress = ms * 100;
       const duration_formatted = moment

@@ -113,7 +113,7 @@ const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
 
 
-const ComponentTreeBranch = ({
+const ComponentTree = ({
   selectedPage,
   preview,
   loaded,
@@ -238,7 +238,7 @@ const ComponentTreeBranch = ({
      
 
     if (queryState.pageLoaded) return 
-
+console.log ('loading...')
     setPageClientState(state => {     
       if ( !!stateProps && !!Object.keys(stateProps).length ) {  
         return stateProps;
@@ -389,40 +389,7 @@ const ComponentTreeBranch = ({
               />
             ))}
 
- 
-          <Collapse in={showTrace}>
-          {!!jsonLog?.length && <Button onClick={() =>{
-            setMessages([]);
-            setOpenTraceLog({})
-          }}>clear stack trace</Button>}
-            {!!showTrace && jsonLog.map((msg, i) => {
-              const id = 'key' + i
-              return <Box key={i}>
-                <Flex>
-                  <TinyButton icon={ExpandMore} deg={openTraceLog[id] ? 180 : 0} /> 
-                  <Text onClick={() => {
-                  setOpenTraceLog(s => ({
-                    ...s,
-                    [id]: !openTraceLog[id]
-                  }))
-                }} small active>{msg.message}</Text>
-
-                {!!msg.json?.trigger &&  <DeleteConfirmMenu 
-                    message={`Delete "${msg.json.trigger.event}.${msg.json.trigger.action?.type}"?`}    
-                  onDelete={e =>  onEventDelete(msg.json.trigger.resourceID, msg.json.trigger.ID, 'connection', true) } /> }
-
-
-                </Flex>
-
-                
-              <hr />
-              <Collapse in={openTraceLog[id]}>
-              <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
-              <hr />
-              </Collapse>
-                </Box>
-            })} 
-          </Collapse>
+  
 
         </Box>
 
@@ -442,20 +409,7 @@ const ComponentTreeBranch = ({
   );
 }; 
 
-
-class ComponentTree extends React.Component {
-
-  observer = new Observer('appload')
-  componentDidMount() {
-    // alert ('loaded!')
-    this.observer.next('loaded??!')
-  }
-
-
-  render() {
-    return <ComponentTreeBranch {...this.props}  observer={this.observer}/>;
-  }
-}
+ 
 
 export const RenderComponent = ({
   component,
@@ -482,7 +436,7 @@ export const RenderComponent = ({
   const { Component } = Library[component.ComponentType];
 
 
-  // const eventMap = attachEventHandlers(component);
+  const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
 
@@ -498,7 +452,8 @@ export const RenderComponent = ({
         setQueryState={setQueryState}
         preview={preview}
         hilit={hilit}
-        {...component} 
+        {...component}
+        {...eventMap}
       >
 
         {!!kids.length && (

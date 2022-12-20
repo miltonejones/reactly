@@ -6,6 +6,8 @@ import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, Se
 import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
  
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -204,7 +206,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
         <Divider sx={{mb: 1}} />
 
         {/* pagination  */}
-        <Flex sx={{ mb: 1 }}>
+        <Flex sx={{ mb: 1, mr: 10 }}>
         {pageCount > 1 && <Pagination count={pageCount} color="primary" variant="rounded" 
           sx={{mb: 2}} page={page} onChange={(e, p) => setPage(p)}/>}
         <Spacer />
@@ -217,10 +219,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
         </Flex>
 
         {/* big view search box  */}
-        {!!big && <SearchBox 
+        {!!big && <Box sx={{mr: 2}}>
+          <SearchBox 
          placeholder="Filter script name"
+        
           onChange={e => setFilter(e.target.value)}
-          onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>}
+          onClose={() => setFilter('')} size="small" label="Filter"/>
+          </Box>}
 
         {/* script list  */}
         {visible.map(s => <Bar big={big}
@@ -255,11 +260,20 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
             >
             <Edit />
           </IconButton>
-          <Highlight style={{fontSize:  '0.7rem'}} className={
+
+          <SyntaxHighlighter language="javascript" 
+          className={
+            ['javascript', big ? 'big' : ''].join(' ')
+          }
+          showLineNumbers  customStyle={{ fontSize:  '0.95rem' }}> 
+            {code}
+          </SyntaxHighlighter>
+
+          {/* <Highlight style={{fontSize:  '0.7rem'}} className={
             ['javascript', big ? 'big' : ''].join(' ')
           }> 
             {code}
-          </Highlight>
+          </Highlight> */}
         </Box>}
 
         {!!editMode  && <TextBox 

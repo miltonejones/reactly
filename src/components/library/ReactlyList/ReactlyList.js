@@ -6,6 +6,7 @@ import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import { PageStateContext } from '../../../hooks/usePageContext';
+import { useTextTransform } from '../../../hooks/useTextTransform';
 
 const ListItem = styled(ListItemButton)(( {active, theme, selectedColor = 'primary' } ) => ({
   fontWeight: active ? 500 : 400,
@@ -18,6 +19,8 @@ const ReactlyComponentList = ({ children, ...props }) => {
   
   const {onItemClick, onSecondaryClick, settings} = props;
   const args = getSettings(settings);
+  const { interpolateText } = useTextTransform();
+ 
 
 
   const listItems = props.items || args?.items;
@@ -61,16 +64,17 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
 
  const sortRows = !autoSort ? dataRows : dataRows.sort((a,b) => a.text > b.text ? 1 : -1);
+ const headerText = interpolateText(header);
 
  return (
    <> 
-
+ 
   {/* [ {index}/{props.selectedIndex}/{args.selectedIndex}] */}
-   <ReactlyComponent component={List} {...props} subheader={header}> 
- {sortRows?.map((item, i) => {
-  const StartIcon = Icons[item.startIcon] ;
-  const EndIcon = Icons[item.endIcon] ;
-  return <ListItem key={i} active={i === Number(selectedIndex)} 
+    <ReactlyComponent component={List} {...props} > 
+      {sortRows?.map((item, i) => {
+        const StartIcon = Icons[item.startIcon] ;
+        const EndIcon = Icons[item.endIcon] ;
+        return <ListItem key={i} active={i === Number(selectedIndex)} 
           selectedColor={args.selectedColor}
           >
           

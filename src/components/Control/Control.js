@@ -378,7 +378,7 @@ export const SearchBox = ({value, onChange, onClose, startIcon = true, ...props}
     </InputAdornment>,
   }
 
-  return  <TextInput size="small" {...props} value={value} autoComplete="off" onChange={onChange} 
+  return  <TextInput size="small" {...props} sx={{mr: 1, ...props.sx}} value={value} autoComplete="off" onChange={onChange} 
   InputProps={adornment} autoFocus/>
 };
 

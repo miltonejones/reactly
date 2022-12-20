@@ -1,6 +1,6 @@
 import React from 'react';
 import {  useParams } from "react-router-dom"; 
-import { Paper, Box, styled } from '@mui/material'; 
+import { Paper, styled } from '@mui/material'; 
 import { getStyles, getSettings , fixText} from './util';
 import { RepeaterContext, AppStateContext } from '../../hooks/AppStateContext'; 
 import { PageStateContext } from '../../hooks/usePageContext';
@@ -96,8 +96,6 @@ const ReactlyComponent = ({
  
     
 
-  const eventMap = attachEventHandlers(props);
-
 
   const made = {}
   
@@ -146,8 +144,7 @@ const ReactlyComponent = ({
 {/* [  <pre>
     {JSON.stringify(props.pageID,0,2)}
   </pre>] */}
- <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} 
-    {...eventMap} > 
+ <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
     {fixed.children || children}
  </Component></>
    )
@@ -162,17 +159,29 @@ export const Faux = styled(Paper)(({ open, anchor }) => {
 
   if (anchor) {
     Object.assign(obj, {
-      width: 400,
-      maxWidth: '400px !important',
-      position: 'fixed',
-      top: 0,
-      left: 360,
-      height: '100%',
-      minHeight: '100vh',
+      position: 'fixed', 
       zIndex: 1000,
       // maxHeight: '90vh',
       boxShadow: `0px 8px 10px -5px rgb(0 0 0 / 20%), 0px 16px 24px 2px rgb(0 0 0 / 14%), 0px 6px 30px 5px rgb(0 0 0 / 12%)`
     })
+
+    if (anchor === 'bottom') {
+      Object.assign(obj, {
+        bottom: 0,
+        left: 0,
+        minHeight: '30vh',
+        width: 'calc(100vw - 400px)'
+      })
+    } else {
+      Object.assign(obj, {
+        height: '100%',
+        minHeight: '100vh',
+        top: 0,
+        left: 360,
+        width: 400,
+        maxWidth: '400px !important',
+      })
+    }
   }
 
   return obj;

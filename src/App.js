@@ -42,6 +42,10 @@ import { uniqueId } from "./components/library/util";
 
 function App() { 
  
+  React.useEffect(() => {
+    console.log ('app loading')
+  }, [])
+
   return (
     <BrowserRouter>
       <Routes>
@@ -96,7 +100,12 @@ function RenderComponent({ preview, component: Component, ...props}) {
     appLoaded: true,
   });
   const [dirty, setDirty] = React.useState(false);
+  let [t, setT] = React.useState(0);
 
+
+  React.useEffect(() => {
+    console.log ('renderer loading')
+  }, [])
 
   const monitorEvent = eventName => setMonitoredEvents(e => e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName) )
 
@@ -193,6 +202,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
   }
  
   React.useEffect(() => { 
+    setT(d => d++)
     if (!libraryLoaded) {
       (async () => {
         await refreshProgs()
@@ -343,10 +353,10 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
         pageResourceState, 
         getPageResourceState,
-        setPageResourceState,
+        setPageResourceState, 
         
         pageModalState, 
-        setPageModalState,
+        setPageModalState, 
         sessionID,
         ...appHistory,  
         ...modal,
@@ -358,8 +368,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
         createBreadcrumbs
       }}
     > 
-
-  
+ 
+   
  
       <Component {...props} appData={applicationData} applications={applicationData} />
  

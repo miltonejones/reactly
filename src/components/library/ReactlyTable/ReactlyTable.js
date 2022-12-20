@@ -99,6 +99,7 @@ const ReactlyComponentTable = ({ children, ...props }) => {
                   ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
                   row: i,
                   cell: k,
+                  column: columnMap[k],
                   ...resource,
                   ...resource.records[i]
                 });

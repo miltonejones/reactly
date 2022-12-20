@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Card, Grid, FormControlLabel, Collapse, Slider,
-    Switch, Box, Alert,  Stack, Typography, Popover } from '@mui/material'; 
+    Switch, Box, Alert, IconButton, Stack, Typography, Popover } from '@mui/material'; 
 import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
@@ -163,17 +163,15 @@ export const ComponentInput = props => {
             onChange( 'boundTo', {boundTo, attribute} )
           }
         }
-      : props;
-            
-
+      : props; 
+        const LinkIcon =isBound ? LinkOff : AddLink
     return <Flex  baseline>
- 
+{/* [{inputProps.type}][{label}] */}
       <ComponentInputBody {...inputProps} /> 
       <Spacer />
-      {!!bindable && <TinyButton onClick={() => {
-        alert(JSON.stringify(isBound));
+      {!!bindable && <IconButton onClick={() => { 
        onChange( label, { attribute: isBound ? false : label } )
-      }} icon={isBound ? LinkOff : AddLink} />}
+      }}  ><LinkIcon /></IconButton>}
       {/* {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>} */}
     </Flex>
 }
@@ -291,6 +289,7 @@ export const ComponentInputBody = (props) => {
   const CustomInput = customInputs[type];
   if (CustomInput) {
     return <>
+     
     <CustomInput {...inputProps} />
  
     </> 
@@ -311,7 +310,7 @@ export const ComponentInputBody = (props) => {
     const Host = !isMenu ? Stack : Flex;
     return <Host fullWidth>
       {header} 
-
+ 
       {isMenu && <Spacer />}
 
       <Flexible  nowrap on={colorProp || free || typeList?.length < 32  }>
@@ -335,7 +334,7 @@ export const ComponentInputBody = (props) => {
   }
 
   if (customProp) {
-    return  <Stack>
+    return  <Stack> 
       {header}
       <Flexible on={colorProp}>
       <ColorInput
@@ -360,7 +359,6 @@ export const ComponentInputBody = (props) => {
   {header} 
       <Flexible on={free || chip}>
   <Component 
-    prompt={usePrompt}
     multiline={!!multiline}
     rows={4}
     autoComplete="off"
@@ -636,7 +634,7 @@ const ComponentSettings = ({ selectedPage, component, onChange, showSettings, re
   if (!categories) {
     return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{orderer}{debug}</>
   }
-  return <> 
+  return <>  
 {showSettings && <>
 
   {orderer}

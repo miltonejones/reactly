@@ -243,7 +243,7 @@ export const usePageContext = () => {
 
     // const triggerLog = {}
 
-    console.log ('Found %c%s %s events', 'color: cyan', triggers.length, name);
+    // console.log ('Found %c%s %s events', 'color: cyan', triggers.length, name);
 
     await map(triggers, async (trigger, index) => {
 
@@ -265,7 +265,7 @@ export const usePageContext = () => {
 //   trigger
 // })
       // temporary logging
-      // speakable &&
+      speakable &&
         console.log(
           '%s, triggering "%s" script on %s',
           index,

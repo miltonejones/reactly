@@ -273,6 +273,10 @@ const Editor = ({ applications: apps = {} }) => {
 
   } = React.useContext(AppStateContext);
 
+  React.useEffect(() => {
+    console.log ('editor loading')
+  }, [])
+
   const open = Boolean(anchorEl);
 
   const handlePopoverClick = (content) => (event) => {

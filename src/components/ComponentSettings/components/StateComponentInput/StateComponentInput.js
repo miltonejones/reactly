@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, Stack, IconButton } from '@mui/material';
-import { QuickSelect, QuickMenu } from '../../..';
+import { QuickSelect, QuickMenu,  Flex, PillMenu } from '../../..';
 import {
   AppStateContext, EditorStateContext
 } from "../../../../hooks/AppStateContext";
@@ -57,7 +57,7 @@ const StateComponentInput = ({
   })
   return <Stack>
     {header}
-   {/* (( {JSON.stringify(value)})) */}
+    
     <Component helperText={helperText} 
         options={options}  
         value={value} 
@@ -65,7 +65,10 @@ const StateComponentInput = ({
           <MoreVert />
         </IconButton>}
         onChange={onChange}/>
-      
+
+        {!menu && <Flex fullWidth sx={{pt: 1}}>
+          
+          </Flex>}
   </Stack> 
 }
 StateComponentInput.defaultProps = {};
