@@ -485,7 +485,7 @@ export const usePageContext = () => {
             return;
           }
 
-          
+
           const resources = appContext?.resources || sources;
           if (!resources) {
             Alert(JSON.stringify(sources));
@@ -506,6 +506,22 @@ export const usePageContext = () => {
 
           let querystring;
 
+          const datum = {
+            resourceID: resource.ID,
+            name: resource.name ,
+            records: []
+          };
+      
+          if (!pageResourceState) {
+            setPageResourceState([datum]);
+          } else {
+            setPageResourceState((s) =>
+              (s || [])
+                .filter((e) => e.resourceID !== resource.ID)
+                .concat(datum)
+            );
+          }
+      
           // quick method to get a property value from a term key
           const getProp = (value) =>
             getPropertyValueFromString(
@@ -531,9 +547,7 @@ export const usePageContext = () => {
             connect || appContext.connections,
             resource,
             getProp
-          );
-
-
+          ); 
 
           // validate querystring if there is one
           // TODO: make this its own method

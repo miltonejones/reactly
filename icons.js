@@ -25,49 +25,7 @@ https://s-media-cache-ak0.pinimg.com/originals/9f/08/0c/9f080cff13af2942eed3e309
 https://is1-ssl.mzstatic.com/image/thumb/Music/v4/9e/1e/57/9e1e574b-45ef-c77a-aabb-d732f018df62/source/1200x630sr.jpg,https://is5-ssl.mzstatic.com/image/thumb/Music/v4/76/b0/5b/76b05bf9-eba1-aa9c-6943-50bc4ca3f8ac/source/1200x630sr.jpg,https://is4-ssl.mzstatic.com/image/thumb/Music/v4/9d/e5/ae/9de5ae48-6e3a-135f-83ac-3b7962a30247/source/1200x630sr.jpg,https://jarrettmpho.files.wordpress.com/2015/02/image.jpg,https://is4-ssl.mzstatic.com/image/thumb/Music71/v4/60/5c/9d/605c9dd4-2a1e-84bd-12f6-2087b8af0521/source/1200x630sr.jpg,https://is3-ssl.mzstatic.com/image/thumb/Music2/v4/9a/ac/36/9aac36bc-127f-665e-fbc0-e2219a7e30bb/source/1200x630sr.jpg,https://is3-ssl.mzstatic.com/image/thumb/Music18/v4/60/81/33/608133b7-e8bf-3811-f755-bac85fa8f587/source/1200x630sr.jpg,https://is5-ssl.mzstatic.com/image/thumb/Music/v4/75/90/c5/7590c5ea-0431-c6ab-fafa-9888ee6fb827/source/1200x630sr.jpg,https://is3-ssl.mzstatic.com/image/thumb/Music/v4/c3/49/ff/c349ffd7-1a29-05fd-4247-0655f1eb2567/source/1200x630sr.jpg
  
  */
-
-function handleListClick (page, {setState, data}) { 
-  setState(value => ({
-    ...value, 
-    selected_index: data.row,
-    player_url: "https://s3.amazonaws.com/box.import/" + data.FileKey,
-    track_name: data.Title,
-    album_image: data.albumImage,
-    artist_name: data.artistName
-  }));
-}
-
-function handleDataLoaded (page, options) {
-  const { state, setState, data } = options; 
-  !!data?.count && setState(s => ({...s, 
-     page_count: Math.ceil(data.count / 100),
-     row_count: data.count 
-  }));
-}
-
-function handlePlayClick (page, options) {
-  const { state, setState, api } = options; 
-  const player = api.getRefByName('aux');  
-  if (!player) return api.Alert('No player!'); 
-  if (player.paused) return player.play()
-  player.pause(); 
-}
-
-function setPlayerProgress (page, options) {
-  const { state, setState, data, api } = options; 
-  if (!data?.progress) return;
-  const formatted = api.moment.utc(data.duration*1000).format('HH:mm:ss');
-  const progress = api.moment.utc(data.currentTime * 1000).format('HH:mm:ss');
-
-  !!data?.progress && setState(s => ({...s, 
-     player_progress: Math.round(data.progress * 100),
-     player_progress_formatted: progress,
-     player_duration:  formatted 
-  })) 
-}
-
-
-
+ 
 
  
 

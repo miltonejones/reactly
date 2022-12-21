@@ -42,7 +42,7 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
     onClose={handleClose}
     open={drawerOpen} 
     {...rest}
-    hideBackdrop={!!args.hideBackdrop || componentEditing} 
+    hideBackdrop={!!args.hideBackdrop || componentEditing || (childOpen && preview )} 
     component={Drawer} 
     >
       {children}
@@ -52,56 +52,10 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
  );
 }
 
+ 
 
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Anchor',
-          label: 'anchor' ,
-          types: ['bottom'
-          , 'left'
-          , 'right'
-          , 'top']
-        }, 
-        {
-          title: 'Elevation',
-          label: 'elevation'
-        },
-        {
-          title: 'Hide Backdrop',
-          label: 'hideBackdrop',
-          type: 'boolean'
-        }, 
-      ]
-    },
-    {
-      name: 'Appearance',
-      settings: [ 
-        {
-          title: 'Variant',
-          label: 'variant',
-          types: ['permanent'
-          , 'persistent'
-          , 'temporary' ], 
-        } 
-      ]
-    },
-  ]
-}
-
-
-const ReactlyDrawer = {
-  Icon: Inventory,
-  Component: ReactlyComponentDrawer,
-  Settings,
-  allowChildren: !0,
-  Styles: GenericStyles, 
-  Defaults: { }
+const ReactlyDrawer = { 
+  Component: ReactlyComponentDrawer, 
 }
  
 
