@@ -68,7 +68,7 @@ export const useTextTransform = () => {
 
     const parameters = {};
     const routeProps = routeParams['*'];
-   
+
   
     // when route props are populated use those values
     if (routeProps && selectedPage?.parameters) {
@@ -78,7 +78,9 @@ export const useTextTransform = () => {
       Object.keys(selectedPage.parameters).map((parameterKey, i) => {
         parameters[parameterKey] = routeProp[i]
       } );
-    
+       
+      console.log ({ routeProp, parameters })
+
       return parameters; 
     }
 

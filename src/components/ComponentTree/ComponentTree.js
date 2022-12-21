@@ -289,49 +289,36 @@ const ComponentTree = ({
   const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
   const pageTheme = createTheme(theme);
   
-  if (pageError) {
-    return <>
-    <Alert severity="error">
-      <Flex baseline fullWidth>
+//   if (pageError) {
+//     return <>
+//     <Alert severity="error">
+//       <Flex baseline fullWidth>
 
-        {pageError.message}
-        <Spacer />
-        <Close onClick={() => setPageError && setPageError(null)} />
+//         {pageError.message}
+//         <Spacer />
+//         <Close onClick={() => setPageError && setPageError(null)} />
   
 
-      </Flex>
-    </Alert> 
+//       </Flex>
+//     </Alert> 
 
-{pageError.fields.map(field => <Flex sx={{m: 1}}>
+// {pageError.fields.map(field => <Flex sx={{m: 1}}>
 
-  <Text small>{field.key}</Text>
+//   <Text small>{field.key}</Text>
 
-  <TextInput size="small" label={field.key} value={field.value}/>
+//   <TextInput size="small" label={field.key} value={field.value}/>
 
-</Flex>)}
+// </Flex>)}
 
-<TextBtn variant="contained"
-  onClick={() => pageError.execute({
-    ['term.param']: 'zaz',
-    param: null
-  })}
-  >Retry</TextBtn>
-
-      {/* <hr />
-    {jsonLog.map((msg, i) => <Box key={i}>
-      <Flex>
-      <Text small active>{msg.message}</Text>
-      <Spacer />
-
-      </Flex>
-      <hr />
-      <pre>{JSON.stringify(msg.json, 0, 2)}</pre>
-      <hr />
-
-      
-    </Box>)} */}
-    </>
-  }
+// <TextBtn variant="contained"
+//   onClick={() => pageError.execute({
+//     ['term.param']: 'zaz',
+//     param: null
+//   })}
+//   >Retry</TextBtn>
+ 
+//     </>
+//   }
 
   const renderComponentProps = { 
     selectedPage,
