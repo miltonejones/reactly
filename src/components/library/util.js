@@ -246,15 +246,11 @@ export const getParams = (state, page, route, shout) => {
 
 export const map = async (list, fn, index = 0, out = []) => {
   if (index < list.length) {
-    setTimeout(async () => {
 
-      const trigger  = list[index];
-      const res = await fn(trigger, index);
-      out.push(res)
-      return await map (list, fn, ++index, out );
-
-
-    }, index * 49)
+    const trigger  = list[index];
+    const res = await fn(trigger, index);
+    out.push(res)
+    return await map (list, fn, ++index, out );
   }
   return out;
 }

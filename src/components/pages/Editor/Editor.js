@@ -67,7 +67,7 @@ import { JsonView } from "../../../colorize";
 import { ChipBox, TinyButton } from "../..";
 import { ApplicationTree } from "../..";
 import StatusPane from "../../StatusPane/StatusPane";
-import { uniqueId } from "../../library/util";
+import { uniqueId } from "../../library/util"; 
 import { ConsoleDrawer } from "../..";
 import { useNavigate  } from "react-router-dom";
 
@@ -675,6 +675,157 @@ const Editor = ({ applications: apps = {} }) => {
 
   }
 
+  const componentType = Library[queryState.selectedComponent?.ComponentType];
+
+  const recurse = (page, selected, open = false) => { 
+
+    console.log ({ selected })
+
+    if (!selected) {
+      return false;
+    }
+    
+    const parents = page?.components.filter(f => f.ID === selected.componentID);
+
+    console.log ({ parents, page: page.components })
+
+    if (parents?.length) {
+      const out = parents.map(kid => {
+
+        const type = Library[kid.ComponentType];
+        return recurse(page, kid, open || type?.modal )
+      }) 
+      const ok = out.some(f => !!f);
+      return ok
+    }
+    return open;
+  }
+  
+
+  const parentOpen = recurse(componentParent, queryState.selectedComponent) ; 
+
+
+  const navigationPane = 
+          <Pane
+            item
+            side="left"
+            state={collapsed.left ? "-off" : ""}
+            sx={{ borderRight: 1, borderColor: "divider" }}
+            thin={collapsed.left ? 1 : 0}
+          >
+ 
+            <Stack sx={{ p: collapsed.left ? 0 : 1, height: 300 }}>
+              <Flex nowrap spacing={1}>
+                {!collapsed.left && (
+                  <>
+                   {!!selectedPage?.PageName && <Text small>
+                      <b>Page</b>
+                    </Text>}
+                    <QuickMenu
+                      small
+                      caret
+                      options={appData.pages.map((f) => f.PageName)}
+                      title="Choose Page"
+                      label={selectedPage?.PageName || <b>{ appData.Name}</b>}
+                      onChange={handlePageNavigate}
+                    />
+
+                    <Spacer /> 
+                    <PopoverPrompt 
+                    onChange={(value) => !!value && createPage(null, value)}
+                      label="Enter a name for your page" endIcon={<Add />} >Create</PopoverPrompt>
+                  </>
+                )}
+
+                    <Popover 
+                  open={open}
+                  anchorEl={anchorEl}
+                  onClose={handlePopoverClose} 
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                  }}
+                >
+                <Box sx={{width: 300, p: 2}}>
+                  {popoverContent}
+                </Box>
+
+                </Popover>
+  
+               <Stack>
+                  <RotateButton
+                    deg={collapsed.left ? 270 : 90}
+                    onClick={() =>
+                      setCollapsed((s) => ({ ...s, left: !collapsed.left }))
+                    }
+                  >
+                    {collapsed.left ? <ExpandMore /> : <Close />}
+                  </RotateButton>
+                  
+                  {collapsed.left && <>
+                  <RotateButton 
+                    onClick={handlePopoverClick(pageTree)}
+                  >
+                    <Article />
+                  </RotateButton>
+                  <RotateButton 
+                    onClick={handlePopoverClick(contentTree)}
+                  >
+                    <Newspaper />
+                  </RotateButton>
+                  </>}
+               </Stack>
+              </Flex>
+
+              {!collapsed.left && (
+                <>
+                  <Box sx={{ border: "solid 1px gray", height: 240, overflow: 'auto', p: 1 }}>
+                   {pageTree}
+                  </Box>
+                </>
+              )}
+            </Stack>
+
+            {!collapsed.left && (
+              <>
+                <Divider />
+
+                <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
+                  {!!componentParent && (
+                    <Flex spacing={1}>
+                      <Flex fullWidth>
+                        <Text small>
+                          <b>Content</b>
+                        </Text>
+
+                        <Spacer />
+                        <QuickMenu
+                          onChange={quickComponent}
+                          options={libraryKeys}
+                          icons={libraryKeys.map(
+                            (e) => Icons[Library[e].Icon]
+                          )}
+                          label={<TextBtn endIcon={<Add />}>Add</TextBtn>}
+                        />
+                        {/* <TextBtn onClick={() => createComponent()} endIcon={<Add />}>Add</TextBtn> */}
+                      </Flex>
+                    </Flex>
+                  )}
+                  {!!componentParent?.components && <>
+                  
+                 <Box sx={{mb: 1}}>
+                 <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
+                      value={contentFilter} />
+                 </Box>
+                  {contentTree}
+                  </>
+                    
+                  }
+                </Stack>
+              </>
+            )}
+          </Pane>;
+
 
   return (
     <EditorStateContext.Provider value={{ 
@@ -732,6 +883,7 @@ const Editor = ({ applications: apps = {} }) => {
           </Stack>
         </Stack>
         <Grid container >
+
           <Pane
             short
             item
@@ -821,128 +973,15 @@ const Editor = ({ applications: apps = {} }) => {
               </TextBtn>
             </Flex>
           </Pane>
-          <Pane
-            item
-            side="left"
-            state={collapsed.left ? "-off" : ""}
-            sx={{ borderRight: 1, borderColor: "divider" }}
-            thin={collapsed.left ? 1 : 0}
-          >
-            <Stack sx={{ p: collapsed.left ? 0 : 1, height: 300 }}>
-              <Flex nowrap spacing={1}>
-                {!collapsed.left && (
-                  <>
-                   {!!selectedPage?.PageName && <Text small>
-                      <b>Page</b>
-                    </Text>}
-                    <QuickMenu
-                      small
-                      caret
-                      options={appData.pages.map((f) => f.PageName)}
-                      title="Choose Page"
-                      label={selectedPage?.PageName || <b>{ appData.Name}</b>}
-                      onChange={handlePageNavigate}
-                    />
+          {!(componentType?.modal || parentOpen) && <>
+            {navigationPane}
+          </>}
 
-                    <Spacer /> 
-                    <PopoverPrompt 
-                    onChange={(value) => !!value && createPage(null, value)}
-                      label="Enter a name for your page" endIcon={<Add />} >Create</PopoverPrompt>
-                  </>
-                )}
-
-  <Popover 
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handlePopoverClose} 
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-    >
-     <Box sx={{width: 300, p: 2}}>
-      {popoverContent}
-     </Box>
-
-    </Popover>
-  
-               <Stack>
-                  <RotateButton
-                    deg={collapsed.left ? 270 : 90}
-                    onClick={() =>
-                      setCollapsed((s) => ({ ...s, left: !collapsed.left }))
-                    }
-                  >
-                    {collapsed.left ? <ExpandMore /> : <Close />}
-                  </RotateButton>
-                  
-                  {collapsed.left && <>
-                  <RotateButton 
-                    onClick={handlePopoverClick(pageTree)}
-                  >
-                    <Article />
-                  </RotateButton>
-                  <RotateButton 
-                    onClick={handlePopoverClick(contentTree)}
-                  >
-                    <Newspaper />
-                  </RotateButton>
-                  </>}
-               </Stack>
-              </Flex>
-
-              {!collapsed.left && (
-                <>
-                  <Box sx={{ border: "solid 1px gray", height: 240, overflow: 'auto', p: 1 }}>
-                   {pageTree}
-                  </Box>
-                </>
-              )}
-            </Stack>
-
-            {!collapsed.left && (
-              <>
-                <Divider />
-
-                <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
-                  {!!componentParent && (
-                    <Flex spacing={1}>
-                      <Flex fullWidth>
-                        <Text small>
-                          <b>Content</b>
-                        </Text>
-
-                        <Spacer />
-                        <QuickMenu
-                          onChange={quickComponent}
-                          options={libraryKeys}
-                          icons={libraryKeys.map(
-                            (e) => Icons[Library[e].Icon]
-                          )}
-                          label={<TextBtn endIcon={<Add />}>Add</TextBtn>}
-                        />
-                        {/* <TextBtn onClick={() => createComponent()} endIcon={<Add />}>Add</TextBtn> */}
-                      </Flex>
-                    </Flex>
-                  )}
-                  {!!componentParent?.components && <>
-                  
-                 <Box sx={{mb: 1}}>
-                 <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
-                      value={contentFilter} />
-                 </Box>
-                  {contentTree}
-                  </>
-                    
-                  }
-                </Stack>
-              </>
-            )}
-          </Pane>
           <Pane wide {...collapsed} item sx={{ p: 1 }} 
        
             state={center_state}
             side="work">
+ 
 
             <Collapse in={showLib && !json}>
              {!!showLib && <LibraryTree onClose={closeLib} />}
@@ -985,6 +1024,9 @@ const Editor = ({ applications: apps = {} }) => {
                 
             </Collapse>
           </Pane>
+        {(componentType?.modal || parentOpen) && <>
+          {navigationPane}
+        </>}
           <Pane
             item
             side="right"

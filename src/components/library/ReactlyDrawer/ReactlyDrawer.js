@@ -37,18 +37,13 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
 
  return (
  <>
- {/* <hr />
- <pre>
-  {JSON.stringify(open || !preview,0,2)}
- </pre>
- <pre>
-  {JSON.stringify(drawerOpen,0,2)}
- </pre> */}
+ 
   <ReactlyComponent 
     onClose={handleClose}
     open={drawerOpen} 
     {...rest}
-    component={open || !preview ? Drawer : Faux} 
+    hideBackdrop={!!args.hideBackdrop || componentEditing} 
+    component={Drawer} 
     >
       {children}
    </ReactlyComponent> 
