@@ -5,6 +5,7 @@ import { Add, Close, Delete , Error} from "@mui/icons-material";
 import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events';
 import { eventTypes } from '../../hooks/usePageContext';
 import { EditorStateContext, AppStateContext } from '../../hooks/AppStateContext'; 
+import { useRunScript } from '../../hooks/subhook/useRunScript';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -29,6 +30,7 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
 }
 
 const HandlerCard = ({ ID, event: eventName, action, application, page, selected, onSelect, onDelete  }) => {
+  const { getApplicationScripts } = useRunScript()
   const { appData  } = React.useContext(EditorStateContext);
   const { supportedEvents } = React.useContext(AppStateContext);
   const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
@@ -69,14 +71,12 @@ const HandlerCard = ({ ID, event: eventName, action, application, page, selected
       ok = !!dialogName || !! appModal;
       break;
     case 'scriptRun':
-      const scr = application.pages.reduce((out, pg) => {
-        const script = pg.scripts && pg.scripts.find(f => f.ID === action.target);
-        if (!script) return out;
-        return <><b>{pg.PageName}.</b>{script.name}</>;
-      }, false)
+      const scripts = getApplicationScripts();
+      const scr = scripts.find(f => f.ID === action.target);
+       
       // const scr = page.scripts && page.scripts.find(f => f.ID === action.target);
       if (scr) {
-        act = <>Run script {scr}</>
+        act = <>Run script <b>{scr.page}.</b>{scr.name}</>
       } else {
         act = <>Could not find script {action.target}</>
         ok = false;

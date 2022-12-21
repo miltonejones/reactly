@@ -12,6 +12,7 @@ import { TextBtn } from '../Control/Control';
 import { JsonView } from '../../colorize';
 import { uniqueId } from '../library/util';
 import { getComponent } from '../../connector/muiConnector';
+import CSSProperties from '../../util/CSSProperties.json'
 
 const sortByOrder = (a,b) => a.order > b.order ? 1 : -1;
 const conseq = (count, out = []) => { for (var e=0;++e<count + 1;out.push(e)); return out; };
@@ -128,6 +129,37 @@ export const useLibrary = () => {
 
   }
 
+  const addComponentSettings = (
+    componentKey, 
+    settingType,
+    categoryName,
+    childName, 
+    options) => {
+
+    const settings = options.map(f => ({
+      ...f,
+      ID: uniqueId()
+    }))
+
+    const updated = {
+      ...config,
+      [componentKey]: {
+        ...config[componentKey],
+        dirty: true,
+        [settingType]: {
+          categories: config[componentKey][settingType].categories.map( category => {
+            return category.name !== categoryName ? category : {
+              ...category,
+              [childName]: (category[childName] || []).concat(settings)
+              
+            }
+          })
+        }
+      }
+    } 
+    updateLib(updated)
+  }
+
   const addComponentChild = (
     componentKey, 
     settingType,
@@ -135,29 +167,18 @@ export const useLibrary = () => {
     childName, 
     props) => {
 
-      const settings = props.split(',').map(f => ({
-        label: f,
-        title: f,
-        ID: uniqueId()
-      }))
+    const settings = props.split(',').map(f => ({
+      label: f,
+      title: f, 
+    }));
 
-      const updated = {
-        ...config,
-        [componentKey]: {
-          ...config[componentKey],
-          dirty: true,
-          [settingType]: {
-            categories: config[componentKey][settingType].categories.map( category => {
-              return category.name !== categoryName ? category : {
-                ...category,
-                [childName]: (category[childName] || []).concat(settings)
-                
-              }
-            })
-          }
-        }
-      } 
-      updateLib(updated)
+    addComponentSettings(
+      componentKey, 
+      settingType,
+      categoryName,
+      childName, 
+      settings
+    ); 
   }
   
   const addCategory = (
@@ -419,6 +440,7 @@ export const useLibrary = () => {
     editEvent,
     setCategoryProp,
     importEvent,
+    addComponentSettings,
     commit
   }
 }
@@ -709,7 +731,9 @@ Input type
 
 const CategoryTree = ({ categories, component, order, childName, Name, title, styleCategories, settingsCategories }) => {
   const Icon = title === 'Settings' ? Icons.Settings : Icons.Palette;
-  const { setCategoryAlways, setCategoryProp, addComponentChild,importComponentChild, dropCategory, addCategory } = useLibrary();
+  const { setCategoryAlways, setCategoryProp, addComponentChild, 
+        importComponentChild, dropCategory, addCategory, addComponentSettings } = useLibrary();
+  const { Confirm } = React.useContext(AppStateContext);
 
   const [value, setValue] = React.useState(0);
  
@@ -722,10 +746,51 @@ const CategoryTree = ({ categories, component, order, childName, Name, title, st
   
   const category = sorted[value];
 
+  const styleMenu = Object.keys(CSSProperties.properties).reduce ((out, key) => {
+    out.push({
+      label: key,
+      key 
+    });
+
+    if (CSSProperties.properties[key]['codegen-properties']) {
+      const { longhands } = CSSProperties.properties[key]['codegen-properties'];
+      longhands?.map(label => {
+        out.push({
+          key: `${key}.${label}`,
+          label: `------${label}`
+        })
+      })
+    }
+
+    return out;
+  }, []);
+
+  const handleCSS = async (label) => {
+    const item = styleMenu.find(f => f.label === label);
+    if (!item) return;
+    const [prefix, key] = item.key.split('.');
+
+    const sourceNode = CSSProperties.properties[key || prefix];
+
+    if (!sourceNode) return;
+
+    const type = {
+      title: key || prefix,
+      label: key || prefix,
+      types: sourceNode.values?.filter(f => typeof f === 'string') || null,
+    }
+
+    const ok = await Confirm(<pre>{JSON.stringify(type,0,2)}</pre>,
+      `Add ${key || prefix}?`);
+
+    !!ok && addComponentSettings(Name, title, category.name, childName, [type])
+ 
+  }
+
   return <>
 
 
-<Flex baseline sx={{  borderBottom: 1, borderColor: 'divider', mb: 2, mt: 3, pb: 0  }}>
+<Flex sx={{  borderBottom: 1, borderColor: 'divider', mb: 2, mt: 3, pb: 0  }}>
  
   <Text active small>
   Categories
@@ -749,24 +814,34 @@ const CategoryTree = ({ categories, component, order, childName, Name, title, st
     options={conseq(categories.length)} />}
  
   <Spacer />
-  <PopoverPrompt
-    onChange={val => addCategory(Name, title, childName, val)}
-    endIcon={<Icons.Add />}
-    label={<>Add category</>}
-    
-  >Add category</PopoverPrompt>
+  <Flex>
 
-  {title === 'Styles' && <QuickMenu 
-    onChange={val => !!val && importComponentChild(Name, title, val)}
-    options={styleCategories} label={<TextBtn variant="contained"
-    endIcon={<Icons.MoreVert />}
-    >Import style category</TextBtn>}/>}
+   {/* <QuickSelect
+      onChange={handleCSS}
+      label="Import CSS rule"
+      sx={{minWidth: 300}}
+      options={styleMenu.map(f => f.label)}
+      /> */}
 
-  {title === 'Settings' && <QuickMenu
+    <PopoverPrompt
+      onChange={val => addCategory(Name, title, childName, val)}
+      endIcon={<Icons.Add />}
+      label={<>Add category</>}
+      
+    >Add category</PopoverPrompt>
+
+    {title === 'Styles' && <QuickMenu 
       onChange={val => !!val && importComponentChild(Name, title, val)}
-      options={settingsCategories} label={<TextBtn variant="contained"
+      options={styleCategories} label={<TextBtn variant="contained"
       endIcon={<Icons.MoreVert />}
-    >Import settings category</TextBtn>}/>}
+      >Import style category</TextBtn>}/>}
+
+    {title === 'Settings' && <QuickMenu
+        onChange={val => !!val && importComponentChild(Name, title, val)}
+        options={settingsCategories} label={<TextBtn variant="contained"
+        endIcon={<Icons.MoreVert />}
+      >Import settings category</TextBtn>}/>}
+  </Flex>
 
 
 </Flex>
@@ -783,6 +858,19 @@ const CategoryTree = ({ categories, component, order, childName, Name, title, st
   label={<>Add {category.name} setting</>}
   
 >Add setting</PopoverPrompt>
+
+   {title === 'Styles' &&  <QuickMenu
+      allowFind
+      small
+      caret
+      maxItems={10}
+      label={<TextBtn variant="contained"
+          endIcon={<Icons.MoreVert />}
+        >Import CSS rule</TextBtn>}
+ 
+      onChange={handleCSS}
+      options={styleMenu.map(f => f.label)}
+       />}
 
     <Spacer />
     <Flex onClick={e => setCategoryAlways(

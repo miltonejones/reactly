@@ -1,7 +1,9 @@
 import React from 'react';
 import { styled, Box, Grid, Divider } from '@mui/material';
-import { Flex, Text, Tiny, QuickSelect, TinyButton, QuickMenu, TextInput } from '../../../../..';
-import { CheckCircle, Settings, CheckCircleOutline } from "@mui/icons-material";  
+import { Flex, Text, Tiny, Spacer, QuickSelect, TinyButton, QuickMenu, TextInput } from '../../../../..';
+import { CheckCircle, Settings, Edit, CheckCircleOutline } from "@mui/icons-material";  
+import { useRunScript } from '../../../../../../hooks/subhook/useRunScript';
+import { AppStateContext } from "../../../../../../hooks/AppStateContext";
  
 const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
  
@@ -50,6 +52,39 @@ const ListTableRow = ( {
       setState , onMove, type, handleType }) => {
     const [settings, setSettings] = React.useState(false);
     const typeName = type?.type;
+    const { 
+      getApplicationScripts 
+    } = useRunScript();
+
+
+     const {  
+      EditCode, 
+    } = React.useContext(AppStateContext);
+ 
+    const scriptList = getApplicationScripts();
+    const scriptMenu = scriptList.filter(f => !!f.page)
+      .map(f => ({
+        ...f,
+        label: `${f.page}.${f.name}`
+      }));
+
+    const handleTransform = (col) => (name) => {
+      if (!name) return;
+     
+      const menuItem = scriptMenu.find(f => f.label === name); 
+ 
+ 
+
+      handleType({ 
+          [col]: {
+          ...type,
+          settings: {
+            ...type?.settings,
+            transform: menuItem.ID,
+          }
+        },
+      })
+    }
 
     const displayConf = {
       Text: [
@@ -112,7 +147,7 @@ const ListTableRow = ( {
       xs: 6,
       sx: active ? { borderBottom: 1, borderColor: 'divider' } : {}
     }
-
+    const transformer = scriptMenu.find(f => f.ID === type?.settings?.transform);
  return (
    < >
     
@@ -169,24 +204,42 @@ const ListTableRow = ( {
 
     </Grid>
 
-       {(settings ) && <Grid xs={12} item>
+       {(settings ) && <><Grid xs={12} item sx={{mb: 1}}>
         
         <Divider sx={{mb: 1}} />
 
         <Flex fullHeight sx={{mb: 1}}>
           <Text small>Display as</Text>
-          <QuickMenu small label={type?.type||'Choose type'} caret value={type?.type} onChange={value => !!value && handleType({
+          <QuickMenu small label={type?.type||'Choose type'} caret value={type?.type} 
+            onChange={value => !!value && handleType({
              [col]: {
               type: value,
               settings: {
                 ...type?.settings
               }
             },
-          })} options={displayTypes} />
+          })} options={displayTypes} /> 
+        </Flex>
+        </Grid>
+        <Grid xs={12} item sx={{mb: 1}}>
+        <Flex>
+
+          {!!transformer && <Text small>Transform: </Text>}
+        <QuickMenu small label={transformer?.label ? 
+            ` ${transformer?.label}`
+            : 'Choose transform'} caret 
+            value={transformer?.label} 
+            options={scriptMenu.map(f => f.label)}
+            onChange={handleTransform(col)} /> 
+          {!!transformer && <TinyButton icon={Edit} 
+            onClick={() => EditCode(transformer.code, transformer.name) }
+              />}
         </Flex>
  
 
-        </Grid>}
+        </Grid>
+        
+        </>}
 
         {!!selectedProp && settings && <Grid xs={12} item sx={{pb: 1}}>
           <Grid container spacing={1}>

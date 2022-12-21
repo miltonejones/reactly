@@ -6,7 +6,7 @@ import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-ma
 import { Spacer , QuickSelect , PopoverPrompt} from '..';
 import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
-import { ExpandMore, Save, Close, Input, Add, Delete } from "@mui/icons-material";
+import { ExpandMore, Save, Close, ContentPaste, CopyAll, Input, Add, Delete } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext'; 
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
@@ -44,6 +44,7 @@ const ComponentPanel = ({
     application,
     Confirm,
     onPageMove,
+    onSettingsPaste
  }) => {
  
   const [ 
@@ -57,11 +58,14 @@ const ComponentPanel = ({
   const {   disableLinks, showSettings } = editorState;
 
 
-  const { setQueryState, 
+  const { 
+    queryState,
+    setQueryState, 
     setMessages, 
     setOpenTraceLog,  
     setShowTrace,
-    showTrace,
+    showTrace,        
+    setDisableRequests,disableRequests,
     jsonLog, appData  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
@@ -150,7 +154,7 @@ const ComponentPanel = ({
     onComponentImport(sourceID, destID, tag.ID);
   }
 
-
+  const pasteTypes = ['settings', 'styles']
 
   
   return <Stack>
@@ -172,12 +176,29 @@ const ComponentPanel = ({
         deleteIcon={ <Close />} onDelete={onDelete}/> 
 
       <Spacer />
-   
         <RotateButton deg={showSettings ? 90 : 270}  onClick={
           () => setShowSettings(!showSettings)
         }>
              <Settings />
         </RotateButton>
+
+   
+       {!!component?.ComponentName && <RotateButton 
+          disabled={!!queryState.clipboard}
+          onClick={
+          () => setQueryState(s => ({
+            ...s,
+            clipboard: {
+              type: component?.ComponentType,
+              name: component?.ComponentName,
+              id: component?.ID,
+              settings: component.settings,
+              styles: component.styles
+            }
+          }))
+        }>
+             <CopyAll />
+        </RotateButton>}
 
       </>}
        
@@ -198,6 +219,32 @@ const ComponentPanel = ({
       </Tabs>
     </Box>
 
+      <Flex sx={{m: 1}}>
+
+    {!!queryState.clipboard && 
+      ((value === 0 && !!queryState.clipboard.settings) || 
+      (value === 1 && !!queryState.clipboard.styles)) &&
+      <Chip variant="outlined"  icon={<ContentPaste />} 
+        label={<>Paste <b>{queryState.clipboard.type}: {queryState.clipboard.name}</b> {pasteTypes[value]}</>}
+        onClick={() => {
+          const content = value === 0 
+            ? queryState.clipboard.settings
+            : queryState.clipboard.styles
+ 
+        onSettingsPaste(component.ID, pasteTypes[value], content);
+      
+    }}
+        deleteIcon={ <Close />} onDelete={() => {
+          
+          setQueryState(s => ({
+            ...s,
+            clipboard: null
+          }))
+
+        }}/> }
+
+      </Flex>
+
     <Collapse in={showSettings} sx={{mb: 0, pb: 0}}>
         <Box sx={{p: 1}}>
           <Flex sx={{...sx, p: 1}}>
@@ -217,7 +264,13 @@ const ComponentPanel = ({
           onChange={handleMove}
            caret label="Move" icon={Input}/>
         </Flex>}
-        
+        , 
+
+        <Flex onClick={() => setDisableRequests(!disableRequests)} sx={sx}>
+          <Switch checked={disableRequests} /> 
+          <Text small>disable Requests</Text> 
+        </Flex> 
+
         <Flex onClick={() => setDisableLinks(!disableLinks)} sx={sx}>
           <Switch checked={disableLinks} /> 
           <Text small>Disable links</Text> 

@@ -238,7 +238,7 @@ const ComponentTree = ({
     });
 
     setQueryState(qs => ({...qs, appContext, pageLoaded: true}))  ;
-
+    console.log ('page loaded')
   }, [
     stateProps, 
     appContext,

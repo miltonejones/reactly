@@ -16,6 +16,7 @@ import {
   FormControlLabel,
   Switch,
   Collapse,
+  Tabs,
 } from "@mui/material";
 import {
   Flex,
@@ -34,7 +35,8 @@ import {
   PopoverPrompt,
   SearchBox, 
   LibraryTree,
-  Text
+  Text,
+  TabButton,
 } from "../..";
 import {
   ExpandMore,
@@ -50,7 +52,7 @@ import {
   RecentActors,
   Code,
   Article,
-  Newspaper, Widgets
+  Newspaper, Construction, ArrowBack
 } from "@mui/icons-material";
 import {
   AppStateContext,
@@ -62,12 +64,17 @@ import { Json } from "../../../colorize";
 import { TextInput } from "../..";
 import { Icons } from "../../library/icons";
 import { JsonView } from "../../../colorize";
-import { ChipBox } from "../..";
+import { ChipBox, TinyButton } from "../..";
 import { ApplicationTree } from "../..";
 import StatusPane from "../../StatusPane/StatusPane";
 import { uniqueId } from "../../library/util";
 import { ConsoleDrawer } from "../..";
 import { useNavigate  } from "react-router-dom";
+
+const BorderButton = styled(IconButton)(({ active , theme}) => ({
+  // borderWidth: active ? 1  : 0,
+  outline: !active ? '' : ('solid 2px ' + theme.palette.primary.main)
+}))
 
 const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, tool }) => {
   const args = {
@@ -201,7 +208,9 @@ const Editor = ({ applications: apps = {} }) => {
     setPageParent,
     setParameter, 
     dropParameter,
-    setComponentCustomName
+    setComponentCustomName,
+    promotePageScript,
+    pasteComponentProps
   } = useEditor(apps);
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
@@ -216,6 +225,7 @@ const Editor = ({ applications: apps = {} }) => {
     left: false,
     right: false,
   });
+  const [ showTabs,  setShowTabs ] = React.useState(true);
   const [ popoverContent,  setPopoverContent ] = React.useState(null);
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
@@ -314,6 +324,10 @@ const Editor = ({ applications: apps = {} }) => {
       selector
     );
   };
+
+  const handleSettingsPaste =(componentID, type, props) => {
+    pasteComponentProps(appData.ID, selectedPage?.ID, componentID, type, props)
+  }
 
   const handleSettingsChange = (componentID, label, value) => {
   // alert(JSON.stringify({label, value}, 0, 2))
@@ -438,7 +452,7 @@ const Editor = ({ applications: apps = {} }) => {
     const labels = menuOptions.filter(f => !!f.on);
     return labels.map(label => label.name);
   }
-
+  
   const menuOptions = [
     {
       name: collapsed.left ? "Show Navigation Panel" : "Hide Navigation Panel",
@@ -457,6 +471,11 @@ const Editor = ({ applications: apps = {} }) => {
       name: `Hilight all components`,
       action: () => setHilit(!hilit),
       on: hilit,
+    },
+    {
+      name: `${showTabs ? 'Hide' : 'Show'} Tabs`,
+      action: () => setShowTabs(!showTabs),
+      on: showTabs,
     },
     {
       name: `Loud logging`,
@@ -489,6 +508,18 @@ const Editor = ({ applications: apps = {} }) => {
       action: () => Alert(<StatusPane />)
     },
   ]; 
+
+  const handleScriptPromote = async (scriptID) => {
+    const ok = await Confirm(
+      <Stack>
+        Are you sure you want to promote this script?
+        <Text small active error>This will remove it from the current page</Text>
+      </Stack>,
+      "Confirm promote"
+    );
+    if (!ok) return;
+    promotePageScript(appData.ID, selectedPage?.ID, scriptID)
+  }
 
   const handleDropScript = async (scriptID, confirmed) => {
     const ok = confirmed || await Confirm(
@@ -579,26 +610,20 @@ const Editor = ({ applications: apps = {} }) => {
     setPageResourceState, 
   };
 
+  const handlePageNavigate = name => {
+    const clickedPage = appData.pages.find((f) => f.PageName === name);
+    if (!clickedPage) return navigate(`/edit/${appData.path}`);
+        setPageError(null)
+    navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
+  }
+
   const pageTree =  <PageTree
     tree={appData.pages}
     selected={selectedPage?.PageName}
     setPage={createPage}
     dropPage={handlePageDelete}
     duplicatePage={id => duplicatePage(appData.ID, id)}
-    onClick={(name) =>{
-      const clickedPage = appData.pages.find((f) => f.PageName === name);
-      if (!clickedPage) return navigate(`/edit/${appData.path}`);
-      navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
-        // setQueryState((s) => ({
-        //   ...s,
-        //   page: appData.pages.find((f) => f.PageName === name),
-        //   pageLoaded: false,
-        //   pageError: false
-        // // appLoaded: false
-        // }))
-        setPageError(null)
-      }
-    }
+    onClick={handlePageNavigate}
   />;
 
   const applicationTreeProps = {  
@@ -618,6 +643,38 @@ const Editor = ({ applications: apps = {} }) => {
     onCreate={(type, options) => createComponent(type, options)}
     tree={componentParent?.components}
   />
+
+  const componentTabs = queryState.tabs?.[selectedPage?.PageName];
+
+  const selectComponentByID = (ID, on) => {
+    const component = componentParent.components.find(f => f.ID === ID);
+    !!component && selectComponent(component, on);
+  }
+ 
+
+  const selectComponent = (component, on) => {
+
+    setQueryState(s => {
+      if (!s.tabs) {
+        Object.assign(s, { tabs: {}})
+      }
+
+      Object.assign(s.tabs, {
+        [selectedPage.PageName]: {
+          ...s.tabs[selectedPage.PageName],
+          [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
+        }
+      })
+
+      if (on) {
+        delete s.tabs[selectedPage.PageName][component.ID]
+      }
+
+      return {...s, selectedComponent: on ? null :  component};
+    });
+
+  }
+
 
   return (
     <EditorStateContext.Provider value={{ 
@@ -689,6 +746,10 @@ const Editor = ({ applications: apps = {} }) => {
                 <b>Reactly</b>
               </Flex>
 
+              <IconButton onClick={() => window.history.back()}>
+                <ArrowBack />
+              </IconButton>
+
               <Chip color="primary" variant="outlined" label={<b>{appData.Name}</b>} />
 
               <Flex nowrap>
@@ -707,17 +768,34 @@ const Editor = ({ applications: apps = {} }) => {
                 />
               </Flex>
                   
-                  <IconButton onClick={() => closeLib()}>
-                    <Widgets />
-                  </IconButton>
-
               <Addressbox value={`/${path.join("/")}`}  
                 queryState={queryState}
                 setQueryState={setQueryState}
                 selectedPage={selectedPage}
               />
 
-              <FormControlLabel
+             <BorderButton active={showLib} disabled={!!json} onClick={() => closeLib()}>
+                <Construction />
+              </BorderButton>
+
+              <BorderButton active={json} disabled={showLib} onClick={() => setJSON(!json)}>
+                <Code />
+              </BorderButton>
+
+              <IconButton
+                sx={{ border: 1, borderColor: "divider" }}
+                size="small"
+                onClick={() => {
+                  setQueryState(null);
+                  setAppData(null);
+                  window.location.reload();
+                }}
+                variant="outlined"
+              >
+                <Sync />
+              </IconButton>
+              
+              {/* <FormControlLabel
                 sx={{ m: 1 }}
                 label={<Text small>Show JSON</Text>}
                 control={
@@ -727,7 +805,7 @@ const Editor = ({ applications: apps = {} }) => {
                     onChange={(e) => setJSON(e.target.checked)}
                   />
                 }
-              />
+              /> */}
               <TextBtn
                 variant="contained"
                 endIcon={<Save />}
@@ -741,18 +819,6 @@ const Editor = ({ applications: apps = {} }) => {
               >
                 Save
               </TextBtn>
-              <IconButton
-                sx={{ border: 1, borderColor: "divider" }}
-                size="small"
-                onClick={() => {
-                  setQueryState(null);
-                  setAppData(null);
-                  window.location.reload();
-                }}
-                variant="outlined"
-              >
-                <Sync />
-              </IconButton>
             </Flex>
           </Pane>
           <Pane
@@ -766,21 +832,16 @@ const Editor = ({ applications: apps = {} }) => {
               <Flex nowrap spacing={1}>
                 {!collapsed.left && (
                   <>
-                    <Text small>
+                   {!!selectedPage?.PageName && <Text small>
                       <b>Page</b>
-                    </Text>
+                    </Text>}
                     <QuickMenu
                       small
                       caret
                       options={appData.pages.map((f) => f.PageName)}
                       title="Choose Page"
-                      label={selectedPage?.PageName || "none selected"}
-                      onChange={(p) => {
-                        setQueryState((s) => ({
-                          ...s,
-                          page: appData.pages.find((f) => f.PageName === p),
-                        }));
-                      }}
+                      label={selectedPage?.PageName || <b>{ appData.Name}</b>}
+                      onChange={handlePageNavigate}
                     />
 
                     <Spacer /> 
@@ -892,7 +953,21 @@ const Editor = ({ applications: apps = {} }) => {
             </Collapse>
  
             <Collapse in={!json && !showLib}>
+
+              {!!componentTabs && showTabs &&  <Box sx={{mb: 1, borderBottom: 1, borderColor: 'divider'}}>
+                <Tabs  sx={{minHeight: 24, ml: 1, mb: 0 }} 
+                onChange={(e, index) => selectComponentByID(Object.keys(componentTabs)[index])}
+                    value={Object.keys(componentTabs).indexOf(queryState.selectedComponent?.ID)}>
+                  {Object.keys(componentTabs).map((tab) => <TabButton 
+                    icon={<TinyButton 
+                      onClick={() => selectComponentByID(tab, 1) } icon={Close} />} 
+                    iconPosition="end"
+                    key={tab} label={componentTabs[tab]} />)}
+                </Tabs>
+                </Box>}
  
+            <ApplicationTree {...applicationTreeProps} application={appData} />
+
                 <ComponentTree
                   
                   {...componentTreeProps}
@@ -908,8 +983,6 @@ const Editor = ({ applications: apps = {} }) => {
 
                 />
                 
-            <ApplicationTree {...applicationTreeProps} application={appData} />
-
             </Collapse>
           </Pane>
           <Pane
@@ -924,7 +997,7 @@ const Editor = ({ applications: apps = {} }) => {
                 onCollapse={() =>
                   setCollapsed((s) => ({ ...s, right: !collapsed.right }))
                 } 
-
+                onSettingsPaste={handleSettingsPaste}
                 setEditorState={setEditorState} 
                 editorState={editorState}
                 onPageMove={handlePageMove}
@@ -958,6 +1031,7 @@ const Editor = ({ applications: apps = {} }) => {
         application={appData}
         handleDrop={handleDropScript}
         handleChange={handleScriptChange}
+        handleScriptPromote={handleScriptPromote}
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         open={scriptOpen}
         handleClose={() => {
@@ -1056,7 +1130,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
       size="small"
       disabled
       {...props}
-      sx={{ width: "calc(100vw - 740px)" }}
+      sx={{ width: "calc(100vw - 700px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}

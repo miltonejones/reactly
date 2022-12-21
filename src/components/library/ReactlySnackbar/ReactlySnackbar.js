@@ -1,5 +1,5 @@
 import React from 'react';
-import { Snackbar, Alert, IconButton } from '@mui/material'; 
+import { Snackbar, Alert, IconButton, AlertTitle } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { Icecream } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
@@ -35,88 +35,59 @@ const ReactlyComponentSnackbar = ({ children, ...props }) => {
    const Icon = Icons[args.action]
 
    const action = !args.action && !!Icon
-    ? <i />
+    ? null
     : <IconButton>
         <Icon  />
       </IconButton> 
 
+      
+if (!args.message) {
+  return <>Waiting for settings</>
+}
+
+
+ if (!args.color) {
+
+  return (  
+    <ReactlyComponent component={Snackbar} {...props}
+      anchorOrigin={{ vertical, horizontal }}
+      onClose={handleClose}
+      open={open || componentEditing}  
+      >
+
+    {!!args.message &&  <Flex>  {interpolateText(args.message)} </Flex>}
+    </ReactlyComponent>
+     
+  );
+
+ }
+
  return (
   <>
+  {/* <>This would be the color version [{args.color}]</> */}
    <ReactlyComponent component={Snackbar} {...props}
     anchorOrigin={{ vertical, horizontal }}
     onClose={handleClose}
     open={open || componentEditing}  
->
-
-<Flex>
-      <Alert severity={args.color}>
+    >
+ 
+      <Alert action={action} severity={args.color}>
+      {!!args.title && <AlertTitle>{interpolateText(args.title)}</AlertTitle>}
         {interpolateText(args.message)}
-      </Alert> {action}
-    </Flex>
+      </Alert>  
 
-</ReactlyComponent>
+   </ReactlyComponent>
   
   </>
  );
 }
+ 
 
-const SnackbarContent = ({ color, children, action }) => {
-  if (!color) {
-    return <Flex>{children}<Spacer /> {action}</Flex>;
-  }
-
-  return <Flex>
-      <Alert severity={color}>
-        {children}
-      </Alert> {action}
-    </Flex>
-
-}
+ 
 
 
-const Settings = {
-  categories: [
-
-    {
-      name: 'General',
-      always: true,
-      settings: [  
-        {
-          title: 'Message',
-          label: 'message' ,
-          bindable: 1,
-          type: 'chip'
-        }, 
-        {
-          title: 'Vertical Origin',
-          label: 'vertical' ,
-          types: ['top', 'bottom']
-        }, 
-        {
-          title: 'Horizontal Origin',
-          label: 'horizontal' ,
-          types: ['left', 'right'], 
-        }, 
-        {
-          title: 'AutoHide Duration',
-          label: 'autoHideDuration' , 
-          helperText: 'Time in milliseconds'
-        }, 
-      ]
-    }, 
-  ]
-}
-
-
-const ReactlySnackbar = {
-  Icon: Icecream,
-  Component: ReactlyComponentSnackbar,
-  Settings,
-  Styles: GenericStyles, 
-  allowChildren: !0,
-  Defaults: {
-  vertical: 'bottom',
-  horizontal: 'left' }
+const ReactlySnackbar = { 
+  Component: ReactlyComponentSnackbar, 
 }
  
 

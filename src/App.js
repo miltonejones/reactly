@@ -43,7 +43,19 @@ import { uniqueId } from "./components/library/util";
 function App() { 
  
   React.useEffect(() => {
-    console.log ('app loading')
+
+    const styleSheets = Array.from(document.styleSheets).filter(
+      (styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin)
+    );
+      for (let style of styleSheets) {
+        if (style instanceof CSSStyleSheet && style.cssRules) {
+          console.log ({ styles: style.rules })
+        }
+      }
+
+
+
+    console.log ('app loading');
   }, [])
 
   return (
@@ -83,6 +95,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
    
   const [showTrace, setShowTrace] = React.useState(false);
   const [disableLinks, setDisableLinks] = React.useState(false);
+  const [disableRequests, setDisableRequests] = React.useState(false);
   const [openTraceLog, setOpenTraceLog] = React.useState({});
   const [dynamoProgs, setDynamoProgs] = React.useState(null)
   const [supportedEvents, setSupportedEvents] = React.useState([])
@@ -359,6 +372,9 @@ function RenderComponent({ preview, component: Component, ...props}) {
         pageResourceState, 
         getPageResourceState,
         setPageResourceState, 
+
+        disableRequests, 
+        setDisableRequests,
         
         pageModalState, 
         setPageModalState, 

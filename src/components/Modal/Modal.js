@@ -298,14 +298,15 @@ export const useModal = () => {
     required: ['name']
   });
 
-  const EditCode = (code) => 
+  const EditCode = (code, title, allowEdit) => 
   createModalMethod({
     message: 'Code Editor',
-    title: 'Code Editor',
+    title:   'Code Editor - ' + title + (allowEdit ? "" : " (read-only)"),
     code,
-    okayText: "Save",
+    okayText: allowEdit ? "Save" : "Okay",
     deleteText: "import",
-    handleDelete: !0,
+    handleDelete: allowEdit,
+    allowEdit,
     component: CodeEditor, 
     minWidth: 720,
     maxWidth: 720, 

@@ -50,7 +50,8 @@ export const usePageContext = () => {
     pageClientState,
     setPageClientState,
     // getPageClientState,
-
+    setDisableRequests,
+    disableRequests,
     appContext,
     selectedPage,
     monitoredEvents,
@@ -480,7 +481,11 @@ export const usePageContext = () => {
           break;
         case "dataExec":
 
+          if (disableRequests) {
+            return;
+          }
 
+          
           const resources = appContext?.resources || sources;
           if (!resources) {
             Alert(JSON.stringify(sources));

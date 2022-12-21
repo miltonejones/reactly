@@ -36,7 +36,7 @@ const RunScript = ({ event = {}, page, application, handleSave }) => {
   const handleEdit = React.useCallback(ID => {
     const script = scriptList.find(s => s.ID === ID)
     if (script) {
-      EditCode(script.code)
+      EditCode(script.code, script.name)
     }
   }, [scriptList])
 

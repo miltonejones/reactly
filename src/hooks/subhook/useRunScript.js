@@ -110,23 +110,35 @@ export const useRunScript = () => {
 
 
 
-  const handleScriptRequest = async (block, opts, title) => { 
+const handleScriptRequestAsync = async (block, opts, title) => { 
 
-    try { 
-      // call that function to get the client function
-      const action = eval(`(${block})()`); 
-      if (block.indexOf('async') > -1) { 
-        return await action(selectedPage, opts) ;
-      }
-      // call the client function
-      return action(selectedPage, opts)
-    } catch (ex) {
-      Alert (ex.message, 'Script error in ' + title);
+  try { 
+    // call that function to get the client function
+    const action = eval(`(${block})()`); 
+    if (block.indexOf('async') > -1) { 
+      return await action(selectedPage, opts) ;
     }
+    // call the client function
+    return action(selectedPage, opts)
+  } catch (ex) {
+    Alert (ex.message, 'Script error in ' + title);
   }
- 
+}
 
-  const executeScriptByName = (scriptName, options, execResourceByName) => { 
+const handleScriptRequest =  (block, opts, title) => { 
+
+  try { 
+    // call that function to get the client function
+    const action = eval(`(${block})()`);  
+    // call the client function
+    return action(selectedPage, opts)
+  } catch (ex) {
+    Alert (ex.message, 'Script error in ' + title);
+  }
+}
+
+
+  const executeScriptByName =  (scriptName, options, execResourceByName) => { 
 
     const scriptList = getApplicationScripts();
     const scr = scriptList.find(f => f.name === scriptName); 
@@ -183,10 +195,14 @@ export const useRunScript = () => {
       }
     }
 
-
     // console.log ({opts, index})
     if (scr) {  
-      return await handleScriptRequest(`function runscript() {
+      if (scr.code.indexOf('async') > -1) { 
+        return await handleScriptRequestAsync(`function runscript() {
+          return  ${scr.code}
+        }`, opts, scr.name)
+      }
+      return handleScriptRequest(`function runscript() {
         return  ${scr.code}
       }`, opts, scr.name)
     } 

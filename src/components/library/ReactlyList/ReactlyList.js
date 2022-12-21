@@ -1,8 +1,8 @@
 import React from 'react';
-import { styled, Box, Avatar, List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
+import { styled, Box, Avatar, List, ListItemButton ,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { FormatListBulleted } from '@mui/icons-material';
-import ReactlyComponent from '../reactly';
+import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import { PageStateContext } from '../../../hooks/usePageContext';

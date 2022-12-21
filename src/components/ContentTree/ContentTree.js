@@ -32,7 +32,7 @@ const filterProp = filter => f =>  !filter ||
   f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
 
 const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, onCustomName, quickComponent }) => {
-  const { queryState = {}, setQueryState  } = React.useContext(AppStateContext);
+  const { queryState = {}, setQueryState, selectedPage  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
   if (!tree) return <i />
   const components = tree.filter(f => !f.componentID);
@@ -50,7 +50,22 @@ const ContentTree = ({ tree, onCreate, onNameChange, onDrop, filter, onCustomNam
           key={c.ID}
           onNameChange={onNameChange}
           onSelect={(component, on) => {
-            setQueryState(s => ({...s, selectedComponent:on ? null :  component}));
+
+            setQueryState(s => {
+              if (!s.tabs) {
+                Object.assign(s, { tabs: {}})
+              }
+
+              Object.assign(s.tabs, {
+                [selectedPage?.PageName||'application']: {
+                  ...s.tabs[selectedPage?.PageName||'application'],
+                  [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
+                }
+              })
+
+              return {...s, selectedComponent: on ? null :  component};
+            });
+
           }} selectedComponent={selectedComponent} onDrop={onDrop} trees={tree} key={c.ComponentName} tree={c} /> )} 
       </List>
     </Content>

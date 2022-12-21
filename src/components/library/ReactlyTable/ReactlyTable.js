@@ -8,6 +8,7 @@ import { Flex , Text } from '../..';
 import { PageStateContext } from '../../../hooks/usePageContext';
 import { usePageResourceState } from '../../../hooks/usePageResourceState';
 import { useImageLoader } from '../ReactlyInfoCard/ReactlyInfoCard';
+import { useRunScript } from '../../../hooks/subhook/useRunScript';
 
 const truncate = (value, length) => {
   try {
@@ -148,22 +149,42 @@ const ReactlyComponentTable = ({ children, ...props }) => {
 const CellContent = ({ columnMap, typeMap, displayKey, value, selected,  children, ...props}) => {
 
 
+  const [content, setContent] = React.useState(children)
+
   const displayType = typeMap?.[displayKey];
+  const transformer = displayType?.settings?.transform;
+
+  const { executeScript } = useRunScript();
+
+  React.useEffect(() => {
+    if (!transformer) return;
+
+    (async() => {
+      const res = await executeScript(transformer, children);
+      !!res && setContent(res);
+    })()
+
+  }, [transformer])
+
+  // const content = children; //!transformer ? children : executeScript(transformer, { data: children });
+
+  // !!transformer && console.log ({ content: executeScript(transformer, { data: children })   });
+
 
   const { image } = useImageLoader(value, displayType?.settings?.default_image)
 
 
   if (!(!!typeMap && !!columnMap && !!typeMap[ displayKey ])) {
-    return <>{children}</>
+    return <>{content}</>
   } 
 
   if (displayType?.type === 'Text') {
-    return <Typography variant={displayType.settings.Variant || 'body2'}>{children}</Typography> 
+    return <Typography variant={displayType.settings.Variant || 'body2'}>{content}</Typography> 
   }
  
   if (displayType?.type === 'Link') {
     return <Linked { ...props} selected={selected} sx={{ cursor: 'pointer'}} {...displayType.settings}>
-      <Typography variant={displayType.settings.Variant || 'body2'}>{children}</Typography>
+      <Typography variant={displayType.settings.Variant || 'body2'}>{content}</Typography>
     </Linked>
   }
  
@@ -177,11 +198,11 @@ const CellContent = ({ columnMap, typeMap, displayKey, value, selected,  childre
   }
 
   if (displayType?.type === 'Icon') {
-    const Icon = Icons[children];
+    const Icon = Icons[content];
     return !Icon ? <i /> : <Icon />
   }
 
-  return <>{children}</>
+  return <>{content}</>
 }
 
 const colorize = ({ selected, theme, color = 'primary', columnMap, typeMap, displayKey }) => {

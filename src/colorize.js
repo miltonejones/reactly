@@ -195,11 +195,12 @@ const JsonTreeBody = ( { path = [], short, edit, json, options, string, label, h
           <Divider />
         </>
        } 
-       if (typeof (json[node]) === 'object') {
+       if (!!json[node] && typeof (json[node]) === 'object') {
         return <>
         <Text onClick={() => expand(node)} sx={{ml:  indent}} small key={node}
           ><Icon on={expanded.indexOf(node) > -1} /><b>{node}</b> {!!short && <>({ Object.keys(json[node]).length })</>}</Text> 
-          {!!json[node] && !short && Object.keys(json[node]).map(child => <Collapse in={expanded.indexOf(node) > -1}>
+          {!!json[node] && !short && Object.keys(json[node])
+              .map(child => <Collapse in={expanded.indexOf(node) > -1}>
             <JsonTreeBody handlePopoverClick={handlePopoverClick}
               path={path.concat([node, child])} options={options}
               handleChange={handleChange}

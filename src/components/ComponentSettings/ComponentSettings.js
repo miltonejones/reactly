@@ -132,10 +132,20 @@ const attempt = value => {
 }
 
 export const ComponentInput = props => {
-    const { bindable, label, component, title, onChange, value, args = {} } = props;
+    const { bindable, label, when, component, title, onChange, value, args = {} } = props;
 
     const isBound = component.boundProps?.find(prop => prop.attribute === label);
       
+      if (when &&  typeof when === 'function' && !when(args)) {
+        return <></>
+      }
+
+      if (when &&  typeof when === 'string' ) {
+        const ok = eval(when)(args);
+        if (!ok) return <></>
+      }
+
+
     const bindProps = {
       ...props,
       title: `Bind ${title} to client state`,
@@ -165,13 +175,15 @@ export const ComponentInput = props => {
         }
       : props; 
         const LinkIcon =isBound ? LinkOff : AddLink
-    return <Flex  baseline>
+    return <Flex fullWidth>
 {/* [{inputProps.type}][{label}] */}
       <ComponentInputBody {...inputProps} /> 
       <Spacer />
-      {!!bindable && <IconButton onClick={() => { 
+      {!!bindable && <Tooltag component={IconButton} 
+      title={isBound ? `Remove data binding on "${label}"` : `Bind "${label}" to client state` }
+      onClick={() => { 
        onChange( label, { attribute: isBound ? false : label } )
-      }}  ><LinkIcon /></IconButton>}
+      }}  ><LinkIcon /></Tooltag>}
       {/* {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>} */}
     </Flex>
 }
@@ -308,7 +320,7 @@ export const ComponentInputBody = (props) => {
         : QuickMenu  
 
     const Host = !isMenu ? Stack : Flex;
-    return <Host fullWidth>
+    return <Host fullWidth sx={{width: "100%"}}>
       {header} 
  
       {isMenu && <Spacer />}
@@ -355,12 +367,13 @@ export const ComponentInputBody = (props) => {
   const usePrompt = ['width','top','left','bottom', 'height', 'right'].some(f => !!title && title.toLowerCase().indexOf(f) > -1)
     || type == 'prompt';
 
-  return <Stack>
+  return <Stack sx={{width: '100%'}}>
   {header} 
       <Flexible on={free || chip}>
   <Component 
     multiline={!!multiline}
     rows={4}
+    fullWidth
     autoComplete="off"
     helperText={helperText}  
     onChange={e => handleChange(e.target.value)} 

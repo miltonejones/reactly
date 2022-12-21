@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Stack, Card, Tabs, Switch, Grid, Collapse, Drawer, Typography, Divider, IconButton } from '@mui/material';
+import { styled, List, ListItemButton, ListItemText, Box, Stack, Card, Tabs, Switch, Grid, Collapse, Drawer, Typography, Divider, IconButton } from '@mui/material';
 import { Flex, TinyButton, TextBtn, TabButton, Text, Spacer } from '..';
 import { Close, ExpandMore, Gamepad, AutoStories,Code,RecentActors } from "@mui/icons-material";  
 import { AppStateContext } from "../../hooks/AppStateContext";
@@ -9,6 +9,13 @@ const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   minHeight: '65vh'
 }));
+
+const ListItem = styled(ListItemButton)(({ theme, active }) => ({
+  fontWeight: active ? 500 : 400,
+  color: active ? 'white' :'#222',
+  backgroundColor: !active ? 'white' : theme.palette.primary.main
+}))
+ 
 
 const SectionHead = ({ children }) => {
   return <>
@@ -159,12 +166,12 @@ const ConsoleDrawer = ({ handleSwitch }) => {
       <Divider />
      
      <Grid container sx={{height: '100%'}}>
-        <Grid xs={5} item {...gridProps}>
+        {!!jsonLog?.length && <Grid xs={5} item {...gridProps}>
           <SectionHead>Log</SectionHead>
           <Stack sx={{height: 560, overflow: 'auto'}}>
             {jsonLog?.map((entry, i) => <LogEntry key={i} id={`box${i}`} {...entry} />)}
           </Stack>
-        </Grid>
+        </Grid>}
 
         <Grid xs={4} item {...gridProps}>
           <SectionHead>State variables</SectionHead>
@@ -189,11 +196,23 @@ const ConsoleDrawer = ({ handleSwitch }) => {
             <TabButton label="Events" />
             <TabButton label="Triggers" />
           </Tabs>
-          <Flex baseline sx={{height: 500, p: 2, overflow: 'auto', alignContent: 'flex-start', flexWrap: 'wrap', width: '100%'}}>
-          {triggerNames[evt].map(e => <TextBtn size="small" onClick={() => monitorEvent(e.name)} 
+          <Flex baseline sx={{height: 500, p: 2, overflow: 'auto',
+             alignContent: 'flex-start', flexWrap: 'wrap', width: '100%'}}>
+
+              <List dense>
+                {triggerNames[evt].map(e => <ListItem
+                    onClick={() => monitorEvent(e.name)}
+                   active={ monitoredEvents.indexOf(e.name) > -1 }
+                   key={e.name}> 
+                  <ListItemText primary= {e.name} secondary={e.description}/>
+                </ListItem>)}
+              </List>
+
+          {/* {triggerNames[evt].map(e => <TextBtn size="small" onClick={() => monitorEvent(e.name)} 
           variant={ monitoredEvents.indexOf(e.name) > -1 ? "contained" : "outlined" }
           sx={{ ml: 1, mb: 1,  overflow: 'hidden',   
-              }} key={e.name}>{e.name}</TextBtn>)}
+              }} key={e.name}>{e.name}</TextBtn>)} */}
+
           </Flex>
         </Grid>
      </Grid>

@@ -43,7 +43,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
         return src;
       })
     }
-
+ 
     if (listeners.length) {
       return; 
     }

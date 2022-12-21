@@ -2,7 +2,7 @@ import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
   Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
-import {  Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
+import {  DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
 import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
@@ -27,7 +27,8 @@ const Bar = styled(Box)(({ theme, active, big }) => ({
   transition: 'all 0.2s linear'
 }));
  
-const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDrop, handleClose, handleChange }) => {
+const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, 
+  handleScriptPromote, handleDrop, handleClose, handleChange }) => {
 
   
 
@@ -72,6 +73,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
     setAnchorEl(null)
   } 
 
+  const handleDrawerClose = event => {
+    setPage(1)
+    setSelected({code: ''})
+    setDirty(false)
+    handleClose(event)
+  }
+
   const scriptInsert = data => {
     const target = ref.current;
     if (!target) return alert ('Nope!');
@@ -86,7 +94,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
   }
 
   const editJS = async (js, pageID) =>  {
-    const script = await EditCode(js.code);
+    const script = await EditCode(js.code,  js.name);
     if (!script) return;
     if (script === -1) {
       return handleChange (null, null, js.code, res => setSelected(res), js.name)
@@ -144,7 +152,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
    <Layout big={big}>
     <Flex>
       <Typography variant="subtitle1">
-        <b>Client scripts</b>
+        <b>{targetPage?.PageName || 'Application'} scripts</b>
       </Typography>
 
 
@@ -160,6 +168,15 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
         }}
         />
 
+        {!!selected.ID && !!targetPage?.PageName && <TextBtn variant="contained" 
+          color="warning"
+          onClick={async () => {
+            const ok = await handleScriptPromote(ID);
+            // if (!ok) return;
+            setSelected(c => ({ code: '' }))
+            setDirty(false);
+            
+          }}>promote "{name}"</TextBtn>}  
 
       <Spacer />
 
@@ -183,20 +200,24 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
       >
         <AutoStories />
       </IconButton>
+
       <IconButton disabled>
         <Code />
       </IconButton>
-        <IconButton
-              color="inherit" 
-              onClick={() => {
-                handleSwitch({ scriptOpen: false, stateOpen: 1})
-              }}
-            >
-              <RecentActors />
-            </IconButton>
-      <IconButton  onClick={handleClose}>
+
+      <IconButton
+        color="inherit" 
+        onClick={() => {
+          handleSwitch({ scriptOpen: false, stateOpen: 1})
+        }}
+      >
+        <RecentActors />
+      </IconButton>
+
+      <IconButton  onClick={handleDrawerClose}>
         <Close />
       </IconButton>
+
     </Flex>
     <Divider />
      
@@ -243,7 +264,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, handleDro
             setSelected( {code: ''} ) ;
             setDirty(false)
           }} /> }
-          <TinyButton icon={Delete}  onClick={() => handleDrop && handleDrop(s.ID)} /> 
+                <DeleteConfirmMenu message={`Delete script "${s.name}"?`}    
+        onDelete={e =>  !!e && handleDrop(s.ID, true) } /> 
+           
          </Bar>)}
 
       </Grid>

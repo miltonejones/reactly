@@ -301,6 +301,22 @@ export const useEditor = (apps) => {
     });
   }
 
+  const pasteComponentProps = async (appID, pageID, componentID, type, props) => { 
+    editComponent(appID, pageID, componentID, async (component, sourcePage) => {
+      
+      const settings = component[type]
+          .filter(dead => 
+            !props.find(added =>
+              added.SettingName === dead.SettingName) );
+      const added = settings.concat(props)
+
+      Object.assign(component, {
+        [type]: added
+      }) 
+
+    });
+  }
+
   const importComponent = async (appID, sourceID, destID, componentID) => { 
     editComponent(appID, sourceID, componentID, async (component, sourcePage) => {
       const dressed = getComponent(sourcePage, component);
@@ -345,6 +361,17 @@ export const useEditor = (apps) => {
   const dropPageScript = async (appID, pageID, scriptID) => {
     editPage(appID, pageID, async (page) => { 
       Object.assign(page, { scripts: page.scripts.filter(f => f.ID !== scriptID) }); 
+    });
+  }
+
+  const promotePageScript = async (appID, pageID, scriptID) => {
+    editPage(appID, pageID, async (page, app) => { 
+      const script = page.scripts.find(f => f.ID === scriptID)
+      Object.assign(page, { scripts: page.scripts.filter(f => f.ID !== scriptID) }); 
+      if (!app.scripts) {
+        Object.assign(app, { scripts: []})
+      }
+      app.scripts = app.scripts.concat(script);
     });
   }
 
@@ -558,5 +585,5 @@ export const useEditor = (apps) => {
     dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource, importComponent,
     dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, setComponentCustomName,
     createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  
-    setResourceEvent, dropResourceEvent, setPageParent };
+    setResourceEvent, dropResourceEvent, pasteComponentProps, setPageParent, promotePageScript };
 }

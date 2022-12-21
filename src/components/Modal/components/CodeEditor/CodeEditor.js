@@ -10,7 +10,8 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
 }));
  
-const CodeEditor = ({ onChange, code }) => {
+const CodeEditor = ({ onChange, code, allowEdit }) => {
+ 
   const ref = React.useRef(null)
   const [editMode, setEditMode] = React.useState(false)
   const [js, setJS] = React.useState(code);
@@ -24,7 +25,7 @@ const CodeEditor = ({ onChange, code }) => {
      
      {!editMode  && <Box onClick={() => setEditMode(!editMode)} 
           sx={{ position: 'relative', maxHeight: 460 }}>
-          <IconButton
+        {!!allowEdit &&  <IconButton
             sx={{
               position: 'absolute',
               top: 20,
@@ -32,7 +33,7 @@ const CodeEditor = ({ onChange, code }) => {
             }}
             >
             <Edit />
-          </IconButton>
+          </IconButton>}
           <SyntaxHighlighter language="javascript"  showLineNumbers  customStyle={{ fontSize:  '0.9rem', maxHeight: 400 }}> 
             {js}
           </SyntaxHighlighter>
@@ -51,10 +52,10 @@ const CodeEditor = ({ onChange, code }) => {
             setCode(e.target.value) 
             }} />}
  
-       <Flex onClick={() => setEditMode(!editMode)}>
+       {allowEdit && <Flex onClick={() => setEditMode(!editMode)}>
         <Switch checked={editMode} />
         Edit mode 
-       </Flex>
+       </Flex>}
     </Layout>
   );
 }

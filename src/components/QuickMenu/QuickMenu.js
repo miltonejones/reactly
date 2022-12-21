@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
-import { AU, TinyButton, Tiny, Flex, OptionSwitch, Text } from '..';
+import { AU, TinyButton, TextInput, Tiny, Flex, OptionSwitch, Text } from '..';
 import { ExpandMore, Delete } from "@mui/icons-material";
  
  
@@ -31,8 +31,11 @@ const {
   input,
   icon: LabelIcon,
   onChange ,
-  onOpen
+  onOpen,
+  allowFind,
+  maxItems
 } = props;
+const [filter, setFilter] = React.useState(null);
 const [anchorEl, setAnchorEl] = React.useState(null);
 const open = Boolean(anchorEl) || !!input;
 const handleClick = (event) => {
@@ -58,6 +61,9 @@ const equals = (source, dest) => {
   }
   return false;
 }
+const rows = options?.filter(f => !filter || f.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+const visible = !maxItems ? rows : rows.slice(0, maxItems)
+
 
 return <>
 
@@ -79,22 +85,22 @@ return <>
 {/* menu title  */}
   {!!title && typeof title === 'string' && <Flex sx={{m: t => t.spacing(1,0)}}
     ><Divider textAlign="left" sx={{width: '100%'}}><Typography variant="caption">{title}</Typography></Divider></Flex>}
-
-{/* when only 2 options use a Switch  */}
-  {/* {options?.length === 2 && <Box sx={{m: 2, minWidth: 300}}>
-    <OptionSwitch
-    options={options}
-    value={selected}
-    onChange={handleClose}
-  />
-
-    </Box>}
- */}
+ 
 
 {!options.length && <MenuItem>[empty menu]</MenuItem>}
 
+{!!allowFind && <MenuItem onKeyDown={(e) => e.stopPropagation()}>
+        <TextInput
+        size="small"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+         
+            label={"Filter Options"}
+        />
+    </MenuItem>}
+
 {/* otherwise make a menu item list  */}
-  {options?.map ((option, index) => {
+  {visible?.map ((option, index) => {
     const Icon = icons[index];
     return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
     sx={{fontWeight: equals(selected, option) ? 600 : 400, minWidth: 300}}
@@ -102,6 +108,10 @@ return <>
       option
     }</MenuItem>
   })} 
+ 
+{ !!options.length && !!allowFind && !filter && <MenuItem>
+ <Text small active> {options?.length - visible?.length} more...</Text>
+</MenuItem>}
 
 
 </MenuComponent>
