@@ -79,7 +79,7 @@ export const useTextTransform = () => {
         parameters[parameterKey] = routeProp[i]
       } );
        
-      console.log ({ routeProp, parameters })
+      // console.log ({ routeProp, parameters })
 
       return parameters; 
     }

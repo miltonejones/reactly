@@ -1131,16 +1131,17 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
   };
 
   const handleButtonClick = (event) => {
-    if (selectedPage.parameters && 
+    if (selectedPage?.parameters && 
         Object.keys(selectedPage.parameters).length) {
       return handlePopoverClick(event);
-    }
+    } 
     window.open(value)
   }
 
 
   const openPage = () => {
     const path = [value, Object.values(selectedPage?.parameters).join('/')].join('/'); 
+    alert(path)
     window.open(path)
     handlePopoverClose ()
   }

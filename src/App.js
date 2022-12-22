@@ -272,7 +272,12 @@ function RenderComponent({ preview, component: Component, ...props}) {
    }
 
   const appContext = applicationData?.find(f => f.path === appname);
-  const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : appContext?.pages?.[0];
+  const homePageID =  appContext?.HomePage;
+  const defaultPage = !homePageID
+   ? appContext?.pages?.[0]
+   : appContext?.pages?.find(f => f.ID === homePageID) ;
+
+  const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : defaultPage;
    
   const selectedPage = (preview && (!pagename || !!queryState.page))  ? queryState.page : targetPage;
 
