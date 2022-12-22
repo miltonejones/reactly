@@ -36,14 +36,28 @@ const RunScript = ({ event = {}, page, application, handleSave }) => {
   const handleEdit = React.useCallback(ID => {
     const script = scriptList.find(s => s.ID === ID)
     if (script) {
-      EditCode(script.code, script.name)
+      EditCode(script.code, script.name, 1)
     }
   }, [scriptList])
 
   if (!application) {
     return <>Could not connect to application</>
   }
+/**
+ * function setImageList (page, options) {
+  const { state, setState, data } = options; 
+  const image_list = data.records
+  .filter(f => !!f.TrackCount)
+  .map(i => ({
+    src: i.imageLg,
+    text: i.Name,
+    subtext: `${i.TrackCount} tracks in your library`
+  })).filter(f => !!f.src )
+  console.log(data)
+  setState(s => ({...s, image_list}));
+}
 
+ */
   
   // const getApplicationScripts = () => {
   //   return application.pages.reduce((out, pg) => {

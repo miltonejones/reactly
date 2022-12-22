@@ -50,6 +50,7 @@
 }
 
 .scroll-head .text { 
+  mix-blend-mode: difference;
   position: absolute;
   top: 360px;
   left: 30px;

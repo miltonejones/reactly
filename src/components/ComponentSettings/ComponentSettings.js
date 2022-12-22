@@ -333,7 +333,7 @@ export const ComponentInputBody = (props) => {
           renderOption={renderOption} 
           options={typeList}  
           value={value} 
-          label={value || <Text small><em>set {title} value</em></Text>}
+          label={value || <Text small>set {title} value</Text>}
           onChange={handleChange} />
 
         {!!colorProp && <Pill round backgroundColor={attempt(value)} />} 
@@ -379,7 +379,7 @@ export const ComponentInputBody = (props) => {
     onChange={e => handleChange(e.target.value)} 
     size="small" 
     value={attempt(value)} 
-    label={usePrompt ? <Text small><em>Set {title}</em></Text> : ''}
+    label={usePrompt ? <Text small>Set {title}</Text> : ''}
     placeholder={title}
   />
  

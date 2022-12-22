@@ -2,7 +2,8 @@ import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField, Collapse,
   Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
-import { CodePane, DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
+import { CodePane, DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, 
+    Text, TextBox, QuickMenu, SearchBox, PillMenu } from '..';
 import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, ExpandMore, NodeAdd,
   Remove, AutoStories, MoreVert, CreateNewFolder, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput, PopoverPrompt } from '../Control/Control';
@@ -152,6 +153,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
   const ref = React.useRef(null)
   const [css, setCss] = React.useState(localStorage.getItem('js-theme'));
+  const [font, setFont] = React.useState(localStorage.getItem('js-font') || 'med');
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const [assist, setAssist] = React.useState('')
@@ -440,6 +442,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
               onMouseDown={e => { 
                 !!assist && scriptInsert(assist)
               }}
+              font={font}
               css={css}
               externalRef={ref}
               onCodeChange={value => { 
@@ -449,8 +452,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
               className={
                 ['javascript', big ? 'big' : ''].join(' ')
               }
-              code={code}>
-
+              code={code}> 
             </CodePane>
 {/* 
           <SyntaxHighlighter language="javascript" 
@@ -498,16 +500,28 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
         <QuickMenu options={styleNames} small label={<TextBtn endIcon={<MoreVert />}>
           {spaces(css? `Theme: ${css}` : "Theme")}
+
         </TextBtn>} value={css} onChange={e => !!e && (() => {
           setCss(e)
           localStorage.setItem('js-theme', e)
         })()} />
 
+
         {!!error && <Alert severity="error">{error}</Alert>}
-       <QuickMenu options={api} onChange={scriptInsert} 
-          value={assist} label={<TextBtn endIcon={<Help />}>{assist || 'methods'}</TextBtn>}/>
+
+
+        <QuickMenu options={api} onChange={scriptInsert} 
+            value={assist} label={<TextBtn endIcon={<Help />}>{assist || 'methods'}</TextBtn>}/>
       
-          <Spacer />
+        <Text small>Font size</Text>
+        <PillMenu options={['sm','med','lg']} value={font} onChange={e => {
+          setFont(e);
+          localStorage.setItem('js-font', e)
+        }} />
+
+        <Spacer />
+
+
           <TextBtn onClick={() => {
           setSelected( {code: ''} )
         }}  > 

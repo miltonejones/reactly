@@ -15,12 +15,18 @@ const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(0)
 }));
  
-const CodePane = ({ code,  onCodeChange, style, css, externalRef, ...props }) => {
+const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props }) => {
   const syntaxRef = React.useRef(null) 
   const [bs, setBS] = React.useState(code);
   const [showLineNumbers, setShowLineNumbers] = React.useState(true);
   const args = {
     ref: externalRef || syntaxRef
+  }
+
+  const fontSizes = {
+    sm: '0.8em',
+    med: '0.9em',
+    lg: '1em'
   }
 
   const theme = stylenames[css] || coyWithoutShadows;
@@ -51,7 +57,7 @@ const CodePane = ({ code,  onCodeChange, style, css, externalRef, ...props }) =>
               console.log(e.message)
             }
          }} 
-          customStyle={{  minHeight: 400, ...style }}> 
+          customStyle={{  minHeight: 400,  fontSize: fontSizes[font], ...style }}> 
          {code}
        </SyntaxHighlighter>)}
 

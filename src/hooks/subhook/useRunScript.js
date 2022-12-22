@@ -151,6 +151,11 @@ const handleScriptRequest =  (block, opts, title) => {
     return executeScript(scr.ID, options, execResourceByName)
   }
 
+  const shuffle = unshuffled => unshuffled
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+
   const executeScript = async (scriptID, options, execResourceByName) => {
 
 
@@ -187,7 +192,7 @@ const handleScriptRequest =  (block, opts, title) => {
         getRefByName, 
         execRefByName: (name, fn) => execRefByName(name, fn, scr.name),
         shout,
-
+        shuffle,
         getResourceByName ,
         execResourceByName,
 

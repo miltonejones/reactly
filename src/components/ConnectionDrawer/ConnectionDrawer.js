@@ -15,8 +15,10 @@ import { AppStateContext } from "../../hooks/AppStateContext";
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
-  minHeight: '50vh'
+  minHeight: '60vh'
 }));
+
+const sx = { height: 480, overflowY: 'auto', overflowX: 'hidden' }
  
   
 const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
@@ -173,7 +175,7 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
     <JsonModal json={resource} />
     <Typography sx={{pl: 1}} variant="caption"><b>Configure Resource</b></Typography>
     <Divider  sx={{mb: 2}}/>
-    <Box sx={{height: 400, overflowX: 'hidden', overflowY: 'auto', width: 'calc(100% - 1rem)'}}>
+    <Box sx={{...sx, width: 'calc(100% - 1rem)'}}>
 
     <Box sx={{mr: 1, ml: 1}}>
 
@@ -397,6 +399,23 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
   const dot = path.join('.');
   const fields = resource.columns;
 
+    if (Array.isArray(nodes)) {
+      return <>
+
+      {/* <Text small onClick={() => {
+        onAddProp(node, dot);
+      }} sx={{ml: indent}} key={node}
+      > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node} !!</Text> */}
+
+      <ConnectionTree resource={resource} fields={fields} onAddProp={onAddProp}  
+          path={path} nodes={nodes[0]} indent={indent} /> 
+      <Divider />
+    </>
+    }
+
+
+
+
   return <>  
       {Object.keys(nodes).map(node => { 
 
@@ -405,7 +424,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
             <Text small onClick={() => {
               onAddProp(node, dot);
             }} sx={{ml: indent}} key={node}
-            > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node} </Text>
+            > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node} !!</Text>
             <ConnectionTree resource={resource} fields={fields} onAddProp={onAddProp}  
                 path={path.concat(node)} nodes={nodes[node][0]} indent={indent + 4} /> 
             <Divider />
@@ -469,8 +488,12 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
       headers: { 'Content-Type': 'application/json' },
     }; 
 
+    const suffix = typeof qs === 'string' && !!qs?.length
+      ? `${slash}${qs}`
+      : ''
 
-    const endpoint = isGetRequest ? `${url}${slash}${qs}` : url;
+
+    const endpoint = isGetRequest ? `${url}${suffix}` : url;
 
     const response = await fetch(endpoint, requestOptions); 
 
@@ -614,6 +637,11 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
       description: 'Data starts loading.'
     }, 
   ]
+
+  const columnLabel = (node, col) => {
+    if (!node) return col;
+    return `${node}.${col}`
+  }
   
 
  return (
@@ -672,7 +700,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         <Typography sx={{pl: 1}} variant="caption">
           <b>Connections</b></Typography>
         <Divider  sx={{mb: 2}}/>
-        <Box sx={{height: 400, overflow: 'auto'}}>
+        <Box sx={{...sx}}>
 
           {connections.map (connection => <ConnectionNode 
                 resources={resources} 
@@ -725,7 +753,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         {!!answer && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Choose columns</b></Typography>
           <Divider  sx={{mb: 2}}/>
-          <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
+          <Box sx={{...sx, pl: 2}}>
           <ConnectionTree 
             resource={selected}
             onAddProp={addProp} nodes={answer} />
@@ -735,12 +763,12 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         {!!selected.columns && isGetRequest && <Grid item xs={2} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Selected columns</b></Typography>
           <Divider  sx={{mb: 2}}/>
-          <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
+          <Box sx={{...sx, pl: 2}}>
             {selected.columns.map(col => <Text small key={col}>
-              <Check on /> {selected.node}.{col}
+              <Check on /> {columnLabel(selected.node, col)} 
               <Spacer />
 
-          <DeleteConfirmMenu small message={`Remove column "${selected.node}.${col}"?`} 
+          <DeleteConfirmMenu small message={`Remove column "${columnLabel(selected.node, col)}"?`} 
             onDelete={(e) => !!e &&  addProp(col, selected.node)}   /> 
 
               {/* <Tiny onClick={() => addProp(col, selected.node)} icon={Close} /> */}
@@ -752,7 +780,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
             sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Request Body</b></Typography>
           <Divider  sx={{mb: 2}}/>
-          <Box sx={{height: 400, overflow: 'auto', pr: 2, pl: 2}}>
+          <Box sx={{...sx, pr: 2, pl: 2}}>
             <Flex onClick={() => setUseClient(!useClient)}>
               <Text small>
               Use client variable
@@ -795,7 +823,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
         {!answer && !!selected?.name && !!selectedPage && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Events</b></Typography>
           <Divider  sx={{mb: 2}}/>
-          <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
+          <Box sx={{...sx, pl: 2}}>
             <ComponentEvents 
             onChange={(id, event) => {
               onEventChange(id, event, 'connection')

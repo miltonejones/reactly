@@ -138,7 +138,11 @@ export const usePageContext = () => {
 
     const isGetRequest = method === "GET";
 
-    const endpoint = isGetRequest ? `${url}${delimiter}${querystring}` : url;
+    const suffix = typeof querystring === 'string' && !!querystring?.length
+      ? `${delimiter}${querystring}`
+      : ''
+
+    const endpoint = isGetRequest ? `${url}${suffix}` : url;
 
     if (listening("executeComponentRequest")) {
       await hello({ endpoint, connection, path, querystring });
@@ -243,7 +247,7 @@ export const usePageContext = () => {
 
     // await Alert (<pre>{JSON.stringify(terms,0,2)}</pre>);
 
-    if (resource.method === "GET") {
+    if (resource.method === "GET" && !!terms) {
       // build query string from trigger params
       querystring = Object.keys(terms)
         .filter(f => !!terms[f])
@@ -498,6 +502,10 @@ export const usePageContext = () => {
             (f) => f.ID === trigger.action.target
           );
 
+          if (!resource) {
+            return Alert(`No resource was found for ${trigger.action.target}`)
+          }
+
           // set state source to read values from
           const clientState = !pageClientState ? stateProps : pageClientState;
 
@@ -511,7 +519,8 @@ export const usePageContext = () => {
             name: resource.name ,
             records: []
           };
-      
+       
+
           if (!pageResourceState) {
             setPageResourceState([datum]);
           } else {
@@ -552,7 +561,7 @@ export const usePageContext = () => {
           // validate querystring if there is one
           // TODO: make this its own method
 
-          if (resource.method === "GET") {
+          if (resource.method === "GET" && !!trigger.action.terms) {
             const valid = Object.keys(trigger.action.terms).reduce(
               (ok, term) => {
                 const property = getProp(trigger.action.terms[term]);
