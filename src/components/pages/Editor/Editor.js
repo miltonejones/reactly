@@ -611,7 +611,7 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handlePageNavigate = name => {
-    const clickedPage = appData.pages.find((f) => f.PageName === name);
+    const clickedPage = !!name && appData.pages.find((f) => f.PageName === name);
     if (!clickedPage) return navigate(`/edit/${appData.path}`);
         setPageError(null)
     navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
@@ -678,30 +678,27 @@ const Editor = ({ applications: apps = {} }) => {
   const componentType = Library[queryState.selectedComponent?.ComponentType];
 
   const recurse = (page, selected, open = false) => { 
-
-    console.log ({ selected })
+ 
 
     if (!selected) {
-      return false;
+      return open;
     }
     
     const parents = page?.components.filter(f => f.ID === selected.componentID);
-
-    console.log ({ parents, page: page.components })
+ 
 
     if (parents?.length) {
-      const out = parents.map(kid => {
-
-        const type = Library[kid.ComponentType];
-        return recurse(page, kid, open || type?.modal )
+      const out = parents.map(kid => { 
+        return recurse(page, kid, open || kid.ComponentType === 'Drawer' )
       }) 
       const ok = out.some(f => !!f);
       return ok
     }
-    return open;
+    
+    return open || page.ComponentType === 'Drawer';
   }
   
-
+  const isInApplicationScope = !!componentParent.Name
   const parentOpen = recurse(componentParent, queryState.selectedComponent) ; 
 
 
@@ -754,7 +751,7 @@ const Editor = ({ applications: apps = {} }) => {
   
                <Stack>
                   <RotateButton
-                    deg={collapsed.left ? 270 : 90}
+                    deg={!parentOpen ? 270 : 90}
                     onClick={() =>
                       setCollapsed((s) => ({ ...s, left: !collapsed.left }))
                     }
@@ -902,7 +899,9 @@ const Editor = ({ applications: apps = {} }) => {
                 <ArrowBack />
               </IconButton>
 
-              <Chip color="primary" variant="outlined" label={<b>{appData.Name}</b>} />
+              <Chip color="primary" 
+                onClick={() => handlePageNavigate()}
+                variant={isInApplicationScope ? "outlined" : "filled" } label={<b>{appData.Name}</b>} />
 
               <Flex nowrap>
                 <QuickMenu
@@ -1094,6 +1093,7 @@ const Editor = ({ applications: apps = {} }) => {
         resources={appData.resources}
         onEventChange={handleEventChange}
         onEventDelete={handledEventDelete}
+        onStateChange={handleStateChange}
         open={connectOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, connectOpen: false }));

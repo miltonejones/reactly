@@ -1,6 +1,28 @@
 const fs = require('fs');
 const data = require ('./data.js')
 
+
+function camelize(str) {
+  return  camelize2(str
+      .replace('.min.js', '')
+      .replace(/\./g, '')
+      )
+      .replace(/-/g, '')
+}
+
+function camelize2(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+    return index === 0 ? word.toLowerCase() : word.toUpperCase();
+  }).replace(/\s+/g, '');
+}
+
+
+ const filenames = fs.readdirSync('node_modules/react-syntax-highlighter/dist/esm/styles/prism');
+const all = filenames.filter(d => d.indexOf('min.js') > 0).map(camelize);//.join(', ');
+const line = `import {${all}} from 'react-syntax-highlighter/dist/esm/styles/prism'`
+const lihe = `const stylenames = {${all}}`
+  
+console.log (all)
 /**
 connection endpoints
 ------------------------------------------------------------------

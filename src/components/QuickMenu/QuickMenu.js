@@ -5,13 +5,13 @@ import { AU, TinyButton, TextInput, Tiny, Flex, OptionSwitch, Text } from '..';
 import { ExpandMore, Delete } from "@mui/icons-material";
  
  
-export const DeleteConfirmMenu = ({message, hidden, 
+export const DeleteConfirmMenu = ({message, hidden, small,
   title="Confirm Delete",
   subtitle="This action cannot be undone.",
-  onDelete, ...props}) => <QuickMenu 
+  onDelete, ...props}) => <QuickMenu  small
   { ...props}
   title={title}
-  options={[<Stack sx={{ lineHeight: 1 }}>
+  options={[<Stack sx={small ? {} : { lineHeight: 1 }}>
     <Text>{message}</Text>
     <Text error active small>{subtitle}</Text>
   </Stack>]} 

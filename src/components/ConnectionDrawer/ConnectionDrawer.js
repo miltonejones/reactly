@@ -131,7 +131,7 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
   </>
 }
 
-const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
+const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
     onTermDrop, onTermAdd, onChange, setDirty, resourceCommit }) => {
 
   const { ID, connectionID, name, path, format, method, values, columns, transform, node } = resource;
@@ -166,21 +166,25 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
     }
   }, [scriptList])
 
-  const isGetRequest = method === 'GET';
+  const isGetRequest = method === 'GET' ||  method === 'DELETE';
 
   return <>
 
     <JsonModal json={resource} />
     <Typography sx={{pl: 1}} variant="caption"><b>Configure Resource</b></Typography>
     <Divider  sx={{mb: 2}}/>
-    <Box sx={{mr: 2, ml: 2}}>
+    <Box sx={{height: 400, overflowX: 'hidden', overflowY: 'auto', width: 'calc(100% - 1rem)'}}>
+
+    <Box sx={{mr: 1, ml: 1}}>
 
         <Grid container spacing={1}>  
           <Grid item xs={6}>
-            <TextField label="Name" fullWidth onChange={handleChange('name')} value={name} size="small" />
+            <Text small>Name</Text>
+            <TextField placeholder="Resource name" fullWidth onChange={handleChange('name')} value={name} size="small" />
           </Grid> 
           <Grid item xs={6}>
-            <TextField label="Path" fullWidth onChange={handleChange('path')} value={path} size="small" />
+            <Text small>Path</Text>
+            <TextField placeholder="Resource path" fullWidth onChange={handleChange('path')} value={path} size="small" />
           </Grid>
 
           <Grid item xs={4}  >     
@@ -192,11 +196,14 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
           </Grid>
            
           {isGetRequest && <Grid item xs={7}>
-              
- 
-              <PillMenu options={['rest', 'querystring']} 
-              onChange={handleChange('format')} value={format} /> 
+              <Flex fullHeight>
+                <Spacer />
+                <Text small>Format</Text>
+  
+                <PillMenu options={['rest', 'querystring']} 
+                onChange={handleChange('format')} value={format} /> 
              
+              </Flex>
           </Grid> }
 
           <Grid item xs={isGetRequest ? 1 : 8}>
@@ -232,11 +239,10 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
            
           <Grid item xs={12}>     
             <Collapse in={showTransform || !!transform}>
-
+              <Divider sx={{mb: 1}} />
               <Flex  sx={{mb: 2}}>
-                  <Tiny icon={Code} />
-                  
-              <Text active small>Transform {isGetRequest ? "incoming data" : "outgoing request"}</Text>
+                <Tiny icon={Code} /> 
+                <Text active small>Transform {isGetRequest ? "incoming data" : "outgoing request"}</Text>
               </Flex>
                
                <Flex fullWidth >
@@ -261,7 +267,7 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
         </Grid>
 
       </Box>
-      
+       
 
       <Flex sx={{pl: 1, pr: 1, mt: 2}}>
 
@@ -321,46 +327,58 @@ const ResourceForm = ({ setAnswer, answer, dirty, resource, terms, setTerms, onP
         {isGetRequest && values?.map(prop => <>
 
           <Grid item xs={2}>
-<Flex fullHeight>
-  <PopoverPrompt 
-  small
-  value={terms[prop.key]}
-  component={Text}
-  onChange={e => {
-    setTerms(s => ({...s, [prop.key]: e}));
-    setDirty(true)
-  }} 
-  label={<>Set value for "{prop.key}"</>}
-  
->{prop.key}</PopoverPrompt>
-</Flex>
+              <Flex fullHeight>
+
+                <PopoverPrompt 
+                  small
+                  value={terms[prop.key]}
+                  component={Text}
+                  onChange={e => {
+                    setTerms(s => ({...s, [prop.key]: e}));
+                    setDirty(true)
+                  }} 
+                  label={<>Set value for "{prop.key}"</>} 
+                >{prop.key}</PopoverPrompt>
+
+              </Flex>
           </Grid>
-          <Grid item xs={8}>
-<Flex fullHeight>
-  <Text small active>
-{terms[prop.key]} 
-  </Text>
 
-</Flex>
-            {/* <TextField placeholder={`Enter ${prop.key} value`}  value={terms[prop.key]} 
-            autoComplete="off"
-              onChange={e => {
-                setTerms(s => ({...s, [prop.key]: e.target.value}));
-                setDirty(true)
-              }}
-            size="small" /> */}
-
-
+          <Grid item xs={6}>
+            <Flex fullHeight>
+              <Text small active>
+                  {terms[prop.key]} 
+              </Text> 
+            </Flex>  
           </Grid>
+
           <Grid item xs={1}>
-            <Box onClick={() => onTermDrop(prop.key)}>
-            <Tiny sx={{mt: 2}} icon={Close} />
-            </Box>
+
+          <DeleteConfirmMenu message={`Remove term "${prop.key}"?`} 
+            onDelete={(e) => !!e && onTermDrop && onTermDrop(prop.key)}   /> 
+          </Grid>
+
+          <Grid item xs={3}>
+            <PopoverPrompt 
+              small
+              value={prop.key}
+              component={TinyButton}
+              icon={Add}
+              onChange={e => {
+                !!e && onStateChange(null, e, terms[prop.key],
+                    isNaN(terms[prop.key]) ? 'string' : 'number'
+                  )
+                alert (e)
+              }} 
+              label={<>Create a client variable for "{prop.key}"</>} 
+             />
+
           </Grid>
 
         </>)}
       </Grid>}  
 
+    </Box>
+    
       <PopoverInput label="Add a query string value" 
         onChange={value => {
       if (!value) return handleAliasClose();   
@@ -412,7 +430,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
 const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     resources = [], connections = [], appID, handleDrop, selectedPage,
     setConnection, dropConnection, handleClose, handleChange ,
-    onEventChange, onEventDelete, application}) => {
+    onEventChange, onEventDelete, application, onStateChange}) => {
   // const { setResource } = useEditor()
   const [selected, setSelected] = React.useState({})
   const [selectedConnection, setSelectedConnection] = React.useState({})
@@ -686,8 +704,9 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
               onChange={handleSelectedConnectionChange}/>
         </Grid>}
 
-        {!!selected?.name && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+        {!!selected?.name && <Grid item xs={isGetRequest ? 4 : 3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <ResourceForm 
+          onStateChange={onStateChange}
             setDirty={setDirty}
             dirty={dirty}
             answer={answer}
@@ -713,14 +732,18 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
           </Box>
         </Grid>}
 
-        {!!selected.columns && isGetRequest && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+        {!!selected.columns && isGetRequest && <Grid item xs={2} sx={{borderRight: 1, borderColor: 'divider'}}>
           <Typography sx={{pl: 1}} variant="caption"><b>Selected columns</b></Typography>
           <Divider  sx={{mb: 2}}/>
           <Box sx={{height: 400, overflow: 'auto', pl: 2}}>
             {selected.columns.map(col => <Text small key={col}>
               <Check on /> {selected.node}.{col}
               <Spacer />
-              <Tiny onClick={() => addProp(col, selected.node)} icon={Close} />
+
+          <DeleteConfirmMenu small message={`Remove column "${selected.node}.${col}"?`} 
+            onDelete={(e) => !!e &&  addProp(col, selected.node)}   /> 
+
+              {/* <Tiny onClick={() => addProp(col, selected.node)} icon={Close} /> */}
             </Text>)}
           </Box>
         </Grid>} 

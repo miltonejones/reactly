@@ -14,6 +14,7 @@ import ComponentEvents from "./ComponentEvents/ComponentEvents";
 import PillMenu, { Pill } from "./PillMenu/PillMenu";
 import ConnectionDrawer from "./ConnectionDrawer/ConnectionDrawer";
 import StateDrawer from "./StateDrawer/StateDrawer";
+import CodePane from "./CodePane/CodePane";
 import ScriptDrawer from "./ScriptDrawer/ScriptDrawer";
 import ApplicationTree from "./ApplicationTree/ApplicationTree";
 import ApplicationForm from "./ApplicationForm/ApplicationForm";
@@ -29,6 +30,7 @@ const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'd
 export {
   AU,
   Area,
+  CodePane,
   ChipBox,
   TabButton,
   LibraryTree,

@@ -4,6 +4,7 @@ import { Flex, TinyButton, TextBtn, TabButton, Text, Spacer } from '..';
 import { Close, ExpandMore, Gamepad, AutoStories,Code,RecentActors } from "@mui/icons-material";  
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { JsonView } from "../../colorize";
+import { useTextTransform } from '../../hooks/useTextTransform';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -82,7 +83,9 @@ const ConsoleDrawer = ({ handleSwitch }) => {
     setMonitoredEvents,
   } = React.useContext(AppStateContext);
   const [tab, setTab] = React.useState(0)
-  const [evt, setEvent] = React.useState(0)
+  const [evt, setEvent] = React.useState(0);
+
+  const { getParametersInScope } = useTextTransform()
 
   const gridProps = {
     // xs={3} sx={}
@@ -95,7 +98,8 @@ const ConsoleDrawer = ({ handleSwitch }) => {
 
   const states = [
     pageClientState,
-    applicationClientState
+    applicationClientState,
+    getParametersInScope()
   ]
 
   const triggerTypes = ['methodCall','setState','modalOpen','dataReset',
@@ -123,7 +127,10 @@ const ConsoleDrawer = ({ handleSwitch }) => {
         </Flex>
         <Spacer />
 
-        
+          <Text small>
+
+        {window.location.href}
+          </Text>
           <IconButton  disabled>
             <Gamepad />
           </IconButton>
@@ -180,6 +187,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
          <Tabs value={tab} sx={{minHeight: 24, ml: 1, mb: 0 }} onChange={handleChange(setTab)}>
             <TabButton label="Page" />
             <TabButton label="Application" />
+            <TabButton label="Route parameters" />
           </Tabs>
          </Flex>
           <Box sx={{height: 500, p: 2, overflow: 'auto'}}>
@@ -196,10 +204,10 @@ const ConsoleDrawer = ({ handleSwitch }) => {
             <TabButton label="Events" />
             <TabButton label="Triggers" />
           </Tabs>
-          <Flex baseline sx={{height: 500, p: 2, overflow: 'auto',
+          <Flex baseline fullWidth sx={{height: 500, p: 2, overflow: 'auto',
              alignContent: 'flex-start', flexWrap: 'wrap', width: '100%'}}>
 
-              <List dense>
+              <List dense sx={{width: '100%'}}>
                 {triggerNames[evt].map(e => <ListItem
                     onClick={() => monitorEvent(e.name)}
                    active={ monitoredEvents.indexOf(e.name) > -1 }

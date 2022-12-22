@@ -2,8 +2,8 @@ import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
   Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
-import {  DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
-import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
+import { CodePane, DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
+import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -31,9 +31,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   handleScriptPromote, handleDrop, handleClose, handleChange }) => {
 
   
-
+    
 
   const ref = React.useRef(null)
+  const [css, setCss] = React.useState(localStorage.getItem('js-theme'));
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const [assist, setAssist] = React.useState('')
@@ -58,11 +59,11 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   const setCode = text => {
      try {
        eval(text);
-       setError('')
+       setError('') 
      } catch (ex) {
        setError(ex.message)
      }
-       setSelected(s => ({...s, code: text }))
+     setSelected(s => ({...s, code: text }))
   }
 
   const handleAliasOpen = event => {
@@ -82,15 +83,18 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
   const scriptInsert = data => {
     const target = ref.current;
+    setAssist('')
     if (!target) return alert ('Nope!');
-    
-    if (target.setRangeText) {
-        //if setRangeText function is supported by current browser
-        target.setRangeText(data)
-    } else {
-        target.focus()
-        document.execCommand('insertText', false /*no UI*/, data);
-    }
+    setTimeout(() => {
+
+      if (target.setRangeText) {
+          //if setRangeText function is supported by current browser
+          target.setRangeText(data) 
+      } else {
+          target.focus()
+          document.execCommand('insertText', false /*no UI*/, data); 
+      }
+    }, 1299)
   }
 
   const editJS = async (js, pageID) =>  {
@@ -105,6 +109,8 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
    
   }
 
+  const spaces = s => s.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1")
+ 
   const scriptMenu = application.pages?.filter(f => f.ID !== targetPage?.ID)
     .reduce ((items, page) => {
     !!page.scripts?.length && items.push({
@@ -273,9 +279,8 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
       <Grid item xs={big ? 9 : 6}> 
 
-      {!editMode  && <Box onClick={() => setEditMode(!editMode)} 
-          sx={{ position: 'relative' }}>
-          <IconButton
+      {!editMode  && <Box sx={{ position: 'relative' }}>
+          {/* <IconButton
             sx={{
               position: 'absolute',
               top: 20,
@@ -283,15 +288,30 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
             }}
             >
             <Edit />
-          </IconButton>
+          </IconButton> */}
+ 
+            <CodePane  
+              onMouseDown={e => { 
+                !!assist && scriptInsert(assist)
+              }}
+              css={css}
+              externalRef={ref}
+              onCodeChange={value => { 
+                setCode(value)
+                setDirty(true);
+              }}
+              className={
+                ['javascript', big ? 'big' : ''].join(' ')
+              }
+              code={code}>
 
+            </CodePane>
+{/* 
           <SyntaxHighlighter language="javascript" 
-          className={
-            ['javascript', big ? 'big' : ''].join(' ')
-          }
+       
           showLineNumbers  customStyle={{ fontSize:  '0.95rem' }}> 
             {code}
-          </SyntaxHighlighter>
+          </SyntaxHighlighter> */}
 
           {/* <Highlight style={{fontSize:  '0.7rem'}} className={
             ['javascript', big ? 'big' : ''].join(' ')
@@ -301,7 +321,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
         </Box>}
 
         {!!editMode  && <TextBox 
-        ref={ref}
+        
+          onKeyUp={e => {
+            console.log ({ e });
+            if (!e) return;
+            const pos = getCursorPos(e);
+            console.log ({ pos })
+          }}
           value={code} 
           disabled={!name}
           multiline
@@ -314,7 +340,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
         <Flex>
        
-        <FormControlLabel 
+        {/* <FormControlLabel 
           label="Edit Mode"
           control={   <Switch  size="small"
             checked={editMode}
@@ -322,16 +348,19 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
                setEditMode( e.target.checked)
             }} 
           /> }
-        />
+        /> */}
 
+        <QuickMenu options={styleNames} small label={<TextBtn endIcon={<MoreVert />}>
+          {spaces(css? `Theme: ${css}` : "Theme")}
+        </TextBtn>} value={css} onChange={e => !!e && (() => {
+          setCss(e)
+          localStorage.setItem('js-theme', e)
+        })()} />
 
         {!!error && <Alert severity="error">{error}</Alert>}
-       <QuickMenu options={api} onChange={v => window.prompt(v,v)} 
-          value={assist} label={assist || 'methods'}/>
-          {/*  {!!assist && <TextBtn onChange={() => {
-            scriptInsert(assist);
-            setAssist('')
-          }}>add</TextBtn>} */}
+       <QuickMenu options={api} onChange={scriptInsert} 
+          value={assist} label={<TextBtn endIcon={<Help />}>{assist || 'methods'}</TextBtn>}/>
+      
           <Spacer />
           <TextBtn onClick={() => {
           setSelected( {code: ''} )
@@ -387,3 +416,78 @@ function camelize(str) {
   }).replace(/\s+/g, '');
 }
 
+const styleNames = [   'a11yDark',
+'atomDark',
+'base16Ateliersulphurpoollight',
+'cb',
+'coldarkCold',
+'coldarkDark',
+'coyWithoutShadows',
+'coy',
+'darcula',
+'dark',
+'dracula',
+'duotoneDark',
+'duotoneEarth',
+'duotoneForest',
+'duotoneLight',
+'duotoneSea',
+'duotoneSpace',
+'funky',
+'ghcolors',
+'gruvboxDark',
+'gruvboxLight',
+'holiTheme',
+'hopscotch',
+'lucario',
+'materialDark',
+'materialLight',
+'materialOceanic',
+'nightOwl',
+'nord',
+'okaidia',
+'oneDark',
+'oneLight',
+'pojoaque',
+'prism',
+'shadesOfPurple',
+'solarizedDarkAtom',
+'solarizedlight',
+'synthwave84',
+'tomorrow',
+'twilight',
+'vs',
+'vscDarkPlus',
+'xonokai',
+'zTouch'
+]
+
+function getCursorPos(input) {
+  if ("selectionStart" in input && document.activeElement == input) {
+      return {
+          start: input.selectionStart,
+          end: input.selectionEnd
+      };
+  }
+  else if (input.createTextRange) {
+      var sel = document.selection.createRange();
+      if (sel.parentElement() === input) {
+          var rng = input.createTextRange();
+          rng.moveToBookmark(sel.getBookmark());
+          for (var len = 0;
+                   rng.compareEndPoints("EndToStart", rng) > 0;
+                   rng.moveEnd("character", -1)) {
+              len++;
+          }
+          rng.setEndPoint("StartToStart", input.createTextRange());
+          for (var pos = { start: 0, end: len };
+                   rng.compareEndPoints("EndToStart", rng) > 0;
+                   rng.moveEnd("character", -1)) {
+              pos.start++;
+              pos.end++;
+          }
+          return pos;
+      }
+  }
+  return -1;
+}
