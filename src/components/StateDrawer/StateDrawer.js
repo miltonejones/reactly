@@ -29,7 +29,15 @@ export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }
   }}  />
 }
  
-const StateDrawer = ({open, state = [], handleClose, handleSwitch, handleChange, handleDrop }) => {
+const StateDrawer = ({
+  open, 
+  state = [], 
+  handleClose, 
+  handleSwitch, 
+  handleChange, 
+  handleDrop 
+}) => {
+
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const args = {

@@ -1,35 +1,152 @@
 import React from 'react';
 import Highlight from 'react-highlight'
-import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField,
+import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField, Collapse,
   Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
 import { CodePane, DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, Text, TextBox, QuickMenu, SearchBox } from '..';
-import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, AutoStories, MoreVert, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
-import { PopoverInput } from '../Control/Control';
+import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, ExpandMore, NodeAdd,
+  Remove, AutoStories, MoreVert, CreateNewFolder, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
+import { PopoverInput, PopoverPrompt } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { ScriptLine, Bar } from './components';
  
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
   minHeight: big ? '90vh' : '40vh',
   transition: 'all 0.2s linear'
 }));
+  
+
+const ScriptFolderTree = (props) => {
+  const {  
+    scripts,
+    parentID,
+    big,
+    activeID,
+    indent = 0,
+    dirty,
+    onFolderMove,
+    setDirty,
+    folderList,
+    setSelected,
+    handleChange ,
+    handleDrop ,
+    createScriptFolder,
+    expanded,
+    setExpanded
+  } = props;
+
+
+  const [hide, setHidden] = React.useState(true);
+
+    const currentNode = scripts.find(f =>  f.ID === parentID);
+
+    if (!currentNode) return <Box><b>No current node with ID {parentID}</b></Box>
+
+    const folders = scripts?.filter(f => !f.code && f.parentID === parentID);
+    const files = scripts?.filter(f => !!f.code && f.parentID === parentID);
+
+
+    return <>
+
+        <Bar indent={indent}  big={big}
+        onMouseEnter={() => setHidden(false)}
+        onMouseLeave={() => setHidden(true)}
+    >
+          <Flex onClick={() => {
+              setExpanded(s =>  ({
+                ...s,
+                [currentNode.ID]: !s[currentNode.ID]
+              }))
+            }}>
+
+            
+            <TinyButton deg={expanded[currentNode.ID] ? 0 : 270} icon={ExpandMore} /> 
+            <Text active={expanded[currentNode.ID]} small>{currentNode.name} </Text>
+          </Flex>
+          <Spacer />
+
+
+          <PopoverPrompt hidden={hide} 
+            onChange={(value) => !!value && createScriptFolder(null, value, currentNode.ID)}
+              label="Enter folder name" icon={CreateNewFolder} component={Tiny}/>
+
+        </Bar>
+        
+  <Collapse in={!!expanded[currentNode.ID]}>
+  
+{/* <Box>{folders.length}</Box>NodeAdd */}
+    {folders.map(dir => { 
+        return <>
+
+      {/* // current row  */}
+        {/* <Bar indent={indent} key={dir.ID} big={big} sx={{paddingLeft: t => t.spacing(indent)}}>
+          <Tiny icon={Remove} /> {dir.name} ? [{dir.ID}][{dir.parentID}]
+          <Spacer />
+
+
+          <PopoverPrompt 
+            onChange={(value) => !!value && createScriptFolder(null, value, dir.ID)}
+              label="Enter folder name" icon={Add} component={TinyButton}/>
+
+        </Bar> */}
  
-const Bar = styled(Box)(({ theme, active, big }) => ({
-  display: 'flex',
-  gap: theme.spacing(1) ,
-  alignItems: 'center',
-  borderBottom: 'solid 1px ' +  theme.palette.divider,
-  width: big ? 360 : '90%',
-  padding: theme.spacing(0.5, 0),
-  fontWeight: active? 600 : 400,
-  cursor: 'pointer',
-  transition: 'all 0.2s linear'
-}));
+        {folders?.map(child => <ScriptFolderTree 
+          {...props}
+          parentID={child.ID}
+          indent={indent + 2}
+          />)}
+
+        </>
+
+    })}
+
+
+    {/* child files */}
+    {files?.map(child => <ScriptLine 
+      key={child.ID}
+      {...child}
+      big={big}
+      active={child.ID === activeID}
+      indent={indent + 2}
+      dirty={dirty}
+      onFolderMove={onFolderMove}
+      setDirty={setDirty}
+      folderList={folderList}
+      setSelected={setSelected}
+      handleChange={handleChange}
+      handleDrop={handleDrop}
+      /> )}
+      
+  </Collapse>
+    </>
+}
  
 const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, 
-  handleScriptPromote, handleDrop, handleClose, handleChange }) => {
+  handleScriptPromote, handleDrop, handleClose, handleChange: handleScriptChange }) => {
 
+  
+  const handleChange = ( 
+    scriptID, name, code, 
+    fn, existingName, pageID) => {
+      handleScriptChange(
+        scriptID, name, code, 
+        { fn, existingName, pageID } 
+      ); 
+  }
+
+  const createScriptFolder = (
+    scriptID, name, parentID
+  ) => {
+    handleScriptChange(scriptID, name, null, { parentID });
+  }
+  
+  const moveScriptFolder = (
+    scriptID, name, code, parentID
+  ) => {
+    handleScriptChange(scriptID, name, code, { parentID });
+  }
   
     
 
@@ -38,6 +155,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const [assist, setAssist] = React.useState('')
+  const [expanded, setExpanded] = React.useState({})
   const [selected, setSelected] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
   const [dirty, setDirty] = React.useState(false)
@@ -141,12 +259,18 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   ]
 
   const page_size = big ? 18 : 8;
+  const folderList = scripts.filter(f => !f.code);
   const filtered = scripts
+    .filter(f => !!f.code && !f.parentID)
     .filter(f => !filter || f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
   const pageCount = Math.ceil(filtered?.length / page_size);
   const startPage = Math.min(page, pageCount)
   const startSlice = (startPage - 1) * page_size;
   const visible = filtered.slice(startSlice, startSlice + page_size)
+
+  const toptLevel = scripts  
+    .filter(f => !f.code && !f.parentID)
+
 
   if (appBusy) {
     return <>loading...</>
@@ -228,53 +352,75 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
     <Divider />
      
     <Grid container>
-      <Grid item xs={big ? 3 : 6} sx={{pt: 0, pl: 0}}>
+      <Grid item xs={big ? 3 : 6} sx={{pt: 0, pl: 0, pr: 1}}>
         <Typography variant="caption"><b>Available scripts</b></Typography>
         
         <Divider sx={{mb: 1}} />
-
-        {/* pagination  */}
-        <Flex sx={{ mb: 1, mr: 10 }}>
-        {pageCount > 1 && <Pagination count={pageCount} color="primary" variant="rounded" 
-          sx={{mb: 2}} page={Math.min(page, pageCount)} onChange={(e, p) => setPage(p)}/>}
-        <Spacer />
-
-        {/* search box  */}
-        {!big && <SearchBox 
-         placeholder="Filter script name"
-          onChange={e => setFilter(e.target.value)}
-          onClose={() => setFilter('')} size="small" label="Filter" sx={{mr: 10}}/>}
-        </Flex>
+ 
 
         {/* big view search box  */}
-        {!!big && <Box sx={{mr: 2}}>
+        {/* {!!big && <Box sx={{mr: 2}}>
           <SearchBox 
          placeholder="Filter script name"
         
           onChange={e => setFilter(e.target.value)}
           onClose={() => setFilter('')} size="small" label="Filter"/>
-          </Box>}
+          </Box>} */}
 
-        {/* script list  */}
-        {visible.map(s => <Bar big={big}
-            active={s.ID === ID}
-          ><Tiny icon={Code} /> <Text small
-          sx={{fontWeight: s.ID === ID ? 600 : 400}}
-          onClick={() => setSelected(s)}>{s.name}</Text>
+        <Bar big={big}>
+          <Tiny icon={ExpandMore} />
+            <Text small active>All scripts</Text>
           <Spacer />
-          {s.ID === ID && dirty && <TinyButton onClick={() => {
-              setDirty(false);
-            handleChange( ID, name, code)
-          }}  icon={Save}  onClick={() =>  setSelected( {code: ''} ) } /> }
-          {s.ID === ID && <TinyButton icon={Close}  onClick={() =>  {
-            setSelected( {code: ''} ) ;
-            setDirty(false)
-          }} /> }
-                <DeleteConfirmMenu message={`Delete script "${s.name}"?`}    
-        onDelete={e =>  !!e && handleDrop(s.ID, true) } /> 
-           
-         </Bar>)}
 
+          <PopoverPrompt 
+            onChange={(value) => !!value && createScriptFolder(null, value)}
+              label="Enter folder name" icon={CreateNewFolder} component={TinyButton}/>
+
+        </Bar>
+ <Box sx={{ height: big ? '100%' : 360, overflow: 'auto' }}>
+
+            {toptLevel?.map(dir => (
+                <ScriptFolderTree 
+                expanded={expanded}
+                setExpanded={setExpanded}
+                  scripts={scripts} 
+                  createScriptFolder={createScriptFolder}
+                  indent={2}
+                  big={big} 
+                  parentID={dir.ID}
+                  activeID={ID}
+                  dirty={dirty}
+                  onFolderMove={moveScriptFolder}
+                  setDirty={setDirty}
+                  folderList={folderList}
+                  setSelected={setSelected}
+                  handleChange={handleChange}
+                  handleDrop={handleDrop}
+          />
+            ))}
+        
+ 
+          {/* script list  */}
+          {visible.filter(f=>!f.parentID).map(s => (
+            <ScriptLine 
+              key={s.ID}
+              {...s}
+              big={big}
+              active={s.ID === ID}
+              indent={2}
+              dirty={dirty}
+              onFolderMove={moveScriptFolder}
+              setDirty={setDirty}
+              folderList={folderList}
+              setSelected={setSelected}
+              handleChange={handleChange}
+              handleDrop={handleDrop}
+              /> 
+            )
+          )}
+
+
+ </Box>
       </Grid>
 
       <Grid item xs={big ? 9 : 6}> 
@@ -320,7 +466,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           </Highlight> */}
         </Box>}
 
-        {!!editMode  && <TextBox 
+        {/* {!!editMode  && <TextBox 
         
           onKeyUp={e => {
             console.log ({ e });
@@ -336,7 +482,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           onChange={e => {
             setCode(e.target.value)
             setDirty(true);
-            }} />}
+            }} />} */}
 
         <Flex>
        
@@ -406,9 +552,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   </Drawer>
  );
 }
+
 ScriptDrawer.defaultProps = {};
 export default ScriptDrawer;
-
 
 function camelize(str) {
   return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
@@ -462,32 +608,3 @@ const styleNames = [   'a11yDark',
 'zTouch'
 ]
 
-function getCursorPos(input) {
-  if ("selectionStart" in input && document.activeElement == input) {
-      return {
-          start: input.selectionStart,
-          end: input.selectionEnd
-      };
-  }
-  else if (input.createTextRange) {
-      var sel = document.selection.createRange();
-      if (sel.parentElement() === input) {
-          var rng = input.createTextRange();
-          rng.moveToBookmark(sel.getBookmark());
-          for (var len = 0;
-                   rng.compareEndPoints("EndToStart", rng) > 0;
-                   rng.moveEnd("character", -1)) {
-              len++;
-          }
-          rng.setEndPoint("StartToStart", input.createTextRange());
-          for (var pos = { start: 0, end: len };
-                   rng.compareEndPoints("EndToStart", rng) > 0;
-                   rng.moveEnd("character", -1)) {
-              pos.start++;
-              pos.end++;
-          }
-          return pos;
-      }
-  }
-  return -1;
-}

@@ -18,9 +18,9 @@ import {
 import { execQuery } from '../../connector/dbConnector';
 import { TextBtn } from '../Control/Control';
 
-const AU = styled(Link)(({ theme }) => ({
+const AU = styled(Typography)(({ theme }) => ({
   cursor: 'pointer',
-  color: theme.palette.primary.dark,
+  // color: theme.palette.primary.dark,
   marginLeft: 30,
   '&:hover': {
     textDecoration: 'underlined'

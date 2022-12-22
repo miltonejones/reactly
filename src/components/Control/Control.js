@@ -22,7 +22,7 @@ export const AU = styled('span')(({ theme, active, error, small }) => ({
   fontWeight: active ? 600 : 400,
   fontSize: small ? '0.85rem' : '1rem',
   // fontStyle: 'italic',
-  color: error ? theme.palette.error.main : theme.palette.primary.main, 
+  color: error ? theme.palette.error.main : '#222', 
   '&:hover': {
     textDecoration: 'underlined',
     color: theme.palette.primary.dark

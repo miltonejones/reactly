@@ -376,10 +376,10 @@ export const useEditor = (apps) => {
   }
 
   
-  const setPageScript = async (appID, pageID, scriptID, name, code, fn) => {
+  const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
-        name, code
+        name, code, parentID
       }
       
       if (!page.scripts) {

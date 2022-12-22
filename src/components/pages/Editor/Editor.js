@@ -370,10 +370,14 @@ const Editor = ({ applications: apps = {} }) => {
     importComponent(appData.ID, sourceID, destID, componentID);
   }
 
-  const handleScriptChange = async (scriptID, name, code, fn, existingName, pageID) => {
+  const handleScriptChange = async (
+      scriptID, name, code, 
+     { fn, existingName, pageID , parentID }
+    ) => {
+      //  alert(JSON.stringify({scriptID,name,code,parentID},0,2))
     const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
     if (!scriptName) return;
-    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn);
+    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn, parentID);
   };
 
   const handlePropChange = (props, state) => {
@@ -694,7 +698,7 @@ const Editor = ({ applications: apps = {} }) => {
       const ok = out.some(f => !!f);
       return ok
     }
-    
+
     return open || page.ComponentType === 'Drawer';
   }
   
