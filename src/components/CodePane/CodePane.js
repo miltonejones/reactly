@@ -18,21 +18,21 @@ const Layout = styled(Box)(({ theme }) => ({
 const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props }) => {
   const syntaxRef = React.useRef(null) 
   const [bs, setBS] = React.useState(code);
+  const [msg, setMsg] = React.useState('ok');
   const [showLineNumbers, setShowLineNumbers] = React.useState(true);
   const args = {
     ref: externalRef || syntaxRef
   }
 
   const fontSizes = {
-    sm: '0.8em',
-    med: '0.9em',
+    sm: '0.85em',
+    med: '0.95em',
     lg: '1em'
   }
 
   const theme = stylenames[css] || coyWithoutShadows;
  return (
-   <Layout data-testid="test-for-CodePane" {...args}>
-
+   <Layout data-testid="test-for-CodePane" {...args}> 
 {!code && (<Flex 
       sx={{ justifyContent: 'center', border: 1, borderColor: 'divider', height: args.ref.current?.offsetHeight}}>
     No code in the abode
@@ -50,9 +50,10 @@ const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props
           onBlur={e => {
             try {
               setShowLineNumbers(true) 
-              if (!bs || code === bs) return;
+              if (!bs || code === bs) return setMsg('No change');
               onCodeChange(''); 
               setTimeout(() => onCodeChange(bs), 9)
+              setMsg(' changed code ');
             } catch (e) {
               console.log(e.message)
             }

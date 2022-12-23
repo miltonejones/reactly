@@ -621,6 +621,46 @@ const Editor = ({ applications: apps = {} }) => {
     navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
   }
 
+  const componentTabs = queryState.tabs?.[selectedPage?.PageName];
+
+  const selectComponentByID = (ID, on) => {
+    const component = componentParent.components.find(f => f.ID === ID);
+    !!component && selectComponent(component, on);
+  }
+ 
+  const selectComponent = (component, on) => {
+    setQueryState(state => ({
+      ...state,
+      componentLoading: true
+    }));
+    setTimeout(() => {
+      chooseComponent(component, on);
+    }, 0)
+  }
+
+  const chooseComponent = (component, on) => {
+
+    setQueryState(s => {
+      if (!s.tabs) {
+        Object.assign(s, { tabs: {}})
+      }
+
+      Object.assign(s.tabs, {
+        [selectedPage.PageName]: {
+          ...s.tabs[selectedPage.PageName],
+          [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
+        }
+      })
+
+      if (on) {
+        delete s.tabs[selectedPage.PageName][component.ID]
+      }
+
+      return {...s, componentLoading: false, selectedComponent: on ? null :  component};
+    });
+
+  }
+
   const pageTree =  <PageTree
     tree={appData.pages}
     selected={selectedPage?.PageName}
@@ -644,40 +684,10 @@ const Editor = ({ applications: apps = {} }) => {
     onNameChange={handleNameChange}
     onCustomName={handleCustomName}
     quickComponent={quickComponent}
+    selectComponent={selectComponent}
     onCreate={(type, options) => createComponent(type, options)}
     tree={componentParent?.components}
   />
-
-  const componentTabs = queryState.tabs?.[selectedPage?.PageName];
-
-  const selectComponentByID = (ID, on) => {
-    const component = componentParent.components.find(f => f.ID === ID);
-    !!component && selectComponent(component, on);
-  }
- 
-
-  const selectComponent = (component, on) => {
-
-    setQueryState(s => {
-      if (!s.tabs) {
-        Object.assign(s, { tabs: {}})
-      }
-
-      Object.assign(s.tabs, {
-        [selectedPage.PageName]: {
-          ...s.tabs[selectedPage.PageName],
-          [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
-        }
-      })
-
-      if (on) {
-        delete s.tabs[selectedPage.PageName][component.ID]
-      }
-
-      return {...s, selectedComponent: on ? null :  component};
-    });
-
-  }
 
   const componentType = Library[queryState.selectedComponent?.ComponentType];
 

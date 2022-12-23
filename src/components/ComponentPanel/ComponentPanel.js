@@ -154,7 +154,13 @@ const ComponentPanel = ({
     onComponentImport(sourceID, destID, tag.ID);
   }
 
-  const pasteTypes = ['settings', 'styles']
+  const pasteTypes = ['settings', 'styles'];
+
+  if (queryState.componentLoading) {
+    return <Box sx={{p: 2}}>
+      Loading component settings...
+    </Box>
+  }
 
   
   return <Stack>

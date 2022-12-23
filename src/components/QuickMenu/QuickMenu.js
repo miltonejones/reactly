@@ -76,6 +76,7 @@ return <>
 {!!caret && <TinyButton onClick={handleClick} icon={ExpandMore} deg={open ? 180 : 0} />}
 
 <MenuComponent  
+dense
   anchorEl={anchorEl || input}
   anchor={menuPos}
   open={open}

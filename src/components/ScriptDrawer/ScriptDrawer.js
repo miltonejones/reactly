@@ -12,6 +12,8 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ScriptLine, Bar } from './components';
 import { CodeTabs } from './components';
+import { ScriptTree } from './components';
+import { useRunScript } from '../../hooks/subhook/useRunScript';
  
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -19,111 +21,6 @@ const Layout = styled(Box)(({ theme, big }) => ({
   transition: 'all 0.2s linear'
 }));
   
-
-const ScriptFolderTree = (props) => {
-  const {  
-    scripts,
-    parentID,
-    big,
-    activeID,
-    indent = 0,
-    dirty,
-    onFolderMove,
-    setDirty,
-    folderList,
-    setSelected,
-    handleChange ,
-    handleDrop ,
-    createScriptFolder,
-    expanded,
-    setExpanded
-  } = props;
-
-
-  const [hide, setHidden] = React.useState(true);
-
-    const currentNode = scripts.find(f =>  f.ID === parentID);
-
-    if (!currentNode) return <Box><b>No current node with ID {parentID}</b></Box>
-
-    const folders = scripts?.filter(f => !f.code && f.parentID === parentID);
-    const files = scripts?.filter(f => !!f.code && f.parentID === parentID);
-
-
-    return <>
-
-        <Bar indent={indent}  big={big}
-        onMouseEnter={() => setHidden(false)}
-        onMouseLeave={() => setHidden(true)}
-    >
-          <Flex onClick={() => {
-              setExpanded(s =>  ({
-                ...s,
-                [currentNode.ID]: !s[currentNode.ID]
-              }))
-            }}>
-
-            
-            <TinyButton deg={expanded[currentNode.ID] ? 0 : 270} icon={ExpandMore} /> 
-            <Text active={expanded[currentNode.ID]} small>{currentNode.name} </Text>
-          </Flex>
-          <Spacer />
-
-
-          <PopoverPrompt hidden={hide} 
-            onChange={(value) => !!value && createScriptFolder(null, value, currentNode.ID)}
-              label="Enter folder name" icon={CreateNewFolder} component={Tiny}/>
-
-        </Bar>
-        
-  <Collapse in={!!expanded[currentNode.ID]}>
-  
-{/* <Box>{folders.length}</Box>NodeAdd */}
-    {folders.map(dir => { 
-        return <>
-
-      {/* // current row  */}
-        {/* <Bar indent={indent} key={dir.ID} big={big} sx={{paddingLeft: t => t.spacing(indent)}}>
-          <Tiny icon={Remove} /> {dir.name} ? [{dir.ID}][{dir.parentID}]
-          <Spacer />
-
-
-          <PopoverPrompt 
-            onChange={(value) => !!value && createScriptFolder(null, value, dir.ID)}
-              label="Enter folder name" icon={Add} component={TinyButton}/>
-
-        </Bar> */}
- 
-        {folders?.map(child => <ScriptFolderTree 
-          {...props}
-          parentID={child.ID}
-          indent={indent + 2}
-          />)}
-
-        </>
-
-    })}
-
-
-    {/* child files */}
-    {files?.map(child => <ScriptLine 
-      key={child.ID}
-      {...child}
-      big={big}
-      active={child.ID === activeID}
-      indent={indent + 2}
-      dirty={dirty}
-      onFolderMove={onFolderMove}
-      setDirty={setDirty}
-      folderList={folderList}
-      setSelected={setSelected}
-      handleChange={handleChange}
-      handleDrop={handleDrop}
-      /> )}
-      
-  </Collapse>
-    </>
-}
  
 const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, 
   handleScriptPromote, handleDrop, handleClose, handleChange: handleScriptChange }) => {
@@ -176,8 +73,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   const [anchorEl, setAnchorEl] = React.useState(null);
   const { ID, name, code, parentID } = selected;
   const [ openScripts, setOpenScripts ] = React.useState({});
+  const { getApplicationScripts } = useRunScript()
 
-  const setSelected = object => {
+  const onSelected = object => {
     if (typeof object === 'function') {
       return commitSelected(object);
     }
@@ -188,6 +86,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
       }))
     }
     commitSelected(object);
+  }
+
+  const setSelected = object => {
+    commitSelected({ code: ''});
+    setTimeout(() => {
+      onSelected(object)
+    }, 9)
   }
 
   const closeTab = tabID => {
@@ -221,7 +126,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
      } catch (ex) {
        setError(ex.message)
      }
-     setSelected(s => ({...s, code: text }))
+     setSelected({...selected, code: text })
   }
 
   const handleAliasOpen = event => {
@@ -266,8 +171,18 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   }
 
   const spaces = s => s.replace(/([A-Z]+)/g, " $1").replace(/([A-Z][a-z])/g, " $1")
- 
-  const scriptMenu = application.pages?.filter(f => f.ID !== targetPage?.ID)
+  
+  const scriptList = getApplicationScripts();
+
+  const appScripts = targetPage?.PageName ? [{
+    name: <b>Application</b>
+  }].concat(scriptList.filter(script => script.page === 'application')
+    .map(script => ({
+      ...script,
+      action: () => editJS(script),
+    }))) : []
+
+  const scriptMenu = appScripts.concat(application.pages?.filter(f => f.ID !== targetPage?.ID)
     .reduce ((items, page) => {
     !!page.scripts?.length && items.push({
       name: <b>{page.PageName}</b>
@@ -279,7 +194,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
       })
     })
     return items;
-  }, [])
+  }, []))
 
   const api = [
     'getRef', 
@@ -386,74 +301,23 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
         <Typography variant="caption"><b>Available scripts</b></Typography>
         
         <Divider sx={{mb: 1}} />
- 
 
-        {/* big view search box  */}
-        {/* {!!big && <Box sx={{mr: 2}}>
-          <SearchBox 
-         placeholder="Filter script name"
-        
-          onChange={e => setFilter(e.target.value)}
-          onClose={() => setFilter('')} size="small" label="Filter"/>
-          </Box>} */}
+        <ScriptTree 
+          expanded={expanded}
+          setExpanded={setExpanded}
+          scripts={scripts} 
+          createScriptFolder={createScriptFolder}
+          big={big}  
+          activeID={ID}
+          dirty={dirty}
+          onFolderMove={saveScriptToFolder}
+          setDirty={setDirty}
+          folderList={folderList}
+          setSelected={setSelected}
+          handleChange={handleChange}
+          handleDrop={handleDrop}
+        />
 
-        <Bar big={big}>
-          <Tiny icon={ExpandMore} />
-            <Text small active>All scripts</Text>
-          <Spacer />
-
-          <PopoverPrompt 
-            onChange={(value) => !!value && createScriptFolder(null, value)}
-              label="Enter folder name" icon={CreateNewFolder} component={TinyButton}/>
-
-        </Bar>
- <Box sx={{ height: big ? '100%' : 360, overflow: 'auto' }}>
-
-            {toptLevel?.map(dir => (
-                <ScriptFolderTree 
-                  expanded={expanded}
-                  setExpanded={setExpanded}
-                  scripts={scripts} 
-                  createScriptFolder={createScriptFolder}
-
-
-                  indent={2}
-                  big={big} 
-                  parentID={dir.ID}
-                  activeID={ID}
-                  dirty={dirty}
-                  onFolderMove={saveScriptToFolder}
-                  setDirty={setDirty}
-                  folderList={folderList}
-                  setSelected={setSelected}
-                  handleChange={handleChange}
-                  handleDrop={handleDrop}
-          />
-            ))}
-        
- 
-          {/* script list  */}
-          {filtered.filter(f=>!f.parentID).map(s => (
-            <ScriptLine 
-              key={s.ID}
-              {...s}
-              big={big}
-              active={s.ID === ID}
-              indent={2}
-
-              dirty={dirty}
-              onFolderMove={saveScriptToFolder}
-              setDirty={setDirty}
-              folderList={folderList}
-              setSelected={setSelected}
-              handleChange={handleChange}
-              handleDrop={handleDrop}
-              /> 
-            )
-          )}
-
-
-      </Box>
       </Grid>
 
       <Grid item xs={big ? 9 : 6}>  
@@ -466,34 +330,24 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           />
  
 
-      {!editMode  && <Box sx={{ position: 'relative' }}>
-          {/* <IconButton
-            sx={{
-              position: 'absolute',
-              top: 20,
-              right: 20
+        <Box sx={{ position: 'relative' }}>  
+          <CodePane  
+            onMouseDown={e => { 
+              !!assist && scriptInsert(assist)
             }}
-            >
-            <Edit />
-          </IconButton> */}
- 
-            <CodePane  
-              onMouseDown={e => { 
-                !!assist && scriptInsert(assist)
-              }}
-              font={font}
-              css={css}
-              externalRef={ref}
-              onCodeChange={value => { 
-                setCode(value)
-                setDirty(true);
-              }}
-              className={
-                ['javascript', big ? 'big' : ''].join(' ')
-              }
-              code={code}> 
-            </CodePane> 
-        </Box>}
+            font={font}
+            css={css}
+            externalRef={ref}
+            onCodeChange={value => { 
+              setCode(value)
+              setDirty(true);
+            }}
+            className={
+              ['javascript', big ? 'big' : ''].join(' ')
+            }
+            code={code}> 
+          </CodePane> 
+        </Box>
 
      
 

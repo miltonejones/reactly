@@ -145,30 +145,21 @@ export const useOpenLink = () => {
 
     // parse page parameters if present,
    createPageParams(parameters, options, pageParams => {
-
-      const hacked = [];
-      for(let prop in pageParams){
-          if(pageParams.hasOwnProperty(prop)){
-            hacked.push(pageParams[prop])
-          }
-      }
-      console.log(hacked, pageParams, JSON.stringify(pageParams,0,2));
+ 
   
   
       // listening('openLink')  && hello ({ pageParams }, 'openLink pageParams');
   
       const prefix = preview ? 'edit': 'apps';
-        const type = typeof pageParams;
-        const array = Array.isArray(pageParams);
-  
-      const keys = Object.keys(pageParams) ;
+   
+   
       const values = Object.values(pageParams) ;
       const path = values.join('/'); 
       const value = `/${prefix}/${appContext.path}/${targetPage.PagePath}`;
       const url = [value].concat(!!path ? [path] : []).join('/');  
   
       listening('openLink') && 
-        hello ( { url, path, pageParams, keys, values, type, hacked, array }, `Navigating to ${value}`)
+        hello ( { url, path, pageParams, values }, `Navigating to ${value}`)
       
       if (disableLinks) {
         if (listening('openLink')  )  hello({  pageParams }, 'stopping here');
