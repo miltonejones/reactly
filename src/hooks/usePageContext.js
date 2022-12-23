@@ -94,6 +94,7 @@ export const usePageContext = () => {
   };
 
   const drillPath = (object, path) => {
+ 
     const arr = path.split(".");
     const first = arr.shift();
     const node = object[first];
@@ -104,7 +105,7 @@ export const usePageContext = () => {
 
     return node;
   };
-
+  // trackName,artworkUrl100,collectionName,artistName
   const execResourceByName = async ( name, options ) => {
 
     const resource = appContext.resources.find(
@@ -169,10 +170,12 @@ export const usePageContext = () => {
     let requestOptions = null;
     const scriptList = getApplicationScripts();
 
-    if (transform && !isGetRequest) {
+    if (transform) {
       const script = scriptList?.find((f) => f.ID === transform.ID);
       querystring = await executeScript(script.ID, querystring, execResourceByName);
+    }
 
+    if (!isGetRequest) {
       requestOptions = {
         method,
         body: JSON.stringify(querystring),
@@ -532,17 +535,22 @@ export const usePageContext = () => {
           }
       
           // quick method to get a property value from a term key
-          const getProp = (value) =>
-            getPropertyValueFromString(
+          const getProp = (value) => {
+
+            const { boundTo, clientState } = getPropertyScope(value);
+
+            return getPropertyValueFromString(
               clientState,
               {
                 ...trigger.action,
-                value,
+                value: boundTo,
               },
               options,
               currentParameters, 
               speakable ? hello : () => true
             );
+          }
+        
 
           // returns a number if value is not isNaN
           const trueProp = (val) => {
@@ -714,7 +722,7 @@ export const usePageContext = () => {
 
             if (attributeProp !== undefined && typeof attributeProp !== 'undefined') {
 
-              // component.ComponentType === 'Collapse' && 
+              // attribute === 'options' && 
               //   console.log ( {  component: component.ComponentName, attribute, attributeProp, boundTo })
 
               Object.assign(eventHandlers, {

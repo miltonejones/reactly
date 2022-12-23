@@ -645,15 +645,19 @@ const Editor = ({ applications: apps = {} }) => {
         Object.assign(s, { tabs: {}})
       }
 
-      Object.assign(s.tabs, {
-        [selectedPage.PageName]: {
-          ...s.tabs[selectedPage.PageName],
-          [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
-        }
-      })
+      if (selectedPage?.PageName) {
 
-      if (on) {
-        delete s.tabs[selectedPage.PageName][component.ID]
+        Object.assign(s.tabs, {
+          [selectedPage.PageName]: {
+            ...s.tabs[selectedPage.PageName],
+            [component.ID]: `${component.ComponentType}: ${component.ComponentName}`
+          }
+        })
+  
+        if (on) {
+          delete s.tabs[selectedPage.PageName][component.ID]
+        }
+  
       }
 
       return {...s, componentLoading: false, selectedComponent: on ? null :  component};

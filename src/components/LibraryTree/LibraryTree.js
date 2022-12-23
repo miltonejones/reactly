@@ -576,7 +576,7 @@ const SettingRow = ({
   const defaultNode = component[defaultType]
   
   const dataTypes = ['pill', 'boolean', 'chip', 'shadow', 'listtable', 'tablecolumn', 'valuelist',
-  'repeatertable', 'listbuilder', 'imagelist', 'text', 'prompt']
+  'repeatertable', 'listbuilder', 'menulist', 'imagelist', 'text', 'prompt']
   return <>
   <Grid sx={{mt: 1}} spacing={1} container>
   

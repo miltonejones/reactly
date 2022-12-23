@@ -62,6 +62,8 @@ const Modal = ({
  minWidth = 360,
  
  anchor = 'right',
+
+ pre,
  // * Modal input
  // * NOTE: input properties pass through to the injected component
  // ------------------------------------------------------------------- *
@@ -81,6 +83,11 @@ const Modal = ({
    modalState,
    submitClicked,
  };
+
+ const Container = pre 
+  ? ({message: m}) => <pre>{m}</pre>
+  : Component;
+  
  return (
    <Tag anchor={anchor} onClose={handleClose} open={open}
       sx={{
@@ -97,7 +104,7 @@ const Modal = ({
        {/* modal injected component */}
        {!!Component && (
          <Box  sx={{p: theme => theme.spacing(1, 2, 2, 2)}}>
-           <Component {...props} onChange={setModelState} />
+           <Container {...props} onChange={setModelState} />
          </Box>
        )}
        <Box sx={{ flexGrow: 1 }} />
@@ -234,12 +241,12 @@ export const useModal = () => {
   * @param {string} message - message to display in the dialog
   * @param {string} title - dialog title
   */
- const Alert = (message, title = "Alert") =>
+ const Alert = (message, title = "Alert", pre) =>
    createModalMethod({
      message,
      title,
      icon: Info,
- 
+     pre,
      // for Alert Modals, no "submitClicked" hides the Okay button
      submitClicked: null,
    });

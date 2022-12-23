@@ -1,3 +1,5 @@
+import { map } from "../components/library/util";
+
 class DynamoStorage {
     endpoint = 'https://storage.puppeteerstudio.com';
     
@@ -119,10 +121,46 @@ const useDynamoStorage = () => {
 
   const getProgItems = async() => { 
     const dynamoDatum = await store.getItems(app_key);
+
+    console.log ({ dynamoDatum, parsed: Object.values(dynamoDatum).map(p => atob(p)) })
+
+
+    await map(Object.keys(dynamoDatum), async (key) => {
+
+       const app = JSON.parse(atob(dynamoDatum[key]));
+
+       if (!app.pages) {
+        
+        const page_key = `${app_key}-app-${app.ID}`;
+        const pages = await store.getItems(page_key);
+
+        Object.assign(app, { pages: []});
+
+        !!pages && Object.keys(pages).map(leaf => {
+          const page = JSON.parse(atob(pages[leaf]));
+          app.pages.push(page);  
+        });
+
+        Object.assign(dynamoDatum, { [key]: btoa(JSON.stringify(app))})
+      }
+
+    })
+
+
     return dynamoDatum;
   }
 
-  const setProgItem = async (name, value) => await store.setItem(app_key, name, value);
+  const setProgItem = async (name, value) => {
+    
+    const { pages, ...rest} = value;
+
+    await map(pages, async (page) => {
+      const page_key = `${app_key}-${name}`;
+      await store.setItem(page_key, 'subpage-' + page.ID, JSON.stringify(page));
+    })
+
+    await store.setItem(app_key, name, JSON.stringify(rest));
+  }
   
   const removeProgItem = async (name) => await store.removeItem(app_key, name);
   

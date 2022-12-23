@@ -42,21 +42,6 @@ import { uniqueId } from "./components/library/util";
 
 function App() { 
  
-  React.useEffect(() => {
-
-    const styleSheets = Array.from(document.styleSheets).filter(
-      (styleSheet) => !styleSheet.href || styleSheet.href.startsWith(window.location.origin)
-    );
-      for (let style of styleSheets) {
-        if (style instanceof CSSStyleSheet && style.cssRules) {
-          console.log ({ styles: style.rules })
-        }
-      }
-
-
-
-    console.log ('app loading');
-  }, [])
 
   return (
     <BrowserRouter>
@@ -137,7 +122,17 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
   const commitProg = async (app) => { 
     setBusy(`Committing changes...`)
-    await setProgItem(`app-${app.ID}`, JSON.stringify(app))
+    console.log ({app})
+    const { pages, ...rest} = app;
+    let total = 0;
+    app.pages.map(page => {
+      total += JSON.stringify(page).length;
+      console.log (page, JSON.stringify(page).length)
+    })
+    total += JSON.stringify(rest).length;
+    console.log (rest, JSON.stringify(rest).length)
+    console.log ({ total })
+     await setProgItem(`app-${app.ID}`, app)
     await refreshProgs()
    }
 

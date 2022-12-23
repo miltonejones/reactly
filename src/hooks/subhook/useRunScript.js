@@ -122,6 +122,7 @@ export const useRunScript = () => {
 const handleScriptRequestAsync = async (block, opts, title) => { 
 
   try { 
+    await Alert(block, title, 1)
     // call that function to get the client function
     const action = eval(`(${block})()`); 
     if (block.indexOf('async') > -1) { 
@@ -190,7 +191,7 @@ const handleScriptRequest =  (block, opts, title) => {
       api: { 
         getPageResourceState,
         pageResourceState,
-        Alert: (message) => Alert(message, scr.name + ' alert'),
+        Alert: (message, title, pre) => Alert(message, title || (scr.name + ' alert'), pre),
 
         executeScriptByName: (scriptName, options) => executeScriptByName(scriptName, options, execResourceByName), 
 

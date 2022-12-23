@@ -72,6 +72,7 @@ import ReactlyVideoPlayer from './ReactlyVideoPlayer/ReactlyVideoPlayer';
 import ReactlyRating from './ReactlyRating/ReactlyRating';
 import ReactlyScrollText from './ReactlyScrollText/ReactlyScrollText';
 import ReactlySnackbarContent from './ReactlySnackbarContent/ReactlySnackbarContent';
+import ReactlyAutocomplete from './ReactlyAutocomplete/ReactlyAutocomplete';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -147,7 +148,8 @@ const ComponentList = {
   SpeedDial: ReactlySpeedDial,
   Rating: ReactlyRating,
   Marquee: ReactlyScrollText,
-  SnackbarContent: ReactlySnackbarContent
+  SnackbarContent: ReactlySnackbarContent,
+  Autocomplete: ReactlyAutocomplete
 }
 
 

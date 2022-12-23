@@ -29,7 +29,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
 
   const args = getSettings(props.settings);
   
-  const parsed = !!args?.items && typeof args?.items === 'string' 
+  const dataRows = !!args?.items && typeof args?.items === 'string' 
       ? JSON.parse(args?.items)
       : args?.items;
 
@@ -54,7 +54,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
      component={open || !preview ? Menu : FauxMenu} 
      {...props} >
  
-    {parsed?.map((item, i) => {
+    {dataRows?.map((item, i) => {
       const StartIcon = Icons[item.startIcon] ;
       const EndIcon = Icons[item.endIcon] ;
       return <ReactlyMenuItem onClick={e => {
@@ -75,7 +75,7 @@ const ReactlyComponentMenu = ({ children, ...props }) => {
     </ReactlyMenuItem>
     })}
      
-     {/* {JSON.stringify(parsed)} */}
+     {/* {JSON.stringify(dataRows)} */}
 
    </ReactlyComponent>
  );
