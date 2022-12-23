@@ -30,12 +30,19 @@ export const useRunScript = () => {
   const { getResourceByName } = useDataResource()
 
   
-  const getApplicationScripts = () => { 
+  const getApplicationScripts = (unfiltered) => {
+    const filter = unfiltered 
+      ? () => !0
+      : (script) => !!script.code;
+      
+        
     const appScripts = !appContext.scripts 
       ? []
       : [{
         label: 'Application'
-      }].concat(appContext.scripts.map(s => ({
+      }].concat(appContext.scripts
+        .filter(filter)
+        .map(s => ({
         ...s,
         label: s.name,
         page: 'application',
@@ -49,12 +56,14 @@ export const useRunScript = () => {
       out.push({
         label: pg.PageName
       })
-      out = out.concat((pg.scripts || []).map(s => ({
-        ...s,
-        label: s.name,
-        page: pg.PageName,
-        ID: s.ID
-      })));
+      out = out.concat((pg.scripts || []) 
+        .filter(filter)
+        .map(s => ({
+          ...s,
+          label: s.name,
+          page: pg.PageName,
+          ID: s.ID
+        })));
       return out;
     }, []))
   }

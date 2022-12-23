@@ -43,7 +43,7 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
     open={drawerOpen} 
     {...rest}
     hideBackdrop={!!args.hideBackdrop || componentEditing || (childOpen && preview )} 
-    component={Drawer} 
+    component={componentEditing||childOpen ? Faux : Drawer} 
     >
       {children}
    </ReactlyComponent> 

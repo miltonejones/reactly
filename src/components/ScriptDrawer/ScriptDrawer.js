@@ -1,16 +1,17 @@
 import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField, Collapse,
-  Divider, Typography, Stack, Grid, Card, Switch, Alert, Pagination } from '@mui/material';
-import { CodePane, DeleteConfirmMenu, Flex, Spacer, TextBtn , Tiny, TinyButton, 
-    Text, TextBox, QuickMenu, SearchBox, PillMenu } from '..';
-import { Close, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, ExpandMore, NodeAdd,
+  Divider, Typography, Stack, Grid, Card, Tabs,Switch, Alert, Pagination } from '@mui/material';
+import { CodePane, DeleteConfirmMenu, Flex,  Spacer, TextBtn , Tiny, TinyButton, 
+    Text, TextBox, TabButton, QuickMenu, SearchBox, PillMenu } from '..';
+import { Close, Settings, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, ExpandMore, NodeAdd,
   Remove, AutoStories, MoreVert, CreateNewFolder, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput, PopoverPrompt } from '../Control/Control';
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { dark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { ScriptLine, Bar } from './components';
+import { CodeTabs } from './components';
  
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -143,10 +144,19 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
     handleScriptChange(scriptID, name, null, { parentID });
   }
   
-  const moveScriptFolder = (
+  const saveScriptToFolder = (
     scriptID, name, code, parentID
   ) => {
+
     handleScriptChange(scriptID, name, code, { parentID });
+
+    // save updated code to tabs array
+    setSelected({
+      ID: scriptID,
+      name,
+      code,
+      parentID
+    })
   }
   
     
@@ -154,17 +164,45 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   const ref = React.useRef(null)
   const [css, setCss] = React.useState(localStorage.getItem('js-theme'));
   const [font, setFont] = React.useState(localStorage.getItem('js-font') || 'med');
-  const [page, setPage] = React.useState(1);
+  const [showSettings, setShowSettings] = React.useState(false);
   const [filter, setFilter] = React.useState('');
   const [assist, setAssist] = React.useState('')
   const [expanded, setExpanded] = React.useState({})
-  const [selected, setSelected] = React.useState({})
+  const [selected, commitSelected] = React.useState({})
   const [editMode, setEditMode] = React.useState(false)
   const [dirty, setDirty] = React.useState(false)
   const [big, setBig] = React.useState(false)
   const [error, setError] = React.useState('')
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { ID, name, code } = selected;
+  const { ID, name, code, parentID } = selected;
+  const [ openScripts, setOpenScripts ] = React.useState({});
+
+  const setSelected = object => {
+    if (typeof object === 'function') {
+      return commitSelected(object);
+    }
+    if (object.ID) { 
+      setOpenScripts(scripts => ({
+        ...scripts,
+        [object.ID]: object
+      }))
+    }
+    commitSelected(object);
+  }
+
+  const closeTab = tabID => {
+    setOpenScripts(scripts => {
+      delete scripts[tabID];
+      const keys = Object.keys(scripts);
+      if (!!keys.length) {
+        selected.ID === tabID && commitSelected(scripts[ keys[0]]); 
+      } else {
+        commitSelected({ code: '' });
+      }
+      return scripts
+    })
+  }
+
 
   const { 
     appBusy,
@@ -194,8 +232,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
     setAnchorEl(null)
   } 
 
-  const handleDrawerClose = event => {
-    setPage(1)
+  const handleDrawerClose = event => { 
     setSelected({code: ''})
     setDirty(false)
     handleClose(event)
@@ -218,14 +255,13 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   }
 
   const editJS = async (js, pageID) =>  {
-    const script = await EditCode(js.code,  js.name);
+    const script = await EditCode(js.code,  js.name, true);
     if (!script) return;
     if (script === -1) {
-      return handleChange (null, null, js.code, res => setSelected(res), js.name)
+      return  setSelected(js)
     }
 
-    
-    return handleChange (js.ID, js.name, script, res => alert(js.name + ' was saved!'), js.name, pageID)
+      return handleChange (js.ID, js.name, script, res => alert(js.name + ' was saved!'), js.name, pageID)
    
   }
 
@@ -259,24 +295,16 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
     'execRefByName',
     'moment'
   ]
-
-  const page_size = big ? 18 : 8;
+ 
   const folderList = scripts.filter(f => !f.code);
   const filtered = scripts
     .filter(f => !!f.code && !f.parentID)
     .filter(f => !filter || f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
-  const pageCount = Math.ceil(filtered?.length / page_size);
-  const startPage = Math.min(page, pageCount)
-  const startSlice = (startPage - 1) * page_size;
-  const visible = filtered.slice(startSlice, startSlice + page_size)
+ 
 
-  const toptLevel = scripts  
-    .filter(f => !f.code && !f.parentID)
+  const toptLevel = scripts.filter(f => !f.code && !f.parentID)
 
-
-  if (appBusy) {
-    return <>loading...</>
-  }
+ 
 
  return (
 
@@ -291,9 +319,9 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
 
       <QuickMenu 
-        title="Import script"
+        title="Open script"
         options={scriptMenu.map(m => m.name)}
-        label={<TextBtn endIcon={<MoreVert />}>Import</TextBtn>}
+        label={<TextBtn endIcon={<MoreVert />}>Open</TextBtn>}
         onChange={(val) => {
           const { action } = scriptMenu.find(f => f.name === val);
           !!action && action()
@@ -305,7 +333,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           onClick={async () => {
             const ok = await handleScriptPromote(ID);
             // if (!ok) return;
-            setSelected(c => ({ code: '' }))
+            setSelected({ code: '' })
             setDirty(false);
             
           }}>promote "{name}"</TextBtn>}  
@@ -383,16 +411,18 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
 
             {toptLevel?.map(dir => (
                 <ScriptFolderTree 
-                expanded={expanded}
-                setExpanded={setExpanded}
+                  expanded={expanded}
+                  setExpanded={setExpanded}
                   scripts={scripts} 
                   createScriptFolder={createScriptFolder}
+
+
                   indent={2}
                   big={big} 
                   parentID={dir.ID}
                   activeID={ID}
                   dirty={dirty}
-                  onFolderMove={moveScriptFolder}
+                  onFolderMove={saveScriptToFolder}
                   setDirty={setDirty}
                   folderList={folderList}
                   setSelected={setSelected}
@@ -403,15 +433,16 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
         
  
           {/* script list  */}
-          {visible.filter(f=>!f.parentID).map(s => (
+          {filtered.filter(f=>!f.parentID).map(s => (
             <ScriptLine 
               key={s.ID}
               {...s}
               big={big}
               active={s.ID === ID}
               indent={2}
+
               dirty={dirty}
-              onFolderMove={moveScriptFolder}
+              onFolderMove={saveScriptToFolder}
               setDirty={setDirty}
               folderList={folderList}
               setSelected={setSelected}
@@ -422,10 +453,18 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           )}
 
 
- </Box>
+      </Box>
       </Grid>
 
-      <Grid item xs={big ? 9 : 6}> 
+      <Grid item xs={big ? 9 : 6}>  
+
+        <CodeTabs 
+          openScripts={openScripts}
+          closeTab={closeTab}
+          setSelected={setSelected}
+          selectedID={selected.ID}
+          />
+ 
 
       {!editMode  && <Box sx={{ position: 'relative' }}>
           {/* <IconButton
@@ -453,95 +492,79 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
                 ['javascript', big ? 'big' : ''].join(' ')
               }
               code={code}> 
-            </CodePane>
-{/* 
-          <SyntaxHighlighter language="javascript" 
-       
-          showLineNumbers  customStyle={{ fontSize:  '0.95rem' }}> 
-            {code}
-          </SyntaxHighlighter> */}
-
-          {/* <Highlight style={{fontSize:  '0.7rem'}} className={
-            ['javascript', big ? 'big' : ''].join(' ')
-          }> 
-            {code}
-          </Highlight> */}
+            </CodePane> 
         </Box>}
 
-        {/* {!!editMode  && <TextBox 
+     
+
+        <Flex nowrap>
+
+
         
-          onKeyUp={e => {
-            console.log ({ e });
-            if (!e) return;
-            const pos = getCursorPos(e);
-            console.log ({ pos })
-          }}
-          value={code} 
-          disabled={!name}
-          multiline
-          fullWidth
-          rows={big ? 32 : 14}
-          onChange={e => {
-            setCode(e.target.value)
-            setDirty(true);
-            }} />} */}
 
-        <Flex>
-       
-        {/* <FormControlLabel 
-          label="Edit Mode"
-          control={   <Switch  size="small"
-            checked={editMode}
-            onChange={e => { 
-               setEditMode( e.target.checked)
-            }} 
-          /> }
-        /> */}
+          {!!error && <Alert severity="error">{error}</Alert>}
 
-        <QuickMenu options={styleNames} small label={<TextBtn endIcon={<MoreVert />}>
-          {spaces(css? `Theme: ${css}` : "Theme")}
+          <QuickMenu 
+            options={api} 
+            onChange={scriptInsert} 
+            value={assist} 
+            label={<TextBtn endIcon={<Help />}>{assist || 'methods'}</TextBtn>}
+          />
 
-        </TextBtn>} value={css} onChange={e => !!e && (() => {
-          setCss(e)
-          localStorage.setItem('js-theme', e)
-        })()} />
+          <TinyButton 
+            icon={Settings} 
+            deg={showSettings ? 0 : 360}
+            onClick={()=>setShowSettings(!showSettings)}/>
+        
+          <Collapse in={showSettings} orientation="horizontal">
 
+              <Flex nowrap>
+                <Text active small>Theme</Text> 
+                {/* theme menu  */}
+                <QuickMenu 
+                caret
+              options={styleNames} small 
+              label={<u>{spaces(css? `${css}` : "Choose")}</u>} 
+              value={css} 
+              onChange={e => !!e && (() => {
+                setCss(e)
+                localStorage.setItem('js-theme', e)
+              })()} 
+            />
 
-        {!!error && <Alert severity="error">{error}</Alert>}
+            {/* font size menu  */}
+            <Text active small>Font size</Text>
+            <PillMenu options={['sm','med','lg']} value={font} onChange={e => {
+              setFont(e);
+              localStorage.setItem('js-font', e)
+            }} />
+              </Flex>
 
+          </Collapse>
 
-        <QuickMenu options={api} onChange={scriptInsert} 
-            value={assist} label={<TextBtn endIcon={<Help />}>{assist || 'methods'}</TextBtn>}/>
-      
-        <Text small>Font size</Text>
-        <PillMenu options={['sm','med','lg']} value={font} onChange={e => {
-          setFont(e);
-          localStorage.setItem('js-font', e)
-        }} />
-
-        <Spacer />
+          <Spacer />
 
 
           <TextBtn onClick={() => {
-          setSelected( {code: ''} )
-        }}  > 
-          cancel
-        </TextBtn>
+            setSelected( {code: ''} )
+          }}  > 
+            cancel
+          </TextBtn>
+
           <TextBtn onClick={() => { 
-            setDirty(false);
-          handleChange( ID, name, code)
-        }} endIcon={<Save />}  
-          variant="contained"
-          disabled={!selected.code || !dirty || error}
-          > 
-          save script
-        </TextBtn>
-        <IconButton onClick={() => {
-           setBig(!big);
-           setPage(1)
-        }}>
-          {big ? <CloseFullscreen /> : <OpenInFull />}
-        </IconButton>
+              setDirty(false);
+            saveScriptToFolder( ID, name, code, parentID)
+          }} endIcon={<Save />}  
+            variant="contained"
+            disabled={!selected.code || !dirty || error}
+            > 
+            save script
+          </TextBtn>
+          <IconButton onClick={() => {
+            setBig(!big); 
+          }}>
+            {big ? <CloseFullscreen /> : <OpenInFull />}
+          </IconButton>
         </Flex>
       </Grid>
 

@@ -1140,8 +1140,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
 
 
   const openPage = () => {
-    const path = [value, Object.values(selectedPage?.parameters).join('/')].join('/'); 
-    alert(path)
+    const path = [value, Object.values(selectedPage?.parameters).join('/')].join('/');  
     window.open(path)
     handlePopoverClose ()
   }
@@ -1156,7 +1155,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
       <InputAdornment
         sx={{ cursor: "pointer" }}
         onClick={handleButtonClick}
-        position="end"
+        position="end" 
       >
         <>
         <Text small active error={!pageLoaded}>Loaded</Text>

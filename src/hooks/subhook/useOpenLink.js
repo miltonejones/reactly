@@ -7,7 +7,7 @@ export const useOpenLink = () => {
    
 
 
-    const navigate =  useNavigate();
+  const navigate =  useNavigate();
   // const navigate = (path) => window.location.replace(path);
   const {
     appContext,
@@ -25,7 +25,7 @@ export const useOpenLink = () => {
   } = React.useContext(AppStateContext);
 
 
-  const listening = (name) => monitoredEvents.indexOf(name) > -1;
+  const listening = React.useCallback((name) => monitoredEvents.indexOf(name) > -1,  [monitoredEvents]);
 
   const hello = async (json, msg) => {
     if (!shout) return console.log({shoutless: json});
@@ -39,7 +39,7 @@ export const useOpenLink = () => {
      * @param {*} parameters JSON object of the page parameters
      * @param {*} options - other options to pass to the params 
      */
-    (parameters, options) => {
+    (parameters, options, fn) => {
 
       const { records, ...rest} = pageClientState;
       const { records: rec, ...op} = options ?? {};
@@ -83,7 +83,7 @@ export const useOpenLink = () => {
               const [t, prop, datum] = values;
 
               triggerProp = options[datum]; 
-              listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: data bound values');
+              listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: data bound values: ' + triggerProp);
               if (!!triggerProp ) {
                 Object.assign(params, {[key]: triggerProp  });
               }
@@ -92,24 +92,26 @@ export const useOpenLink = () => {
 
             const [t, optionKey] = triggerKey.split('.') ;
             triggerProp = options[optionKey]; 
-            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: parsing options');
+            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: parsing options: ' + triggerProp);
             // pass the resulting value into page params
             if (!!triggerProp ) {
               Object.assign(params, {[key]: triggerProp  });
             }
           } else if (triggerProp) { 
-            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: passing state value');
+            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: passing state value: ' + triggerProp);
             // pass the resulting value into page params
             if (!!triggerProp?.length ) {
               Object.assign(params, {[key]: triggerProp  });
             }
           } else {
-            listening('createPageParams') && hello( { triggerKey, parameters  }, 'createPageParams: parsing parameters');
+            listening('createPageParams') && hello( { triggerKey, parameters  }, 'createPageParams: parsing parameters: ' + triggerKey);
             Object.assign(params, {[key]: triggerKey  });
           }
 
         });
 
+
+        !!fn && fn(params)
 
         return state;
     })
@@ -142,23 +144,42 @@ export const useOpenLink = () => {
   
 
     // parse page parameters if present,
-    const params = createPageParams(parameters, options);
+   createPageParams(parameters, options, pageParams => {
 
-    listening('openLink')  && hello ({ params }, 'openLink params');
-
-    const prefix = preview ? 'edit': 'apps';
-
-    if (disableLinks) {
-      if (!listening('openLink')  ) return
-       return hello({  params }, 'stopping here');
-    }
-
-
+      const hacked = [];
+      for(let prop in pageParams){
+          if(pageParams.hasOwnProperty(prop)){
+            hacked.push(pageParams[prop])
+          }
+      }
+      console.log(hacked, pageParams, JSON.stringify(pageParams,0,2));
   
-    const value = `/${prefix}/${appContext.path}/${targetPage.PagePath}`;
-    const path = [value, Object.values(params).join('/')].join('/');  
-    
-    navigate(path, { state: { refresh: 1 }}) 
+  
+      // listening('openLink')  && hello ({ pageParams }, 'openLink pageParams');
+  
+      const prefix = preview ? 'edit': 'apps';
+        const type = typeof pageParams;
+        const array = Array.isArray(pageParams);
+  
+      const keys = Object.keys(pageParams) ;
+      const values = Object.values(pageParams) ;
+      const path = values.join('/'); 
+      const value = `/${prefix}/${appContext.path}/${targetPage.PagePath}`;
+      const url = [value].concat(!!path ? [path] : []).join('/');  
+  
+      listening('openLink') && 
+        hello ( { url, path, pageParams, keys, values, type, hacked, array }, `Navigating to ${value}`)
+      
+      if (disableLinks) {
+        if (listening('openLink')  )  hello({  pageParams }, 'stopping here');
+          return
+      }
+  
+  
+      navigate(url) 
+
+    });
+
     return
 
     // // otherwise pass parameters into page state
@@ -171,7 +192,7 @@ export const useOpenLink = () => {
     // }))
 
     
-  }, [queryState, disableLinks, preview, setQueryState])
+  }, [queryState, disableLinks, listening, preview, setQueryState])
 
 
   const openPath = React.useCallback(
@@ -192,6 +213,9 @@ export const useOpenLink = () => {
     // look up the path ID
     const targetPage = appContext.pages.find((f) => f.PagePath === path); 
     if (targetPage) {
+      listening('openPath') && 
+        hello ( { path }, `Navigating to ${targetPage.ID}`)
+      
       return await openLink(targetPage.ID, parameters, options);
     }
     if (listening('openPath')  ) {

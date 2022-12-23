@@ -305,7 +305,7 @@ export const useModal = () => {
     code,
     okayText: allowEdit ? "Save" : "Okay",
     deleteText: "import",
-    handleDelete: allowEdit,
+    handleDelete: !!allowEdit,
     allowEdit,
     component: CodeEditor, 
     minWidth: 720,
