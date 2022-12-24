@@ -107,16 +107,14 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
   if (video) {
     return (
       <Box sx={{ width: "fit-content" }} {...props}>
-        <video {...args} src={src} ref={ref} style={style}></video>
-        {args.debug && <pre>{JSON.stringify(args,0,2)}</pre> } 
-      </Box>
+        <video {...args} src={src} ref={ref} style={style}></video> 
+      </Box> 
     );
   }
 
   return (
     <Box sx={{ width: "fit-content" }} {...props}>
-      <audio {...args} id={`audio-${props.ID}`} src={src} ref={ref}></audio>
-      {args.debug && <pre>{JSON.stringify(args,0,2)}</pre> }   
+      <audio {...args} id={`audio-${props.ID}`} src={src} ref={ref} ></audio> 
     </Box>
   );
 };

@@ -36,7 +36,7 @@ const ScriptTree = (props) => {
       <PopoverPrompt 
           hidden={hide} 
         onChange={(value) => !!value && createScriptFolder(null, value)}
-        label="Enter folder name" 
+        label="Creata a folder named" 
         icon={CreateNewFolder} 
         component={Tiny}
       />
@@ -115,7 +115,7 @@ const ScriptNode = (props) => {
         <PopoverPrompt 
           hidden={hide} 
           onChange={(value) => !!value && createScriptFolder(null, value, currentNode.ID)}
-          label="Enter folder name" 
+          label="Create a folder named" 
           icon={CreateNewFolder} 
           component={Tiny}/>
 

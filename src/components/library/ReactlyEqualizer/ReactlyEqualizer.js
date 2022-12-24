@@ -30,35 +30,58 @@ const FrameLooper = (analyser, context, canvas) => () => {
 	}
 }
 
+class AudioConnector {
+
+  constructor() {
+    this.connected = false; 
+  }
+
+  connect (audio) { 
+    if (!this.connected) {
+      this.context = new AudioContext();
+      this.analyser = this.context.createAnalyser();
+      this.source = this.context.createMediaElementSource(audio);
+      this.source.connect(this.analyser);
+      this.analyser.connect(this.context.destination);
+      this.connected = true;
+    }
+
+    return {
+      analyser: this.analyser,
+      context: this.context
+    }
+  }
+  
+}
 
 
 const audioConnect = (audio) => {
+
+
   const context = new AudioContext();
   const analyser = context.createAnalyser();
   const source = context.createMediaElementSource(audio);
-
-
-  // canvas = document.getElementById("canvas");
-  // context = canvas.getContext("2d");
-  
-  // canvas.width = window.innerWidth * 0.80;
-  // canvas.height = window.innerHeight * 0.60;
+ 
   
   source.connect(analyser);
   analyser.connect(context.destination);
-  return {
-    analyser,
-    context
-  }
+
 }
 
 class Eq extends React.Component {
+  constructor(props) {
+    super(props);
+    this.connector = new AudioConnector();
+    this.state = {
+      connected: false
+    };
+  }
 
   componentDidMount() {
     const { canvas, reference } = this.props
     const { id } = reference;
     const context = canvas.getContext("2d");
-    const ok = audioConnect(reference); 
+    const ok = this.connector.connect(reference); 
 
     canvas.width = 400;
     canvas.height = 100;
@@ -67,7 +90,7 @@ class Eq extends React.Component {
     const frameLoop = FrameLooper(
       ok.analyser, context, reference
      );
-
+     this.setState({connected: true});
      frameLoop()
 
   }
@@ -103,9 +126,10 @@ const ReactlyComponentEqualizer = ({ children, ...props }) => {
           //  frameLoop();
            return pageRefState[id];
         } 
+
         return false
       }
-      return state;
+      return false;
     });
   }, [pageRefState, connected, args])
 
@@ -123,6 +147,7 @@ const ReactlyComponentEqualizer = ({ children, ...props }) => {
       <Eq reference={connected} canvas={ref.current} />
       </Box>}
 
+Connected to: {connected.id}
       <pre>
 
       {JSON.stringify(args,0,2)}
