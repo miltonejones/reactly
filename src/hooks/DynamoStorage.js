@@ -121,8 +121,7 @@ const useDynamoStorage = () => {
 
   const getProgItems = async() => { 
     const dynamoDatum = await store.getItems(app_key);
-
-    console.log ({ dynamoDatum, parsed: Object.values(dynamoDatum).map(p => atob(p)) })
+ 
 
 
     await map(Object.keys(dynamoDatum), async (key) => {
@@ -133,19 +132,22 @@ const useDynamoStorage = () => {
         
         const page_key = `${app_key}-app-${app.ID}`;
         const pages = await store.getItems(page_key);
-
         Object.assign(app, { pages: []});
 
         !!pages && Object.keys(pages).map(leaf => {
           const page = JSON.parse(atob(pages[leaf]));
-          app.pages.push(page);  
+          const { dirty, ...rest} = page;
+          app.pages.push(rest);  
         });
 
+        
         Object.assign(dynamoDatum, { [key]: btoa(JSON.stringify(app))})
+        console.log ({ app, pages , dynamoDatum})
       }
 
     })
 
+    console.log ({  dynamoDatum})
 
     return dynamoDatum;
   }
@@ -155,8 +157,12 @@ const useDynamoStorage = () => {
     const { pages, ...rest} = value;
 
     await map(pages, async (page) => {
-      const page_key = `${app_key}-${name}`;
-      await store.setItem(page_key, 'subpage-' + page.ID, JSON.stringify(page));
+      if (page.dirty) {
+        console.log ({ dirty: page.dirty})
+        const { dirty, ...rest} = page;
+        const page_key = `${app_key}-${name}`;
+        await store.setItem(page_key, 'subpage-' + page.ID, JSON.stringify(rest));
+      }
     })
 
     await store.setItem(app_key, name, JSON.stringify(rest));

@@ -374,7 +374,7 @@ const Editor = ({ applications: apps = {} }) => {
       scriptID, name, code, 
      { fn, existingName, pageID , parentID }
     ) => {
-      //  alert(JSON.stringify({scriptID,name,code,parentID},0,2))
+       alert(JSON.stringify({scriptID,name,code,parentID},0,2))
     const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
     if (!scriptName) return;
     setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn, parentID);
@@ -615,7 +615,7 @@ const Editor = ({ applications: apps = {} }) => {
   };
 
   const handlePageNavigate = name => {
-    const clickedPage = !!name && appData.pages.find((f) => f.PageName === name);
+    const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
     if (!clickedPage) return navigate(`/edit/${appData.path}`);
         setPageError(null)
     navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
@@ -739,7 +739,7 @@ const Editor = ({ applications: apps = {} }) => {
                     <QuickMenu
                       small
                       caret
-                      options={appData.pages.map((f) => f.PageName)}
+                      options={appData?.pages?.map((f) => f.PageName)}
                       title="Choose Page"
                       label={selectedPage?.PageName || <b>{ appData.Name}</b>}
                       onChange={handlePageNavigate}
@@ -963,7 +963,7 @@ const Editor = ({ applications: apps = {} }) => {
               >
                 <Sync />
               </IconButton>
-              
+              [{selectedPage?.dirty?.toString()}]
               {/* <FormControlLabel
                 sx={{ m: 1 }}
                 label={<Text small>Show JSON</Text>}
@@ -978,7 +978,7 @@ const Editor = ({ applications: apps = {} }) => {
               <TextBtn
                 variant="contained"
                 endIcon={<Save />}
-                disabled={!dirty}
+                disabled={!selectedPage?.dirty}
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
                   // copy(JSON.stringify(applications, 0, 2));

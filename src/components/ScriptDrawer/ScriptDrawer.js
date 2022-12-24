@@ -1,9 +1,9 @@
 import React from 'react';
 import Highlight from 'react-highlight'
 import { styled, FormControlLabel, Box,  IconButton, Drawer, TextField, Collapse,
-  Divider, Typography, Stack, Grid, Card, Tabs,Switch, Alert, Pagination } from '@mui/material';
+  Divider, Typography, Stack, Grid, Card, Tabs, Switch, Alert, Pagination } from '@mui/material';
 import { CodePane, DeleteConfirmMenu, Flex,  Spacer, TextBtn , Tiny, TinyButton, 
-    Text, TextBox, TabButton, QuickMenu, SearchBox, PillMenu } from '..';
+    Text, TextInput, TextBox, TabButton, QuickMenu, SearchBox, PillMenu } from '..';
 import { Close, Settings, Gamepad, Edit, CloseFullscreen, OpenInFull, Add, ExpandMore, NodeAdd,
   Remove, AutoStories, MoreVert, CreateNewFolder, Help, RecentActors, Code, Delete, Save } from "@mui/icons-material"; 
 import { PopoverInput, PopoverPrompt } from '../Control/Control';
@@ -20,6 +20,36 @@ const Layout = styled(Box)(({ theme, big }) => ({
   minHeight: big ? '90vh' : '40vh',
   transition: 'all 0.2s linear'
 }));
+
+const SearchItem = styled(Box)(({ theme, active }) => ({
+  cursor: 'pointer',
+  padding: theme.spacing(1),
+  color: active ? 'white' : '#222',
+  backgroundColor: active ? theme.palette.primary.main : 'white',
+  borderRadius: 5,
+  marginRight: theme.spacing(1),
+  '&:hover': {
+    color: active ? 'cyan' : theme.palette.primary.main,
+    '& .hover': {
+      textDecoration: 'underline'
+    }
+  },
+}))
+
+const SearchLine = ({ children, filter}) => {
+
+  if (!(children && typeof children === 'string')) {
+    return <i />
+  }
+    const [first, last] = children.split(filter);
+    const prefix = first?.substr(first.length - 40);
+    const suffix = last?.substr(0, 40);
+
+    return <code style={{letterSpacing: 0.2, fontSize: '0.9rem'}}>
+    ...{prefix}<b>{filter}</b>{suffix}...
+    </code>
+
+}
   
  
 const ScriptDrawer = ({ open, scripts = [], application, handleSwitch, 
@@ -42,10 +72,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   }
   
   const saveScriptToFolder = (
-    scriptID, name, code, parentID
+    scriptID, name, code, parentID, pageID
   ) => {
 
-    handleScriptChange(scriptID, name, code, { parentID });
+    handleScriptChange(scriptID, name, code, { pageID, parentID });
 
     // save updated code to tabs array
     setSelected({
@@ -212,9 +242,10 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
   ]
  
   const folderList = scripts.filter(f => !f.code);
-  const filtered = scripts
-    .filter(f => !!f.code && !f.parentID)
-    .filter(f => !filter || f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+  const filtered = scriptList
+    .filter(f => !!f.code)
+    .filter(f => f.code.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
+    f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1)
  
 
   const toptLevel = scripts.filter(f => !f.code && !f.parentID)
@@ -243,7 +274,17 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
         }}
         />
 
-        {!!selected.ID && !!targetPage?.PageName && <TextBtn variant="contained" 
+          <TextField 
+            size="small"
+            label="Search"
+            value={filter}
+            onChange={e => setFilter(e.target.value)}
+            sx={{mb: 1}}
+            />
+
+        {!!selected.ID && !!targetPage?.PageName && <TextBtn 
+            sx={{mb: 1}}
+         variant="contained" 
           color="warning"
           onClick={async () => {
             const ok = await handleScriptPromote(ID);
@@ -254,7 +295,6 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           }}>promote "{name}"</TextBtn>}  
 
       <Spacer />
-
 
       <IconButton  
           color="inherit" 
@@ -297,7 +337,7 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
     <Divider />
      
     <Grid container>
-      <Grid item xs={big ? 3 : 6} sx={{pt: 0, pl: 0, pr: 1}}>
+    {!filter && <Grid item xs={big ? 3 : 6} sx={{pt: 0, pl: 0, pr: 1}}>
         <Typography variant="caption"><b>Available scripts</b></Typography>
         
         <Divider sx={{mb: 1}} />
@@ -318,7 +358,28 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           handleDrop={handleDrop}
         />
 
-      </Grid>
+      </Grid>}
+
+      {!!filter && <Grid item xs={big ? 3 : 6}>
+
+
+        <Typography variant="caption"><b>{filtered.length} Scripts matching "{filter}"</b></Typography>
+        
+        <Divider sx={{mb: 1}} />
+
+        <Box sx={{height: big ? 'calc(100% - 130px)' : 400, 
+          mr: 1, 
+          overflow: 'auto'}}>
+          {filtered.map(item => (
+            <SearchItem active={item.ID === ID}
+              onClick={() => setSelected(item)} >
+              <Text className="hover" small><b>{item.page}</b>.{item.name}</Text>
+              <SearchLine filter={filter}>{item.code}</SearchLine>
+            </SearchItem>))}
+        </Box>
+          
+        
+        </Grid>}
 
       <Grid item xs={big ? 9 : 6}>  
 
@@ -404,10 +465,11 @@ const ScriptDrawer = ({ open, scripts = [], application, handleSwitch,
           }}  > 
             cancel
           </TextBtn>
+           
 
           <TextBtn onClick={() => { 
               setDirty(false);
-            saveScriptToFolder( ID, name, code, parentID)
+              saveScriptToFolder(ID, name, code, parentID, selected.pageID)
           }} endIcon={<Save />}  
             variant="contained"
             disabled={!selected.code || !dirty || error}

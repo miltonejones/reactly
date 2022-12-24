@@ -73,6 +73,7 @@ import ReactlyRating from './ReactlyRating/ReactlyRating';
 import ReactlyScrollText from './ReactlyScrollText/ReactlyScrollText';
 import ReactlySnackbarContent from './ReactlySnackbarContent/ReactlySnackbarContent';
 import ReactlyAutocomplete from './ReactlyAutocomplete/ReactlyAutocomplete';
+import ReactlyEqualizer from './ReactlyEqualizer/ReactlyEqualizer';
 
 const ReactlySpacer = {
   Component: () => <Box sx={{ flexGrow: 1}} />,
@@ -149,7 +150,8 @@ const ComponentList = {
   Rating: ReactlyRating,
   Marquee: ReactlyScrollText,
   SnackbarContent: ReactlySnackbarContent,
-  Autocomplete: ReactlyAutocomplete
+  Autocomplete: ReactlyAutocomplete,
+  Equalizer: ReactlyEqualizer
 }
 
 

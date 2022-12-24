@@ -1,6 +1,9 @@
 import React from 'react';
 import { styled, Box, Divider, Typography , Collapse, Switch, Stack} from '@mui/material'; 
 import { QuickSelect, Flex, Text, Spacer, TextBtn } from '../../..';
+import {
+  AppStateContext 
+} from "../../../../hooks/AppStateContext";
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -9,6 +12,11 @@ const Layout = styled(Box)(({ theme }) => ({
 const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEvent }) => {
   const [state, setState ] = React.useState({ ...event.action, type: selectedType });
   
+  
+  const {  
+    appContext
+  } = React.useContext(AppStateContext);
+
   
   const actionReset = selectedType === 'dataReset';
   const actionDesc = actionReset
@@ -29,6 +37,9 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
     return options.push(`event.${paramKey}`);
   })
 
+  !!appContext.state && appContext.state.map(s => {
+    return options.push(`application.${s.Key}`);
+  })
   const triggerName = resources?.find(f => f.ID === state.triggers)
 
  return (

@@ -195,7 +195,7 @@ export const usePageContext = () => {
 
     const collated = !isGetRequest
       ? json
-      : rows.map((row) =>
+      : rows?.map((row) =>
           columns.reduce((items, res) => {
             items[res] = row[res];
             return items;
@@ -537,13 +537,13 @@ export const usePageContext = () => {
           // quick method to get a property value from a term key
           const getProp = (value) => {
 
-            const { boundTo, clientState } = getPropertyScope(value);
+            // const { boundTo, clientState } = getPropertyScope(value);
 
             return getPropertyValueFromString(
               clientState,
               {
                 ...trigger.action,
-                value: boundTo,
+                value
               },
               options,
               currentParameters, 

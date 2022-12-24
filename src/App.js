@@ -145,6 +145,10 @@ function RenderComponent({ preview, component: Component, ...props}) {
         components: page.components?.map(component => ({
           pageID: page.ID,
           ...component, 
+        })),
+        scripts: page.scripts?.map(script => ({
+          pageID: page.ID,
+          ...script, 
         }))
       }))
     }));
@@ -155,9 +159,12 @@ function RenderComponent({ preview, component: Component, ...props}) {
    const refreshProgs = async () => { 
     setBusy(`Reloading data...`)
     const items = await getProgItems();
+    console.log ({ items })
     const converted = Object.keys(items).reduce((out, item) => {
       const [label, key] = item.split('-');
-      out = out.concat (JSON.parse(atob(items[item])))
+      const app = JSON.parse(atob(items[item]));
+      console.log ({pages: app.pages  })
+      out = out.concat (app)
       return out;
     }, []);
     console.log(converted)
@@ -266,6 +273,9 @@ function RenderComponent({ preview, component: Component, ...props}) {
     return <>Loading application data</>
    }
 
+  //  return <pre>{JSON.stringify(applicationData,0,2)}</pre>
+
+
   const appContext = applicationData?.find(f => f.path === appname);
   const homePageID =  appContext?.HomePage;
   const defaultPage = !homePageID
@@ -310,6 +320,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
   const sessionID = uniqueId();
  
+
+
   if (!dynamoProgs) {
  
     return <Flex sx={{width: '100vw', height: '100vh', justifyContent: 'center'}}>

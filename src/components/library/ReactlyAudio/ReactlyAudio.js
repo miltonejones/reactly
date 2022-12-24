@@ -115,7 +115,7 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
 
   return (
     <Box sx={{ width: "fit-content" }} {...props}>
-      <audio {...args} src={src} ref={ref}></audio>
+      <audio {...args} id={`audio-${props.ID}`} src={src} ref={ref}></audio>
       {args.debug && <pre>{JSON.stringify(args,0,2)}</pre> }   
     </Box>
   );

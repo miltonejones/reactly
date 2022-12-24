@@ -62,6 +62,7 @@ export const useRunScript = () => {
           ...s,
           label: s.name,
           page: pg.PageName,
+          pageID: pg.ID,
           ID: s.ID
         })));
       return out;
@@ -85,50 +86,21 @@ export const useRunScript = () => {
     }
     return '--none--' + JSON.stringify(option)
   }
-
- /**async function transformMusic (page, options) {
-  const { api, data, application, setState } = options; 
  
-  let transformed = data;
-
-  const transform = fn => {
-
-    application.setState(state => {
-      fn(state.playlist_db);
-      return state;
-    })
-
-  }
-
-  transform(playlist_db => {
-     if (playlist_db) {
-       transformed = {
-         ...data,
-         records: data.records.map(rec => ({
-           ...rec,
-           favorite: playlist_db.indexOf(rec.FileKey) > -1 ? 'Favorite' : 'FavoriteBorder'
-          }))
-       }
-     } else console.log ('NO PLAYLIST IN MEMORY')
-   })  ;
-  
-
-  return transformed;
-}
- */
-
-
 
 const handleScriptRequestAsync = async (block, opts, title) => { 
 
   try { 
-    await Alert(block, title, 1)
+  //   await Alert(block, title, 1)
+    // console.log ({ block, title})
     // call that function to get the client function
     const action = eval(`(${block})()`); 
     if (block.indexOf('async') > -1) { 
+      // console.log ({ selectedPage, opts})
       return await action(selectedPage, opts) ;
     }
     // call the client function
+    // console.log ({ selectedPage, opts})
     return action(selectedPage, opts)
   } catch (ex) {
     Alert (ex.message, 'Script error in ' + title);

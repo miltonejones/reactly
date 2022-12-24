@@ -2457,6 +2457,10 @@
             {
               "Key": "mix-blend-mode",
               "Value": "difference"
+            },
+            {
+              "Key": "line-height",
+              "Value": "2.8rem"
             }
           ],
           "events": [],
@@ -3248,6 +3252,66 @@
           "data": [],
           "ID": "lbv088fs5sy5qp72mvf",
           "order": 1500
+        },
+        {
+          "pageID": "lb97fg4snqudtrhx1ut",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-9",
+          "componentID": "lblj2yf9229sjpjt5qm",
+          "state": [],
+          "styles": [
+            {
+              "Key": "color-custom",
+              "Value": true
+            },
+            {
+              "Key": "color",
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
+            },
+            {
+              "Key": "line-height",
+              "Value": "1rem"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "button"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": " ARTIST"
+            },
+            {
+              "SettingName": "debug",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "align",
+              "SettingValue": "left"
+            },
+            {
+              "SettingName": "paragraph",
+              "SettingValue": false
+            },
+            {
+              "SettingName": "noWrap",
+              "SettingValue": true
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbxhair0rp6x0nz1bn",
+          "order": 1297
         }
       ],
       "appID": 2,
@@ -5185,7 +5249,7 @@
         },
         {
           "name": "navigate",
-          "code": "function navigate (page, options) {\n  const { api, data } = options; \n  const paths = ['library', 'music-search', 'albums', 'artists', 'playlists', 'genres'];\n  api.openPath(paths[data.row], { pageno: 1 });\n}\n",
+          "code": "function navigate (page, options) {\n  const { api, data, application } = options; \n  const paths = ['splash', 'library', 'albums', 'artists', 'playlists', 'genres'];\n\n  // close the hero image first\n  application.setState(state => ({ ...state, hero_open: false }));\n\n  api.openPath(paths[data.row]);\n\n}\n",
           "ID": "lbj71tdudxkae5flijs"
         },
         {
@@ -5441,7 +5505,7 @@
               "action": {
                 "type": "setState",
                 "target": "application.selected_list_index",
-                "value": "0"
+                "value": "1"
               },
               "ID": 2,
               "componentID": "lbf392gz0924ll9eg76v"
@@ -6742,7 +6806,7 @@
           "scripts": [],
           "data": [],
           "ID": "lbulk8smoh4tx7oh6o",
-          "order": 2057
+          "order": 2155
         },
         {
           "pageID": "lbj7y09boqopygn0edg",
@@ -6895,48 +6959,77 @@
       "scripts": [
         {
           "name": "play audio",
-          "code": "function handleListClick (page, options) {\n  const { state, setState, data , api} = options;  \n  api.executeScriptByName('set current track', data);\n  api.executeScriptByName('start player', data);\n \n}\n",
+          "code": "function handleListClick (page, options) {\n  const { data , api} = options;  \n\n  api.executeScriptByName('set current track', data);\n  api.executeScriptByName('start player', data);\n \n}\n",
+          "parentID": "lbyw9rd5avm0daj32pr",
           "ID": "lbj881rljzhqvd6jq5"
         },
         {
           "name": "set current track",
-          "code": "function setCurrentTrack (page, options) {\n  const { application, setState, data, api } = options; \n  // api.Alert('setting track')\n \n  const CLOUD_FRONT_URL = \"https://s3.amazonaws.com/box.import/\";\n\n  const getPlayerURL = key => {\n    const audioURL = `${CLOUD_FRONT_URL}${key}`\n    .  replace(\"#\", \"%23\")\n      .replace(/\\+/g, \"%2B\");\n    return audioURL;\n  }\n\n  \n\n  if (!data) return api.Alert('No data!!'); \n  // if (data.hasOwnProperty('cell')) return alert('Ignoring cell click')\n\n  application.setState(state => {\n\n    const fresh = {\n      ...state,\n      app_player_url: getPlayerURL(data.FileKey),\n      current_id: data.ID,\n      track: data.Title,\n      album_image: data.albumImage,\n      src: data.albumImage,\n      artist: data.artistName,\n      scrolling: data.Title?.length > 35,\n      selected_index: data.row,\n      selected_id: data.ID,\n    }\n\n    return fresh;\n  });\n\n  api.executeScriptByName('set hero information', {\n    record: data \n  });\n\n  setState(value => ({\n    ...value, \n    selected_index: data.row,\n    selected_id: data.ID,\n    player_url: \"https://s3.amazonaws.com/box.import/\" + data.FileKey,\n    track: data.Title,\n    album_image: data.albumImage,\n    src: data.albumImage,\n    artist: data.artistName\n  }));\n\n\n}\n",
+          "code": "function setCurrentTrack (page, options) {\n  const { application, setState, data, api } = options; \napi.shout(data, 'loading track')\n  if (!data) return api.Alert('No data was received in the request!');  \n\n  application.setState(state => ({\n      ...state,\n      app_player_url: getPlayerURL(data.FileKey),\n      current_id: data.ID,\n      track: data.Title,\n      album_image: data.albumImage,\n      src: data.albumImage,\n      artist: data.artistName,\n      scrolling: data.Title?.length > 35,\n      selected_index: data.row,\n      selected_id: data.ID,\n    }));\n\n  api.executeScriptByName('set hero information', {\n    record: data \n  });\n\n const CLOUD_FRONT_URL = \"https://s3.amazonaws.com/box.import/\";\n const getPlayerURL = key => {\n    const audioURL = `${CLOUD_FRONT_URL}${key}`\n    .  replace(\"#\", \"%23\")\n      .replace(/\\+/g, \"%2B\");\n    return audioURL;\n  }\n\n}\n",
+          "parentID": "lbyw9rd5avm0daj32pr",
           "ID": "lbj88dx52dt9iort54g"
         },
         {
           "name": "data is here",
-          "code": "async function handleDataLoaded (page, options) {\n  const { state, setState, data , api} = options; \n  !!data?.count && setState(s => ({...s, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     records: data.records\n  }))\n\n\n  if (!data.records?.length) return;\n\n  api.executeScriptByName('set hero information', {\n    record: data.records[0]\n  });\n\n}\n",
+          "code": "async function handleDataLoaded (page, options) {\n  const { state, setState, data , api} = options; \n\n  !!data?.count && setState(state => ({\n     ...state, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     records: data.records\n  }));\n\n  if (!data.records?.length) return;\n\n  api.executeScriptByName('set hero information', {\n    record: data.records[0]\n  });\n}\n",
+          "parentID": "lbywa36s01pxapoeujsf",
           "ID": "lbj8964w0cs52gsqou66"
         },
         {
           "name": "scroll text",
           "code": "function scrollText (page, options) {\n  const { application, state, setState } = options; \n  setState(s => {\n    const scrolling = s.track?.length > 35;\n    application.setState(s => ({\n      ...s,\n      scrolling \n    }))\n\n    return {\n      ...s,\n      scrolling \n    }\n  })\n}\n",
+          "parentID": "lbywavq8cvtztge5ypv",
           "ID": "lbj8rnija8o6l3dly2g"
         },
         {
           "name": "list cell click",
-          "code": "function listCellClick (page, options) {\n  const { api, application, data } = options; \n \n  const { records } = data; \n\n  if (data.column === 'menu') {\n    return api.executeScriptByName('open context menu', data)\n  }\n\n  if (data.column === 'favorite') {\n    return api.executeScriptByName('add to playlist', data);\n  } \n  \n  if (data.column === 'Genre') {\n    if (!data.Genre) return api.Alert(\"Unknown Genre\")\n    return api.openPath('genre', { genrekey: data.Genre})\n  } \n\n  if (data.cell === 1) { \n    api.executeScriptByName('create play list', data);\n    return api.executeScriptByName('play audio', data);\n  }\n\n  if (data.cell === 2) {\n    if (!data.artistFk) return api.Alert(\"Unknown artist\")\n    return api.openPath('artist', { artist_id: data.artistFk})\n  } \n\n  if (data.cell === 3) {\n    if (data.albumFk) return api.openPath('album', { album_id: data.albumFk})\n    else api.Alert ('Unknown album')\n  } \n  \n}\n",
+          "code": "function listCellClick (page, options) {\n  const { api, application, data } = options;  \n\n  const closeHero = () => application.setState(state => ({...state, hero_open: false}));\n\n  switch(data.column) {\n    case \"menu\":\n      api.executeScriptByName('open context menu', data); \n      break;\n    case \"favorite\":\n      api.executeScriptByName('add to playlist', data);\n      break;\n    case \"Genre\":\n      if (!data.Genre) return api.Alert(\"Unknown Genre\");\n      closeHero();\n      api.openPath('genre', { genrekey: data.Genre});\n      break;\n    case \"Title\":\n      api.executeScriptByName('create play list', data);\n      api.executeScriptByName('play audio', data);\n      break;\n    case \"albumName\":\n      closeHero();\n      if (data.albumFk) return api.openPath('album', { album_id: data.albumFk});\n      else api.Alert ('Unknown album');\n      break;\n    case \"artistName\":\n      if (!data.artistFk) return api.Alert(\"Unknown artist\");\n      closeHero();\n      api.openPath('artist', { artist_id: data.artistFk});\n      break ;\n    default:\n      api.Alert(data.column);\n  } \n \n}\n",
+          "parentID": "lbyw9rd5avm0daj32pr",
           "ID": "lbjw0l6v6i9tz1auu1h"
         },
         {
           "name": "transform music",
-          "code": "async function transformMusic (page, options) {\n  const { api, data, application, setState } = options; \n\n  let transformed = data;\n  const transform = json => {\n    application.setState(state => {\n      console.log ({ state })\n      const { playlist_db } = state;\n      !!playlist_db && Object.assign(json, {\n          records: json.records.map(rec => ({\n           ...rec,\n           favorite: playlist_db.indexOf(rec.FileKey) > -1 \n             ? 'Favorite' \n             : 'FavoriteBorder',\n           menu: 'MoreVert'\n          }))\n      }) \n      return state;\n    })\n  };\n\n  transform(data)  ;  \n  return data;\n}\n",
+          "code": "async function transformMusic (page, options) {\n  const { api, data, application, setState } = options; \n\n  let transformed = data;\n\n  // set favorite status based on saved playlist data\n  const transform = json => {\n    application.setState(state => {\n     \n      const { playlist_db } = state;\n\n      !!playlist_db && Object.assign(json, {\n          records: json.records.map(record => ({\n           ...record,\n           favorite: playlist_db.indexOf(record.FileKey) > -1 \n             ? 'Favorite' \n             : 'FavoriteBorder',\n\n           // add a menu icon column to the row\n           menu: 'MoreVert'\n          }))\n      }) \n      return state;\n    })\n  };\n\n  transform(data)  ;  \n  return data;\n}\n",
+          "parentID": "lbywaeob5dbmz9e991k",
           "ID": "lbqsjgamo5qsf23frhl"
         },
         {
           "name": "transform save request",
-          "code": "async function transformSaveRequest (page, options) {\n  const { application, api, data } = options; \n\n  let transformed = data; \n    \n  const { playlist_file, playlist_name, playlist_full } = application.state;\n    \n\n  const targetList = playlist_full?.find(f => f.listKey === data.value);\n\n  if (targetList) {\n     const { related } = targetList;\n     transformed = {\n        ...targetList,\n        related: related.indexOf(playlist_file) > -1\n            ? related.filter(f => f !== playlist_file)\n            : related.concat(playlist_file)\n     } \n  }\n\n  return transformed;\n\n\n}\n",
+          "code": "async function transformSaveRequest (page, options) {\n  const { application, api, data } = options; \n\n  let transformed = data; \n    \n  const { playlist_file, playlist_name, playlist_full } = application.state;\n  const targetList = playlist_full?.find(f => f.listKey === data.value);\n\n  if (targetList) {\n     const { related } = targetList;\n     transformed = {\n        ...targetList,\n        related: related.indexOf(playlist_file) > -1\n            ? related.filter(f => f !== playlist_file)\n            : related.concat(playlist_file)\n     } \n  }\n\n  return transformed;\n}\n",
+          "parentID": "lbywaeob5dbmz9e991k",
           "ID": "lbrddd9jghrv7htrhna"
         },
         {
           "name": "set hero image",
           "code": "async function setHeroImage (page, options) {\n  const { api, data, setState } = options; \n\n  if (!data.record) return console.log('No record was found!');\n\n  const artist_fk = data.record.artistFk;\n \n\n  const request = `albumFk, discNumber, trackNumber/ASC/1/artist/${artist_fk}`;\n  const res = await api.execResourceByName('Artist Info', request);\n \n\n  const hero_open = res?.length && res[0].imageLg;\n\n  if (res?.length && res[0].imageLg) {\n     setState(s => ({\n        ...s,\n        hero_open,\n        banner_image: res[0].imageLg\n     }))\n  } else {\n     setState(s => ({\n        ...s,\n        hero_open, \n     })) \n  }\n\n\n}\n",
+          "parentID": "lbywavq8cvtztge5ypv",
           "ID": "lbumqwwb4avik8cj1t5"
         },
         {
           "name": "create play list",
           "code": "function createPlayList (page, options) {\n  const { application, data } = options; \n \n  const { records } = data; \n \n  // build current playlist from records in state\n  if (!records) return;\n\n  // drawer_list_items appear in the list for controlling playback\n  const drawer_list_items = records.map(p => ({\n       text: p.Title,\n       subtext: p.artistName,\n       avatar: p.albumImage\n    }));\n\n  // update app state\n  application.setState(state => ({\n      ...state,\n      play_list_items: records,\n      drawer_list_items\n    }));\n\n}\n",
+          "parentID": "lbywavq8cvtztge5ypv",
           "ID": "lbwyas85s97hphwhjj9"
+        },
+        {
+          "name": "play back",
+          "code": null,
+          "ID": "lbyw9rd5avm0daj32pr"
+        },
+        {
+          "name": "data",
+          "code": null,
+          "ID": "lbywa36s01pxapoeujsf"
+        },
+        {
+          "name": "transform",
+          "code": null,
+          "ID": "lbywaeob5dbmz9e991k"
+        },
+        {
+          "name": "legacy",
+          "code": null,
+          "ID": "lbywavq8cvtztge5ypv"
         }
       ],
       "dirty": 1
@@ -6951,7 +7044,12 @@
           "ComponentType": "DataGrid",
           "ComponentName": "DataGrid-1",
           "state": [],
-          "styles": [],
+          "styles": [
+            {
+              "Key": "margin",
+              "Value": "Xxl/2"
+            }
+          ],
           "events": [
             {
               "event": "onRowClick",
@@ -7021,6 +7119,10 @@
             {
               "Key": "gap",
               "Value": "12px"
+            },
+            {
+              "Key": "margin",
+              "Value": "Lg/1"
             }
           ],
           "events": [],
@@ -7393,12 +7495,14 @@
               "Value": true
             },
             {
-              "Key": "margin-top",
-              "Value": "Sm/0.5"
+              "Key": "margin-top"
             },
             {
-              "Key": "margin-bottom",
-              "Value": "Md/0.75"
+              "Key": "margin-bottom"
+            },
+            {
+              "Key": "margin-left",
+              "Value": "Lg/1"
             }
           ],
           "events": [
@@ -7471,7 +7575,8 @@
               "boundTo": "pageno",
               "attribute": "page"
             }
-          ]
+          ],
+          "componentID": "lby2tb5jgo9t1cg33dq"
         },
         {
           "pageID": "lbmbm5t0nj7lhq2nqjo",
@@ -7500,7 +7605,7 @@
             },
             {
               "Key": "margin-left",
-              "Value": "Xs/0.25"
+              "Value": "Lg/1"
             },
             {
               "Key": "margin-top",
@@ -7651,6 +7756,107 @@
           "data": [],
           "ID": "lbv0chr1sxbn4mt5h1r",
           "order": 632
+        },
+        {
+          "pageID": "lbmbm5t0nj7lhq2nqjo",
+          "ComponentType": "Box",
+          "ComponentName": "pages",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "32px"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            },
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Sm/0.5"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lby2tb5jgo9t1cg33dq",
+          "order": 109
+        },
+        {
+          "pageID": "lbmbm5t0nj7lhq2nqjo",
+          "ComponentType": "Spacer",
+          "ComponentName": "Spacer-2",
+          "componentID": "lby2tb5jgo9t1cg33dq",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lby2wf1bz0p2ajlpv5h",
+          "order": 732
+        },
+        {
+          "pageID": "lbmbm5t0nj7lhq2nqjo",
+          "ComponentType": "Typography",
+          "ComponentName": "page count",
+          "componentID": "lby2tb5jgo9t1cg33dq",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            },
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-right",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "caption"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": " {row_count} albums in your library"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lby2wwhgdhkkbfbg1b5",
+          "order": 832
         }
       ],
       "appID": 2,
@@ -7704,11 +7910,6 @@
           "name": "album data loaded",
           "code": "function handleDataLoaded (page, options) {\n  const { state, setState, data } = options; \n   console.log ({ data })\n\n  !!data?.count && setState(s => ({...s, \n     page_count: Math.ceil(data.count / 100),\n     row_count: data.count,\n     records: data.records\n  }))\n}\n",
           "ID": "lbmfdge9vt0j4urjuv"
-        },
-        {
-          "name": "console.log",
-          "code": "function n (page, options) {\n console.log ({options});\n}\n",
-          "ID": "lbn0vpit478vhodwduh"
         }
       ],
       "ThemeName": "plain",
@@ -7896,6 +8097,15 @@
               },
               "ID": 1,
               "componentID": "lbf37pdcenvr4bfy678"
+            },
+            {
+              "event": "onEnterPress",
+              "action": {
+                "type": "setState",
+                "target": "application.hero_open",
+                "value": false
+              },
+              "ID": "lc07jwycpftxc6byhhr"
             }
           ],
           "settings": [
@@ -8718,6 +8928,10 @@
             {
               "Key": "margin-bottom",
               "Value": "Sm/0.5"
+            },
+            {
+              "Key": "margin-left",
+              "Value": "Lg/1"
             }
           ],
           "events": [],
@@ -8754,7 +8968,12 @@
           "ComponentName": "Link-1",
           "componentID": "lbq47vzgny54ikegbl",
           "state": [],
-          "styles": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
           "events": [
             {
               "event": "onClick",
@@ -8823,7 +9042,12 @@
           "ComponentName": "Link-2",
           "componentID": "lbq47vzgny54ikegbl",
           "state": [],
-          "styles": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
           "events": [
             {
               "event": "onClick",
@@ -9023,6 +9247,14 @@
             {
               "Key": "color",
               "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
+            },
+            {
+              "Key": "line-height",
+              "Value": "3rem"
             }
           ],
           "events": [],
@@ -9058,7 +9290,11 @@
             },
             {
               "Key": "color",
-              "Value": "#f6efee"
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
             }
           ],
           "events": [],
@@ -9094,7 +9330,11 @@
             },
             {
               "Key": "color",
-              "Value": "#f8f2f2"
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
             }
           ],
           "events": [],
@@ -9116,6 +9356,50 @@
           "data": [],
           "ID": "lbvhelq77ygcv3w2ri5",
           "order": 2107
+        },
+        {
+          "pageID": "lbmcu13u56x4x9ptqgu",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-8",
+          "componentID": "lbulcmf38uyidi4vym2",
+          "state": [],
+          "styles": [
+            {
+              "Key": "color-custom",
+              "Value": true
+            },
+            {
+              "Key": "color",
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
+            },
+            {
+              "Key": "line-height",
+              "Value": "1rem"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "button"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "ALBUM"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbxh69k64j2uv22y7k6",
+          "order": 2007
         }
       ],
       "appID": 2,
@@ -10208,13 +10492,8 @@
         },
         {
           "name": "goto list",
-          "code": "function gotoList (page, options) {\n  const { data, api, setState } = options; \n   const createKey = (name) => name.replace(/[\\s\\&\\-]/g, \"\").toLowerCase();\n  \n  api.openPath('playlist', { listname: createKey(data.text) })\n}\n",
+          "code": "function gotoList (page, options) {\n  const { data, api, setState } = options; \n  const createKey = (name) => name.replace(/[\\s\\&\\-]/g, \"\").toLowerCase();\n  \n  api.openPath('playlist', { listname: createKey(data.text) })\n}\n",
           "ID": "lbqjs394vlj9xyqllog"
-        },
-        {
-          "name": "transform save request",
-          "code": "async function transformSaveRequest (page, options) {\n  const { state, data, application, setState } = options; \n \n  let transformed = data;\n \n  console.log ({  transformed })\n\n  return transformed;\n}\n",
-          "ID": "lbrcnep7rn1mngr2k8p"
         }
       ],
       "ThemeName": "plain",
@@ -10876,12 +11155,12 @@
               "Value": "#f6efef"
             },
             {
-              "Key": "text-shadow",
-              "Value": "0px 3px 1px -2px rgba(0,0,0,0.2),0px 2px 2px 0px rgba(0,0,0,0.14),0px 1px 5px 0px rgba(0,0,0,0.12)"
+              "Key": "mix-blend-mode",
+              "Value": "difference"
             },
             {
-              "Key": "mix-blend-mode",
-              "Value": "luminosity"
+              "Key": "line-height",
+              "Value": "2.8rem"
             }
           ],
           "events": [],
@@ -10917,7 +11196,11 @@
             },
             {
               "Key": "color",
-              "Value": "#f6efee"
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
             }
           ],
           "events": [],
@@ -10959,6 +11242,50 @@
               "attribute": "in"
             }
           ]
+        },
+        {
+          "pageID": "lbqj1v9h1r7gbkw32ls",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-5",
+          "componentID": "lbulcmf38uyidi4vym2",
+          "state": [],
+          "styles": [
+            {
+              "Key": "color-custom",
+              "Value": true
+            },
+            {
+              "Key": "color",
+              "Value": "#f6efef"
+            },
+            {
+              "Key": "mix-blend-mode",
+              "Value": "difference"
+            },
+            {
+              "Key": "line-height",
+              "Value": "1rem"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "button"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "PLAYLIST"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbxhg09q7n250awyh3l",
+          "order": 2007
         }
       ],
       "appID": 2,
@@ -12523,12 +12850,2272 @@
       ]
     },
     {
-      "PageName": "test",
-      "PagePath": "test",
+      "PageName": "Splash",
+      "PagePath": "splash",
       "pageID": null,
-      "components": [],
+      "components": [
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Carousel",
+          "ComponentName": "Carousel-1",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "speed",
+              "SettingValue": 10
+            },
+            {
+              "SettingName": "empty-message",
+              "SettingValue": "No images to display"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbyzz5naimo72b002gb",
+          "order": 50,
+          "boundProps": [
+            {
+              "boundTo": "carousel_images",
+              "attribute": "images"
+            }
+          ]
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Repeater",
+          "ComponentName": "Repeater-1",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "grid"
+            },
+            {
+              "Key": "grid-template-rows",
+              "Value": 6
+            },
+            {
+              "Key": "grid-template-columns",
+              "Value": 6
+            },
+            {
+              "Key": "gap",
+              "Value": "12px"
+            },
+            {
+              "Key": "height",
+              "Value": "920px"
+            },
+            {
+              "Key": "margin",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "emptyMessage",
+              "SettingValue": "No records to display."
+            },
+            {
+              "SettingName": "bindings",
+              "SettingValue": "{\"dirty\":1,\"resourceID\":\"lbyyrs9a3viw05jvd3l\",\"bindings\":{\"Thumbnail\":{\"title\":\"InfoCard-1.image\",\"componentID\":\"lbz0em5hahwula1qlj7\",\"SettingName\":\"image\"},\"Name\":{\"title\":\"InfoCard-1.label\",\"componentID\":\"lbz0em5hahwula1qlj7\",\"SettingName\":\"label\"},\"Caption\":{\"title\":\"InfoCard-1.subtext\",\"componentID\":\"lbz0em5hahwula1qlj7\",\"SettingName\":\"subtext\"}}}"
+            },
+            {
+              "SettingName": "use_id",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "selectedColumn",
+              "SettingValue": "ID"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0eae6eejq7y19x8l",
+          "order": 300,
+          "boundProps": [
+            {
+              "boundTo": "selected_item_id",
+              "attribute": "selectedID"
+            }
+          ]
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "InfoCard",
+          "ComponentName": "InfoCard-1",
+          "componentID": "lbz0eae6eejq7y19x8l",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [
+            {
+              "event": "onCardClick",
+              "action": {
+                "type": "scriptRun",
+                "target": "lbz31d8dh19wqwa6dy"
+              },
+              "ID": "lbz34r70v3v0lmn8aor"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "image_height",
+              "SettingValue": "200"
+            },
+            {
+              "SettingName": "use_image",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "below_image",
+              "SettingValue": true
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0em5hahwula1qlj7",
+          "order": 400
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Divider",
+          "ComponentName": "artist header",
+          "children": true,
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "textAlign",
+              "SettingValue": "left"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0o658vogbnypinm8",
+          "order": 200
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "IconButton",
+          "ComponentName": "IconButton-1",
+          "componentID": "lbz0ptgaucx5zxhv7m",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "icon",
+              "SettingValue": "People"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0oj4ajg9eqrbpbmb",
+          "order": 500
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-1",
+          "componentID": "lbz0ptgaucx5zxhv7m",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "subtitle1"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "Top Artists"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0p9f7afgj9skfs5u",
+          "order": 600
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Box",
+          "ComponentName": "Box-1",
+          "componentID": "lbz0o658vogbnypinm8",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "height",
+              "Value": "inherit"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "justify-content",
+              "Value": "flex-start"
+            },
+            {
+              "Key": "justify-items",
+              "Value": "center"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0ptgaucx5zxhv7m",
+          "order": 450
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Box",
+          "ComponentName": "Box-2",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "inherit"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            },
+            {
+              "Key": "gap",
+              "Value": "8px"
+            },
+            {
+              "Key": "padding",
+              "Value": "Sm/0.5"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0z2gnvref8zo60um",
+          "order": 25
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Avatar",
+          "ComponentName": "Avatar-1",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onImageLoad",
+              "action": {
+                "type": "dataExec",
+                "target": "lbyyrs9a3viw05jvd3l"
+              },
+              "ID": "lbz12c5lc8jm4478kzw"
+            },
+            {
+              "event": "onImageLoad",
+              "action": {
+                "type": "dataExec",
+                "target": "lbz1bzszkrvnntd6kv"
+              },
+              "ID": "lbz1hiv1ykcmocgc4df"
+            },
+            {
+              "event": "onImageLoad",
+              "action": {
+                "type": "setState",
+                "value": "0",
+                "target": "application.selected_list_index"
+              },
+              "ID": "lbzkiabzug1fpecg4m"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "children",
+              "SettingValue": "MJ"
+            },
+            {
+              "SettingName": "src",
+              "SettingValue": "https://www.sky-tunes.com/assets/icon-72x72.png"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0za0o6flqfnoxnp4",
+          "order": 700
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-2",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "h6"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "Welcome to Boombot"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz0zgwfqi4llq7cunp",
+          "order": 800
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "IconButton",
+          "ComponentName": "IconButton-2",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "modalOpen",
+                "target": "lbicgeh04batv4fdkt3",
+                "open": true
+              },
+              "ID": "lbz14vxw3mev46w6qth"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "icon",
+              "SettingValue": "Menu"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz13gty5qt5wpwvomf",
+          "order": 650
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Divider",
+          "ComponentName": "Divider-2",
+          "children": true,
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "textAlign",
+              "SettingValue": "left"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1fiylc3jgljg5dtm",
+          "order": 900
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Repeater",
+          "ComponentName": "Repeater-2",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "grid"
+            },
+            {
+              "Key": "grid-template-columns",
+              "Value": 6
+            },
+            {
+              "Key": "gap",
+              "Value": "12px"
+            },
+            {
+              "Key": "margin",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "emptyMessage",
+              "SettingValue": "No records to display."
+            },
+            {
+              "SettingName": "bindings",
+              "SettingValue": "{\"dirty\":1,\"resourceID\":\"lbz1bzszkrvnntd6kv\",\"bindings\":{\"Name\":{\"title\":\"InfoCard-2.label\",\"componentID\":\"lbz1fvys29cgu7fbzhi\",\"SettingName\":\"label\"},\"Caption\":{\"title\":\"InfoCard-2.subtext\",\"componentID\":\"lbz1fvys29cgu7fbzhi\",\"SettingName\":\"subtext\"},\"Thumbnail\":{\"title\":\"InfoCard-2.image\",\"componentID\":\"lbz1fvys29cgu7fbzhi\",\"SettingName\":\"image\"}}}"
+            },
+            {
+              "SettingName": "use_id",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "selectedColumn",
+              "SettingValue": "ID"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1fp29jrl254jy2g",
+          "order": 1000,
+          "boundProps": [
+            {
+              "boundTo": "selected_item_id",
+              "attribute": "selectedID"
+            }
+          ]
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "InfoCard",
+          "ComponentName": "InfoCard-2",
+          "componentID": "lbz1fp29jrl254jy2g",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [
+            {
+              "event": "onCardClick",
+              "action": {
+                "type": "scriptRun",
+                "target": "lbz20smdz8f4cqnrq2"
+              },
+              "ID": "lbz239ihb6opriiaveh"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "image_height",
+              "SettingValue": "200"
+            },
+            {
+              "SettingName": "use_image",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "below_image",
+              "SettingValue": true
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1fvys29cgu7fbzhi",
+          "order": 1100
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "IconButton",
+          "ComponentName": "IconButton-3",
+          "componentID": "lbz1mbm20dovxgdpszvi",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "icon",
+              "SettingValue": "Album"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1lsfaf48w871ke5t",
+          "order": 1200
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Box",
+          "ComponentName": "Box-3",
+          "componentID": "lbz1fiylc3jgljg5dtm",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "height",
+              "Value": "inherit"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "justify-content",
+              "Value": "flex-start"
+            },
+            {
+              "Key": "justify-items",
+              "Value": "center"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1mbm20dovxgdpszvi",
+          "order": 1150
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-3",
+          "componentID": "lbz1mbm20dovxgdpszvi",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "body1"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "Top Albums"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz1mutjwn2kujb1kzq",
+          "order": 1300
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Spacer",
+          "ComponentName": "Spacer-1",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz3e50gfzocl6zw4vt",
+          "order": 1400
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Textbox",
+          "ComponentName": "Textbox-1",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onEnterPress",
+              "action": {
+                "type": "openLink",
+                "target": "lbf2xcjqu3abexk6uhk",
+                "params": {
+                  "param": "search_param"
+                }
+              },
+              "ID": "lbz3h009hufma9za3n"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "label",
+              "SettingValue": "Search for music"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "outlined"
+            },
+            {
+              "SettingName": "value",
+              "SettingValue": "Textbox component"
+            },
+            {
+              "SettingName": "size",
+              "SettingValue": "small"
+            },
+            {
+              "SettingName": "margin",
+              "SettingValue": "normal"
+            },
+            {
+              "SettingName": "autoComplete",
+              "SettingValue": "off"
+            },
+            {
+              "SettingName": "placeholder",
+              "SettingValue": "Type a song, album or artist"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz3eb2kvuywzecn8t",
+          "order": 1500,
+          "boundProps": [
+            {
+              "boundTo": "search_param",
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "pageID": "lbx6k8bc1on20678gtp",
+          "ComponentType": "Button",
+          "ComponentName": "Button-1",
+          "componentID": "lbz0z2gnvref8zo60um",
+          "state": [],
+          "styles": [
+            {
+              "Key": "text-transform",
+              "Value": "capitalize"
+            },
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-right",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "openLink",
+                "target": "lbf2xcjqu3abexk6uhk",
+                "params": {
+                  "param": "search_param"
+                }
+              },
+              "ID": "lbz3hbqz4ejh6gjfj8i"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Search"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "contained"
+            },
+            {
+              "SettingName": "end",
+              "SettingValue": "Search"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lbz3efkyc8ksv07wcsi",
+          "order": 1600
+        }
+      ],
       "appID": 2,
-      "ID": "lbx6k8bc1on20678gtp"
+      "ID": "lbx6k8bc1on20678gtp",
+      "scripts": [
+        {
+          "name": "populate artist images",
+          "code": "function populateArtistImages (page, options) {\n  const { data, setState } = options; \n \n  if (!data?.length) return;\n\n  const carousel_images = data \n    .map(row => ({\n       text: row.Name,\n       subtext: row.Caption,\n       value: row.ID,\n       src: row.imageLg\n     }));\n\n  setState(state => ({\n    ...state,\n    carousel_images\n  }));\n \n}\n",
+          "ID": "lbyzng65ic8u29ml9v8"
+        },
+        {
+          "name": "filter for artists",
+          "code": "function filterForArtists (page, options) {\n  const { api, data, setState } = options; \n  if (!data) return data;\n\n  // shuffle the response and return the first 18 rows\n  return api.shuffle(data)\n    .filter(row => !!row.imageLg && row.imageLg.indexOf('http') > -1)\n    .slice(0, 18);\n}\n",
+          "ID": "lbz07ojqvmfu9w7std8"
+        },
+        {
+          "name": "filter for albums",
+          "code": "function filterForAlbums (page, options) {\n  const { api, data, setState } = options; \n  if (!data) return data;\n\n  // shuffle the response and return the first 18 rows\n  return api.shuffle(data).filter(f => f.Type === 'album').slice(0, 18)\n}\n",
+          "ID": "lbz1d6ds2np7gqxgzwg"
+        },
+        {
+          "name": "album click",
+          "code": "async function albumClick (page, options) {\n  const { data, api, application } = options; \n  if (!data?.Name) return;\n  const { ID } = data.Name.record\n\n  api.shout ({ ID, data }, 'Album was clicked!!');\n\n  const request = `discNumber,trackNumber/ASC/1/album/${ID}`;\n  const records = await api.execResourceByName('Album Detail', request);\n \n  api.executeScriptByName('create play list', { records });\n  api.shout( { records }, 'Got album info' )\n  api.executeScriptByName('set current track', {\n     ...records[0],\n     row: 0\n  });\n\n\n  application.setState(state => ({\n    ...state,\n    selected_item_id: ID\n  }));\n\n\n}\n",
+          "ID": "lbz20smdz8f4cqnrq2"
+        },
+        {
+          "name": "artist click",
+          "code": "async function artistClick (page, options) {\n  const { data, api, application } = options; \n  if (!data?.Name) return;\n  const { ID } = data.Name.record\n\n  api.shout ({ ID, data }, 'Artist was clicked!!');\n\n  const request = `albumFk, discNumber, trackNumber/ASC/1/artist/${ID}`;\n  const records = await api.execResourceByName('Artist Detail', request);\n \n  api.executeScriptByName('create play list', { records });\n  api.shout( { records }, 'Got album info' )\n  api.executeScriptByName('set current track', {\n     ...records[0],\n     row: 0\n  });\n  \n  application.setState(state => ({\n    ...state,\n    selected_item_id: ID\n  }))\n\n}\n",
+          "ID": "lbz31d8dh19wqwa6dy"
+        }
+      ],
+      "state": [
+        {
+          "Key": "carousel_images",
+          "Value": "",
+          "Type": "object",
+          "ID": "lbyzx4upznj4fxut0k"
+        },
+        {
+          "Key": "search_param",
+          "Value": "",
+          "Type": "string",
+          "ID": "lbz3dkxcy9sp9c00sg"
+        },
+        {
+          "Key": "selected_item_id",
+          "Value": "",
+          "Type": "string",
+          "ID": "lbz5ar3gbmxflmdhgu"
+        }
+      ],
+      "dirty": 1
+    },
+    {
+      "PageName": "form",
+      "PagePath": "form",
+      "pageID": null,
+      "components": [
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-1",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "start"
+            },
+            {
+              "Key": "width",
+              "Value": "400px"
+            },
+            {
+              "Key": "height",
+              "Value": "fir-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "column"
+            },
+            {
+              "Key": "gap",
+              "Value": "4px"
+            },
+            {
+              "Key": "justify-content",
+              "Value": "flex-start"
+            },
+            {
+              "Key": "justify-items",
+              "Value": "start"
+            },
+            {
+              "Key": "grid-template-columns",
+              "Value": 1
+            },
+            {
+              "Key": "grid-template-rows",
+              "Value": 5
+            },
+            {
+              "Key": "align-items",
+              "Value": ""
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0856vzm45xnmts04",
+          "order": 100,
+          "componentID": "lc0ai89nzg8hdopi0lc"
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Textbox",
+          "ComponentName": "title",
+          "componentID": "lc0a94nb0t8kv8c9iza",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "label",
+              "SettingValue": "Title"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "outlined"
+            },
+            {
+              "SettingName": "value",
+              "SettingValue": "{application.track} "
+            },
+            {
+              "SettingName": "size",
+              "SettingValue": "small"
+            },
+            {
+              "SettingName": "margin",
+              "SettingValue": "dense"
+            },
+            {
+              "SettingName": "autoComplete",
+              "SettingValue": "off"
+            },
+            {
+              "SettingName": "value-free",
+              "SettingValue": false
+            },
+            {
+              "SettingName": "fullWidth",
+              "SettingValue": true
+            },
+            {
+              "SettingName": "autoFocus",
+              "SettingValue": true
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc085npsctai45h5ow",
+          "order": 200,
+          "boundProps": [
+            {
+              "boundTo": "application.Title",
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Textbox",
+          "ComponentName": "track",
+          "componentID": "lc08jeztg65days0o5g",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "label",
+              "SettingValue": "Track Number"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "outlined"
+            },
+            {
+              "SettingName": "value",
+              "SettingValue": " {undefined} "
+            },
+            {
+              "SettingName": "size",
+              "SettingValue": "small"
+            },
+            {
+              "SettingName": "margin",
+              "SettingValue": "normal"
+            },
+            {
+              "SettingName": "autoComplete",
+              "SettingValue": "off"
+            },
+            {
+              "SettingName": "value-free",
+              "SettingValue": false
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc087dqyerummh7fkji",
+          "order": 300,
+          "boundProps": [
+            {
+              "boundTo": "application.trackNumber",
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-2",
+          "componentID": "lc0856vzm45xnmts04",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "gap",
+              "Value": "8px"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc08jeztg65days0o5g",
+          "order": 350
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Textbox",
+          "ComponentName": "disc",
+          "componentID": "lc08jeztg65days0o5g",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "label",
+              "SettingValue": "Disc Number"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "outlined"
+            },
+            {
+              "SettingName": "value",
+              "SettingValue": "Textbox component"
+            },
+            {
+              "SettingName": "size",
+              "SettingValue": "small"
+            },
+            {
+              "SettingName": "margin",
+              "SettingValue": "normal"
+            },
+            {
+              "SettingName": "autoComplete",
+              "SettingValue": "off"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc08k8nru99u5potj8",
+          "order": 500,
+          "boundProps": [
+            {
+              "boundTo": "application.discNumber",
+              "attribute": "value"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-3",
+          "componentID": "lc0856vzm45xnmts04",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "gap",
+              "Value": "12px"
+            },
+            {
+              "Key": "justify-items",
+              "Value": "center"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0a94nb0t8kv8c9iza",
+          "order": 150
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Avatar",
+          "ComponentName": "Avatar-1",
+          "componentID": "lc0a94nb0t8kv8c9iza",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "children",
+              "SettingValue": "MJ"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "rounded"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0aaadtavcdeo6d1uo",
+          "order": 175,
+          "boundProps": [
+            {
+              "boundTo": "application.albumImage",
+              "attribute": "src"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-4",
+          "componentID": "lc0856vzm45xnmts04",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "overflow"
+            },
+            {
+              "Key": "gap",
+              "Value": "12px"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0abosqor5ixmqxq3h",
+          "order": 800
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "IconButton",
+          "ComponentName": "IconButton-1",
+          "componentID": "lc0abosqor5ixmqxq3h",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "dataExec",
+                "target": "lc0jvz81oo1gf9v7grh",
+                "terms": {
+                  "apple_term": "application.Title"
+                }
+              },
+              "ID": "lc0k0n60r6xvqzta28"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "icon",
+              "SettingValue": "Apple"
+            },
+            {
+              "SettingName": "color",
+              "SettingValue": "success"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0achi14w4828mut42",
+          "order": 900
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Button",
+          "ComponentName": "Button-1",
+          "componentID": "lc0abosqor5ixmqxq3h",
+          "state": [],
+          "styles": [
+            {
+              "Key": "text-transform",
+              "Value": "capitalize"
+            }
+          ],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "setState",
+                "target": "open",
+                "value": false
+              },
+              "ID": "lc0pvkb0j7ju0vp409j"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Cancel"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "outlined"
+            },
+            {
+              "SettingName": "end",
+              "SettingValue": "Close"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0acmljdffne7tvkmc",
+          "order": 1000
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Button",
+          "ComponentName": "Button-2",
+          "componentID": "lc0abosqor5ixmqxq3h",
+          "state": [],
+          "styles": [
+            {
+              "Key": "text-transform",
+              "Value": "capitalize"
+            }
+          ],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "dataExec",
+                "target": "lc0lifmfmurg9xvna7g"
+              },
+              "ID": "lc0m7y1z2txhb5z6ev2"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Save"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "contained"
+            },
+            {
+              "SettingName": "end",
+              "SettingValue": "Save"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0acqfv1pes9iih02",
+          "order": 1100
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Spacer",
+          "ComponentName": "Spacer-1",
+          "componentID": "lc0abosqor5ixmqxq3h",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0acx35lqnz174wzj",
+          "order": 950
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Divider",
+          "ComponentName": "Divider-1",
+          "componentID": "lc0856vzm45xnmts04",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Lg/1"
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0ah86ybgucn9els07",
+          "order": 750
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Card",
+          "ComponentName": "Card-1",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "padding",
+              "Value": "Lg/1"
+            },
+            {
+              "Key": "width",
+              "Value": "400px"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0ai89nzg8hdopi0lc",
+          "order": 1200,
+          "componentID": "lc0kwd3zdi2gq94idn8"
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-1",
+          "componentID": "lc0ai89nzg8hdopi0lc",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "h6"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "Edit Track Information"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0ajhintvraoibdxrj",
+          "order": 50
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Divider",
+          "ComponentName": "Divider-2",
+          "componentID": "lc0ai89nzg8hdopi0lc",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Lg/1"
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Sm/0.5"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0akbcm4vahs756hu8",
+          "order": 75
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Autocomplete",
+          "ComponentName": "Autocomplete-1",
+          "componentID": "lc0856vzm45xnmts04",
+          "state": [],
+          "styles": [
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [
+            {
+              "event": "onValueChanged",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0h1uw46vn7pcdku6o"
+              },
+              "ID": "lc0h4oys76on8jr6bxe"
+            },
+            {
+              "event": "onValueSelected",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0hc9agro7fz55g11p"
+              },
+              "ID": "lc0hera3w39i72xb44"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "throttle_speed",
+              "SettingValue": "1000"
+            },
+            {
+              "SettingName": "label",
+              "SettingValue": "Album"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0gwikg3qsrrid4qq1",
+          "order": 550,
+          "boundProps": [
+            {
+              "boundTo": "application.albumName",
+              "attribute": "value"
+            },
+            {
+              "boundTo": "album_results",
+              "attribute": "options"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Autocomplete",
+          "ComponentName": "Autocomplete-2",
+          "componentID": "lc0856vzm45xnmts04",
+          "state": [],
+          "styles": [
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Sm/0.5"
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [
+            {
+              "event": "onValueChanged",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0i0rfv0ehpwvl9keri"
+              },
+              "ID": "lc0i8g6horm5972x8y"
+            },
+            {
+              "event": "onValueSelected",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0ibgu5u67del7yjyq"
+              },
+              "ID": "lc0icw12l96j6n54p4o"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "throttle_speed",
+              "SettingValue": "1000"
+            },
+            {
+              "SettingName": "label",
+              "SettingValue": "Artist"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0i5yzn9fbvtw8nitv",
+          "order": 375,
+          "boundProps": [
+            {
+              "boundTo": "application.artistName",
+              "attribute": "value"
+            },
+            {
+              "boundTo": "artist_results",
+              "attribute": "options"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Autocomplete",
+          "ComponentName": "Autocomplete-3",
+          "componentID": "lc0856vzm45xnmts04",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onValueChanged",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0imr9e81eb4hx9faq"
+              },
+              "ID": "lc0irmhal8chvstevnl"
+            },
+            {
+              "event": "onValueSelected",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0in2pemk4knmd028b"
+              },
+              "ID": "lc0irtvk2t6d6sqz5bs"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "throttle_speed",
+              "SettingValue": "1000"
+            },
+            {
+              "SettingName": "label",
+              "SettingValue": "Genre"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0ig2lmkvhad5keuvi",
+          "order": 625,
+          "boundProps": [
+            {
+              "boundTo": "application.Genre",
+              "attribute": "value"
+            },
+            {
+              "boundTo": "genre_results",
+              "attribute": "options"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "List",
+          "ComponentName": "List-1",
+          "componentID": "lc0kvgcw7l53zdvvgj6",
+          "state": [],
+          "styles": [
+            {
+              "Key": "width",
+              "Value": "400px"
+            }
+          ],
+          "events": [
+            {
+              "event": "onItemClick",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0njx3m1za6qc1p7rx"
+              },
+              "ID": "lc0nljag79huqgrxujj"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "selectedColor",
+              "SettingValue": "success"
+            },
+            {
+              "SettingName": "empty message",
+              "SettingValue": "No items to display"
+            },
+            {
+              "SettingName": "subheader",
+              "SettingValue": "Apple Results"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0ktrm9rk2xd2thub8",
+          "order": 1300,
+          "boundProps": [
+            {
+              "boundTo": "apple_results",
+              "attribute": "items"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-5",
+          "componentID": "lc0kxrfxxvg3skrakk",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "400px"
+            },
+            {
+              "Key": "height",
+              "Value": "400px"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            },
+            {
+              "Key": "overflow",
+              "Value": "auto"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0kvgcw7l53zdvvgj6",
+          "order": 1400
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Collapse",
+          "ComponentName": "form",
+          "children": true,
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0kwd3zdi2gq94idn8",
+          "order": 1500,
+          "boundProps": [
+            {
+              "boundTo": "form_open",
+              "attribute": "in"
+            }
+          ],
+          "componentID": "lc0pnxz2t6bhzq6vjq"
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Collapse",
+          "ComponentName": "list",
+          "children": true,
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0kxrfxxvg3skrakk",
+          "order": 1600,
+          "boundProps": [
+            {
+              "boundTo": "list_open",
+              "attribute": "in"
+            }
+          ],
+          "componentID": "lc0pnxz2t6bhzq6vjq"
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-6",
+          "componentID": "lc0kxrfxxvg3skrakk",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "400px"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "row"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0l23i50qz5jm3mbgc",
+          "order": 1350
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "IconButton",
+          "ComponentName": "IconButton-2",
+          "componentID": "lc0l23i50qz5jm3mbgc",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "setState",
+                "target": "list_open",
+                "value": false
+              },
+              "ID": "lc0l3nh98uqcpxj65xi"
+            },
+            {
+              "event": "onClick",
+              "action": {
+                "type": "setState",
+                "target": "form_open",
+                "value": true
+              },
+              "ID": "lc0l3v67wyxobu6d7u9"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "icon",
+              "SettingValue": "Close"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0l2rsykeoyv6yb0mt",
+          "order": 1700
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Spacer",
+          "ComponentName": "Spacer-2",
+          "componentID": "lc0l23i50qz5jm3mbgc",
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0l33fczbipr7uggz",
+          "order": 1650
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Drawer",
+          "ComponentName": "edit form",
+          "children": true,
+          "state": [],
+          "styles": [],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "anchor",
+              "SettingValue": "bottom"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0pnq15httiekznqu",
+          "order": 1800,
+          "boundProps": [
+            {
+              "boundTo": "open",
+              "attribute": "open"
+            }
+          ]
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Box",
+          "ComponentName": "Box-7",
+          "componentID": "lc0pnq15httiekznqu",
+          "children": true,
+          "state": [],
+          "styles": [
+            {
+              "Key": "display",
+              "Value": "flex"
+            },
+            {
+              "Key": "align-content",
+              "Value": "center"
+            },
+            {
+              "Key": "width",
+              "Value": "100%"
+            },
+            {
+              "Key": "height",
+              "Value": "fit-content"
+            },
+            {
+              "Key": "flex-direction",
+              "Value": "column"
+            },
+            {
+              "Key": "min-heignt",
+              "Value": "400px"
+            },
+            {
+              "Key": "justify-items",
+              "Value": "center"
+            },
+            {
+              "Key": "justify-content",
+              "Value": "center"
+            },
+            {
+              "Key": "align-items",
+              "Value": "center"
+            },
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "padding-edges",
+              "Value": false
+            },
+            {
+              "Key": "margin",
+              "Value": "Lg/1"
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Lg/1"
+            },
+            {
+              "Key": "margin-left"
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Lg/1"
+            }
+          ],
+          "events": [],
+          "settings": [],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0pnxz2t6bhzq6vjq",
+          "order": 1900
+        },
+        {
+          "pageID": "lc083f2ah2qxm2a2bx5",
+          "ComponentType": "Button",
+          "ComponentName": "Button-3",
+          "state": [],
+          "styles": [
+            {
+              "Key": "text-transform",
+              "Value": "capitalize"
+            }
+          ],
+          "events": [
+            {
+              "event": "onClick",
+              "action": {
+                "type": "setState",
+                "target": "open",
+                "value": true
+              },
+              "ID": "lc0pwaahxerk6em5fi"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Button"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "contained"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0pqvnhwpae21ryydn",
+          "order": 2000
+        }
+      ],
+      "appID": 2,
+      "ID": "lc083f2ah2qxm2a2bx5",
+      "scripts": [
+        {
+          "name": "set current track",
+          "code": "function setCurrentTrack (page, options) {\n  const { application, setState, data, api } = options; \n\n  if (!data) return api.Alert('No data was received in the request!');  \n\n\n  api.shout(data, 'setting track')\n\n  application.setState(state => ({\n      ...state,\n      app_player_url: getPlayerURL(data.FileKey),\n      current_id: data.ID,\n      track: data.Title,\n      album_image: data.albumImage,\n      src: data.albumImage,\n      artist: data.artistName,\n      scrolling: data.Title?.length > 35,\n      selected_index: data.row,\n      selected_id: data.ID,\n    }));\n\n  api.executeScriptByName('set hero information', {\n    record: data \n  });\n\n const CLOUD_FRONT_URL = \"https://s3.amazonaws.com/box.import/\";\n const getPlayerURL = key => {\n    const audioURL = `${CLOUD_FRONT_URL}${key}`\n    .  replace(\"#\", \"%23\")\n      .replace(/\\+/g, \"%2B\");\n    return audioURL;\n  }\n\n}\n",
+          "parentID": "lbyw9rd5avm0daj32pr",
+          "ID": "lc08pu1f56vqi4kfetj"
+        },
+        {
+          "name": "star album search",
+          "code": "async function console (page, options) {\n  const { api, data } = options; \n\n  api.executeScriptByName('start search', {\n    ...data,\n    type: 'album'\n  });\n\n}\n\n",
+          "parentID": "lc0ij7hxar2te5j5fe",
+          "ID": "lc0h1uw46vn7pcdku6o"
+        },
+        {
+          "name": "set response value",
+          "code": "function setResponseValue (page, options) {\n  const { api, data, application } = options; \n  api.Alert(JSON.stringify(data));\n  application.setState(s => ({...s, albumName: data.text, albumFk: data.ID}))\n\n}\n",
+          "parentID": "lc0ij7hxar2te5j5fe",
+          "ID": "lc0hc9agro7fz55g11p"
+        },
+        {
+          "name": "start search",
+          "code": "async function startSearch (page, options) {\n  const { setState, api, data } = options; \n  api.shout({data}, 'typing at ' + new Date().getTime());\n\n  const request = `1/${data.type}/${data.value}`;\n  const response = await api.execResourceByName('Type Search', request);\n  api.shout(response, 'Got search response');\n\n // api.executeScriptByName('set album response', response);\n\n  api.executeScriptByName('record response', {\n    rows: response,\n    key: data.type + '_results'\n  });\n\n}\n\n",
+          "parentID": "lc0iiygvzv3lxpqlfw",
+          "ID": "lc0hkay92o4q07w46f9"
+        },
+        {
+          "name": "record response",
+          "code": "function setResponse (page, options) {\n  const { setState, data } = options; \n  \n  console.log ({data})\n\n  if (!(data.rows && data.rows.length)) return;\n\n  const results = !data.rows ? [] : data.rows.map(row => ({\n    text: row.Name || row.Genre,\n    image: row.Thumbnail || row.albumImage,\n    ID: row.ID\n  }));\n\n\n  setState(state => ({\n    ...state,\n    [data.key]: results\n  }))\n\n}\n\n",
+          "parentID": "lc0iiygvzv3lxpqlfw",
+          "ID": "lc0hscci1xxebyhezmji"
+        },
+        {
+          "name": "start artist search",
+          "code": "function startArtistSearch (page, options) {\n\n  const { api, data } = options; \n  api.executeScriptByName('start search', {\n    ...data,\n    type: 'artist'\n  });\n\n}\n",
+          "parentID": "lc0ij3evf6g5103kvf",
+          "ID": "lc0i0rfv0ehpwvl9keri"
+        },
+        {
+          "name": "set artist value",
+          "code": "function setArtistValue (page, options) {\n\n  const { api, data, application } = options; \n  api.Alert(JSON.stringify(data,0,2), 'artist response', 1);\n  application.setState(s => ({...s, artistName: data.text, artistFk: data.ID }))\n\n}\n",
+          "parentID": "lc0ij3evf6g5103kvf",
+          "ID": "lc0ibgu5u67del7yjyq"
+        },
+        {
+          "name": "global",
+          "code": null,
+          "ID": "lc0iiygvzv3lxpqlfw"
+        },
+        {
+          "name": "artist",
+          "code": null,
+          "ID": "lc0ij3evf6g5103kvf"
+        },
+        {
+          "name": "album",
+          "code": null,
+          "ID": "lc0ij7hxar2te5j5fe"
+        },
+        {
+          "name": "start genre search",
+          "code": "function startGenreSearch (page, options) {\n   const { api, data } = options; \n\n  api.executeScriptByName('start search', {\n    ...data,\n    type: 'genre'\n  });\n\n\n\n\n\n}\n",
+          "parentID": "lc0in9pe1k1kpa9sfbk",
+          "ID": "lc0imr9e81eb4hx9faq"
+        },
+        {
+          "name": "set genre response",
+          "code": "function setGenreResponse (page, options) {\n  const { api, data, application } = options; \n  api.Alert(JSON.stringify(data));\n  application.setState(s => ({...s, Genre: data.text}));\n}\n",
+          "parentID": "lc0in9pe1k1kpa9sfbk",
+          "ID": "lc0in2pemk4knmd028b"
+        },
+        {
+          "name": "genre",
+          "code": null,
+          "ID": "lc0in9pe1k1kpa9sfbk"
+        },
+        {
+          "name": "genre transform",
+          "code": "function genreTransform (page, options) {\n  const { data, setState } = options; \n\n\n  if (!data?.records) return data;\n\n\n  return {\n    ...data,\n    records: data.records.map(record => ({\n       ...record,\n       Name: record.Name || record.Genre,\n       Thumbnail: record.Thumbnail || record.albumImage\n    }))\n  };\n}\n",
+          "parentID": "lc0in9pe1k1kpa9sfbk",
+          "ID": "lc0j0yydansicxgti"
+        },
+        {
+          "name": "apple response",
+          "code": "function appleResponse (page, options) {\n  const { data, api, setState } = options; \n  api.shout(data, 'Got apple response');\n  if (!data?.results) return;\n\n  const apple_results = data.results.map(result => ({\n    text: result.trackName,\n    subtext: result.artistName,\n    avatar: result.artworkUrl100,\n    album: result.collectionName,\n    genre: result.primaryGenreName,\n    trackNumber: result.trackNumber,\n    discNumber: result.discNumber,\n    albumImage: result.artworkUrl100,\n    trackTime: result.trackTimeMillis\n  }));\n\n  setState(state => ({\n    ...state,\n     list_open: true,\n     form_open: false,\n     apple_results\n  }))\n\n}\n",
+          "ID": "lc0k1gimgrgge05cbgo"
+        },
+        {
+          "name": "transform update",
+          "code": "function transformUpdate (page, options) {\n  const {application} = options; \n  // add your code here\n   const {\nGenre  ,\n     ID ,\n     Title, \n     albumFk, \n     albumImage, \n     artistFk ,\n     discNumber, \n     trackNumber, \n     trackTime \n   } = application.state;\n\n\n\n\n  return  {\nGenre  ,\n     ID ,\n     Title, \n     albumFk, \n     albumImage, \n     artistFk ,\n     discNumber, \n     trackNumber, \n     trackTime \n   } \n\n}\n",
+          "ID": "lc0lkfpt22p42m7dfsc"
+        },
+        {
+          "name": "apple song selected",
+          "code": "async function appleSongSelected (page, options) {\n  const { data, api, setState, application } = options; \n\n  const artistLookup = {\n    type: 'artist',\n    name: data.subtext,\n    image: data.avatar\n  };\n\n  const albumLookup = {\n    type: 'album',\n    name: data.album,\n    image: data.avatar\n  };\n\n  const updated = {\n    artistName: data.subtext,\n    albumName: data.album ,\n    Genre: data.genre,\n    trackNumber: data.trackNumber,\n    discNumber: data.discNumber,\n    albumImage: data.albumImage,\n    trackTime: data.trackTime\n  };\n\n  const albumResponse = await api.execResourceByName('Curate', albumLookup);\n  const artistResponse = await api.execResourceByName('Curate', artistLookup);\n\n  !!albumResponse && Object.assign(updated, {\n     albumFk: albumResponse\n   }) \n \n  !!artistResponse && Object.assign(updated, {\n     artistFk: artistResponse\n   })\n\n   await api.Alert (JSON.stringify(updated,0,2), 'curated response', 1);\n\n   setState(state => ({\n     ...state,\n     list_open: false,\n     form_open: true\n   }));\n\n   application.setState(state => ({\n     ...state,\n     ...updated\n   }))\n\n}\n",
+          "ID": "lc0njx3m1za6qc1p7rx"
+        }
+      ],
+      "state": [
+        {
+          "Key": "album_results",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0h3wdx01cpc2ja93f"
+        },
+        {
+          "Key": "page",
+          "Value": "1",
+          "Type": "string",
+          "ID": "lc0h67g240vz7qkk0wr"
+        },
+        {
+          "Key": "type",
+          "Value": "album",
+          "Type": "string",
+          "ID": "lc0h67g3wj3f79vs4fa"
+        },
+        {
+          "Key": "artist_results",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0i7emo5jeznwwil66"
+        },
+        {
+          "Key": "genre_results",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0iqxd96imaqz9qwn7"
+        },
+        {
+          "Key": "apple_term",
+          "Value": "warm it up kriss kross",
+          "Type": "string",
+          "ID": "lc0k03j35cpc7wxqz45"
+        },
+        {
+          "Key": "apple_results",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0kryn8if17fvwm63"
+        },
+        {
+          "Key": "form_open",
+          "Value": true,
+          "Type": "boolean",
+          "ID": "lc0kzbtqs7s8la07gxq"
+        },
+        {
+          "Key": "list_open",
+          "Value": "",
+          "Type": "boolean",
+          "ID": "lc0kzbtrvhclc3qhvg"
+        },
+        {
+          "Key": "open",
+          "Value": true,
+          "Type": "boolean",
+          "ID": "lc0pr4tw5dsw99teiyt"
+        }
+      ]
+    },
+    {
+      "PageName": "auto",
+      "PagePath": "auto",
+      "pageID": null,
+      "components": [
+        {
+          "pageID": "lc0csaepu4iiyo49b1s",
+          "ComponentType": "Typography",
+          "ComponentName": "Typography-1",
+          "state": [],
+          "styles": [
+            {
+              "Key": "cursor",
+              "Value": "pointer"
+            },
+            {
+              "Key": "margin-edges",
+              "Value": true
+            },
+            {
+              "Key": "margin-top",
+              "Value": "Xxl/2"
+            },
+            {
+              "Key": "margin-bottom",
+              "Value": "Xxl/2"
+            }
+          ],
+          "events": [],
+          "settings": [
+            {
+              "SettingName": "Label",
+              "SettingValue": "Typography text"
+            },
+            {
+              "SettingName": "variant",
+              "SettingValue": "body1"
+            },
+            {
+              "SettingName": "children",
+              "SettingValue": "input value is  {inputValue} "
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0fuid1gtkkm925aue",
+          "order": 200
+        },
+        {
+          "pageID": "lc0csaepu4iiyo49b1s",
+          "ComponentType": "Autocomplete",
+          "ComponentName": "Autocomplete-1",
+          "state": [],
+          "styles": [],
+          "events": [
+            {
+              "event": "onValueChanged",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0dln5cdacshi3gklk"
+              },
+              "ID": "lc0fzivvllm6222246i"
+            },
+            {
+              "event": "onValueSelected",
+              "action": {
+                "type": "scriptRun",
+                "target": "lc0g6r696ny2zppd2xu"
+              },
+              "ID": "lc0g7ryiulrhq8tqeim"
+            }
+          ],
+          "settings": [
+            {
+              "SettingName": "throttle_speed",
+              "SettingValue": "100"
+            }
+          ],
+          "scripts": [],
+          "data": [],
+          "ID": "lc0fyw7k3fct5bo4mfl",
+          "order": 300,
+          "boundProps": [
+            {
+              "boundTo": "inputValue",
+              "attribute": "value"
+            },
+            {
+              "boundTo": "results",
+              "attribute": "options"
+            }
+          ]
+        }
+      ],
+      "appID": 2,
+      "ID": "lc0csaepu4iiyo49b1s",
+      "scripts": [
+        {
+          "name": "console",
+          "code": "async function console (page, options) {\n  const { setState, api, data } = options; \n  api.shout({data}, 'typing at ' + new Date().getTime());\n\n\n  const asyncState = fn => {\n    setState(state => {\n      fn(state);\n      return state; \n    })\n  }\n  \n  asyncState(async (state) => {\n    const { page, type } = state;\n\n    const request = `${page}/${type}/${data.value}`;\n    const response = await api.execResourceByName('Type Search', request);\n    api.shout(response, 'Got search response');\n    api.executeScriptByName('set response', response);\n  })\n\n}\n",
+          "ID": "lc0dln5cdacshi3gklk"
+        },
+        {
+          "name": "set response",
+          "code": "function setResponse (page, options) {\n  const { setState, data } = options; \n  if (!data.length) return;\n\n  const results = data.map(row => ({\n    text: row.Name,\n    image: row.Thumbnail\n  }));\n\n\n  setState(state => ({\n    ...state,\n    results\n  }))\n\n  console.log ({ data })\n}\n",
+          "ID": "lc0emhfgtrhapxt1gx"
+        },
+        {
+          "name": "select",
+          "code": "function select (page, options) {\n  const { api, data, setState } = options; \n  api.Alert(JSON.stringify(data));\n  setState(s => ({...s, inputValue: data.text}))\n}\n",
+          "ID": "lc0g6r696ny2zppd2xu"
+        }
+      ],
+      "state": [
+        {
+          "Key": "param",
+          "Value": "d12",
+          "Type": "string",
+          "ID": "lc0e4c6z37p7kc6945d"
+        },
+        {
+          "Key": "type",
+          "Value": "album",
+          "Type": "string",
+          "ID": "lc0e4g2mmx61k32xpna"
+        },
+        {
+          "Key": "page",
+          "Value": "1",
+          "Type": "number",
+          "ID": "lc0e4jjcimnbntqf6rd"
+        },
+        {
+          "Key": "results",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0ekw1a7mvmj2r873x"
+        },
+        {
+          "Key": "initial",
+          "Value": "start value before typing",
+          "Type": "string",
+          "ID": "lc0fpiaetd1rk6qbda8"
+        },
+        {
+          "Key": "inputValue",
+          "Value": "",
+          "Type": "string",
+          "ID": "lc0fu7crw1m48iitknj"
+        }
+      ]
     }
   ],
   "connections": [
@@ -13447,6 +16034,163 @@
           "ID": "lbvlt1xxbvpuzwrgpzi"
         }
       ]
+    },
+    {
+      "connectionID": 2,
+      "name": "Dashboard Artists",
+      "method": "GET",
+      "columns": [
+        "Thumbnail",
+        "Caption",
+        "Name",
+        "ID",
+        "imageLg",
+        "Type"
+      ],
+      "values": [],
+      "path": "/dash",
+      "format": "rest",
+      "ID": "lbyyrs9a3viw05jvd3l",
+      "node": "",
+      "events": [
+        {
+          "event": "dataLoaded",
+          "action": {
+            "type": "scriptRun",
+            "target": "lbyzng65ic8u29ml9v8"
+          },
+          "ID": "lbyzoqdfmsat70g3oro"
+        }
+      ],
+      "transform": {
+        "name": "filter for artists",
+        "code": "function filterForArtists (page, options) {\n  const { data, setState } = options; \n  if (!data) return data;\n\n\n  return data.filter(row => !!row.imageLg);\n\n}\n",
+        "ID": "lbz07ojqvmfu9w7std8",
+        "label": "filter for artists",
+        "page": "test"
+      }
+    },
+    {
+      "connectionID": 2,
+      "name": "Dashboard Albums",
+      "method": "GET",
+      "columns": [
+        "Type",
+        "ID",
+        "Name",
+        "imageLg",
+        "Caption",
+        "Thumbnail"
+      ],
+      "values": [],
+      "format": "rest",
+      "ID": "lbz1bzszkrvnntd6kv",
+      "path": "/dash",
+      "node": "",
+      "transform": {
+        "name": "filter for albums",
+        "code": "function filterForAlbums (page, options) {\n  const { data, setState } = options; \n  if (!data) return data;\n  return data.filter(f => f.Type === 'album').slice(0, 18)\n}\n",
+        "ID": "lbz1d6ds2np7gqxgzwg",
+        "label": "filter for albums",
+        "page": "test"
+      }
+    },
+    {
+      "connectionID": 2,
+      "name": "Type Search",
+      "method": "GET",
+      "columns": [
+        "ID",
+        "Name",
+        "Thumbnail",
+        "artistFk",
+        "collectionId",
+        "artistName",
+        "TrackCount"
+      ],
+      "values": [
+        {
+          "key": "page",
+          "value": "1"
+        },
+        {
+          "key": "type",
+          "value": "album"
+        },
+        {
+          "key": "param",
+          "value": "d12"
+        }
+      ],
+      "path": "/search",
+      "format": "rest",
+      "ID": "lc0eesa1ndybvyx0l0o",
+      "node": "records",
+      "transform": {
+        "name": "genre transform",
+        "code": "function genreTransform (page, options) {\n  const { state, setState } = options; \n  // add your code here\n}\n",
+        "ID": "lc0j0yydansicxgti",
+        "label": "genre transform",
+        "page": "form"
+      }
+    },
+    {
+      "connectionID": 2,
+      "name": "Apple Lookup",
+      "method": "GET",
+      "columns": [
+        "trackName",
+        "artistName",
+        "previewUrl",
+        "artworkUrl100",
+        "collectionName"
+      ],
+      "values": [
+        {
+          "key": "apple_term",
+          "value": "warm it up kriss kross"
+        }
+      ],
+      "path": "/apple",
+      "ID": "lc0jvz81oo1gf9v7grh",
+      "format": "rest",
+      "node": "results",
+      "events": [
+        {
+          "event": "dataLoaded",
+          "action": {
+            "type": "scriptRun",
+            "target": "lc0k1gimgrgge05cbgo"
+          },
+          "ID": "lc0khjbihaywmunkwhg"
+        }
+      ]
+    },
+    {
+      "connectionID": 2,
+      "name": "Music Update",
+      "method": "PUT",
+      "columns": [],
+      "values": [],
+      "path": "/update/s3Music",
+      "format": "rest",
+      "ID": "lc0lifmfmurg9xvna7g",
+      "transform": {
+        "name": "transform update",
+        "code": "function transformUpdate (page, options) {\n  const {application} = options; \n  // add your code here\n   const {\nGenre  ,\n     ID ,\n     Title, \n     albumFk, \n     albumImage, \n     artistFk ,\n     discNumber, \n     trackNumber, \n     trackTime \n   } = application.state;\n\n\n\n\n  return  {\nGenre  ,\n     ID ,\n     Title, \n     albumFk, \n     albumImage, \n     artistFk ,\n     discNumber, \n     trackNumber, \n     trackTime \n   } \n\n}\n",
+        "ID": "lc0lkfpt22p42m7dfsc",
+        "label": "transform update",
+        "page": "form"
+      }
+    },
+    {
+      "connectionID": 2,
+      "name": "Curate",
+      "method": "PUT",
+      "columns": [],
+      "values": [],
+      "path": "/find",
+      "ID": "lc0nc5lm8tjs0f4k41g"
     }
   ],
   "themes": [
@@ -14533,7 +17277,7 @@
       "settings": [
         {
           "SettingName": "items",
-          "SettingValue": "[{\"ID\":1,\"text\":\"Home\",\"value\":\"Home\",\"startIcon\":\"Home\",\"endIcon\":null,\"subtext\":null},{\"ID\":2,\"text\":\"Search\",\"value\":\"Search\",\"startIcon\":\"Search\",\"endIcon\":null,\"subtext\":null},{\"ID\":4,\"text\":\"Albums\",\"value\":\"Albums\",\"startIcon\":\"Album\",\"endIcon\":null,\"subtext\":null},{\"ID\":5,\"text\":\"Artists\",\"value\":\"Artists\",\"startIcon\":\"People\",\"endIcon\":null,\"subtext\":null},{\"ID\":6,\"text\":\"Playlists\",\"value\":\"Genres\",\"startIcon\":\"PlaylistAddCheckCircle\",\"endIcon\":null,\"subtext\":null},{\"ID\":7,\"text\":\"Genres\",\"value\":\"Genres\",\"startIcon\":\"LocalOffer\",\"endIcon\":null,\"subtext\":null}]"
+          "SettingValue": "[{\"ID\":1,\"text\":\"Home\",\"value\":\"Home\",\"startIcon\":\"Home\",\"endIcon\":null,\"subtext\":null},{\"ID\":2,\"text\":\"Library\",\"value\":\"Search\",\"startIcon\":\"LibraryMusic\",\"endIcon\":null,\"subtext\":null},{\"ID\":4,\"text\":\"Albums\",\"value\":\"Albums\",\"startIcon\":\"Album\",\"endIcon\":null,\"subtext\":null},{\"ID\":5,\"text\":\"Artists\",\"value\":\"Artists\",\"startIcon\":\"People\",\"endIcon\":null,\"subtext\":null},{\"ID\":6,\"text\":\"Playlists\",\"value\":\"Genres\",\"startIcon\":\"PlaylistAddCheckCircle\",\"endIcon\":null,\"subtext\":null},{\"ID\":7,\"text\":\"Genres\",\"value\":\"Genres\",\"startIcon\":\"LocalOffer\",\"endIcon\":null,\"subtext\":null}]"
         },
         {
           "SettingName": "selectedIndex",
@@ -16130,84 +18874,168 @@
       "Value": "",
       "Type": "string",
       "ID": "lbw894w677s8h191ddd"
+    },
+    {
+      "Key": "CLOUD_FRONT_URL",
+      "Value": "https://s3.amazonaws.com/box.import/",
+      "Type": "string",
+      "ID": "lbzlre1e8yvwyspgrt8"
+    },
+    {
+      "Key": "trackNumber",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09dg9oqybd80oq9v"
+    },
+    {
+      "Key": "discNumber",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09dg9ojpv95ne663r"
+    },
+    {
+      "Key": "artistName",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09dg9ofi5h51k7tqw"
+    },
+    {
+      "Key": "albumName",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09dg9oelt6p35e10m"
+    },
+    {
+      "Key": "Genre",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09dg9om68ginyrk3c"
+    },
+    {
+      "Key": "Title",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc09yzdsa0fdiq7dqf"
+    },
+    {
+      "Key": "albumImage",
+      "Value": "",
+      "Type": "string",
+      "ID": "lc0a765l0tvqnu9zhwc9"
     }
   ],
-  "HomePage": "lbj7y09boqopygn0edg",
+  "HomePage": "lbx6k8bc1on20678gtp",
   "scripts": [
     {
       "name": "set hero information",
-      "code": "async function setHeroImage (page, options) {\n  const { api, data, application } = options; \n\n  if (!data.record) return console.log('No record was found!');\n\n  const artist_fk = data.record.artistFk;\n \n\n  const request = `albumFk, discNumber, trackNumber/ASC/1/artist/${artist_fk}`;\n  const res = await api.execResourceByName('Artist Info', request);\n \n\n  const hero_open = res?.length && res[0].imageLg;\n\n  if (res?.length && res[0].imageLg) {\n     application.setState(s => ({\n        ...s,\n        hero_open,\n        banner_image: res[0].imageLg\n     }))\n  } else {\n     application.setState(s => ({\n        ...s,\n        hero_open, \n     })) \n  }\n\n\n}\n",
+      "code": "async function setHeroImage (page, options) {\n  const { api, data, application } = options; \n\n  if (!data.record) return console.log('No record was found!');\n\n  const artist_fk = data.record.artistFk;\n  const request = `albumFk, discNumber, trackNumber/ASC/1/artist/${artist_fk}`;\n  const response = await api.execResourceByName('Artist Info', request);\n  const hero_open = response?.length && response[0].imageLg;\n  const banner_image = !hero_open ? null : response[0].imageLg;\n\n\n  application.setState(state => ({\n      ...state,\n      hero_open,\n      banner_image \n  }));\n \n}\n",
+      "parentID": "lbyv0hoo606wyg6p7wf",
       "ID": "lbw87my0r44y6dbbty"
     },
     {
       "name": "play next",
       "code": "function playNext (page, options) {\n  const {application, api} = options;\n\n  application.setState(state => {  \n    api.executeScriptByName('play by index', { \n        row: state.selected_index - (-1) \n    })  \n    return state;\n  });\n\n}",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbwg7y9u10loooixm6"
     },
     {
       "name": "play by index",
       "code": "function playByIndex (page, options) {\n\n  const {application, data, api} = options;\n\n  application.setState(state => {\n    const { play_list_items } = state; \n    const next_record = play_list_items[data.row];\n\n    if (!next_record) {\n       return api.Alert('Play queue ended', 'End of queue');\n    }\n\n    api.executeScriptByName('set current track', {\n        ...next_record,\n        row: data.row \n    }) ; \n\n    return state;\n  });\n  \n  api.executeScriptByName('start player')\n\n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbwg87seo602llxe0kh"
     },
     {
       "name": "play previous",
       "code": "function playPrevious (page, options) {\n   const { application, api } = options;\n\n  application.setState(state => {  \n    api.executeScriptByName('play by index', { \n        row: state.selected_index - 1 \n    })  \n    return state;\n  });\n\n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbwgg80vlbifqz08a3o"
     },
     {
       "name": "add to playlist",
       "code": "function addToPlaylist (page, options) {\n  const { data, application, setState } = options; \n    application.setState(state => {\n      const { playlist_full } = state;\n      if (!playlist_full) return alert('no records')\n\n      const rows = playlist_full.map(item => ({\n         text: item.Title,\n         subtext: item.TrackCount + ' tracks',\n         value: item.listKey,\n         endIcon: item.related.indexOf(data.FileKey) > -1 ? 'Favorite' : 'FavoriteBorder'\n      }));\n\n      const list_marquee_scrolling = data.Title.length > 35;\n\n    \n      return {\n         ...state,\n         playlist_file: data.FileKey,\n         playlist_name: data.Title,\n         playlist_menu: rows,\n         list_marquee_scrolling,\n         drawer_open: true\n      }\n\n    })\n}\n",
+      "parentID": "lbyv0hoo606wyg6p7wf",
       "ID": "lbvacos3la4agaeull"
     },
     {
       "name": "mute audio",
       "code": "function muteAudio (page, options) {\n  const { api, application, setState } = options; \n\n  // start the player after a delay\n  api.execRefByName('app_aux', player => {\n     setTimeout (() => { \n       !player && alert('Could not find player!!')\n        const muted = player.muted;\n        player.muted = !muted;\n        application.setState(s => ({\n           ...s,\n           volume_icon: muted ? 'VolumeUp' : 'VolumeOff'\n         }))\n\n     }, 888)\n  }); \n\n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbuobffka5o5z77il0c"
     },
     {
       "name": "on play button click",
       "code": "function handlePlayClick (page, options) {\n  const { application, setState, api } = options; \n\n\n  application.setState(state => {\n\n    api.execRefByName('app_aux', player => {\n      if (!player) return api.Alert('Player not found')\n     // api.Alert(state?.is_paused.toString())\n      if (state?.is_paused) return player.play() \n      player.pause();     \n    }); \n\n    return state;\n  });  \n\n\n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbj8oydfnq08b8d3oh"
     },
     {
       "name": "get context menu",
       "code": "function getContextMenu (page, options) { \n  const { api, data } = options; \n \n\n  const context_menu_items = [\n    {\n       text: \"View Artist\",\n       subtext: data.artistName,\n       startIcon: 'People',\n       action: () => api.openPath('artist', { artist_id: data.artistFk})\n    },\n    {\n       text: \"View Album\",\n       subtext: data.albumName,\n       startIcon: 'Album',\n       action: () =>  api.openPath('album', { album_id: data.albumFk})//\n    }, \n    {\n       text: \"Add to queue\",\n       subtext: \"Play this song next\",\n       startIcon: 'PlaylistAdd',\n       action: () => api.Alert('Function not implemented!')\n    },\n    {\n       text: \"Add to playlist\",\n       startIcon: 'PlaylistAddCheck',\n       subtext: \"Save this song to play later\",\n       action: () =>  api.executeScriptByName('add to playlist', data)\n    },\n  ];\n  \n  return context_menu_items;\n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbwkcx46m78o2bv3jd"
     },
     {
       "name": "open context menu",
-      "code": "async function openContextMenu (page, options) {\n  const { api, data, application} = options; \n  \n  const context_menu_items = [\n    {\n       text: \"View Artist\",\n       subtext: data.artistName,\n       startIcon: 'People',\n       action: () => api.openPath('artist', { artist_id: data.artistFk})\n    },\n    {\n       text: \"View Album\",\n       subtext: data.albumName,\n       startIcon: 'Album',\n       action: () =>  api.openPath('album', { album_id: data.albumFk})//\n    }, \n    {\n       text: \"Add to queue\",\n       subtext: \"Play this song next\",\n       startIcon: 'PlaylistAdd',\n       action: () => api.Alert('Function not implemented!')\n    },\n    {\n       text: \"Add to playlist\",\n       startIcon: 'PlaylistAddCheck',\n       subtext: \"Save this song to play later\",\n       action: () =>  api.executeScriptByName('add to playlist', data)\n    },\n  ];\n \n  application.setState(state => ({\n    ...state,\n    context_menu_items,\n    context_menu_open: true,\n    context_photo: data.albumImage,\n    context_title: data.Title\n  }))\n \n}\n",
+      "code": "async function openContextMenu (page, options) {\n  const { api, data, application} = options; \n  \n  const context_menu_items = [\n    {\n       text: \"View Artist\",\n       subtext: data.artistName,\n       startIcon: 'People',\n       action: () => api.openPath('artist', { artist_id: data.artistFk})\n    },\n    {\n       text: \"View Album\",\n       subtext: data.albumName,\n       startIcon: 'Album',\n       action: () =>  api.openPath('album', { album_id: data.albumFk})//\n    }, \n    {\n       text: \"Add to queue\",\n       subtext: \"Play this song next\",\n       startIcon: 'PlaylistAdd',\n       action: () => api.Alert('Function not implemented!')\n    },\n    {\n       text: \"Add to playlist\",\n       startIcon: 'PlaylistAddCheck',\n       subtext: \"Save this song to play later\",\n       action: () =>  api.executeScriptByName('add to playlist', data)\n    },\n  ];\n\n  \n  \n\n\n  const {\n    trackNumber,\n    discNumber,\n    artistName,\n    albumImage,\n    albumName,\n    Genre, \n    Title,\n    ID  ,\n    albumFk  ,     \n    artistFk ,  \n    trackTime\n\n  } = data;\n \n  application.setState(state => ({\n    ...state,\n\n    trackNumber,\n    discNumber,\n    artistName,\n    albumName,\n    albumImage,\n    Genre,\n    Title,\n    ID  ,\n    albumFk  ,     \n    artistFk ,  \n    trackTime,\n\n    context_menu_items,\n    context_menu_open: true,\n    context_photo: data.albumImage,\n    context_title: data.Title\n  }))\n \n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbv91f8dqrrj7wryld"
     },
     {
       "name": "toggle mini mode",
       "code": "function toggleMiniMode (page, options) {\n  const { application, setState, api } = options; \n    \n  application.setState(state => {\n      const avatar_open = !state.avatar_open;\n      \n      // toggle state variables\n      const settings = {\n        avatar_open, \n        photo_open: !avatar_open,\n        full_icon: !avatar_open ? \"CloseFullscreen\" : \"OpenInFull\"\n      } \n\n      return {\n        ...state,\n        ...settings\n      };\n    });\n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbtnqeyl3375x3ob0hd"
     },
     {
       "name": "slider change",
       "code": "function sliderChange (page, options) {\n  const { state, setState, data, api } = options; \n  // add your code here\n  const percent = data.value / 100;\n\n  // start the player after a delay\n  api.execRefByName('app_aux', player => {\n       player.currentTime = player.duration * percent;\n  }); \n\n \n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbj9b5hhx28uzmpinmi"
     },
     {
       "name": "start player",
       "code": "function startPlayer (page, { application, api }) { \n\n  // start the player after a delay\n  api.execRefByName('app_aux', player => {\n     setTimeout (() => { \n        !player && alert('Could not find player!!')\n        !!player && player.play();\n\n        const muted = player.muted; \n        application.setState(s => ({\n           ...s,\n           volume_icon: !muted ? 'VolumeUp' : 'VolumeOff'\n         }));\n\n\n     }, 888)\n  }); \n\n}\n",
+      "parentID": "lbyv09zcrpqqp4kct6p",
       "ID": "lbj88ndazx8o8r8a8k"
     },
     {
       "name": "open photo",
       "code": "function openPhoto (page, options) {\n\n  const { application, setState } = options; \n  \n    application.setState(state => {\n      if (state.avatar_open) return state;\n      \n      return {\n        ...state, \n        photo_open: !0\n      };\n\n    });\n\n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbtoalk63idgiy8gn59"
     },
     {
       "name": "modal close",
       "code": "function modalClose (page, options) {\n  const { application, setState } = options; \n  \n    application.setState(state => ({\n      ...state,\n      drawer_open: false\n    }));\n\n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbqy5dcqe47ri1vcij9"
     },
     {
       "name": "context  menu click",
       "code": "function contextMenuClick (page, options) {\n  const { data, application } = options; \n\n  const { action } = data;\n\n  // perform the menu action\n  !!action && action ();\n\n  // close the menu\n  application.setState(state => ({\n    ...state, \n    context_menu_open: false \n  }));\n \n}\n",
+      "parentID": "lbyv0lydk9queqlmyq",
       "ID": "lbva5sm5gzd9evvf85u"
+    },
+    {
+      "name": "playback",
+      "code": null,
+      "ID": "lbyv09zcrpqqp4kct6p"
+    },
+    {
+      "name": "data",
+      "code": null,
+      "ID": "lbyv0hoo606wyg6p7wf"
+    },
+    {
+      "name": "modal",
+      "code": null,
+      "ID": "lbyv0lydk9queqlmyq"
+    },
+    {
+      "name": "list",
+      "code": null,
+      "parentID": "lbyv0hoo606wyg6p7wf",
+      "ID": "lbyv4ornbrnsxw02yjg"
     }
   ]
 }

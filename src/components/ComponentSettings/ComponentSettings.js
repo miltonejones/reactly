@@ -18,6 +18,7 @@ import {
 } from './components' 
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
+import ReferenceComponentInput from './components/ReferenceComponentInput/ReferenceComponentInput';
 
 const KeypressTextBox = ({ onChange, ...props }) => {
   const [dir, setDir] = React.useState(false);
@@ -294,6 +295,7 @@ export const ComponentInputBody = (props) => {
     listtable: ListTableComponentInput,
     tablecolumn: ListTableComponentInput,
     repeatertable: ListTableComponentInput,
+    ref: ReferenceComponentInput,
     shadow: ShadowComponentInput
   }
 

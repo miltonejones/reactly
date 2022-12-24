@@ -37,7 +37,7 @@ export const useEditor = (apps) => {
         return edit(app);
       }
       await edit(page, app);
-      app.pages = app.pages.map((c) => c.ID === pageID ? page : c);
+      app.pages = app.pages.map((c) => c.ID === pageID ? {...page, dirty: 1} : c);
       return page;
     });
     return res;
