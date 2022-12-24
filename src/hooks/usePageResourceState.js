@@ -19,7 +19,7 @@ export const usePageResourceState = (settings) => {
     typeMap = bindingObject.typeMap || {}
     const id = bindingObject.resourceID;
     resource = pageResourceState.find(f => f.resourceID === bindingObject.resourceID);
-    if (resource) {
+    if (resource?.records) {
       // console.log({ bindingObject })
       dataRows = resource.records.map(record => {
         return columnMap.reduce((items, res) => {

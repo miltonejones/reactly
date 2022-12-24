@@ -372,12 +372,12 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handleScriptChange = async (
       scriptID, name, code, 
-     { fn, existingName, pageID , parentID }
+     { fn, existingName, pageID , parentID, comment }
     ) => {
       //  alert(JSON.stringify({scriptID,name,code,parentID},0,2))
     const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
     if (!scriptName) return;
-    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn, parentID);
+    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn, parentID, comment);
   };
 
   const handlePropChange = (props, state) => {
@@ -978,7 +978,7 @@ const Editor = ({ applications: apps = {} }) => {
               <TextBtn
                 variant="contained"
                 endIcon={<Save />}
-                disabled={!selectedPage?.dirty}
+                disabled={!dirty}
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
                   // copy(JSON.stringify(applications, 0, 2));

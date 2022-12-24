@@ -34,6 +34,7 @@ import {
   QuickMenu,
   SearchBox,
   PillMenu,
+  PopoverPrompt
 } from "..";
 import {
   CopyAll,
@@ -56,7 +57,7 @@ import {
   Delete,
   Save,
 } from "@mui/icons-material";
-import { PopoverInput, PopoverPrompt } from "../Control/Control";
+import { PopoverInput } from "../Control/Control";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -120,6 +121,11 @@ const ScriptDrawer = ({
   const createScriptFolder = (scriptID, name, parentID) => {
     handleScriptChange(scriptID, name, null, { parentID });
   };
+
+  const addScriptComment = (script, comment) => {
+    const { ID, name, code, parentID } = script;
+    handleScriptChange(ID, name, code, { parentID, comment });
+  }
 
   const saveScriptToFolder = (scriptID, name, code, parentID, pageID) => {
     handleScriptChange(scriptID, name, code, { pageID, parentID });
@@ -403,7 +409,7 @@ const ScriptDrawer = ({
         </Flex>
         <Divider />
 
-        <Grid container>
+        <Grid container spacing={1}>
           {!filter && (
             <Grid item xs={big ? 3 : 6} sx={{ pt: 0, pl: 0, pr: 1 }}>
               <Typography variant="caption">
@@ -412,7 +418,14 @@ const ScriptDrawer = ({
 
               <Divider sx={{ mb: 1 }} />
 
-              <ScriptTree
+             <Box
+                sx={{
+                  height: big ? "calc(90vh - 132px)" : 400,
+                  mr: 1,
+                  overflowY: "auto",
+                  overflowX: "hidden",
+                }}>
+             <ScriptTree
                 expanded={expanded}
                 setExpanded={setExpanded}
                 scripts={scripts}
@@ -421,12 +434,15 @@ const ScriptDrawer = ({
                 activeID={ID}
                 dirty={dirty}
                 onFolderMove={saveScriptToFolder}
+                onScriptComment={addScriptComment}
                 setDirty={setDirty}
                 folderList={folderList}
                 setSelected={setSelected}
                 handleChange={handleChange}
                 handleDrop={handleDrop}
               />
+
+             </Box>
             </Grid>
           )}
 
@@ -442,7 +458,7 @@ const ScriptDrawer = ({
 
               <Box
                 sx={{
-                  height: big ? "calc(100% - 130px)" : 400,
+                  height: big ? 800 : 400,
                   mr: 1,
                   overflow: "auto",
                 }}
@@ -458,6 +474,10 @@ const ScriptDrawer = ({
                       <b>{item.page}</b>.{item.name}
                     </Text>
                    </Flex>
+                   <Flex sx={{ml: 3}}>
+              
+                    <Text fullWidth small muted={item.ID !== ID}>{item.comment}</Text>
+                   </Flex>
                     <SearchLine  onClick={() => setSelected(item)}  active={item.ID === ID} filter={filter}>
                       {item.code}
                     </SearchLine>
@@ -467,7 +487,7 @@ const ScriptDrawer = ({
             </Grid>
           )}
 
-          <Grid item xs={big ? 9 : 6}>
+          <Grid item xs={big ? 9 : 6} >
             <CodeTabs
               openScripts={openScripts}
               closeTab={closeTab}

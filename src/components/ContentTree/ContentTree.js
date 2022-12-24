@@ -5,14 +5,14 @@ import { styled, List, Link, ListItemButton,
   } from "@mui/material";
  
 import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
-import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
+import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
 import { AppStateContext } from '../../hooks/AppStateContext';
 
 
-const NodeText = styled(Typography)(({on}) => ({
+const NodeText = styled(Typography)(({ theme, on, indent }) => ({
   fontWeight: on ? 600 : 400, 
-  fontSize: '0.85rem',
-  maxWidth: 140,
+  fontSize: '0.8rem',
+  maxWidth: `calc(216px - ${theme.spacing(indent)})`,
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis',
   overflow: 'hidden'
@@ -126,19 +126,20 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
     : `${tree.ComponentType}: ${tree.ComponentName}`
   return (
     <> 
-      <ListItemButton sx={{ ml:indent , p: 0 }}
+      <Tooltag component={ListItemButton} title={nodeLabel} sx={{ ml:indent , p: 0 }}
         onMouseEnter={() => setOver(true)}
         onMouseLeave={() => setOver(false)}
         >
        <ListItemIcon sx={{minWidth: 24}}>
-          <Tiny sx={{mr: 1}} onClick={()  => setExpanded(!expanded)} icon={ExpandIcon} />
+          {!!kids.length && <Tiny sx={{mr: 1}} onClick={()  => setExpanded(!expanded)} icon={ExpandIcon} />}
            <Tiny sx={{mr: 1}} icon={Icon} />
         </ListItemIcon>
 
 
         <ListItemText sx={{pl: 0}} primary={<NodeText 
-        onClick={() => onSelect && onSelect(tree, on)} 
-        sx={{fontWeight: on ? 600 : 400, fontSize: '0.85rem'}}
+            indent={indent}
+            onClick={() => onSelect && onSelect(tree, on)} 
+            sx={{fontWeight: on ? 600 : 400, fontSize: '0.85rem'}}
          > {nodeLabel}</NodeText>} />
         {!!tree && <ListItemSecondaryAction> 
           {on && <Tiny onClick={() => onSelect && onSelect(tree, on)}  icon={Close}  sx={{mr: 1}} />}
@@ -155,7 +156,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
           }}
           label={<Tiny icon={MoreVert} />}/>
         </ListItemSecondaryAction>}
-      </ListItemButton>  
+      </Tooltag>  
       
       <Collapse in={expanded}>
         

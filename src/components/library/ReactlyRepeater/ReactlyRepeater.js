@@ -21,7 +21,7 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
     obj = JSON.parse(args.bindings); 
     const id = obj.resourceID;
     resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
-    if (resource) {
+    if (resource?.records) {
       dataRows = resource.records.map(record => {
         return Object.keys(obj.bindings).reduce((items, res) => {
           items[res] = {

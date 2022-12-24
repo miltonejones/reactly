@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box } from '@mui/material';
-import { Flex, Tiny, Text, QuickMenu, TinyButton, DeleteConfirmMenu, Spacer } from '../../..';
- import { Code, Close, Info, Save, DriveFileMove, Add } from "@mui/icons-material"; 
+import { Flex, Tiny, Text, PopoverPrompt, QuickMenu, TinyButton, DeleteConfirmMenu, Spacer } from '../../..';
+ import { Code, Close, Info, Save, DriveFileMove, Error, Add } from "@mui/icons-material"; 
 import { useScriptReferences } from '../../../../hooks/useScriptReferences';
 
 
@@ -18,7 +18,7 @@ export const RefsMenu = ({ ID, hidden, title, setHidden, onSelect }) => {
 
   const eventList = getScriptReferences(ID)
 
-  const handleChange = value => { 
+  const handleMenuClick = value => { 
     setHidden && setHidden(true)
     if (!onSelect) return;
     const node = eventList.find(f => f.label === value);
@@ -28,9 +28,10 @@ export const RefsMenu = ({ ID, hidden, title, setHidden, onSelect }) => {
   }
 
   return <QuickMenu
+    emptyMsg={<Text error active><Error /> This function is not used</Text>}
      title={title} 
      options={eventList.map(f => f.label)} 
-     onChange={handleChange}
+     onChange={handleMenuClick}
      label={<Tiny icon={Info} hidden={hidden}  />}/>
 
   
@@ -58,6 +59,7 @@ const ScriptLine = ({
   indent,
   dirty,
 
+  onScriptComment,
   onFolderMove,
   folderList,
   setSelected,
@@ -68,7 +70,8 @@ const ScriptLine = ({
   ...props
 }) => {
   const [hide, setHidden] = React.useState(true);
-  const { name, ID, code, parentID  } = props;
+  const { name, ID, code, comment, parentID } = props;
+  const script = { name, ID, code, comment, parentID } 
   const hidden =  hide && !active;
 
   const {  getScriptReferences } = useScriptReferences() 
@@ -98,7 +101,7 @@ const ScriptLine = ({
 
           {active && dirty && <Tiny hidden={hidden}
               onClick={() => {
-              handleChange( ID, name, code )
+              handleChange( ID, name, code, comment )
               setDirty(false);
             }}  
             icon={Save}  
@@ -126,6 +129,22 @@ const ScriptLine = ({
           onDelete={e =>  !!e && handleDrop(ID, true) } /> 
 
       </Bar>
+
+      <Bar big={big} 
+        indent={indent  + 3}
+        >
+          <PopoverPrompt  
+            component={Text} 
+            muted
+            small
+            value={comment}
+            onChange={value => !!value && onScriptComment(script, value)}
+            label={`Add comment to "${name}"`}  
+            > 
+            {comment || "Add comment..."}
+          </PopoverPrompt>  
+
+        </Bar>
       
    </Layout>
  );

@@ -11,6 +11,7 @@ import { AppStateContext } from '../../hooks/AppStateContext';
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
 import { useTextTransform } from '../../hooks/useTextTransform';
+import { uniqueId } from '../library/util';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -154,7 +155,7 @@ const ComponentPanel = ({
     onComponentImport(sourceID, destID, tag.ID);
   }
 
-  const pasteTypes = ['settings', 'styles'];
+  const pasteTypes = ['settings', 'styles', 'events'];
 
   if (queryState.componentLoading) {
     return <Box sx={{p: 2}}>
@@ -199,7 +200,8 @@ const ComponentPanel = ({
               name: component?.ComponentName,
               id: component?.ID,
               settings: component.settings,
-              styles: component.styles
+              styles: component.styles,
+              events: component.events?.map(e => ({...e, ID: uniqueId()}))
             }
           }))
         }>
@@ -228,25 +230,18 @@ const ComponentPanel = ({
       <Flex sx={{m: 1}}>
 
     {!!queryState.clipboard && 
-      ((value === 0 && !!queryState.clipboard.settings) || 
-      (value === 1 && !!queryState.clipboard.styles)) &&
+      ((value < 3 && !!queryState.clipboard.styles)) &&
       <Chip variant="outlined"  icon={<ContentPaste />} 
         label={<>Paste <b>{queryState.clipboard.type}: {queryState.clipboard.name}</b> {pasteTypes[value]}</>}
         onClick={() => {
-          const content = value === 0 
-            ? queryState.clipboard.settings
-            : queryState.clipboard.styles
- 
-        onSettingsPaste(component.ID, pasteTypes[value], content);
-      
-    }}
-        deleteIcon={ <Close />} onDelete={() => {
-          
+          const content = queryState.clipboard[pasteTypes[value]]
+          onSettingsPaste(component.ID, pasteTypes[value], content); 
+        }}
+        deleteIcon={ <Close />} onDelete={() => { 
           setQueryState(s => ({
             ...s,
             clipboard: null
-          }))
-
+          })) 
         }}/> }
 
       </Flex>

@@ -33,7 +33,8 @@ const {
   onChange ,
   onOpen,
   allowFind,
-  maxItems
+  maxItems,
+  emptyMsg = '[Empty menu]'
 } = props;
 const [filter, setFilter] = React.useState(null);
 const [anchorEl, setAnchorEl] = React.useState(null);
@@ -88,7 +89,7 @@ dense
     ><Divider textAlign="left" sx={{width: '100%'}}><Typography variant="caption">{title}</Typography></Divider></Flex>}
  
 
-{!options.length && <MenuItem>[empty menu]</MenuItem>}
+{!options.length && <MenuItem>{emptyMsg}</MenuItem>}
 
 {!!allowFind && <MenuItem onKeyDown={(e) => e.stopPropagation()}>
         <TextInput

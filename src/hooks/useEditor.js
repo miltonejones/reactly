@@ -376,11 +376,12 @@ export const useEditor = (apps) => {
   }
 
   
-  const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID) => {
+  const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID, comment) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
-        name, code, parentID
+        name, code, parentID, comment
       }
+
       
       if (!page.scripts) {
         Object.assign(page, { scripts: []});

@@ -12,7 +12,7 @@ import {
   Chip,
   InputAdornment,  
   styled } from "@mui/material";
-import Tooltip from "@mui/material/Tooltip"; 
+  import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { Icons } from '../library/icons'; 
@@ -223,6 +223,20 @@ export const Pane = styled(Card)(({ collapsed, theme }) => ({
  padding: theme.spacing(1),
  transition: "width 0.3s ease-in",
 }));
+
+
+const HtmlTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: '#f5f5f9',
+    color: 'rgba(0, 0, 0, 0.87)',
+    maxWidth: 220,
+    fontSize: theme.typography.pxToRem(12),
+    border: '1px solid #dadde9',
+  },
+}));
+
  
 export const Tooltag = ({
  component: Component,
@@ -231,12 +245,12 @@ export const Tooltag = ({
  ...props
 }) => { 
   return (
-    <Tooltip placement="left-start" arrow title={title}> 
+    <HtmlTooltip placement="left-start" arrow title={title}> 
 
       <Component {...props}>
        {children}</Component>
  
-    </Tooltip>
+    </HtmlTooltip>
    )
 };
  
@@ -437,15 +451,22 @@ export const TextInput = ({ sx, prompt, ...props }) => {
   return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>
 }
  
-export const Text = styled(Box)(({ theme, active, small, error, link, spacing = 1 }) => ({
+export const Text = styled(Box)(({ theme, active, small, error, link, fullWidth, muted, spacing = 1 }) => ({
   display: 'flex',
-  color: error ? theme.palette.error.main : (link ? theme.palette.primary.main : theme.palette.black),
+  color:muted 
+    ? theme.palette.grey[600]
+    : ( error 
+      ? theme.palette.error.main 
+      : (link 
+          ? theme.palette.primary.main 
+          : theme.palette.black
+          )),
   textDecoration: link ? 'underline' : 'none',
   gap: theme.spacing(spacing) ,
   alignItems: 'center',
   // borderBottom: small || error ? '' : 'solid 1px gray',
   fontSize: small ? '0.85rem' : '1rem',
-  maxWidth: 400,
+  maxWidth: fullWidth ? '100%' : 400,
   padding: theme.spacing(0.5, 0),
   fontWeight: active ? 600 : 400,
   cursor: 'pointer', 

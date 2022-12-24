@@ -7,6 +7,14 @@ import { IconComponentInput } from '..';
 
 import { AppStateContext } from '../../../../hooks/AppStateContext';
 
+const attempt = str => {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    return false;
+  }
+}
+
   
  
 const ListComponentInput = ({
@@ -19,7 +27,7 @@ const ListComponentInput = ({
   const { Confirm  } = React.useContext(AppStateContext);
 
   const parsed = typeof value === 'string' 
-    ? JSON.parse(value)
+    ? attempt(value)
     : value;
     
   const [expanded, setExpanded] = React.useState([]);
