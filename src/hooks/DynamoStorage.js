@@ -164,8 +164,8 @@ const useDynamoStorage = () => {
         await store.setItem(page_key, 'subpage-' + page.ID, JSON.stringify(rest));
       }
     })
-
-    await store.setItem(app_key, name, JSON.stringify(rest));
+   const res = await store.setItem(app_key, name, JSON.stringify(rest));
+  //  alert (JSON.stringify(res))
   }
   
   const removeProgItem = async (name) => await store.removeItem(app_key, name);

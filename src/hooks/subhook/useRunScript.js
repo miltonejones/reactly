@@ -6,6 +6,7 @@ import { useOpenLink } from '.';
 import { usePageRef } from '.';
 import { useDataResource } from '.';
 import { AppStateContext } from '../AppStateContext';
+import { useClipboard } from '../../components';
 
 
 export const useRunScript = () => {
@@ -25,6 +26,7 @@ export const useRunScript = () => {
   } = React.useContext(AppStateContext); 
  
 
+  const { copy } = useClipboard();
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
   const { getResourceByName } = useDataResource()
@@ -177,7 +179,7 @@ const handleScriptRequest =  (block, opts, title) => {
         shuffle,
         getResourceByName ,
         execResourceByName,
-
+        copy,
         moment
       }
     }

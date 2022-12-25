@@ -193,7 +193,7 @@ export const usePageContext = () => {
 
     const rows = !node ? json : drillPath(json, node);
 
-    const collated = !isGetRequest
+    const collated = !isGetRequest || !rows || !rows?.mapas
       ? json
       : rows?.map((row) =>
           columns.reduce((items, res) => {

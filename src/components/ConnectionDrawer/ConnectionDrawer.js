@@ -488,6 +488,8 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
       headers: { 'Content-Type': 'application/json' },
     }; 
 
+    // return alert (JSON.stringify(requestOptions,0,2))
+
     const suffix = typeof qs === 'string' && !!qs?.length
       ? `${slash}${qs}`
       : ''
@@ -511,6 +513,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     }
 
     if (!isGetRequest) {
+      return setAnswer(json); 
       return Alert(<pre>
         {JSON.stringify(json,0,2)}
       </pre>)

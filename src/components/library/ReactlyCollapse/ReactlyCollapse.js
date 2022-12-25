@@ -7,6 +7,7 @@ import { PageStateContext } from '../../../hooks/usePageContext';
 import { AppStateContext } from "../../../hooks/AppStateContext";
 import { recurse } from '../util';
 import { getSettings } from '../util';
+import { Faux } from '../reactly';
   
 const ReactlyComponentCollapse = ({ children, ...props }) => {
   const { pageModalState, setPageModalState, selectedPage, appContext: app } = React.useContext(AppStateContext);
@@ -37,7 +38,7 @@ const ReactlyComponentCollapse = ({ children, ...props }) => {
   <> 
  {/* {props.ID}[{args.in?.toString()}][{props.in?.toString()}] */}
   {/*  {JSON.stringify(Object.keys(pageModalState))} */}
-  <ReactlyComponent component={Collapse} {...props}
+  <ReactlyComponent component={(componentEditing && preview) || childOpen ? Faux :Collapse} {...props}
    in={open || componentEditing || (childOpen && preview )} 
   >
       {children}

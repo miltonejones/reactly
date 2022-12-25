@@ -18,8 +18,9 @@ const ModalOpen = ({ event = {}, page, handleSave, application }) => {
     .filter(f => !!Library[f].modal)
     .reduce((items, key) => {
         const appModals = application.components?.filter(f => f.ComponentType === key);
-        const pageModals = !!page.PageName ? page.components.filter(f => f.ComponentType === key) : []
-        items = items.concat(pageModals).concat(appModals.map(app => ({...app, prefix: 'application.'})))
+        const pageModals = !!page.PageName ? page.components.filter(f => f.ComponentType === key) : [];
+        const appDialogs = !appModals ? [] : appModals.map(app => ({...app, prefix: 'application.'}));
+        items = items.concat(pageModals).concat(appDialogs)
         return items;
       }, []);   
  

@@ -39,14 +39,14 @@ export const useScriptReferences = () => {
   const getPageEvents = () => {
 
 
-    const pageEvents =  appContext.pages?.reduce((out, page) => {
+    const pageEvents = !appContext.pages ? [] : appContext.pages?.reduce((out, page) => {
       page.components?.map(component => {
         out = out.concat( getEventsFromObject (component, page.PageName, 'ComponentName') );
       });
       return out;
       }, []);
 
-    const dataEvents = appContext.resources?.reduce((out, resource) => {
+    const dataEvents = !appContext.resources ? [] : appContext.resources?.reduce((out, resource) => {
       out = out.concat( getEventsFromObject (resource, resource.name) );
       if (resource.transform) {
         out.push({
@@ -57,10 +57,10 @@ export const useScriptReferences = () => {
       return out;
     }, []);
 
-    const appEvents =  appContext.components?.reduce((out, component) => {
+    const appEvents = !appContext.components ? [] :  appContext.components?.reduce((out, component) => {
       out = out.concat( getEventsFromObject (component, 'application', 'ComponentName') );
       return out;
-      }, []);
+      }, []) ;
   
     return pageEvents.concat([...appEvents, ...dataEvents ]);
   }

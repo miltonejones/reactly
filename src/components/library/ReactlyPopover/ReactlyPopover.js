@@ -5,6 +5,7 @@ import { SystemSecurityUpdateGood } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
 import { AppStateContext } from '../../../hooks/AppStateContext';
+import { Faux } from '../reactly';
   
 const ReactlyComponentPopover = ({ children, ...props }) => {
   const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
@@ -26,7 +27,7 @@ const ReactlyComponentPopover = ({ children, ...props }) => {
     }
 
  return (
-   <ReactlyComponent component={Popover} {...props} 
+   <ReactlyComponent component={componentEditing && preview ? Faux : Popover} {...props} 
       anchorEl={pageModalState.anchorEl}
       open={open || componentEditing} 
       anchorOrigin={{ vertical, horizontal }}

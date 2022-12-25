@@ -702,7 +702,7 @@ const Editor = ({ applications: apps = {} }) => {
       return open;
     }
     
-    const parents = page?.components.filter(f => f.ID === selected.componentID);
+    const parents = page?.components?.filter(f => f.ID === selected.componentID);
  
 
     if (parents?.length) {

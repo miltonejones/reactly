@@ -1,5 +1,7 @@
 import React from 'react';
-import { styled, Box, Avatar, List, ListItemButton ,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
+import { styled, Box, Avatar, List, ListItemButton ,ListSubheader,ListItemText,
+  Stack,
+  ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
 import { GenericStyles } from '../styles'; 
 import { FormatListBulleted } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
@@ -86,11 +88,17 @@ const ReactlyComponentList = ({ children, ...props }) => {
 
 
           <ListItemText  onClick={e => {
-    onItemClick && onItemClick(e, {
-      ...item,
-      row: i
-    })
-  }} primary={item.text} secondary={item.subtext}/>
+            onItemClick && onItemClick(e, {
+              ...item,
+              row: i
+            })
+          }} 
+          primary={item.text} 
+          secondary={!item.tertiary ? <>{item.subtext}</> : <Stack>
+            <Box>{item.subtext}</Box>
+            <Box>{item.tertiary}</Box>
+          </Stack>}
+          />
  {!!EndIcon && <ListItemSecondaryAction  onClick={e => {
     onSecondaryClick && onSecondaryClick(e, {
       ...item,

@@ -2,8 +2,8 @@ import React from 'react';
 import { styled, IconButton, Link , Box, Divider, Tabs, Collapse, 
   Alert, LinearProgress,
   Switch, Grid, Stack, Typography, Chip } from '@mui/material';
-import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, 
-    QuickSelect, DeleteConfirmMenu, QuickMenu, TinyButton, useClipboard } from '..' 
+import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, useClipboard,
+    QuickSelect, DeleteConfirmMenu, QuickMenu, TinyButton } from '..' 
 import { Icons, renderIconOption } from '../library/icons'; 
 import { JsonTree } from '../../colorize'; 
 import { TabButton } from '../ComponentPanel/ComponentPanel';
@@ -455,6 +455,7 @@ const Expander = ({ on }) => <TinyButton icon={on ? Icons.Remove : Icons.Add}  d
 
 
 const EditableListCell = ({ label, value, options, caption, onChange, onAdd, onDelete}) => {
+  const {copy} = useClipboard()
   return   (<Flex fullHeight>
   <QuickMenu
       small
@@ -483,6 +484,8 @@ const EditableListCell = ({ label, value, options, caption, onChange, onAdd, onD
       onChange={onAdd}> 
     </PopoverPrompt>  
     }
+
+    <TinyButton icon={Icons.CopyAll} onClick={() => copy ((options||[]).join(','))} />
 
   </Flex>)
 }

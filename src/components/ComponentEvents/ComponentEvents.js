@@ -65,7 +65,7 @@ const HandlerCard = ({ ID, event: eventName, action, application, page, selected
       break;
     case 'modalOpen':
       const dialogName = page?.components?.find(e => e.ID === action.target)
-      const appModal = application?.components.find(e => e.ID === action.target)
+      const appModal = application?.components?.find(e => e.ID === action.target)
       const modalLabel = dialogName?.ComponentName || `application.${appModal?.ComponentName}`;
       act = <>{action.open ? 'Open' : 'Close'} component <b>{modalLabel}</b></>
       ok = !!dialogName || !! appModal;
