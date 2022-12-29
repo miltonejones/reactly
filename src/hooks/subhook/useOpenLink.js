@@ -20,8 +20,8 @@ export const useOpenLink = () => {
     setPageClientState,
     pageClientState ,
     setQueryState,
-    Alert
- 
+    Alert,
+    applicationClientState,
   } = React.useContext(AppStateContext);
 
 
@@ -91,7 +91,13 @@ export const useOpenLink = () => {
 
 
             const [t, optionKey] = triggerKey.split('.') ;
-            triggerProp = options[optionKey]; 
+
+            if (t === 'application') {
+              triggerProp = applicationClientState[optionKey]
+            } else {
+              triggerProp = options[optionKey]; 
+            }
+
             listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: parsing options: ' + triggerProp);
             // pass the resulting value into page params
             if (!!triggerProp ) {
@@ -118,7 +124,7 @@ export const useOpenLink = () => {
 
     return params;
 
-  }, [pageClientState])
+  }, [pageClientState, applicationClientState])
 
   
   const openLink = React.useCallback(

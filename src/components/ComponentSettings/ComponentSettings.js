@@ -6,7 +6,7 @@ import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer
 import { getSettings } from '../library/util';
 import { ExpandMore, Remove, Add, MoreVert, AddLink, LinkOff } from "@mui/icons-material";
 import { getOptionColor } from '../library/styles';
-import { Icons } from '../library/icons';
+import { Icons, renderIconOption } from '../library/icons';
 import { SketchPicker } from 'react-color';
 import { 
   StateComponentInput, 
@@ -178,13 +178,21 @@ export const ComponentInput = props => {
         const LinkIcon =isBound ? LinkOff : AddLink
     return <Flex fullWidth>
 {/* [{inputProps.type}][{label}] */}
-      <ComponentInputBody {...inputProps} /> 
-      <Spacer />
+      <ComponentInputBody {...inputProps} 
+        bindPropertyClicked={() => { 
+          onChange( label, { attribute: isBound ? false : label } )
+         }}
+        /> 
+
+
+      {/* <Spacer />
       {!!bindable && <Tooltag component={IconButton} 
       title={isBound ? `Remove data binding on "${label}"` : `Bind "${label}" to client state` }
       onClick={() => { 
        onChange( label, { attribute: isBound ? false : label } )
-      }}  ><LinkIcon /></Tooltag>}
+      }}  ><LinkIcon /></Tooltag>} */}
+
+
       {/* {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>} */}
     </Flex>
 }
@@ -204,9 +212,11 @@ export const ComponentInputBody = (props) => {
     title, 
     type,
     binding,
+    bindable,
     bindingValue,
     component,
     getOptionLabel, 
+    bindPropertyClicked,
     image,  
     css,
     free,
@@ -264,8 +274,8 @@ export const ComponentInputBody = (props) => {
   }
 
 
-  const { bindableProps }  = Library [component.ComponentType]
-  const header = <>  
+  const { bindableProps }  = Library [component.ComponentType] ?? {}
+  const header = <>   
  
   <Typography sx={{whiteSpace: 'nowrap', fontSize: '0.85rem', textTransform: 'capitalize'}} small>{title}</Typography>
   </>
@@ -299,17 +309,33 @@ export const ComponentInputBody = (props) => {
     shadow: ShadowComponentInput
   }
 
+  const isTypeMenu = types?.length && !customProp ;
+  const iconSX = isTypeMenu ? {mr:  3} : {}
+
+  const buttons = !!bindable
+    ? { buttons: <IconButton sx={iconSX} onClick={bindPropertyClicked}>
+          <AddLink />
+        </IconButton>  } 
+    : {}
+
 
   const CustomInput = customInputs[type];
   if (CustomInput) {
-    return <>
+    return <Flex fullWidth fullHeight>
      
-    <CustomInput {...inputProps} />
+    <CustomInput {...inputProps} bindPropertyClicked={bindPropertyClicked}/>
  
-    </> 
+
+      {!!bindable && !binding && <> 
+        <Tooltag component={IconButton} 
+      title={   `Bind "${label}" to client state` }
+      onClick={bindPropertyClicked}  ><AddLink /></Tooltag>
+      </>}
+
+    </Flex> 
   } 
 
-  if (types?.length && !customProp ) {
+  if (isTypeMenu) {
 
     const typeList = types?.indexOf('ICON_TYPES') > -1
       ? Object.keys(Icons)
@@ -321,6 +347,10 @@ export const ComponentInputBody = (props) => {
         ? QuickSelect
         : QuickMenu  
 
+    const icoProps = types?.indexOf('ICON_TYPES') > -1
+      ? { renderOption: renderIconOption }
+      : { renderOption }
+
     const Host = !isMenu ? Stack : Flex;
     return <Host fullWidth sx={{width: "100%"}}>
       {header} 
@@ -330,9 +360,10 @@ export const ComponentInputBody = (props) => {
       <Flexible  nowrap on={colorProp || free || typeList?.length < 32  }>
  
         <MenuComponent helperText={helperText} 
-        caret
+         {...buttons}
+           caret
           getOptionLabel={getOptionLabel} 
-          renderOption={renderOption} 
+          {...icoProps}
           options={typeList}  
           value={value} 
           label={value || <Text small>set {title} value</Text>}
@@ -368,12 +399,15 @@ export const ComponentInputBody = (props) => {
 
   const usePrompt = ['width','top','left','bottom', 'height', 'right'].some(f => !!title && title.toLowerCase().indexOf(f) > -1)
     || type == 'prompt';
+  
 
   return <Stack sx={{width: '100%'}}>
   {header} 
       <Flexible on={free || chip}>
-  <Component 
+        
+  <TextInput 
     multiline={!!multiline}
+    {...buttons}
     rows={4}
     fullWidth
     autoComplete="off"
@@ -385,9 +419,7 @@ export const ComponentInputBody = (props) => {
     placeholder={title}
   />
  
-  {!!chip && <StateComponentInput menu {...inputProps}
-    handleChange={val => handleChange(`${attempt(value)} {${val}} `)}
-    header={<i />}/>}
+
 
 
      {!!free && <CustomSwitch args={args} label={label} onChange={onChange}/>} 
@@ -643,7 +675,9 @@ const ComponentSettings = ({ selectedPage, component, onChange, showSettings, re
   </Collapse>
   </Box>
 
-  const { categories } = Library [component.ComponentType].Settings ?? {}
+  const componentType = Library [component.ComponentType];
+
+  const { categories } = componentType?.Settings ?? {}
 
 
   if (!categories) {

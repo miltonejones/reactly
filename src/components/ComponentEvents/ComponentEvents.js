@@ -134,8 +134,16 @@ const HandlerCard = ({ ID, event: eventName, action, application, page, selected
 const Events =  [
   {
     name: 'onPageLoad',
-    title: 'Page  loads',
-    description: 'Page  finishes loading.'
+    title: 'Page loads',
+    description: 'Page finishes loading.'
+  },  
+]
+
+const appEvents =  [
+  {
+    name: 'onApplicationLoad',
+    title: 'Application loads',
+    description: 'Application finishes loading.'
   },  
 ]
 
@@ -156,9 +164,16 @@ const ComponentEvents = ({
 
   
   const { Library } = React.useContext(AppStateContext);
+
+  const isInApplicationScope = !component && !selectedPage?.PageName;
+
+
   const defaultEvents = !addedEvents ? Events : addedEvents;
   const supportedEvents = !!addedEvents || !component ? defaultEvents : Library [component.ComponentType].Events  ;
   const eventOwner = !component ? selectedPage : component;
+
+
+  const { scriptList } = useRunScript()
   
 
   if (!supportedEvents) {
@@ -192,7 +207,7 @@ const ComponentEvents = ({
     {
       name: 'Execute client script',
       value: 'scriptRun',
-      when: () => application.pages?.some(pg => pg.scripts?.length) // !!selectedPage?.scripts?.length
+      when: () => !!scriptList?.length // application.pages?.some(pg => pg.scripts?.length) // !!selectedPage?.scripts?.length
     } ,
     {
       name: 'Call a component method',
@@ -232,7 +247,7 @@ const ComponentEvents = ({
   
  return (
    <Layout>
- 
+ [{JSON.stringify(isInApplicationScope.toString())}]
     {/* panel header  */}
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
       <Spacer />

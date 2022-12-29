@@ -27,7 +27,8 @@ const ReactlyComponentSelect = ({ children, ...props }) => {
       <TextField size="small" value={filter} onChange={e => setFilter(e.target.value)}
         placeholder="Filter options" autoComplete="off"/>
       </Box>}
-      {parsed?.filter(e => !filter || e.text.toLowerCase().indexOf(filter.toLowerCase()) > -1).map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
+      {parsed?.filter(e => !filter || e.text.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+        .map((item, i) => <MenuItem key={i} value={item.value}>{item.text}</MenuItem>)}
    </ReactlyComponent></FormControl>
  
  </>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Alert, Stack, IconButton } from '@mui/material';
-import { QuickSelect, QuickMenu,  Flex, PillMenu } from '../../..';
+import { TextInput, QuickMenu,  Flex, PillMenu } from '../../..';
 import {
   AppStateContext, EditorStateContext
 } from "../../../../hooks/AppStateContext";
 import { useEditor } from "../../../../hooks/useEditor";
-import { MoreVert } from "@mui/icons-material";
+import { MoreVert, LinkOff } from "@mui/icons-material";
 import { PageStateContext } from '../../../../hooks/usePageContext';
   
 const NEW_STATE_TEXT = 'New state variable...'
@@ -17,7 +17,8 @@ const StateComponentInput = ({
   header,
   binding,
   handleChange,
-  menu, 
+  bindPropertyClicked,
+  menu = true, 
 }) => {
 
   const { 
@@ -42,8 +43,7 @@ const StateComponentInput = ({
   if (!selectedPage?.state && !selectedPage?.parameters && !appContext.state) {
     return <i>[{JSON.stringify(application.state) }]</i>
   }
-
-  const Component = menu ? QuickMenu : QuickSelect;
+ 
 
   const options = !selectedPage?.state ? [] : selectedPage.state.map(d => d.Key);
 
@@ -55,20 +55,30 @@ const StateComponentInput = ({
   !!appContext.state && appContext.state.map(s => {
     return options.push(`application.${s.Key}`);
   })
-  return <Stack>
-    {header}
-    
-    <Component helperText={helperText} 
+  return <Stack sx={{ width: '100%' }}>
+    {header} 
+    <TextInput 
+        fullWidth
+        value={value} 
+        size="small"
+      buttons={
+           [ <QuickMenu helperText={helperText} 
         options={options}  
         value={value} 
-        label={!menu ? '' : <IconButton>
+        label={ <IconButton>
           <MoreVert />
         </IconButton>}
-        onChange={onChange}/>
+        onChange={value => !!value && onChange(value)}/>,
+      <IconButton onClick={bindPropertyClicked}>
+        <LinkOff />
+      </IconButton>
+      ]
+      }
+    />
 
-        {!menu && <Flex fullWidth sx={{pt: 1}}>
-          
-          </Flex>}
+
+
+     
   </Stack> 
 }
 StateComponentInput.defaultProps = {};

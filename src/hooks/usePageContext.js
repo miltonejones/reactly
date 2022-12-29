@@ -193,7 +193,7 @@ export const usePageContext = () => {
 
     const rows = !node ? json : drillPath(json, node);
 
-    const collated = !isGetRequest || !rows || !rows?.mapas
+    const collated = !isGetRequest || !rows || !rows?.map
       ? json
       : rows?.map((row) =>
           columns.reduce((items, res) => {
@@ -321,23 +321,14 @@ export const usePageContext = () => {
 
     await map(triggers, async (trigger, index) => {
 
-      // if (triggerLog[trigger.ID]) {
-      //   return console.log ("SKipping repeat trigger %s: %s", index, trigger.ID)
-      // }
-
-      // Object.assign(triggerLog, {
-      //   [trigger.ID]: true
-      // });
-
-      // console.log({index, triggerLog})
+      // console.log ({
+      //   trigger
+      // })
 
       const speakable =
         !!listening(trigger.action.type) && !!listening(trigger.event);
-// shout ({
-//   type: listening(trigger.action.type),
-//   event: listening(trigger.event),
-//   trigger
-// })
+
+        
       // temporary logging
       speakable &&
         console.log(

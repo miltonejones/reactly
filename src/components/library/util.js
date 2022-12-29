@@ -318,7 +318,7 @@ export const map = async (list, fn, index = 0, out = []) => {
       if (!eventParams) {
 
         !!shout && shout(logData, `getPropertyValueFromString: No event params. Returning "${value}""`)
-        return '[...]';
+        return `[...${value}/${target}]`;
       } 
 
       const values = value.split('.'); 
@@ -344,10 +344,10 @@ export const map = async (list, fn, index = 0, out = []) => {
     if (typeof value === 'number' || value?.indexOf('|') < 0) {
       if (state[value]) {
         !!shout && shout(logData, `getPropertyValueFromString: state data "${state[value]}""`)
-        return state[value];
+        return truth(state[value]);
       }
       !!shout && shout(logData, `getPropertyValueFromString: literal data "${value}""`)
-      return  value;
+      return  truth(value);
     }
     // values with 2 parts are meant to toggle
     const [trueProp, falseProp] = value.split('|');
@@ -356,3 +356,8 @@ export const map = async (list, fn, index = 0, out = []) => {
     !!shout && shout(logData, `getPropertyValueFromString: toggle data "${res}""`)
     return res
   } 
+
+  export const truth = e => {
+    if (e === 'true' || e === 'false') return eval(e);
+    return e;
+  }

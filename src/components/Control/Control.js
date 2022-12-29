@@ -361,10 +361,12 @@ export const ChipBox = ({onChange, value = '', ...props})  => {
     onChange && onChange(event)
   }
 
-  return <TextField 
+  const { buttons, ...rest } = props;
+
+  return <TextInput
     autoFocus={!chips}
     size="small"
-    {...props} 
+    {...rest} 
     onFocus={() => setChips(false)}
     onBlur={() => setChips(true)}
     value={chips ? '' : content}
@@ -426,7 +428,7 @@ export const TinyButton = ({icon: Icon, ...props}) => <RotateButton {...props}  
   <Icon sx={{width: 16, height: 16}} />
 </RotateButton>
 
-export const TextInput = ({ sx, prompt, ...props }) => {
+export const TextInput = ({ sx, prompt, buttons, ...props }) => {
   if (prompt) {
     return <PopoverPrompt
 
@@ -448,7 +450,12 @@ export const TextInput = ({ sx, prompt, ...props }) => {
         >{!!props.value ? <u>{props.value}</u> :  (props.label||props.placeholder)}</Flex>
       </PopoverPrompt>
   }
-  return <TextField {...props} sx={{ ...props.sx, fontSize: '0.85rem' }}/>
+
+  const adornment = !buttons 
+    ? null  
+    :  { endAdornment: <InputAdornment position="end">{buttons}</InputAdornment> }
+
+  return  <TextField {...props} InputProps={adornment} sx={{ ...props.sx, fontSize: '0.85rem' }}/> 
 }
  
 export const Text = styled(Box)(({ theme, active, small, error, link, fullWidth, muted, spacing = 1 }) => ({

@@ -65,6 +65,9 @@ import { ScriptLine, RefsMenu, Bar } from "./components";
 import { CodeTabs } from "./components";
 import { ScriptTree } from "./components";
 import { useRunScript } from "../../hooks/subhook/useRunScript";
+import { definitionMenu } from "./definitions";
+import ScriptAssist from "./components/ScriptAssist/ScriptAssist";
+import { downloadApplicationScripts } from "../../connector/sqlConnector";
 
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -197,9 +200,21 @@ const ScriptDrawer = ({
     queryState,
     appContext,
     EditCode,
+    Alert: Shout,
     setShowTrace,
     selectedPage: targetPage,
   } = React.useContext(AppStateContext);
+
+  const [availableScripts, setAvailableScripts] = React.useState([])
+  React.useEffect(() =>{
+    (async() => {
+       
+      const scripts = await downloadApplicationScripts(appContext.ID);
+      setAvailableScripts(scripts);
+
+      // downloadApplicationScripts
+    })();
+  }, [appContext])
 
   const setCode = (text) => {
     try {
@@ -220,24 +235,28 @@ const ScriptDrawer = ({
   };
 
   const handleDrawerClose = (event) => {
-    setSelected({ code: "" });
-    setDirty(false);
+    // setSelected({ code: "" });
+    // setDirty(false);
     handleClose(event);
   };
 
   const scriptInsert = (data) => {
-    const target = ref.current;
-    setAssist("");
-    if (!target) return alert("Nope!");
-    setTimeout(() => {
-      if (target.setRangeText) {
-        //if setRangeText function is supported by current browser
-        target.setRangeText(data);
-      } else {
-        target.focus();
-        document.execCommand("insertText", false /*no UI*/, data);
-      }
-    }, 1299);
+    if (!data) return;
+    const menuItem = definitionMenu.find(item => item.label === data);
+    // alert(menuItem.description)
+    Shout(<ScriptAssist {...menuItem} />)
+    // const target = ref.current;
+    // setAssist("");
+    // if (!target) return alert("Nope!");
+    // setTimeout(() => {
+    //   if (target.setRangeText) {
+    //     //if setRangeText function is supported by current browser
+    //     target.setRangeText(data);
+    //   } else {
+    //     target.focus();
+    //     document.execCommand("insertText", false /*no UI*/, data);
+    //   }
+    // }, 1299);
   };
 
   const editJS = async (js, pageID) => {
@@ -333,15 +352,16 @@ const ScriptDrawer = ({
             Add
           </TextBtn>
 
-          <QuickMenu
+         {!!availableScripts?.length && <QuickMenu
             title="Open script"
-            options={scriptMenu.map((m) => m.name)}
+            options={availableScripts?.map((m) => !m.name ? <b>{m.label}</b> : m.label)}
             label={<TextBtn endIcon={<MoreVert />}>Open</TextBtn>}
             onChange={(val) => {
-              const { action } = scriptMenu.find((f) => f.name === val);
-              !!action && action();
+              alert (val);
+              // const { action } = scriptMenu.find((f) => f.name === val);
+              // !!action && action();
             }}
-          />
+          />}
 
           <Box sx={{ mb: 1 }}>
             <SearchBox
@@ -516,7 +536,7 @@ const ScriptDrawer = ({
               {!!error && <Alert severity="error">{error}</Alert>}
 
               <QuickMenu
-                options={api}
+                options={definitionMenu.map(d => d.label)}
                 onChange={scriptInsert}
                 value={assist}
                 label={

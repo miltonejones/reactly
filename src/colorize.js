@@ -1,10 +1,10 @@
 import React from "react";
 import { SketchPicker } from 'react-color';
-import { Text, TinyButton, TabButton, Flex, QuickMenu, Tooltag } from './components';
+import { Text, TinyButton, TabButton, useClipboard, Flex, QuickMenu, Tooltag } from './components';
 import { Collapse, Tabs, Divider, Box, Link, Popover } from '@mui/material';
 import Modal, { useModal } from "./components/Modal/Modal";
 import {
-  Add, Remove , RadioButtonUnchecked, Info
+  Add, Remove , RadioButtonUnchecked, Info, CopyAll
 } from "@mui/icons-material";
 import { TextInput } from "./components";
 
@@ -44,6 +44,7 @@ function syntaxHighlight(json, css) {
 }
 
 const JsonView = ({ json, initial = 1,  ...props }) => {
+  const { copy } = useClipboard()
   const [index, setIndex] = React.useState(initial);
   const handleChange = (event, newValue) => {
     setIndex(newValue);
@@ -51,7 +52,10 @@ const JsonView = ({ json, initial = 1,  ...props }) => {
   return <>
         <Tabs onChange={handleChange} value={index} sx={{minHeight: 24, mt: 1, ml: 1, width: '90vw' }}   >
         <TabButton label="Tree View"/>
-        <TabButton label="Raw JSON" /> 
+        <TabButton label="Raw JSON"   iconPosition="end" icon={<TinyButton 
+        onClick={() => copy(JSON.stringify(json,0,2))}
+          icon={CopyAll}
+          />} /> 
       </Tabs>
     <Box sx={{mt: 2}}>
       {index === 0 && <JsonTree {...props } json={json} />}

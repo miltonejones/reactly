@@ -12,8 +12,36 @@ const Layout = styled(Box)(({ theme }) => ({
  padding: theme.spacing(2),
  minHeight: '40vh'
 }));
-
+// 'object',  
 export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }) => {
+
+  const handleValueChange = e => {
+    let prop = e.target.value;
+    switch (Type) {
+      case "number":
+        prop = Number(prop);
+        break;
+      case "boolean":
+        prop = Boolean(prop);
+        break;
+      case "array":
+        prop = prop.split(',')
+        break;
+      // case "object":
+      //   prop = JSON.parse(prop)
+      //   break;
+      default:
+        // do nothing
+    }
+    handleChange && handleChange(ID, Key, prop, Type)
+  }
+
+  let displayValue = Type === 'object' && !!Value && typeof Value === 'object'
+    ? JSON.stringify(Value)
+    : Value;
+  
+
+
   if (Type === 'boolean') {
     return <Switch  size="small"
       checked={!!Value}
@@ -24,9 +52,7 @@ export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }
   }
   return <TextInput prompt tabIndex={tab} {...props} label={
     <Text small><em>Set value for "{Key}"</em></Text>
-  } value={Value} onChange={e => {
-    handleChange && handleChange(ID, Key, Type ===  'number' ? parseInt(e.target.value) : e.target.value, Type)
-  }}  />
+  } value={displayValue} onChange={handleValueChange}  />
 }
  
 const StateDrawer = ({
@@ -60,7 +86,28 @@ const StateDrawer = ({
   } 
 
 
-  const props = objectReduce(state);
+  const props = Object.keys (objectReduce(state))
+    .reduce((out, row) => {
+      const type = state.find(f => f.Key === row);
+      switch (type.Type) {
+        case 'boolean': 
+          out[row] = !!type.Value;
+          break;
+        case 'number': 
+          out[row] = Number(type.Value);
+          break;
+        case 'object': 
+          try {
+            out[row] = JSON.parse(type.Value);
+          } catch (e) {
+            out[row] = { error: e.message };
+          }
+          break;
+        default:
+          out[row] = type.Value  
+      }
+      return out;
+    }, {});
 
   const filtered = state
     .filter(f => !filter || f.Key.toLowerCase().indexOf(filter.toLowerCase()) > -1)

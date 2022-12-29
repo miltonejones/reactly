@@ -26,7 +26,6 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
 
 const ComponentPanel = ({ 
     component, 
-    selectedPage = {},
     onSettingsChange,
     onStyleChange ,
     onPropChange,
@@ -66,6 +65,7 @@ const ComponentPanel = ({
     setOpenTraceLog,  
     setShowTrace,
     showTrace,        
+    selectedPage = {},
     setDisableRequests,disableRequests,
     jsonLog, appData  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
@@ -304,13 +304,13 @@ const ComponentPanel = ({
       page={selectedPage} onChange={onChange} />}
 
 
-    {!component?.ComponentName && !!selectedPage &&  value === 2 && <ComponentEvents  {...panelProps}  />}
+    {!component?.ComponentName && value === 2 && <ComponentEvents  {...panelProps}  />}
 
       </>}
 
-    {showApp && <ApplicationForm applications={appData} 
+    {showApp && value !== 2 && <ApplicationForm applications={appData} 
       importable={importable}/> }
-
+ 
 
     </Stack>
  

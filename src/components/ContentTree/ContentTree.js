@@ -101,9 +101,11 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
     }
   ]
   let allowedChildren;
+  let allowChildren;
   try {
 
     allowedChildren = !tree ? null : Library[tree.ComponentType].allowedChildren;
+    allowChildren = !tree ? null : Library[tree.ComponentType].allowChildren;
   } catch (ex) {
     // console.log ({ ex })
   }
@@ -113,7 +115,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
 
   const iconOwner = !tree ? null : Library[tree.ComponentType];
 
-
+  
 
   const { Icon } = !tree ? {Icon: Add} : { Icon: iconOwner?.Icon || Error }
   
@@ -174,7 +176,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
             onNameChange={onNameChange}
             onSelect={onSelect} trees={trees} indent={indent + 3} key={c.ID} tree={c} /> )}</>}
   
-        {tree?.children && !allowedChildren && <Contents 
+        {allowChildren && !allowedChildren && <Contents 
           label={<Link onClick={() => onCreate(tree.ID)}>Add component</Link>} indent={indent + 3} />} 
 
         {!!allowedChildren && allowedChildren.map(allowed => <Contents 

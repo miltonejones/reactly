@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter, Routes, Route,useParams } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route,useParams, useLocation } from "react-router-dom"; 
 import "./App.css";
 import {
   Popover,
@@ -37,6 +37,10 @@ import LibraryTree from "./components/LibraryTree/LibraryTree";
 import { reduceComponent } from "./components/library/library";
 import { useAppParams } from "./hooks/AppStateContext";
 import { uniqueId } from "./components/library/util";
+import { getApplications } from "./connector/sqlConnector";
+import { setApplication } from "./connector/sqlConnector";
+import { getApplicationInfo } from "./connector/sqlConnector";
+import { getPageByPath } from "./connector/sqlConnector";
   
  
 
@@ -69,6 +73,7 @@ function App() {
  
 function RenderComponent({ preview, component: Component, ...props}) {
   const appHistory = useAppHistory();
+  const location = useLocation()
 
   const params =  useParams ();
   const { appname, pagename } = params;
@@ -100,7 +105,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const [queryState, setQueryState] = React.useState({
     loaded: false,
     data: null,
-    appLoaded: true,
+    appLoaded: false,
   });
   const [dirty, setDirty] = React.useState(false);
   let [t, setT] = React.useState(0);
@@ -122,22 +127,26 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
   const commitProg = async (app) => { 
     setBusy(`Committing changes...`)
-    console.log ({app})
-    const { pages, ...rest} = app;
-    let total = 0;
-    app.pages.map(page => {
-      total += JSON.stringify(page).length;
-      console.log (page, JSON.stringify(page).length)
-    })
-    total += JSON.stringify(rest).length;
-    console.log (rest, JSON.stringify(rest).length)
-    console.log ({ total })
-     await setProgItem(`app-${app.ID}`, app)
+    // console.log ({app})
+    // const { pages, ...rest} = app;
+    // let total = 0;
+    // app.pages.map(page => {
+    //   total += JSON.stringify(page).length;
+    //   console.log (page, JSON.stringify(page).length)
+    // })
+    // total += JSON.stringify(rest).length;
+    // console.log (rest, JSON.stringify(rest).length)
+    // console.log ({ total })
+
+    await setApplication(app);
+
+    //  await setProgItem(`app-${app.ID}`, app);
+
     await refreshProgs()
    }
 
 
-   const udpateLocalProgs = updated => {
+   const udpateLocalProgs = async (updated) => {
     const converted =  updated.map(app => ({
       ...app, 
       pages: app.pages?.map(page => ({
@@ -145,6 +154,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
         components: page.components?.map(component => ({
           pageID: page.ID,
           ...component, 
+          children: Library[component.ComponentType].allowChildren
         })),
         scripts: page.scripts?.map(script => ({
           pageID: page.ID,
@@ -153,28 +163,34 @@ function RenderComponent({ preview, component: Component, ...props}) {
       }))
     }));
     setApplicationData(converted)
-    setDynamoProgs(updated)
+    setDynamoProgs(updated);
+
+ 
    }
-  
+
+   React.useEffect(() => {
+    // runs on location, i.e. route, change
+    console.log('handle route change here', location)
+    if (!pagename) return;
+    getCurrentPage(pagename) ;
+   
+  }, [location, pagename]);
+ 
    const refreshProgs = async () => { 
-    setBusy(`Reloading data...`)
-    const items = await getProgItems();
-    console.log ({ items })
-    const converted = Object.keys(items).reduce((out, item) => {
-      const [label, key] = item.split('-');
-      const app = JSON.parse(atob(items[item]));
-      console.log ({pages: app.pages  })
-      out = out.concat (app)
-      return out;
-    }, []);
-    console.log(converted)
-    udpateLocalProgs(converted)
+    setBusy(`Reloading data for "${pagename || 'application'}"...`);
+
+    // get application data
+    const items = await getApplicationInfo(pagename);
+    
+    udpateLocalProgs(items)
     setBusy(false)
-    return converted;
+    return items;
   }
  
   const refreshLib = async () => { 
-    setBusy(`Reloading data...`)
+    setBusy(`Reloading data...`);
+
+    // get library components
     const items = await getItems();
     const converted = Object.keys(items).reduce((out, item) => {
       const [label, key] = item.split('-');
@@ -222,7 +238,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
   }
  
   React.useEffect(() => { 
-    setT(d => d++)
+  
     if (!libraryLoaded) {
       (async () => {
         await refreshProgs()
@@ -269,10 +285,6 @@ function RenderComponent({ preview, component: Component, ...props}) {
   } , [  ])
    
 
-  if (!applicationData) {
-    return <>Loading application data</>
-   }
-
   //  return <pre>{JSON.stringify(applicationData,0,2)}</pre>
 
 
@@ -285,6 +297,45 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : defaultPage;
    
   const selectedPage = (preview && (!pagename || !!queryState.page))  ? queryState.page : targetPage;
+
+  const getCurrentPage = React.useCallback(async () => { 
+    if (!pagename || !targetPage?.skeleton) return;
+    setBusy(`Reloading page "${pagename}"...`)
+    const currentPage = await getPageByPath(pagename);
+ 
+
+    const stateProps = !currentPage?.state
+    ? null
+    : objectReduce(currentPage.state); 
+
+    const update = applicationData.map(app => ({
+
+      ...app,
+
+      pages: app.pages.map(page => page.ID === currentPage.ID 
+        ? currentPage 
+        : page)
+        .map(page => ({
+          ...page,
+          components: page.components?.map(component => ({
+            ...component,
+            children: Library[component.ComponentType].allowChildren
+          }))
+        }))
+
+
+    }));
+ 
+    
+    setApplicationData(update)
+    setBusy(false)
+    
+    // alert (JSON.stringify(update));
+   }, [pagename, targetPage])
+  
+  if (!applicationData) {
+    return <>Loading application data</>
+   }
 
 
   const stateProps = !selectedPage?.state
@@ -359,6 +410,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
         showTrace, 
         setShowTrace,
         // "persistent" state values 
+        setBusy,
+        getCurrentPage,
         setPageError, 
         pageError ,
         shout,

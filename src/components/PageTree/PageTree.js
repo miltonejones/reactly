@@ -9,7 +9,7 @@ import { styled, List, Link, ListItemButton, Typography,
 const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClick}) => {
  return (
    <List dense>
-   {tree.filter(f => !f.pageID).map(c => <Pages 
+   {tree.filter(f => !f.pageID || f.pageID === 'null').map(c => <Pages 
    dropPage={dropPage}
    setPage={setPage}
    duplicatePage={duplicatePage}

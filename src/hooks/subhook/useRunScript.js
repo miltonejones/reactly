@@ -7,6 +7,8 @@ import { usePageRef } from '.';
 import { useDataResource } from '.';
 import { AppStateContext } from '../AppStateContext';
 import { useClipboard } from '../../components';
+import { map } from '../../components/library/util';
+import { Json } from '../../colorize';
 
 
 export const useRunScript = () => {
@@ -16,6 +18,7 @@ export const useRunScript = () => {
     applicationClientState,
     queryState,
     Alert,
+    Confirm,
     shout,
     setPageClientState,
     getPageResourceState,
@@ -72,7 +75,7 @@ export const useRunScript = () => {
   }
 
   const scriptList = getApplicationScripts()
-
+ 
 
   const applicationScriptRenderOption = (props, option) => {  
     if (!option.page) {
@@ -82,6 +85,9 @@ export const useRunScript = () => {
   }
  
   const applicationScriptOptionLabel =  (option) => {
+    if (!option) {
+      return 'Option not detected'
+    }
     const js = scriptList.find(s => s.ID === (option.ID || option));
     if (js?.page) {
       return `${js.page}.${js.label}`
@@ -151,21 +157,40 @@ const handleScriptRequest =  (block, opts, title) => {
 
     const scriptList = getApplicationScripts();
     const scr = scriptList.find(f => f.ID === scriptID); 
+
+    const getState = () => new Promise (resolve => {
+      setPageClientState(state => {
+        resolve(state);
+        return state;
+      })
+    });
+ 
+    const getApplicationState = () => new Promise (resolve => {
+      setApplicationClientState(state => {
+        resolve(state);
+        return state;
+      })
+    });
  
 
     const opts = {
       state: {} ,
       setState: setPageClientState, 
+      getState,
       data: options,
       application: {
         setState: setApplicationClientState,
+        getState: getApplicationState,
         state: applicationClientState
       },
 
       api: { 
         getPageResourceState,
         pageResourceState,
+        Confirm,
+
         Alert: (message, title, pre) => Alert(message, title || (scr.name + ' alert'), pre),
+        JSON: (json, title) => Alert(<Json>{JSON.stringify(json, 0, 2)}</Json>, title || (scr.name + ' alert')),
 
         executeScriptByName: (scriptName, options) => executeScriptByName(scriptName, options, execResourceByName), 
 
@@ -180,7 +205,8 @@ const handleScriptRequest =  (block, opts, title) => {
         getResourceByName ,
         execResourceByName,
         copy,
-        moment
+        moment,
+        map
       }
     }
 

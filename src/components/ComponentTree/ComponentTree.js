@@ -32,6 +32,7 @@ import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
 import { uniqueId } from "../library/util";
 import Observer from "../../util/Observer";
 import { Icons } from '../library/icons';
+import { truth } from "../library/util";
 
 export const propertiesLoadedEvent = new Observer("scroll");
 
@@ -152,7 +153,10 @@ const ComponentTree = ({
     pageError ,
     setDisableLinks,
     disableLinks,
-    appBusy
+    getCurrentPage,
+    selectedPage: thisPage,
+    appBusy,
+    setBusy
   } = React.useContext(AppStateContext);
   const { selectedComponent = {} } = queryState;
  
@@ -216,70 +220,141 @@ const ComponentTree = ({
 
   const defaultTheme = useTheme();
   
-
-  React.useEffect(() => {
-    // runs on location, i.e. route, change
-    console.log('handle route change here', location)
-    setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
+  
+  React.useEffect(() => {  
+    // set page loaded to false to force state to reload
+    setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
   }, [location]);
 
+
+  
+ 
+  
+  const handlePageLoad = () =>  new Promise(resolve => {
+
+    new Promise (report => {
+      setBusy && setBusy('loading page...')
+      // set client state if it is not already set
+      setPageClientState(state => {     
+        const hasState = !!state && !!Object.keys(state).length;
+        if ( !hasState && !!stateProps && !!Object.keys(stateProps).length ) {  
+          report(stateProps);
+          return stateProps;
+        } 
+        report(state);
+        return state;
+      }); 
+    })
+
+    // then fire the onPageLoad event once all state variables are set
+    .then(props => {
+
+      setBusy && setBusy('page loaded...')
+      console.log ({ 
+        thisPage
+      })
+      handleComponentEvent(null, {
+          name: 'onPageLoad',
+          component: thisPage,
+          options: {
+            ID: thisPage?.ID,
+            ...props
+          }
+      })
+      
+      resolve(!!thisPage); 
+      setBusy && setBusy(false)
+
+
+
+    })
+
+
+  })
+ 
+  const getState = () => new Promise(yes =>{
+    setQueryState(s => {
+      yes(s);
+      return s;
+    })
+  })
  
   
   React.useEffect(() => {   
+
+    (async () => {
+      const qstate = await getState();
+      const{ loadTime, pageLoaded } = qstate;
+
+      const now = new Date().getTime();
+      const tooQuick = !!loadTime  && (now - loadTime < 2000)
+      if (pageLoaded || tooQuick) return  ;
+
+      let loaded = await handlePageLoad();
+      console.log ('page loaded', qstate.loadTime, { loaded })
+      
+      setQueryState(state => ({
+        ...state,
+        pageLoaded: loaded,
+        appContext,  
+        loadHandled: false,
+        loadTime: new Date().getTime()
+      })) 
+
+    }) ()
      
+    // setQueryState(qstate => {
+    //   const { loadTime } = qstate;
+    //   const now = new Date().getTime();
+    //   const tooQuick = !!loadTime  && (now - loadTime < 2000)
+    //   if (qstate.pageLoaded || tooQuick) return  {
+    //     ...qstate, 
+    //     pageLoaded: true 
+    //   };
 
-    if (queryState.pageLoaded) return 
+    //   let loaded;
+    //   (async() => {
+    //     loaded = await  handlePageLoad();
+    //     console.log ({ loaded })
+    //   })()
+     
+      
+   
+    //   console.log ('page loaded', qstate.loadTime, { loaded })
+    //   return {
+    //     ...qstate,
+    //     appContext, 
+    //     pageLoaded: true,
+    //     loadHandled: false,
+    //     loadTime: new Date().getTime()
+    //   }
+    // })
  
-    setPageClientState(state => {     
-      if ( !!stateProps && !!Object.keys(stateProps).length ) {  
-        return stateProps;
-      } 
-      return state;
-    });
 
-    setQueryState(qs => ({...qs, appContext, pageLoaded: true}))  ;
-    console.log ('page loaded')
   }, [
     stateProps, 
-    appContext,
+    appContext, 
+    componentTree,
     propertiesLoadedEvent,
     queryState.pageLoaded,    
     pageClientState
   ]);
 
    const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
-
-  // const getPageResourceState = () => pageResourceState
-
-  const loadPage = React.useCallback(() => { 
-
-    console.log ({ 
-      pageRefState
-    })
-    // alert (JSON.stringify(stateProps))
-    setPageError && setPageError(null);
-    // setMessages([]) 
-    !!stateProps && setPageClientState(s => stateProps);   
-    
-    setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: true})) 
-  }, [pageLoaded, setPageError, stateProps,  setPageClientState])
+ 
+ 
 
 
   let path;
   if (selectedPage) {
     path = createBreadcrumbs(appContext.pages, selectedPage);
   }
-
-  // if (appBusy) {
-  //   return <>Updating component set...</>
-  // }
+ 
 
   if (!queryState.pageLoaded || appBusy) {
     return <>Loading...</>
   }
-
-  // if (!componentTree)
-  //   return <Alert sx={{ m: 1 }}>Select a page to see its components</Alert>;
+ 
 
   // components with no parents
   const components = componentTree?.filter((f) => !f.componentID);
@@ -288,46 +363,14 @@ const ComponentTree = ({
   const selectedTheme = themes.find((f) => f.name === selectedPage?.ThemeName);
   const theme = !selectedPage?.ThemeName ? defaultTheme : selectedTheme;
   const pageTheme = createTheme(theme);
-  
-//   if (pageError) {
-//     return <>
-//     <Alert severity="error">
-//       <Flex baseline fullWidth>
-
-//         {pageError.message}
-//         <Spacer />
-//         <Close onClick={() => setPageError && setPageError(null)} />
-  
-
-//       </Flex>
-//     </Alert> 
-
-// {pageError.fields.map(field => <Flex sx={{m: 1}}>
-
-//   <Text small>{field.key}</Text>
-
-//   <TextInput size="small" label={field.key} value={field.value}/>
-
-// </Flex>)}
-
-// <TextBtn variant="contained"
-//   onClick={() => pageError.execute({
-//     ['term.param']: 'zaz',
-//     param: null
-//   })}
-//   >Retry</TextBtn>
- 
-//     </>
-//   }
-
+   
   const renderComponentProps = { 
     selectedPage,
     selectedComponent,
     preview,
     queryState,
     setQueryState, 
-    queryState, 
-    loadPage,
+    queryState,  
     hilit
   }
 
@@ -448,7 +491,7 @@ export const RenderComponent = ({
 
   return (
     <> 
-     {!settings.debug &&  <Preview
+     {!truth(settings.debug) &&  <Preview
         on={on}
         selectedPage={selectedPage}
         component={Component}
@@ -479,7 +522,7 @@ export const RenderComponent = ({
         )}
       </Preview>}
 
-     {!!settings.debug && <> 
+     {!!truth(settings.debug) && <> 
        
       [<pre>
       {JSON.stringify(settings,0,2)}

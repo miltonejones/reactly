@@ -180,7 +180,7 @@ export const useResourceEdit = (apps) => {
 }
 
 const Editor = ({ applications: apps = {} }) => {
-  const { appname } = useParams();
+  const { appname, pagename } = useParams();
   const {
     applications,
     setComponentProp,
@@ -218,6 +218,7 @@ const Editor = ({ applications: apps = {} }) => {
     connectOpen: false,
   });
 
+  
   const navigate = useNavigate();
   const { handleResourceDelete, handleConnectionDelete } = useConnectionEdit(apps);
   const { copy, copied } = useClipboard();
@@ -283,6 +284,7 @@ const Editor = ({ applications: apps = {} }) => {
     setPageError,
     setShowTrace,
     showTrace,
+    appContext
 
   } = React.useContext(AppStateContext);
 
@@ -305,9 +307,11 @@ const Editor = ({ applications: apps = {} }) => {
   if (!applications.find) {
     return <>error</>;
   }
-  const appData = applications.find((f) => f.path === appname);
+  const appData = appContext;// applications.find((f) => f.path === appname);
 
-  const componentParent = selectedPage || appData;
+  const queriedPage = appContext.pages?.find(p => p.PagePath === pagename);
+
+  const componentParent = queriedPage || selectedPage || appData;
 
   const path = ["apps", appData.path].concat(
     !selectedPage?.PagePath ? [] : selectedPage.PagePath
@@ -846,7 +850,6 @@ const Editor = ({ applications: apps = {} }) => {
     <EditorStateContext.Provider value={{ 
       appData 
       }}>
-
       <Flex spacing={0} baseline fullWidth>
         <Stack
           sx={{
@@ -1007,7 +1010,7 @@ const Editor = ({ applications: apps = {} }) => {
             <Collapse in={json && !showLib}>
               {!!json &&  <JsonView json={appData}/>} 
             </Collapse>
- 
+  
             <Collapse in={!json && !showLib}>
 
               {!!componentTabs && showTabs &&  <Box sx={{mb: 1, borderBottom: 1, borderColor: 'divider'}}>

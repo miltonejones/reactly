@@ -2128,5 +2128,5 @@ export const Icons = {
 export const renderIconOption = (props, option) => {
   const Icon = Icons[option];
   if (!Icon) return <Box {...props}>{option}</Box>
-  return <Box {...props}><Icon /> {option}</Box>
+  return <Box sx={{gap: '1rem', display: 'flex', alignItems: 'center'}} {...props}><Icon /> {option}</Box>
 }

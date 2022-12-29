@@ -11,7 +11,7 @@ export const useScriptReferences = () => {
 
   const getEventsFromObject = (object, prefix, field) => {
     return (object.events || []) 
-      .filter(event => event.action.type === 'scriptRun')
+      .filter(event => event.action && event.action.type === 'scriptRun')
       .map(s => ({
         label: `${prefix}.${!field ? '' : (object[field] + '.')}${s.event}`, 
         target: s.action.target

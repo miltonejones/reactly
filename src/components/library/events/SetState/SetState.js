@@ -36,10 +36,11 @@ const StateValue = ({ Value, Type, handleChange, page, component, application, r
       <Spacer />
       {pills.map(p => <Pill 
       onClick={() => handleChange(p.value)}
-      selected={p.value === Value || (!p.value && !Value)} key={p.name}>
-        <Typography sx={{fontWeight: p.value === Value ? 600 : 400}} variant="caption">{p.name}</Typography>
+      selected={p.value?.toString() === Value?.toString() || (!p.value && !Value)} key={p.name}>
+        <Typography sx={{fontWeight: p.value.toString() === Value?.toString()  ? 600 : 400}} variant="caption">{p.name}</Typography>
         
         </Pill>)}
+        {/* {Value?.toString()} */}
     </Flex> 
   }
  
@@ -162,11 +163,15 @@ console.log ({ stateList, target: state.target })
         component={component}
         selectedEvent={selectedEvent}
         page={page}
-        handleChange={value => setState(s => ({...s, value}))}
+        handleChange={value => { 
+          setState(s => ({...s, value}))
+        }}
       />
 
-{/* [{JSON.stringify(event)}] 
-{state.target} */}
+<pre>
+[{JSON.stringify(state,0,2)}] 
+{state.target}
+</pre>
 
       <Flex>
         <Spacer />

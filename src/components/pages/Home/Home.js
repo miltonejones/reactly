@@ -11,11 +11,12 @@ const Layout = styled(Box)(({ theme }) => ({
 const Home = ({ appData }) => {
 
   const { createProg } = useEditor(appData);
-  const create = () => {
+  const create = async () => {
     const name = window.prompt('Name?')
     if (!name) return;
-    createProg(name)
+    await createProg(name)
   }
+
  return (
    <Layout data-testid="test-for-Home">
 
@@ -41,7 +42,10 @@ const Home = ({ appData }) => {
      </Card>)}
 
      <PopoverPrompt
-  onChange={val => !!val &&  createProg(val)}
+  onChange={async (val) => {
+    if (!val) return;
+    await createProg(val)
+  }}
   endIcon={<Add />}
   label={<>Enter application name</>}
   

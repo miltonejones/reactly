@@ -126,7 +126,7 @@ export const useTextTransform = () => {
         ? (!scopeParams ? 'unknown' : scopeParams[boundTo] || `---`)
 
         // otherwise pull from CLIENT or APPLICATION scope
-        : textScope[boundTo] || `...`;    
+        : clientState[boundTo] || `...[${scope}.${boundTo}]`;    
   
 
        deterpolatedText = deterpolatedText.replace(wholeText, innerText)

@@ -133,11 +133,13 @@ const ConnectionForm = ({ connection, connectionCommit, onChange, dirty }) => {
   </>
 }
 
-const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms, setTerms, onPreview, 
+const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms = {}, setTerms, onPreview, 
     onTermDrop, onTermAdd, onChange, setDirty, resourceCommit }) => {
 
   const { ID, connectionID, name, path, format, method, values, columns, transform, node } = resource;
   const handleChange = key => e => onChange(key, !e.target ? e : e.target.value);
+
+  const statePrefix = name?.toLowerCase().replace(/\s/g, '_');
 
   const {  
     EditCode
@@ -310,9 +312,14 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
 
 
       </Flex>
-
+{/* <pre>
+[{JSON.stringify(terms,0,2)}]
+</pre>
+<pre>
+[{JSON.stringify(values,0,2)}]
+</pre> */}
       <Divider  sx={{mb: 2, mt: 1}}/>
-
+{/* */}
       {isGetRequest && <Grid sx={{ml: 1}} container spacing={0}>
         
         <Grid item xs={2}>
@@ -333,7 +340,7 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
 
                 <PopoverPrompt 
                   small
-                  value={terms[prop.key]}
+                  value={terms[prop.key] }
                   component={Text}
                   onChange={e => {
                     setTerms(s => ({...s, [prop.key]: e}));
@@ -362,7 +369,7 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
           <Grid item xs={3}>
             <PopoverPrompt 
               small
-              value={prop.key}
+              value={  statePrefix + '_' + prop.key}
               component={TinyButton}
               icon={Add}
               onChange={e => {
@@ -377,7 +384,7 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
           </Grid>
 
         </>)}
-      </Grid>}  
+      </Grid>}   
 
     </Box>
     
@@ -527,9 +534,9 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     setSelected(resource => ({
       ...resource,
       node: where,
-      columns:  resource.columns.indexOf(name) > -1 
-      ? resource.columns.filter(e => e !== name)
-      : resource.columns.concat(name) 
+      columns:  resource.columns?.indexOf(name) > -1 
+      ? (resource.columns||[]).filter(e => e !== name)
+      : (resource.columns||[]).concat(name) 
     })) 
     setDirty(true);
   }
@@ -597,9 +604,12 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
   }
 
   const handleAddQueryTerm = term => {
+    // alert (term);
+    const values =  (selected.values||[]).concat(term.split(',').map(key => ({ key })));
+ //   return alert (JSON.stringify(values))
     setSelected(resource => ({
       ...resource,
-      values: resource.values.concat(term.split(',').map(key => ({ key })))
+      values
     }))
     setDirty(true);
   }

@@ -2,21 +2,27 @@ import * as React from 'react';
 import { getComponent } from '../components/library/util';
 import { uniqueId } from '../components/library/util';
 import { getMax } from '../components/library/util';
+import { dropObject } from '../connector/sqlConnector';
+import { setApplication } from '../connector/sqlConnector';
+import { clonePage } from '../util';
 import { AppStateContext } from './AppStateContext';
 
 export const useEditor = (apps) => {
-  const [applications, setApplications] = React.useState(apps);
-  const app = React.useContext(AppStateContext)
-  const { Library } = React.useContext(AppStateContext)
+  // const [applications, setApplications] = React.useState(apps);
+  const app = React.useContext(AppStateContext);
+  const { Prompt, Alert } = app;
+  const { Library, appData } = React.useContext(AppStateContext)
 
 
-  const findProg = ID => applications.find(a => a.ID === ID);
+  const findProg = ID => appData.find(a => a.ID === ID);
 
-  const updateProg = (prog) =>{
+  const updateProg = async (prog) =>{
     
-    const updated = applications.map((t) => (t.ID === prog.ID ? prog : t));
+    const updated = appData.map((t) => (t.ID === prog.ID ? prog : t));
  
-    setApplications(updated);
+    // await setApplication(prog);
+
+    // setApplications(updated);
     app.setAppData(updated)
     app.setDirty(true)
   }
@@ -61,9 +67,9 @@ export const useEditor = (apps) => {
       if (!component) {
         return edit (page, app);
       }
-      
 
       await edit(component, page, app);
+      
       page.components = page.components.map((c) => c.ID === componentID ? component : c);
       return component;
     });
@@ -122,19 +128,33 @@ export const useEditor = (apps) => {
 
 
   const createProg = async (Name) => { 
+
+
     const prog = {
       Name,
       "path": Name.toLowerCase().replace(/\s/g, '-'),
       "ID": uniqueId(),
-      "pages": [],
+      "pages": [{
+        PageName: "Home",
+        "ID": uniqueId(),
+        PagePath: "home",
+        dirty: true,
+        components: []
+      }],
       "connections": [],
       "resources": []
     }
-    const updated = applications.concat(prog)
-    setApplications(updated);
-    app.setAppData(updated)
-    app.setDirty(true)
-    await app.commitProg(prog);
+
+    await setApplication(prog);
+
+    // const updated = applications.concat(prog)
+    // setApplications(updated);
+
+
+    
+    // app.setAppData(updated)
+    // app.setDirty(true)
+    // await app.commitProg(prog);
     app.refreshProgs()
   };
 
@@ -178,6 +198,16 @@ export const useEditor = (apps) => {
       app.connections = app.connections.filter(f => f.ID !== ID) 
     })
   }
+
+  const dropComponent = async (appID, pageID, componentID) => { 
+
+    const command = async (object) => {
+      object.components = object.components.filter(f => f.ID !== componentID) 
+    }
+ 
+    editPage(appID, pageID, command);
+    dropObject('components', componentID)
+  }
   
   const setConnection = async(appID, connection) => { 
     editProg(appID, async (app) => {
@@ -188,15 +218,6 @@ export const useEditor = (apps) => {
     })
   }
 
-  const dropComponent = async (appID, pageID, componentID) => { 
-
-    const command = async (object) => {
-      object.components = object.components.filter(f => f.ID !== componentID) 
-    }
- 
-    editPage(appID, pageID, command);
-  }
-
   const dropPage = async(appID, pageID) => {
     editProg(appID, async (app) => {
       app.pages = app.pages.filter(f => f.ID !== pageID) 
@@ -204,11 +225,15 @@ export const useEditor = (apps) => {
   }
 
   const duplicatePage = async(appID, pageID) => {
-    editProg(appID, async (app) => {
-      const existing = app.pages.find((c) => c.ID === pageID); 
-      app.pages = app.pages.concat({ ...existing, appID, ID: uniqueId()
-          , PageName: existing.PageName + ' (copy)'
-          , PagePath: existing.PagePath + '-copy'}) 
+
+    const name = await Prompt('Enter a name for your new page');
+    if (!name) return; 
+
+    editProg(appID, async (prog) => {
+      const existing = prog.pages.find((c) => c.ID === pageID); 
+      const clone = clonePage(existing, name);
+      // return console.log ({ clone })
+      prog.pages = prog.pages.concat(clone) ;
     })
   }
    
@@ -361,6 +386,7 @@ export const useEditor = (apps) => {
   const dropPageScript = async (appID, pageID, scriptID) => {
     editPage(appID, pageID, async (page) => { 
       Object.assign(page, { scripts: page.scripts.filter(f => f.ID !== scriptID) }); 
+      dropObject('scripts', scriptID);
     });
   }
 
@@ -379,7 +405,7 @@ export const useEditor = (apps) => {
   const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID, comment) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
-        name, code, parentID, comment
+        name, code, parentID, comment, pageID
       }
 
       
@@ -487,8 +513,9 @@ export const useEditor = (apps) => {
   const dropComponentEvent = async (appID, pageID, componentID, eventID) => {
     editComponent(appID, pageID, componentID, async (component, page) => { 
       if (!component) return app.Alert(<>Component {componentID} not found on {page?.PageName}</>)
-      app.Alert (<pre>{JSON.stringify({ appID, pageID, eventID, events: component?.events }, 0, 2)}</pre>)
+      // app.Alert (<pre>{JSON.stringify({ appID, pageID, eventID, events: component?.events }, 0, 2)}</pre>)
       Object.assign(component, { events: component.events.filter(f => f.ID !== eventID)   }) ;
+      dropObject('appevents', eventID);
     });
   }
 
@@ -532,9 +559,6 @@ export const useEditor = (apps) => {
     });
   }
 
-
-
-
   const setComponentStyle = async (appID, pageID, componentID, key, value, selector) => {
     
     editComponent(appID, pageID, componentID, async (component) => { 
@@ -555,13 +579,9 @@ export const useEditor = (apps) => {
     });
   }
 
-
-
-
   const setComponentEvent = async (appID, pageID, componentID, event) => {
     editComponent(appID, pageID, componentID, async (component) => {
-      
-
+    
       component.events = component.events.find(f => f.ID === event.ID)
         ? component.events.map((c) => c.ID === event.ID ? event : c)
         : component.events.concat({...event, ID: uniqueId()});
@@ -581,10 +601,57 @@ export const useEditor = (apps) => {
   }
 
 
-  return { dropComponent, applications, editProg, editPage, editComponent , setComponentEvent, addComponent,
-    setComponentName, dropPageState, setPageState, setComponentStyle, setComponentProp, setPageProps,
-    dropComponentEvent, setComponentParent, setPageScript , dropPageScript, setResource, importComponent,
-    dropResource, dropConnection, setConnection, setPage, dropPage, duplicatePage, setComponentCustomName,
-    createProg, setTheme, dropTheme, setPageEvent, setProgProps, setParameter, dropParameter,  
-    setResourceEvent, dropResourceEvent, pasteComponentProps, setPageParent, promotePageScript };
+  return { 
+    
+    applications: appData, 
+
+    editProg, 
+    editPage, 
+    editComponent , 
+    
+
+    dropComponent, 
+    dropPageState,
+    dropComponentEvent, 
+    dropPageScript, 
+    dropResource,
+    dropConnection, 
+    dropPage,
+    dropTheme,
+    dropParameter, 
+    dropResourceEvent,
+
+    importComponent,
+
+    addComponent,
+    
+    setComponentEvent, 
+    setComponentName, 
+    setComponentStyle, 
+    setComponentProp, 
+    setComponentParent, 
+    pasteComponentProps, 
+    setComponentCustomName,
+
+    setPageState, 
+    setPageProps,
+    setPageScript , 
+    setPage, 
+    duplicatePage, 
+    setPageEvent, 
+    setPageParent, 
+
+    setResource,
+    setResourceEvent,  
+    setConnection,
+    
+    createProg, 
+    setProgProps, 
+
+    setTheme,  
+
+    setParameter,  
+    promotePageScript 
+  
+  };
 }
