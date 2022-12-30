@@ -52,6 +52,7 @@ import {
   RecentActors,
   Code,
   Article,
+  Gamepad,
   Newspaper, Construction, ArrowBack
 } from "@mui/icons-material";
 import {
@@ -70,6 +71,7 @@ import StatusPane from "../../StatusPane/StatusPane";
 import { uniqueId } from "../../library/util"; 
 import { ConsoleDrawer } from "../..";
 import { useNavigate  } from "react-router-dom";
+import { ParameterPopover } from "./components";
 
 const BorderButton = styled(IconButton)(({ active , theme}) => ({
   // borderWidth: active ? 1  : 0,
@@ -868,6 +870,21 @@ const Editor = ({ applications: apps = {} }) => {
           </Box>
 
           <Stack>
+          <IconButton
+              color="inherit"
+              sx={{ mt: 1 }}
+              onClick={() => {
+                setDrawerState((s) => ({ ...s, 
+                  connectOpen: !1 , 
+                  scriptOpen: !1 , 
+                  connectOpen: !1 
+                }));
+                setShowTrace(true);
+              }}
+            >
+              <Gamepad />
+            </IconButton>
+
             {!!componentParent && <>
                         <IconButton
               color="inherit"
@@ -1027,7 +1044,7 @@ const Editor = ({ applications: apps = {} }) => {
  
             <ApplicationTree {...applicationTreeProps} application={appData} />
 
-                <ComponentTree
+           {  !!selectedPage &&   <ComponentTree
                   
                   {...componentTreeProps}
                   loadID={uniqueId()}
@@ -1040,7 +1057,7 @@ const Editor = ({ applications: apps = {} }) => {
                   preview
                   selectedPage={selectedPage}
 
-                />
+                />}
                 
             </Collapse>
           </Pane>
@@ -1201,49 +1218,13 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
       autoFocus
     />
     
-  {!!selectedPage?.parameters && <Popover 
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handlePopoverClose} 
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'left',
-      }}
-    >
-     <Box sx={{width: 300, p: 2}}>
-      <Text small><b>Set page parameters</b></Text>
-     </Box>
-      <Divider />
-     <Box sx={{width: 300, p: 2}}>
-      {Object.keys(selectedPage?.parameters).map(param => <Flex sx={{mt: 1}}>
-        {param} <TextInput 
-            size="small"
-            onChange={e => {
-              setQueryState(s => ({
-                ...s,
-                page: {
-                  ...s.page,
-                  parameters: {
-                    ...s.page.parameters,
-                    [param]: e.target.value 
-                  }
-                }
-              }))
-            }}
-            value={selectedPage?.parameters[param]} />
-      </Flex>)}
-
-      <Flex sx={{mt: 1}}>
-        <Spacer />
-        <TextBtn
-          onClick={openPage}
-          variant="outlined"
-          startIcon={<Launch />}
-        >Open</TextBtn>
-      </Flex>
-     </Box>
-
-    </Popover>}
+  {!!selectedPage?.parameters && <ParameterPopover 
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+          setQueryState={setQueryState}
+          openPage={openPage}
+          parameters={selectedPage.parameters}
+    />}
 
     
     </> 

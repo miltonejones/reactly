@@ -33,6 +33,7 @@ import { uniqueId } from "../library/util";
 import Observer from "../../util/Observer";
 import { Icons } from '../library/icons';
 import { truth } from "../library/util";
+import { usePageLoader } from "./usePageLoader";
 
 export const propertiesLoadedEvent = new Observer("scroll");
 
@@ -220,129 +221,8 @@ const ComponentTree = ({
 
   const defaultTheme = useTheme();
   
-  
-  React.useEffect(() => {  
-    // set page loaded to false to force state to reload
-    setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
-  }, [location]);
-
-
-  
- 
-  
-  const handlePageLoad = () =>  new Promise(resolve => {
-
-    new Promise (report => {
-      setBusy && setBusy('loading page...')
-      // set client state if it is not already set
-      setPageClientState(state => {     
-        const hasState = !!state && !!Object.keys(state).length;
-        if ( !hasState && !!stateProps && !!Object.keys(stateProps).length ) {  
-          report(stateProps);
-          return stateProps;
-        } 
-        report(state);
-        return state;
-      }); 
-    })
-
-    // then fire the onPageLoad event once all state variables are set
-    .then(props => {
-
-      setBusy && setBusy('page loaded...')
-      console.log ({ 
-        thisPage
-      })
-      handleComponentEvent(null, {
-          name: 'onPageLoad',
-          component: thisPage,
-          options: {
-            ID: thisPage?.ID,
-            ...props
-          }
-      })
-      
-      resolve(!!thisPage); 
-      setBusy && setBusy(false)
-
-
-
-    })
-
-
-  })
- 
-  const getState = () => new Promise(yes =>{
-    setQueryState(s => {
-      yes(s);
-      return s;
-    })
-  })
- 
-  
-  React.useEffect(() => {   
-
-    (async () => {
-      const qstate = await getState();
-      const{ loadTime, pageLoaded } = qstate;
-
-      const now = new Date().getTime();
-      const tooQuick = !!loadTime  && (now - loadTime < 2000)
-      if (pageLoaded || tooQuick) return  ;
-
-      let loaded = await handlePageLoad();
-      console.log ('page loaded', qstate.loadTime, { loaded })
-      
-      setQueryState(state => ({
-        ...state,
-        pageLoaded: loaded,
-        appContext,  
-        loadHandled: false,
-        loadTime: new Date().getTime()
-      })) 
-
-    }) ()
-     
-    // setQueryState(qstate => {
-    //   const { loadTime } = qstate;
-    //   const now = new Date().getTime();
-    //   const tooQuick = !!loadTime  && (now - loadTime < 2000)
-    //   if (qstate.pageLoaded || tooQuick) return  {
-    //     ...qstate, 
-    //     pageLoaded: true 
-    //   };
-
-    //   let loaded;
-    //   (async() => {
-    //     loaded = await  handlePageLoad();
-    //     console.log ({ loaded })
-    //   })()
-     
-      
+  const { pageState } = usePageLoader();
    
-    //   console.log ('page loaded', qstate.loadTime, { loaded })
-    //   return {
-    //     ...qstate,
-    //     appContext, 
-    //     pageLoaded: true,
-    //     loadHandled: false,
-    //     loadTime: new Date().getTime()
-    //   }
-    // })
- 
-
-  }, [
-    stateProps, 
-    appContext, 
-    componentTree,
-    propertiesLoadedEvent,
-    queryState.pageLoaded,    
-    pageClientState
-  ]);
-
-   const getPageClientState = React.useCallback(() => pageClientState, [pageClientState]);
- 
- 
 
 
   let path;
@@ -352,7 +232,7 @@ const ComponentTree = ({
  
 
   if (!queryState.pageLoaded || appBusy) {
-    return <>Loading...</>
+    return <>{pageState}</>
   }
  
 
@@ -399,8 +279,7 @@ const ComponentTree = ({
           setPageModalState,
           pageRefState,
           setPageRefState,
-          pageClientState,
-          getPageClientState,
+          pageClientState, 
           setPageClientState,
           getPageResourceState,
           pageResourceState, 
@@ -422,7 +301,7 @@ const ComponentTree = ({
         )}
   
         <Box sx={{position: 'relative'}}>
-
+ 
             {components?.sort(componentOrder).map((c) => (
               <RenderComponent
                 key={c.ComponentName}

@@ -51,7 +51,7 @@ export const useScriptReferences = () => {
       if (resource.transform) {
         out.push({
           label: `${resource.name}.transform`,
-          target: resource.transform.ID
+          target: resource.transform.ID || resource.transform
         })
       }
       return out;

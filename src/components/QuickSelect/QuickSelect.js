@@ -36,8 +36,8 @@ export const QuickSelect = ({
   }
 
   const selections = options
-  .filter(f => !filterText || f.toLowerCase().indexOf(filterText.toLowerCase()) > -1)
-  .slice(0, 20)
+  .filter(f => typeof f !== 'string' || (!filterText || f.toLowerCase().indexOf(filterText.toLowerCase()) > -1))
+  .slice(0, 40)
 
   const renderOption = !props.renderOption 
     ? (props, opt) => opt

@@ -376,7 +376,7 @@ const ResourceForm = ({ onStateChange, setAnswer, answer, dirty, resource, terms
                 !!e && onStateChange(null, e, terms[prop.key],
                     isNaN(terms[prop.key]) ? 'string' : 'number'
                   )
-                alert (e)
+                // alert (e)
               }} 
               label={<>Create a client variable for "{prop.key}"</>} 
              />
@@ -510,8 +510,9 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     const json = await response.json();
 
     if (transform && method === 'GET') {
+      const transformID = transform.ID || transform;
       const scriptList = getApplicationScripts()
-      const script = scriptList?.find(f => f.ID === transform.ID);
+      const script = scriptList?.find(f => f.ID === transformID);
  
       const res = await executeScript( script.ID, json )
  

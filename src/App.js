@@ -73,7 +73,9 @@ function App() {
  
 function RenderComponent({ preview, component: Component, ...props}) {
   const appHistory = useAppHistory();
-  const location = useLocation()
+  const location = useLocation();
+  const monitoredText = localStorage.getItem('monitored');
+  const monitored = !monitoredText ? [] : JSON.parse(monitoredText);
 
   const params =  useParams ();
   const { appname, pagename } = params;
@@ -96,8 +98,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
   const [busy, setBusy] = React.useState(false);
   const [applicationClientState, setApplicationClientState] = React.useState({});
 
-  const [monitoredEvents, setMonitoredEvents] = React.useState([])
-  const [applicationData, setApplicationData] = React.useState(null)
+  const [monitoredEvents, setMonitoredEvents] = React.useState(monitored)
+  const [applicationData, setApplicationData] = React.useState(null);
 
   const [pageModalState, setPageModalState] = React.useState({});
   // const [pageClientState, setPageClientState] = React.useState({});
@@ -106,16 +108,32 @@ function RenderComponent({ preview, component: Component, ...props}) {
     loaded: false,
     data: null,
     appLoaded: false,
+    loadTime: new Date().getTime()
   });
   const [dirty, setDirty] = React.useState(false);
   let [t, setT] = React.useState(0);
 
+ 
 
-  React.useEffect(() => {
-    console.log ('renderer loading')
-  }, [])
+  const monitorEvent = eventName => setMonitoredEvents(e => {
+    const monitored = e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName);
+    localStorage.setItem('monitored', JSON.stringify(monitored))
+    return monitored;
+  } )
 
-  const monitorEvent = eventName => setMonitoredEvents(e => e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName) )
+  const shout =  async( j, m = 'message', color, fontWeight) => {
+      
+    setMessages(msgs => msgs.concat({
+          json: j,
+          message: m,
+          color,
+          fontWeight
+        }) 
+      ) 
+      if (loud) {
+        console.log("%s\n------------------\n%o", m, j)
+      }
+  } 
 
   const store = useLocalStorage({
     menu_pos: "bottom",
@@ -172,6 +190,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
     // runs on location, i.e. route, change
     console.log('handle route change here', location)
     if (!pagename) return;
+    shout({location, pagename}, 'Loading page from server', 'green', 600);
     getCurrentPage(pagename) ;
    
   }, [location, pagename]);
@@ -286,7 +305,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
    
 
   //  return <pre>{JSON.stringify(applicationData,0,2)}</pre>
-
+ 
 
   const appContext = applicationData?.find(f => f.path === appname);
   const homePageID =  appContext?.HomePage;
@@ -296,7 +315,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
   const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : defaultPage;
    
-  const selectedPage = (preview && (!pagename || !!queryState.page))  ? queryState.page : targetPage;
+  const selectedPage = (preview && (!pagename || (!!queryState && !!queryState.page)))  ? queryState.page : targetPage;
 
   const getCurrentPage = React.useCallback(async () => { 
     if (!pagename || !targetPage?.skeleton) return;
@@ -345,28 +364,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
   
 
-  const shout =  async( j, m = 'message') => {
-      
-      setMessages(msgs => msgs.concat({
-        json: j,
-            message: m
-          }) 
-        )
-      //   await modal.Alert (<Stack>
-      //     {/* <Text>{m}</Text> */}
-      //     <pre>
-      //     {JSON.stringify(j,0,2)}
-      //     </pre>
-      // </Stack>, m)
-    if (loud) {
-      console.log("%s\n------------------\n%o", m, j)
-    }
-  } 
-
-  const setAppData = data => setApplicationData(s => data); // store.setItem('page_dyno_items', JSON.stringify(data)); 
- 
-
-
+  const setAppData = data => setApplicationData(s => data); 
+  
   const getPageResourceState = () => pageResourceState;
 
   const sessionID = uniqueId();
@@ -381,9 +380,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
      </Flex>
   }
  
-  // const current_state = JSON.parse(store.state.page_dyno_items);
 
-//  return <pre>{JSON.stringify({preview,page: !!queryState.page, pg:pagename},0,2)}</pre>
 
   return (
     <AppStateContext.Provider
@@ -409,6 +406,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
         preview,
         showTrace, 
         setShowTrace,
+        pagename,
         // "persistent" state values 
         setBusy,
         getCurrentPage,

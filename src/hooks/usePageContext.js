@@ -171,7 +171,8 @@ export const usePageContext = () => {
     const scriptList = getApplicationScripts();
 
     if (transform) {
-      const script = scriptList?.find((f) => f.ID === transform.ID);
+      const transformID = transform.ID || transform;
+      const script = scriptList?.find((f) => f.ID === transformID);
       querystring = await executeScript(script.ID, querystring, execResourceByName);
     }
 
@@ -187,7 +188,8 @@ export const usePageContext = () => {
     let json = await response.json();
 
     if (transform && isGetRequest) {
-      const script = scriptList?.find((f) => f.ID === transform.ID);
+      const transformID = transform.ID || transform;
+      const script = scriptList?.find((f) => f.ID === transformID);
       json = await executeScript(script.ID, json, execResourceByName);
     }
 
@@ -353,7 +355,12 @@ export const usePageContext = () => {
       const { selectedComponent, ...rest } = queryState;
 
       const currentParameters = getParametersInScope();
-      const pageParameters = createPageParams(trigger.action.params, options);
+      const currentClientState = await new Promise(yes => {
+        setPageClientState(state => {
+          yes(state);
+          return state;
+        })
+      })
 
       switch (trigger.action.type) {
         case "methodCall":
@@ -366,6 +373,9 @@ export const usePageContext = () => {
           }, trigger.action.delay || 2);
           break;
         case "setState":
+
+          const pageParameters = createPageParams(trigger.action.params, options);
+
           const { boundTo, stateSetter } = getPropertyScope(
             trigger.action.target
           );
@@ -531,7 +541,7 @@ export const usePageContext = () => {
             // const { boundTo, clientState } = getPropertyScope(value);
 
             return getPropertyValueFromString(
-              clientState,
+              currentClientState,
               {
                 ...trigger.action,
                 value
@@ -602,30 +612,18 @@ export const usePageContext = () => {
               },
               []
             );
-            if (valid.length) {
-              const plural = valid.length !== 1 ? "s have" : " has";
-              const msg = (
-                <div>
-                  Could not complete "{resource.name}" request because{" "}
-                  {valid.length} field{plural} problems:{" "}
-                  {valid.map((f) => (
-                    <li>{f.error}</li>
-                  ))}
-                </div>
-              );
-              return setPageError && setPageError({
-              
-                message: msg,
-                fields: valid,
-                execute: async (missing) => {
-                  await execute({
-                    ...trigger.action.terms,
-                    ...missing
-                  })
-                }
-              
-              });
-              // return await Alert(msg, 'Request cancelled');
+            if (valid.length) { 
+           
+              console.log("error in execute", valid);
+              if (listening("dataExec")) {
+                hello(
+                  valid,
+                  `Could not execute query`,
+                  'red',
+                  900
+                );
+              }
+              return;
             }
 
  
@@ -633,6 +631,14 @@ export const usePageContext = () => {
 
           } 
        
+          if (listening("dataExec")) {
+            console.log("execute", trigger.action.terms );
+            hello(
+              trigger.action.terms ,
+              `Executing query`
+            );
+          }
+
 
           await execute( trigger.action.terms )
  

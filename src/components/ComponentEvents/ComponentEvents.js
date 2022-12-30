@@ -247,7 +247,7 @@ const ComponentEvents = ({
   
  return (
    <Layout>
- [{JSON.stringify(isInApplicationScope.toString())}]
+ {/* [{JSON.stringify(isInApplicationScope.toString())}] */}
     {/* panel header  */}
     <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
       <Spacer />

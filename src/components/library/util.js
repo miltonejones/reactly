@@ -318,7 +318,7 @@ export const map = async (list, fn, index = 0, out = []) => {
       if (!eventParams) {
 
         !!shout && shout(logData, `getPropertyValueFromString: No event params. Returning "${value}""`)
-        return `[...${value}/${target}]`;
+        return `[...]`;
       } 
 
       const values = value.split('.'); 

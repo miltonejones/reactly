@@ -52,12 +52,21 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
         </ListItemIcon>
         <ListItemText  
           onClick={() => {
+            if (tree.parameters && Object.keys(tree.parameters).length) {
+              return alert ('Cannot go directly here.')
+            }
             onClick && onClick(null);
             setTimeout(() => {
               onClick && onClick(tree.PageName)
             }, 99)
           }} primary={<><Typography 
-          sx={{ fontWeight: selected === tree.PageName ? 600 : 400, fontSize: '0.85rem' }}
+          sx={{ 
+            fontWeight: selected === tree.PageName ? 600 : 400, 
+            fontSize: '0.85rem',
+            color: !!tree.parameters && !!Object.keys(tree.parameters).length 
+              ? 'gray'
+              : 'black'
+          }}
             variant="body1">{tree.PageName}</Typography></>}/>
          {!!tree && <ListItemSecondaryAction>
 

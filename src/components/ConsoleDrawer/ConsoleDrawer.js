@@ -32,9 +32,9 @@ const LogEntry = (props) => {
     setOpenTraceLog,  
   } = React.useContext(AppStateContext);
 
-  const { id, message, json } = props;
+  const { id, message, json, color, fontWeight } = props;
   const boxProps = { 
-    sx: {borderBottom: 1, borderColor: 'divider'}
+    sx: {borderBottom: 1, borderColor: 'divider', color, fontWeight }, 
   }
 
   return <Box>
@@ -104,7 +104,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
 
   const triggerTypes = ['methodCall','setState','modalOpen','dataReset',
   'executeComponentRequest','createPageParams', 'openPath', 'attachEventHandlers',
-  'openLink','scriptRun','dataExec'].map(name => ({ name }));
+  'openLink','scriptRun','dataExec','onPageLoad'].map(name => ({ name }));
   const triggerNames = [
     supportedEvents,
     triggerTypes
@@ -131,6 +131,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
 
         {window.location.href}
           </Text>
+          
           <IconButton  disabled>
             <Gamepad />
           </IconButton>
@@ -176,7 +177,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
         {!!jsonLog?.length && <Grid xs={5} item {...gridProps}>
           <SectionHead>Log</SectionHead>
           <Stack sx={{height: 560, overflow: 'auto'}}>
-            {jsonLog?.map((entry, i) => <LogEntry key={i} id={`box${i}`} {...entry} />)}
+            {jsonLog?.map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
           </Stack>
         </Grid>}
 
@@ -208,7 +209,9 @@ const ConsoleDrawer = ({ handleSwitch }) => {
              alignContent: 'flex-start', flexWrap: 'wrap', width: '100%'}}>
 
               <List dense sx={{width: '100%'}}>
-                {triggerNames[evt].map(e => <ListItem
+                {triggerNames[evt]
+                  .sort((a,b) => a.name > b.name ? 1 : -1)
+                  .map(e => <ListItem
                     onClick={() => monitorEvent(e.name)}
                    active={ monitoredEvents.indexOf(e.name) > -1 }
                    key={e.name}> 

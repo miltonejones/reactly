@@ -21,6 +21,7 @@ export const useOpenLink = () => {
     pageClientState ,
     setQueryState,
     Alert,
+    setApplicationClientState,
     applicationClientState,
   } = React.useContext(AppStateContext);
 
@@ -32,22 +33,33 @@ export const useOpenLink = () => {
     await shout(json, msg)
   }
 
+  const getApplicationClientStateAsync = () => new Promise(yes => {
+    setApplicationClientState(state => {
+      yes(state);
+      return state;
+    })
+  })
+
 
   const createPageParams = React.useCallback(
     /**
      * 
      * @param {*} parameters JSON object of the page parameters
      * @param {*} options - other options to pass to the params 
+     * @param {*} callback - when a callback is used the params are passed back as a function
+     * object containing navigation parameters
      */
-    (parameters, options, fn) => {
+    async (parameters, options, callback) => {
 
       const { records, ...rest} = pageClientState;
       const { records: rec, ...op} = options ?? {};
 
+      const appState = await getApplicationClientStateAsync();
+
 
       setPageClientState(state => {
         const { records, ...rest} = state;
-        listening('createPageParams') && hello ({ parameters, options: op, pageClientState: rest }, 'createPageParams')
+        listening('createPageParams') && hello ({ parameters, options: op, pageClientState: rest }, 'createPageParams: starting')
         return state
       })
 
@@ -65,7 +77,7 @@ export const useOpenLink = () => {
           let triggerProp = state[ triggerKey ];
 
 
-          listening('createPageParams') && hello({ triggerKey, stateProp, triggerProp},  `createPageParams: parsing param "${key}"`)
+          listening('createPageParams') && hello({ triggerKey, stateProp, appState, triggerProp},  `createPageParams: parsing param "${key}"`)
           if (stateProp) {
             return Object.assign(params, {[key]: stateProp  });
           }
@@ -92,21 +104,28 @@ export const useOpenLink = () => {
 
             const [t, optionKey] = triggerKey.split('.') ;
 
+
             if (t === 'application') {
-              triggerProp = applicationClientState[optionKey]
+              // application params come from that scope
+              // TODO: options should mutate based on scope. use getParametersFromScope?
+              triggerProp = appState[optionKey];
+              listening('createPageParams') && hello( { triggerProp, t, optionKey, appState, applicationClientState  }, 'createPageParams: application scope: ' + triggerProp );
             } else {
               triggerProp = options[optionKey]; 
+              listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: page scope: ' + triggerProp );
             }
 
-            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: parsing options: ' + triggerProp);
+            listening('createPageParams') && hello( { valid: !!triggerProp  }, 'createPageParams: passing prop: ' + triggerProp );
+
             // pass the resulting value into page params
             if (!!triggerProp ) {
+              listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: parsing options: ' + triggerProp + ` from "${t}"`);
               Object.assign(params, {[key]: triggerProp  });
             }
           } else if (triggerProp) { 
-            listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: passing state value: ' + triggerProp);
             // pass the resulting value into page params
             if (!!triggerProp?.length ) {
+              listening('createPageParams') && hello( { triggerProp, options  }, 'createPageParams: passing state value: ' + triggerProp);
               Object.assign(params, {[key]: triggerProp  });
             }
           } else {
@@ -116,12 +135,14 @@ export const useOpenLink = () => {
 
         });
 
+        !!callback && listening('createPageParams') && hello( { params  }, 'createPageParams: returning results  as function');
 
-        !!fn && fn(params)
+        !!callback && callback(params)
 
         return state;
     })
 
+     listening('createPageParams') && hello( { params  }, 'createPageParams: returning params in sync');
     return params;
 
   }, [pageClientState, applicationClientState])
@@ -150,7 +171,7 @@ export const useOpenLink = () => {
   
 
     // parse page parameters if present,
-   createPageParams(parameters, options, pageParams => {
+    await createPageParams(parameters, options, pageParams => {
  
   
   

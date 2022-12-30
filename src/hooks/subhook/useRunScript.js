@@ -9,6 +9,7 @@ import { AppStateContext } from '../AppStateContext';
 import { useClipboard } from '../../components';
 import { map } from '../../components/library/util';
 import { Json } from '../../colorize';
+import { downloadApplicationScripts } from '../../connector/sqlConnector';
 
 
 export const useRunScript = () => {
@@ -25,6 +26,7 @@ export const useRunScript = () => {
     pageResourceState,
     appContext,
     selectedPage,
+    pagename
  
   } = React.useContext(AppStateContext); 
  
@@ -33,6 +35,10 @@ export const useRunScript = () => {
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
   const { getResourceByName } = useDataResource()
+
+  const refreshScripts = React.useCallback(async () => {
+    const scripts = await downloadApplicationScripts(appContext.ID);
+  }, [appContext])
 
   
   const getApplicationScripts = (unfiltered) => {
@@ -149,7 +155,7 @@ const handleScriptRequest =  (block, opts, title) => {
   const executeScript = async (scriptID, options, execResourceByName) => {
 
 
-    const { appContext } = queryState;
+    // const { appContext } = queryState;
 
     if (!appContext) {
       return alert ('No appContext!')
@@ -178,6 +184,7 @@ const handleScriptRequest =  (block, opts, title) => {
       setState: setPageClientState, 
       getState,
       data: options,
+      pagename,
       application: {
         setState: setApplicationClientState,
         getState: getApplicationState,
