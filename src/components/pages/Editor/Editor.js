@@ -229,6 +229,7 @@ const Editor = ({ applications: apps = {} }) => {
     right: false,
   });
   const [ showTabs,  setShowTabs ] = React.useState(true);
+  const [ expandedNodes,  setExpandedNodes ] = React.useState({});
   const [ popoverContent,  setPopoverContent ] = React.useState(null);
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
@@ -699,6 +700,8 @@ const Editor = ({ applications: apps = {} }) => {
     onCustomName={handleCustomName}
     quickComponent={quickComponent}
     selectComponent={selectComponent}
+    expandedNodes={expandedNodes}
+    setExpandedNodes={setExpandedNodes}
     onCreate={(type, options) => createComponent(type, options)}
     tree={componentParent?.components}
   />
@@ -967,6 +970,7 @@ const Editor = ({ applications: apps = {} }) => {
                 selectedPage={selectedPage}
               />}
 
+
              <BorderButton active={showLib} disabled={!!json} onClick={() => closeLib()}>
                 <Construction />
               </BorderButton>
@@ -975,17 +979,12 @@ const Editor = ({ applications: apps = {} }) => {
                 <Code />
               </BorderButton>
 
-              <IconButton
-                sx={{ border: 1, borderColor: "divider" }}
+              <IconButton 
                 size="small"
-                onClick={() => {
-                  setQueryState(null);
-                  setAppData(null);
-                  window.location.reload();
-                }}
-                variant="outlined"
+                onClick={() => window.open(`/${path.join("/")}`.replace('apps',  'debug'))} 
               >
-                <Sync />
+              
+                <Gamepad  />
               </IconButton>
               {/* [{selectedPage?.dirty?.toString()}] */}
               {/* <FormControlLabel
@@ -1105,6 +1104,8 @@ const Editor = ({ applications: apps = {} }) => {
           </Pane>
         </Grid>
       </Flex>
+
+      
       <ConsoleDrawer
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
        />
@@ -1201,7 +1202,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
     endAdornment: (
       <InputAdornment
         sx={{ cursor: "pointer" }}
-        onClick={handleButtonClick}
+      
         position="end" 
       >
         <>
@@ -1209,7 +1210,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
         <Switch size="small" checked={appLoaded} />app  
         <Switch size="small" checked={pageLoaded} />page 
         </>
-        <Launch />
+        <Launch  onClick={handleButtonClick} />
         Open
 
       </InputAdornment>

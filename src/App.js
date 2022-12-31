@@ -1,5 +1,5 @@
 import * as React from "react";
-import { BrowserRouter, Routes, Route,useParams, useLocation } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route,useParams, Navigate, useLocation } from "react-router-dom"; 
 import "./App.css";
 import {
   Popover,
@@ -64,15 +64,19 @@ function App() {
         <Route path="/info/:appname" element={<RenderComponent component={Detail}  />} />  
 
 
-        <Route path="/apps/:appname" element={<RenderComponent component={Renderer} />} />  
+        <Route path="/apps/:appname" element={<RenderComponent redirect component={Renderer} />} />  
         <Route path="/apps/:appname/:pagename" element={<RenderComponent component={Renderer} />} /> 
         <Route path="/apps/:appname/:pagename/*" element={<RenderComponent component={Renderer}   />} />  
+
+        <Route path="/debug/:appname" element={<RenderComponent debug component={Renderer} />} />  
+        <Route path="/debug/:appname/:pagename" element={<RenderComponent debug component={Renderer} />} /> 
+        <Route path="/debug/:appname/:pagename/*" element={<RenderComponent debug component={Renderer}   />} />  
       </Routes>
   </BrowserRouter>
   );
 }
  
-function RenderComponent({ preview, component: Component, ...props}) {
+function RenderComponent({ preview, debug, component: Component, ...props}) {
   const appHistory = useAppHistory();
   const location = useLocation();
   const monitoredText = localStorage.getItem('monitored');
@@ -200,9 +204,10 @@ function RenderComponent({ preview, component: Component, ...props}) {
    const refreshProgs = async () => { 
     setBusy(`Reloading data for "${pagename || 'application'}"...`);
 
+    
     // get application data
     const items = await getApplicationInfo(pagename);
-    
+ 
     udpateLocalProgs(items)
     setBusy(false)
     return items;
@@ -319,9 +324,22 @@ function RenderComponent({ preview, component: Component, ...props}) {
    
   const selectedPage = (preview && (!pagename || (!!queryState && !!queryState.page)))  ? queryState.page : targetPage;
 
+  const  getLoadWaitTime = () => new Promise(yes => {
+    setQueryState(state => {
+      const{ loadTime } = state;
+      yes(new Date().getTime() - loadTime < 5000)
+      return state;
+    })
+  })
+
   const getCurrentPage = React.useCallback(async (requestedPage) => { 
+    const tooQuick = await getLoadWaitTime();
+    if (tooQuick) {
+      return console.log ({ tooQuick });
+    }
+    shout ({ tooQuick }, 'Checking cadence')
     const lookupPage = requestedPage || pagename;
-    if (!lookupPage || !targetPage?.skeleton) {
+    if (!lookupPage || (!requestedPage && !targetPage?.skeleton)) {
       return shout({lookupPage, targetPage}, 'Not reloading this page', 'purple')
     }
     setBusy(`Reloading page "${lookupPage}"...`);
@@ -355,7 +373,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
 
     }));
  
-    
+    setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
+    setPageClientState({})
     setApplicationData(update)
     setBusy(false)
     
@@ -372,7 +391,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
     : objectReduce(selectedPage.state); 
      
 
-  
+  const homePage = appContext?.HomePage;
 
   const setAppData = data => setApplicationData(s => data); 
   
@@ -390,6 +409,15 @@ function RenderComponent({ preview, component: Component, ...props}) {
      </Flex>
   }
  
+  if (!!homePage && !pagename && !preview && appContext) {
+    // setQueryState(s => ({...s, pageLoaded: false}));
+    const path = appContext.pages.find(f => f.ID === homePage).PagePath;
+    if (path) {
+      const rootPath = debug ? 'debug' : 'apps';
+      const redirectPath = `/${rootPath}/${appname}/${path}`;
+      return <Navigate to={redirectPath} />
+    }
+  }
 
 
   return (
@@ -431,7 +459,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
         setLoud,
         pageRefState, 
         setPageRefState,
-
+        debugMode: debug,
         pageClientState, 
         setPageClientState,
         getPageClientStateAsync,
@@ -462,10 +490,9 @@ function RenderComponent({ preview, component: Component, ...props}) {
         createBreadcrumbs
       }}
     > 
- 
-   
- 
-      <Component {...props} appData={applicationData} applications={applicationData} />
+  
+ {/* [{queryState.pageLoaded?.toString()}][{pagename}] */}
+      <Component debug={debug} {...props} appData={applicationData} applications={applicationData} />
  
       <Modal {...modal.modalProps}/>
       <Snackbar message={busy.toString()} open={busy} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} >

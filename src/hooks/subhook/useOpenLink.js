@@ -23,6 +23,7 @@ export const useOpenLink = () => {
     Alert,
     setApplicationClientState,
     applicationClientState,
+    debugMode
   } = React.useContext(AppStateContext);
 
 
@@ -177,7 +178,8 @@ export const useOpenLink = () => {
   
       // listening('openLink')  && hello ({ pageParams }, 'openLink pageParams');
   
-      const prefix = preview ? 'edit': 'apps';
+      const navroot = debugMode ? 'debug' : 'apps';
+      const prefix = preview ? 'edit': navroot;
    
    
       const values = Object.values(pageParams) ;

@@ -1,14 +1,15 @@
 import React from 'react';
 import {
-  Link,
-  Breadcrumbs,
+  Link, 
   Typography, 
+  Fab,
 } from "@mui/material";
 import { Flex, TextBtn, ComponentTree, QuickMenu, Spacer, ContentTree, PageTree } from "../..";
-import { Launch, Save, Sync, Add } from "@mui/icons-material";
+import { Gamepad} from "@mui/icons-material";
 import { AppStateContext } from '../../../hooks/AppStateContext';
 import { useParams, useLocation } from "react-router-dom";
 import { ApplicationTree } from "../..";
+import { ConsoleDrawer } from "../..";
 import { uniqueId } from '../../library/util';
   
  
@@ -16,13 +17,14 @@ const Renderer = ({ applications: apps = {} }) => {
   const params =  useParams ();
   const { appname, pagename } =params;
   const { 
-    
+    debugMode,
   pageResourceState, 
   getPageResourceState,
   setPageResourceState,
   appContext,
   selectedPage,
   queryState = {}, 
+  setShowTrace,
   setQueryState ,
   pageClientState,  
   setPageClientState,
@@ -77,11 +79,7 @@ const Renderer = ({ applications: apps = {} }) => {
  
   React.useEffect(() => {  
     if(queryState.pageLoaded) return 
-    setQueryState(qs => ({...qs, pageLoaded: true, page: firstpage, appContext: appData})) ;
-    if (selectedPage && !pagename) { 
-      getCurrentPage(selectedPage.PagePath)
-    }
-    setRefresh(false)
+    setQueryState(qs => ({...qs, pageLoaded: true, page: firstpage, appContext: appData})) ;  
   }, [firstpage, refresh, queryState, setQueryState, appData]);
 
      
@@ -120,7 +118,14 @@ const Renderer = ({ applications: apps = {} }) => {
       themes={appContext?.themes || []}
       appContext={appContext} 
       selectedPage={selectedPage} />}
-  
+  {!!debugMode && <Fab onClick={() =>setShowTrace(true)} 
+    sx={{position:'absolute', bottom: 50, right: 50}}>
+    <Gamepad />
+  </Fab>}
+  <ConsoleDrawer
+        handleSwitch={ () =>setShowTrace(!1)}
+       />
+
 </>
  );
 }

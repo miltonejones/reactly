@@ -20,6 +20,7 @@ const ApplicationTree = ({ application, queryState, loadPage, children, ...props
 
   const setAppState = () => new Promise(resolve => {
     setApplicationClientState(state => {
+      if(queryState.appLoaded) return state 
       console.log ({ applicationProps })
       if (!(!!state && !!Object.keys(state).length ) && !!applicationProps) {
         resolve(applicationProps)

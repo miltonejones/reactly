@@ -31,7 +31,8 @@ const filterProp = filter => f =>  !filter ||
   f.ComponentName.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
   f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
 
-const ContentTree = ({ tree, onCreate, onNameChange, selectComponent, onDrop, filter, onCustomName, quickComponent }) => {
+const ContentTree = ({ tree, onCreate, onNameChange, selectComponent, 
+    onDrop, filter, onCustomName, quickComponent, ...props }) => {
   const { queryState = {}, setQueryState, selectedPage  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
   if (!tree) return <i />
@@ -48,6 +49,7 @@ const ContentTree = ({ tree, onCreate, onNameChange, selectComponent, onDrop, fi
           quickComponent={quickComponent}
           onCreate={onCreate} 
           key={c.ID}
+          {...props}
           onNameChange={onNameChange}
           onSelect={selectComponent} selectedComponent={selectedComponent} onDrop={onDrop} trees={tree} key={c.ComponentName} tree={c} /> )} 
       </List>
@@ -57,17 +59,31 @@ const ContentTree = ({ tree, onCreate, onNameChange, selectComponent, onDrop, fi
 
 const Contents = ({ filter, tree, parentID, onDrop, trees, 
   onCustomName, quickComponent, label, indent = 0, onNameChange, 
-  onCreate, onSelect, selectedComponent }) => { 
+  onCreate, onSelect, selectedComponent, ...props  }) => { 
   const { Library } = React.useContext(AppStateContext);
   const kids = !!label ? [] : trees.filter(t => t.componentID === tree.ID);
   const on = !!label ? null : selectedComponent?.ID === tree.ID;
   const [over, setOver] = React.useState(false);
-  const [expanded, setExpanded] = React.useState(true)
+  // const [expanded, setExpanded] = React.useState(true)
+
+  const { expandedNodes,setExpandedNodes } = props;
+  const expanded = !!tree && !!expandedNodes[tree.ID]
+
+
+  
+  // const expand = node => {
+  //   setExpanded(nodes => nodes.indexOf(node) > -1 
+  //     ? nodes.filter(item => node !== item)
+  //     : nodes.concat(node));
+
+  // }
+
   
   const expand = node => {
-    setExpanded(nodes => nodes.indexOf(node) > -1 
-      ? nodes.filter(item => node !== item)
-      : nodes.concat(node));
+    setExpandedNodes(nodes => ({
+      ...nodes,
+      [node]: !nodes[node]
+    }));
 
   }
 
@@ -133,7 +149,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
         onMouseLeave={() => setOver(false)}
         >
        <ListItemIcon sx={{minWidth: 24}}>
-          {!!kids.length && <Tiny sx={{mr: 1}} onClick={()  => setExpanded(!expanded)} icon={ExpandIcon} />}
+          {!!kids.length && <Tiny sx={{mr: 1}} onClick={()  => expand(tree.ID)} icon={ExpandIcon} />}
            <Tiny sx={{mr: 1}} icon={Icon} />
         </ListItemIcon>
 
@@ -166,6 +182,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
           .filter(filterProp(filter))
           .sort(componentOrder)
           .map(c => <Contents 
+            {...props}
             quickComponent={quickComponent}
             filter={filter}
             onCreate={onCreate} 

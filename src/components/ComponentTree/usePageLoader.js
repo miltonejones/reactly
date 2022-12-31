@@ -100,6 +100,7 @@ export const usePageLoader = () =>{
 
   // sets pageLoaded to FALSE on navigation
   React.useEffect(() => {  
+    shout (location, 'Handling route change');
 
     // clear page state for the next page
     setPageClientState({});
