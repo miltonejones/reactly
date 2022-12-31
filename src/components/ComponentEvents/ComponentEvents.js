@@ -167,10 +167,13 @@ const ComponentEvents = ({
 
   const isInApplicationScope = !component && !selectedPage?.PageName;
 
-
-  const defaultEvents = !addedEvents ? Events : addedEvents;
+  const availableEvents = isInApplicationScope ? appEvents : Events;
+  const availableOwner = isInApplicationScope ? application : selectedPage;
+  const defaultEvents = !addedEvents ? availableEvents : addedEvents;
   const supportedEvents = !!addedEvents || !component ? defaultEvents : Library [component.ComponentType].Events  ;
-  const eventOwner = !component ? selectedPage : component;
+
+
+  const eventOwner = !component ? availableOwner : component;
 
 
   const { scriptList } = useRunScript()

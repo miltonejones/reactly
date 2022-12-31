@@ -6,7 +6,7 @@ import { getSettings } from '../components/library/util';
 
 
 export const usePageResourceState = (settings) => {
-  const { appContext, setPageResourceState, pageResourceState } = React.useContext(AppStateContext);
+  const { appContext, setPageResourceState, pageResourceState, shout } = React.useContext(AppStateContext);
 
 
   let bindingObject = {}, dataRows = [], resource, columnMap, typeMap;
@@ -15,6 +15,7 @@ export const usePageResourceState = (settings) => {
   const componentProps = getSettings(settings);
   if (componentProps.bindings)  {
     bindingObject = JSON.parse(componentProps.bindings); 
+    console.log(bindingObject, 'usePageResourceState')
     columnMap = bindingObject.columnMap || Object.keys(bindingObject.bindings) 
     typeMap = bindingObject.typeMap || {}
     const id = bindingObject.resourceID;

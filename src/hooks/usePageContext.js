@@ -24,7 +24,11 @@ export const eventTypes = [
   {
     name: "loadStarted",
     description: "Data starts loading.",
-  },
+  }, 
+  {
+    name: 'onApplicationLoad', 
+    description: 'Application finishes loading.'
+  },  
 ];
 
 export const usePageContext = () => {
@@ -361,6 +365,12 @@ export const usePageContext = () => {
           return state;
         })
       })
+      const currentAppState = await new Promise(yes => {
+        setApplicationClientState(state => {
+          yes(state);
+          return state;
+        })
+      })
 
       switch (trigger.action.type) {
         case "methodCall":
@@ -538,10 +548,19 @@ export const usePageContext = () => {
           // quick method to get a property value from a term key
           const getProp = (value) => {
 
-            // const { boundTo, clientState } = getPropertyScope(value);
+           const { scope, boundTo, clientState } = getPropertyScope(value);
+
+           if (listening("dataExec")) { 
+            hello(
+              { scope, currentAppState, },
+              `Getting scope`
+            );
+          }
 
             return getPropertyValueFromString(
-              currentClientState,
+              scope === 'application' 
+                ? currentAppState
+                : currentClientState,
               {
                 ...trigger.action,
                 value

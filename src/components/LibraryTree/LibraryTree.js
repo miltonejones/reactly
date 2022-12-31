@@ -579,7 +579,7 @@ const SettingRow = ({
   const defaultNode = component[defaultType]
   
   const dataTypes = ['pill', 'boolean', 'chip', 'shadow', 'listtable', 'tablecolumn', 'valuelist',
-  'repeatertable', 'listbuilder', 'menulist', 'ref', 'imagelist', 'text', 'prompt']
+  'repeatertable', 'listbuilder', 'menulist', 'ref', 'imagelist', 'text', 'color', 'prompt'].sort();
   return <>
   <Grid sx={{mt: 1}} spacing={1} container>
   
@@ -1055,10 +1055,11 @@ const ComponentRow = ({ Name, allowChildren, Icon,
   return <><Grid container sx={{ml: 2, mt: 2}} spacing={2}>
 
     <Grid xs={3}>
-      <Flex> 
+      <Flex sx={{mr: 2}}> 
   <TinyButton icon={Icons.Settings} onClick={() => setAdv(!adv)} />
-        Icon
+       
   <QuickSelect label="Icon" 
+ 
   renderOption={renderIconOption}
     onChange={val => !!val && setComponentProps(Name, 'Icon', val)}
     value={typeof Icon === 'string' ? Icon : 'unusable'} options={Object.keys(Icons)} />
@@ -1071,9 +1072,12 @@ const ComponentRow = ({ Name, allowChildren, Icon,
  
 
   <Grid xs={8}>
-      <Flex> 
+      <Flex spacing={2}> 
+ 
  {!!Settings?.categories && <QuickSelect disabled={!def?.length} label="Default settings" options={def} />}
  {!!Styles?.categories && <QuickSelect disabled={!pre?.length} label="Default styles" options={pre} />} 
+
+
  {/* [{JSON.stringify(Styles)}] */}
 
     <PopoverPrompt 

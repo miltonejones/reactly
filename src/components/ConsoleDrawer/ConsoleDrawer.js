@@ -102,7 +102,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
     getParametersInScope()
   ]
 
-  const triggerTypes = ['methodCall','setState','modalOpen','dataReset',
+  const triggerTypes = ['methodCall','setState','modalOpen','dataReset', 'onApplicationLoad',
   'executeComponentRequest','createPageParams', 'openPath', 'attachEventHandlers',
   'openLink','scriptRun','dataExec','onPageLoad'].map(name => ({ name }));
   const triggerNames = [
@@ -177,7 +177,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
         {!!jsonLog?.length && <Grid xs={5} item {...gridProps}>
           <SectionHead>Log</SectionHead>
           <Stack sx={{height: 560, overflow: 'auto'}}>
-            {jsonLog?.map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
+            {jsonLog?.sort((a,b) => a.timestamp > b.timestamp ? 1 : -1).map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
           </Stack>
         </Grid>}
 

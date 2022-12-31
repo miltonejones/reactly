@@ -26,7 +26,7 @@ const Renderer = ({ applications: apps = {} }) => {
   setQueryState ,
   pageClientState,  
   setPageClientState,
-
+  getCurrentPage
 } = React.useContext(AppStateContext);
   const [loaded, setLoaded] = React.useState(false)
   const applications = typeof apps === 'object'
@@ -76,8 +76,11 @@ const Renderer = ({ applications: apps = {} }) => {
 
  
   React.useEffect(() => {  
-    if(!refresh) return 
-    setQueryState(qs => ({...qs, rendered: true, page: firstpage, appContext: appData})) 
+    if(queryState.pageLoaded) return 
+    setQueryState(qs => ({...qs, pageLoaded: true, page: firstpage, appContext: appData})) ;
+    if (selectedPage && !pagename) { 
+      getCurrentPage(selectedPage.PagePath)
+    }
     setRefresh(false)
   }, [firstpage, refresh, queryState, setQueryState, appData]);
 
@@ -89,10 +92,14 @@ const Renderer = ({ applications: apps = {} }) => {
   //   return <>{JSON.stringify(queryState)}</>
   // }
 
-  // return <>
-  // {JSON.stringify(params['*']) +
-  //  JSON.stringify(firstpage.parameters) }
-  // </>
+//   return <>
+// <pre>
+
+// [ { 
+//    JSON.stringify(selectedPage,0,2) }]
+
+// </pre>
+//   </>
 
  return (
    <>

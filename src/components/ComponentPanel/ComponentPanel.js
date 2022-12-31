@@ -365,7 +365,7 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
          />
 
       <Box sx={{ pt: 2}}>
-        <Divider textAlign="left"><Text small>Move page</Text></Divider> 
+        <Text small>Parent page</Text> 
         <QuickSelect 
           value={parentPage?.PageName}
           options={application.pages?.filter(f => f.ID !== page.ID)
@@ -374,10 +374,10 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
           />
       </Box>
 
-      <Box sx={{ pt: 2}}>
+      {/* <Box sx={{ pt: 2}}>
         <Divider textAlign="left"><Text small>Import component</Text></Divider> 
         <QuickSelect value={imported} options={importable.map(f => f.label)} onChange={handleImport} />
-      </Box>
+      </Box> */}
 
 
       <Box sx={{pt: 2}}>

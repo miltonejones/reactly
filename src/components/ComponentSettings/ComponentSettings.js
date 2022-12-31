@@ -84,19 +84,23 @@ const ColorInput = ({ title, color, onChange }) => {
   }
 
   return <>
-  <Flex>
+  <Flex fullWidth>
 
     <TextInput 
+    fullWidth
       autoComplete="off" 
       onChange={e => handleChange(e.target.value)} 
       size="small" 
       value={hue} 
       placeholder={title}
-    />
+      buttons={
 
-    <RotateButton onClick={handlePopoverClick}>
-      <MoreVert />
-    </RotateButton>
+        <RotateButton onClick={handlePopoverClick}>
+          <MoreVert />
+        </RotateButton>
+
+      }
+    />
 
   </Flex>
   
@@ -241,7 +245,7 @@ export const ComponentInputBody = (props) => {
   const initialProp = !node?.Value   ? args[label] : node.Value;
   
   const customProp = args[label + '-custom'];
-  const colorProp = label.indexOf('color') > -1;
+  const colorProp = type === 'color' || ['background-color', 'border-color'].find(f => f === label);
 
 
   const [value, setValue] = React.useState(!!binding ? bindingValue : initialProp);
@@ -309,7 +313,7 @@ export const ComponentInputBody = (props) => {
     shadow: ShadowComponentInput
   }
 
-  const isTypeMenu = types?.length && !customProp ;
+  const isTypeMenu = types?.length && !customProp && !colorProp ;
   const iconSX = isTypeMenu ? {mr:  3} : {}
 
   const buttons = !!bindable
@@ -353,11 +357,12 @@ export const ComponentInputBody = (props) => {
 
     const Host = !isMenu ? Stack : Flex;
     return <Host fullWidth sx={{width: "100%"}}>
-      {header} 
- 
+      {header}  
       {isMenu && <Spacer />}
 
-      <Flexible  nowrap on={colorProp || free || typeList?.length < 32  }>
+      <Flexible  nowrap on={ 
+        free || 
+        typeList?.length < 32  }>
  
         <MenuComponent helperText={helperText} 
          {...buttons}
@@ -368,8 +373,7 @@ export const ComponentInputBody = (props) => {
           value={value} 
           label={value || <Text small>set {title} value</Text>}
           onChange={handleChange} />
-
-        {!!colorProp && <Pill round backgroundColor={attempt(value)} />} 
+ 
           {!!free && <CustomSwitch args={args} label={label} onChange={onChange}/>} 
 
       </Flexible>
@@ -378,7 +382,7 @@ export const ComponentInputBody = (props) => {
     </Host>
   }
 
-  if (customProp) {
+  if (colorProp) {
     return  <Stack> 
       {header}
       <Flexible on={colorProp}>

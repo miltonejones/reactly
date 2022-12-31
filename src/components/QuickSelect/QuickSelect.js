@@ -64,6 +64,7 @@ export const QuickSelect = ({
   {/* {props.renderOption?.toString()} */}
 
   <TextInput select={isSelect} label={label}
+      sx={{maxWidth: 300, ...props.sx}}
       onFocus={() => setIsSelect(true)}
       onBlur={() => setIsSelect(!selected)}
       onChange={handleChange}

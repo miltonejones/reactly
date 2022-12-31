@@ -41,6 +41,7 @@ import { getApplications } from "./connector/sqlConnector";
 import { setApplication } from "./connector/sqlConnector";
 import { getApplicationInfo } from "./connector/sqlConnector";
 import { getPageByPath } from "./connector/sqlConnector";
+import { getPageByID } from "./connector/sqlConnector";
   
  
 
@@ -127,7 +128,8 @@ function RenderComponent({ preview, component: Component, ...props}) {
           json: j,
           message: m,
           color,
-          fontWeight
+          fontWeight,
+          timestamp: new Date().getTime()
         }) 
       ) 
       if (loud) {
@@ -317,10 +319,18 @@ function RenderComponent({ preview, component: Component, ...props}) {
    
   const selectedPage = (preview && (!pagename || (!!queryState && !!queryState.page)))  ? queryState.page : targetPage;
 
-  const getCurrentPage = React.useCallback(async () => { 
-    if (!pagename || !targetPage?.skeleton) return;
-    setBusy(`Reloading page "${pagename}"...`)
-    const currentPage = await getPageByPath(pagename);
+  const getCurrentPage = React.useCallback(async (requestedPage) => { 
+    const lookupPage = requestedPage || pagename;
+    if (!lookupPage || !targetPage?.skeleton) {
+      return shout({lookupPage, targetPage}, 'Not reloading this page', 'purple')
+    }
+    setBusy(`Reloading page "${lookupPage}"...`);
+    const desiredPage = appContext.pages.find(page => page.PagePath === lookupPage);
+    if (!desiredPage) return;
+ 
+    const currentPage = await getPageByID(desiredPage.ID);
+
+    shout(currentPage, 'Got server page ' + currentPage?.PageName);
  
 
     const stateProps = !currentPage?.state
@@ -350,7 +360,7 @@ function RenderComponent({ preview, component: Component, ...props}) {
     setBusy(false)
     
     // alert (JSON.stringify(update));
-   }, [pagename, targetPage])
+   }, [pagename, appContext, targetPage])
   
   if (!applicationData) {
     return <>Loading application data</>

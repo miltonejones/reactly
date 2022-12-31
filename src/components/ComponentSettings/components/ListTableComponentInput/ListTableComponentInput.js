@@ -4,6 +4,7 @@ import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny, TinyButton }
 import { AppStateContext } from '../../../../hooks/AppStateContext'; 
 import { CheckCircle, Save, CheckCircleOutline, ExpandMore, ExpandLess } from "@mui/icons-material";  
 import { getSettings } from '../../../library/util';
+import { JsonModal } from '../../../../colorize';
 import { ListTableRow } from './components';
 
 
@@ -92,15 +93,15 @@ const ListTableComponentInput = ({
   }
 
   
-  const offspring = selectedPage?.components?.find(f => f.componentID === component?.ID);
+  const childComponent = selectedPage?.components?.find(f => f.componentID === component?.ID);
 
 
-  const cats = !offspring ? null : Library[offspring.ComponentType];
-  const bindableProps = !cats ? [] : cats.Settings?.categories.reduce((array, category) => {
+  const libraryRef = !childComponent ? null : Library[childComponent.ComponentType];
+  const bindableProps = !libraryRef ? [] : libraryRef.Settings?.categories.reduce((array, category) => {
     const settings = category.settings.filter(f => f.bindable);
     settings.map(f => array = array.concat({
-      title: `${offspring.ComponentName}.${f.label}`,
-      componentID: offspring.ID,
+      title: `${childComponent.ComponentName}.${f.label}`,
+      componentID: childComponent.ID,
       SettingName: f.label
     }))
     return array
@@ -201,7 +202,11 @@ const ListTableComponentInput = ({
       }}/>
 
       <Box sx={{mt: 2}}>
-        <Text small variant="caption">Bound Fields</Text> 
+        <Flex>
+
+     {!!state.typeMap && <JsonModal json={state.typeMap} />}
+        <Text sx={{m: t => t.spacing(1,0)}} small active>Bound Fields</Text> 
+        </Flex>
 
         <Grid container sx={{mt: 0.5}} spacing={0}>
 
@@ -247,7 +252,7 @@ const ListTableComponentInput = ({
 
         <Grid item>
 
-        <Text small variant="caption">Available Fields</Text> 
+        <Text sx={{m: t => t.spacing(1,0)}} active small variant="caption">Available Fields</Text> 
         </Grid>
  
           

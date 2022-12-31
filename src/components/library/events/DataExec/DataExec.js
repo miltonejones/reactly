@@ -76,14 +76,14 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
       />
       </Box>)}
 
-      <Flex onClick={() => setState(s => ({
+      {/* <Flex onClick={() => setState(s => ({
         ...s,
         triggers: !!s.triggers ? null : 'null'
       }))}>
         <Text small>Refresh</Text>
         <Spacer checked={!!state.triggers} />
         <Switch  />
-      </Flex>
+      </Flex> */}
 
       <Collapse in={!!state.triggers}>
 
@@ -94,9 +94,9 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
 
       </Collapse>
 
-<pre>
+{/* <pre>
 {JSON.stringify(state, 0, 2)}
-</pre>
+</pre> */}
 
     <Flex sx={{mt: 2}}>
         <Spacer />

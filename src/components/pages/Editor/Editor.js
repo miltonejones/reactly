@@ -620,11 +620,15 @@ const Editor = ({ applications: apps = {} }) => {
     setPageResourceState, 
   };
 
-  const handlePageNavigate = name => {
+  const handlePageNavigate = (name,  parameters) => {
     const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
     if (!clickedPage) return navigate(`/edit/${appData.path}`);
-        setPageError(null)
-    navigate(`/edit/${appData.path}/${clickedPage.PagePath}`);
+
+    const suffix = !parameters 
+      ? ''
+      : `/${Object.values(parameters).join('/')}`
+ 
+      navigate(`/edit/${appData.path}/${clickedPage.PagePath}${suffix}`);
   }
 
   const componentTabs = queryState.tabs?.[selectedPage?.PageName];
@@ -957,11 +961,11 @@ const Editor = ({ applications: apps = {} }) => {
                 />
               </Flex>
                   
-              <Addressbox value={`/${path.join("/")}`}  
+              {(queryState.pageLoaded || queryState.appLoaded) && <Addressbox value={`/${path.join("/")}`}  
                 queryState={queryState}
                 setQueryState={setQueryState}
                 selectedPage={selectedPage}
-              />
+              />}
 
              <BorderButton active={showLib} disabled={!!json} onClick={() => closeLib()}>
                 <Construction />
@@ -1153,6 +1157,7 @@ const Editor = ({ applications: apps = {} }) => {
 };
 
 export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState, selectedPage, ...props }) => { 
+  const [parameters, setParameters] = React.useState(selectedPage?.parameters)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
@@ -1165,19 +1170,27 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
   };
 
   const handleButtonClick = (event) => {
-    if (selectedPage?.parameters && 
-        Object.keys(selectedPage.parameters).length) {
+    if (parameters && 
+        Object.keys(parameters).length) {
       return handlePopoverClick(event);
     } 
     window.open(value)
   }
 
-
   const openPage = () => {
-    const path = [value, Object.values(selectedPage?.parameters).join('/')].join('/');  
+    const path = [value, Object.values(parameters).join('/')].join('/');  
     window.open(path)
     handlePopoverClose ()
   }
+
+
+  const handleParameterChange = param => event => {
+    setParameters(params => ({
+      ...params,
+      [param]: event.target.value 
+    }))
+  }
+
 
   const { appLoaded, pageLoaded} = queryState
 
@@ -1218,12 +1231,12 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
       autoFocus
     />
     
-  {!!selectedPage?.parameters && <ParameterPopover 
+  {!!parameters && <ParameterPopover 
           anchorEl={anchorEl}
           onClose={handlePopoverClose}
-          setQueryState={setQueryState}
+          handleParameterChange={handleParameterChange}
           openPage={openPage}
-          parameters={selectedPage.parameters}
+          parameters={parameters}
     />}
 
     

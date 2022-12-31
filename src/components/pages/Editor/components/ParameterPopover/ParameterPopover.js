@@ -3,26 +3,13 @@ import {  Popover, Divider, Box } from '@mui/material';
 import { Flex, Text, TextBtn, TextInput, Spacer } from '../../../..';
 import { Launch } from "@mui/icons-material";
  
-const ParameterPopover = ({ anchorEl, onClose, setQueryState, openPage, parameters }) => { 
+const ParameterPopover = ({ anchorEl, onClose, handleParameterChange, openPage, parameters }) => { 
   const open = Boolean(anchorEl);
 
-  if (!parameters && Object.keys(parameters).length) {
-    return <>nope</>
+  if (!(!!parameters && Object.keys(parameters).length)) {
+    return <i />
   }
- 
-
-  const handleParameterChange = param => event => {
-    setQueryState(state => ({
-      ...state,
-      page: {
-        ...state.page,
-        parameters: {
-          ...state.page.parameters,
-          [param]: event.target.value 
-        }
-      }
-    }))
-  }
+  
 
  return (
    <Popover 

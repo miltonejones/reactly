@@ -405,7 +405,7 @@ export const useEditor = (apps) => {
   const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID, comment) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
-        name, code, parentID, comment, pageID
+        name, code, parentID, comment, pageID, b64: !code ? '' : btoa(code)
       }
 
       

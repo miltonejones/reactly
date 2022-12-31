@@ -336,6 +336,10 @@ export const map = async (list, fn, index = 0, out = []) => {
       // values with 2 parts are pulled from the 
       // event fired by the calling component
       const [key, prop] = values;
+      if (key === 'application') {
+        !!shout && shout({key, prop, ...logData}, `getPropertyValueFromString: application value "${state[prop]}""`)
+        return state[prop]
+      }
       !!shout && shout({key, prop, ...logData}, `getPropertyValueFromString: Event data "${eventParams[prop]}""`)
       return eventParams[prop]
     }

@@ -139,6 +139,17 @@ const ListTableRow = ( {
       ]
     }
 
+    const handleBindingChange = title => {
+      setState(state => ({
+        dirty: 1,
+        ...state,
+        bindings: {
+          ...state.bindings,
+          [col]: getBindableByName(title)
+        }
+      }))
+    }
+
 
     const displayTypes = Object.keys(displayConf);
     const selectedProp = displayConf[typeName]
@@ -156,8 +167,8 @@ const ListTableRow = ( {
     <Grid item {...args} key={col} >
       <Flex fullHeight>
        
-        {!active &&  <Check on={active} />  }
-        {!!active && <TinyButton onClick={() => setSettings(!settings)}  deg={settings ? 0 : 729} icon={Settings} />}
+        { (!!componentBound || !active) &&  <Check on={active} />  }
+        {!!active && !componentBound  && <TinyButton onClick={() => setSettings(!settings)}  deg={settings ? 0 : 729} icon={Settings} />}
         <ListLabel onMove={onMove} active={active} small onSettings={() => setSettings(!settings)} addProp={addProp} > 
           {col}
         </ListLabel>
@@ -168,20 +179,15 @@ const ListTableRow = ( {
 
     <Grid item {...args}>  
   
-      {!!componentBound && <QuickSelect 
-        label={`Bind ${col} to`} 
+      {/* repeatertable bindings specify which component property is bound to the
+      data field */}
+      {!!componentBound && <Flex sx={{p: t => t.spacing(1,0)}} fullWidth>
+        <QuickMenu caret
+        label={!state.bindings[col] ? `Bind ${col} to` : state.bindings[col].title} 
         value={!state.bindings[col] ? '' : state.bindings[col].title}
-        onChange={e => {
-          setState(s => ({
-            dirty: 1,
-            ...s,
-            bindings: {
-              ...s.bindings,
-              [col]: getBindableByName(e)
-            }
-          }))
-        }} 
-        options={bindableProps.map(f => f.title)} />}
+        onChange={handleBindingChange} 
+        options={bindableProps.map(f => f.title)} />
+        </Flex>}
 
       {!componentBound && active && <TextInput 
         prompt
@@ -204,6 +210,8 @@ const ListTableRow = ( {
 
     </Grid>
 
+
+      {/* data bound tables can specify data types for each column  */}
        {(settings ) && <><Grid xs={12} item sx={{mb: 1}}>
         
         <Divider sx={{mb: 1}} />

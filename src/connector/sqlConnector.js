@@ -18,22 +18,24 @@ export const downloadApplicationScripts = async (appID) => {
 
 
 const intercept = async (method, request, response) => {
-  const endpoint = 'http://localhost:6009/intercept'
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({method, request, response}, 0, 2),
-  }; 
- 
-
-  // send GET request
-  const res = await fetch(endpoint, requestOptions);
-  try {
-    return await res.json(); 
-  } catch (e) {
-    console.log ({e});
-    return false;
-  }
+  // if (window.location.href.indexOf('localhost') > 0) {
+    const endpoint = 'http://localhost:6009/intercept'
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({method, request, response}, 0, 2),
+    }; 
+   
+  
+    // send GET request
+    const res = await fetch(endpoint, requestOptions);
+    try {
+      return await res.json(); 
+    } catch (e) {
+      console.log ({e});
+      return false;
+    }
+  // }
 }
 
 
@@ -71,7 +73,7 @@ export const setApplication = async (body) => {
   }; 
 
   intercept  ('setApplication', body, {});
-  console.log (requestOptions.body)
+ // console.log (requestOptions.body)
 
   // send GET request
   const response = await fetch(API_ENDPOINT, requestOptions);
@@ -112,6 +114,23 @@ export const getPageByPath = async (path) => {
   try {
     const res = await response.json(); 
     intercept  ('getPageByPath', { path }, res);
+    return res;
+  } catch (e) {
+    console.log ({e});
+    return false;
+  }
+}
+
+// getPageByID method
+export const getPageByID = async (ID) => {
+   
+
+  // send getPageByPath GET request
+  const response = await fetch(API_ENDPOINT + `/page/id/${ID}`);
+
+  try {
+    const res = await response.json(); 
+    intercept  ('getPageByID', { ID }, res);
     return res;
   } catch (e) {
     console.log ({e});

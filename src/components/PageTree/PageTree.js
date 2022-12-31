@@ -4,21 +4,80 @@ import { styled, List, Link, ListItemButton, Typography,
   } from "@mui/material";
   import { Article, MoreVert, Close, Delete } from "@mui/icons-material";
   import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
+import ParameterPopover from '../pages/Editor/components/ParameterPopover/ParameterPopover';
   
  
 const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClick}) => {
+  const [parameters, setParameters] = React.useState(null)
+  const [pageName, setPageName] = React.useState(null)
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+
+  const handlePopoverClick =  (event, name, params) => {  
+    setParameters(params);
+    setPageName(name);
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => { 
+    setAnchorEl(null); 
+  };
+
+  const handleButtonClick = (event) => {
+    if (parameters && Object.keys(parameters).length) {
+      return handlePopoverClick(event);
+    } 
+  }
+
+  const handleParameterChange = param => event => {
+    setParameters(params => ({
+      ...params,
+      [param]: event.target.value 
+    }))
+  }
+
+
+  const openPage = () => { 
+    onClick(pageName, parameters) ;
+    handlePopoverClose ()
+  }
+
+  const popProps = {
+    handlePopoverClick,
+    handlePopoverClose,
+    handleButtonClick
+  }
+
+
+
  return (
+  <>
    <List dense>
    {tree.filter(f => !f.pageID || f.pageID === 'null').map(c => <Pages 
    dropPage={dropPage}
    setPage={setPage}
    duplicatePage={duplicatePage}
+   {...popProps}
    selected={selected} onClick={onClick} key={c.PageName} tree={c} trees={tree}/> )}
    </List>
+   <ParameterPopover 
+          anchorEl={anchorEl}
+          onClose={handlePopoverClose}
+          handleParameterChange={handleParameterChange}
+          openPage={openPage}
+          parameters={parameters}
+    />
+   </>
  );
 }
 
-const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected, indent = 0}) => {
+const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected, indent = 0, ...props}) => {
+  const {
+    handlePopoverClick,
+    handlePopoverClose,
+    handleButtonClick
+  } = props;
   const kids = trees.filter(t => t.pageID === tree.ID);
   const [over, setOver] = React.useState(false);
   const options = [
@@ -50,24 +109,38 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
         <ListItemIcon sx={{minWidth: 24}}>
            <Tiny icon={Article} />
         </ListItemIcon>
+
+
         <ListItemText  
-          onClick={() => {
+          onClick={(e) => {
             if (tree.parameters && Object.keys(tree.parameters).length) {
-              return alert ('Cannot go directly here.')
+              handlePopoverClick(e, tree.PageName, tree.parameters)
+              return; // alert ('Cannot go directly here.')
             }
             onClick && onClick(null);
             setTimeout(() => {
               onClick && onClick(tree.PageName)
             }, 99)
-          }} primary={<><Typography 
-          sx={{ 
-            fontWeight: selected === tree.PageName ? 600 : 400, 
-            fontSize: '0.85rem',
-            color: !!tree.parameters && !!Object.keys(tree.parameters).length 
-              ? 'gray'
-              : 'black'
-          }}
-            variant="body1">{tree.PageName}</Typography></>}/>
+          }} 
+          
+          primary={<>
+
+          <Typography 
+            sx={{ 
+              fontWeight: selected === tree.PageName ? 600 : 400, 
+              fontSize: '0.85rem',
+              color: !!tree.parameters && !!Object.keys(tree.parameters).length 
+                ? 'gray'
+                : 'black'
+            }}
+            variant="body1"
+          >{tree.PageName}</Typography>
+            
+            </>}
+            
+            />
+
+
          {!!tree && <ListItemSecondaryAction>
 
           {on && <Tiny onClick={() =>  onClick && onClick() }  icon={Close}  sx={{mr: 1}} />}
@@ -88,6 +161,7 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
         </ListItemSecondaryAction>}
       </ListItemButton>
       {!!kids && <>{kids.map(c => <Pages 
+            {...props}
             dropPage={dropPage}
             setPage={setPage} selected={selected}  onClick={onClick} 
             indent={indent + 3} 

@@ -364,8 +364,10 @@ const ScriptDrawer = ({
           />}
 
           <Box sx={{ mb: 1 }}>
-            <SearchBox
-              onClose={() => setFilter("")}
+            <TextInput
+              buttons={
+                !filter ? null : <TinyButton icon={Close} onClick={() => setFilter('')} />
+              } 
               size="small"
               label="Search"
               value={filter}
