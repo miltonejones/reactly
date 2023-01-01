@@ -90,6 +90,7 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   const [jsonLog, setMessages] = React.useState([]);
   const [pageRefState, setPageRefState] = React.useState({}); 
    
+  const [ pageTabs,  setPageTabs ] = React.useState({});
   const [showTrace, setShowTrace] = React.useState(false);
   const [disableLinks, setDisableLinks] = React.useState(false);
   const [disableRequests, setDisableRequests] = React.useState(false);
@@ -119,6 +120,29 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   let [t, setT] = React.useState(0);
 
  
+  const addPageTab = (page, parameters) => {
+
+    if (!page) {
+
+      return setPageTabs(tabs => ({
+        ...tabs,
+        [appname]: {
+          path: '/',
+          parameters
+        }
+      }));
+  
+    }
+
+    setPageTabs(tabs => ({
+      ...tabs,
+      [page.PageName]: {
+        path: page.PagePath,
+        parameters
+      }
+    }))
+
+  }
 
   const monitorEvent = eventName => setMonitoredEvents(e => {
     const monitored = e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName);
@@ -204,13 +228,22 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
    const refreshProgs = async () => { 
     setBusy(`Reloading data for "${pagename || 'application'}"...`);
 
-    
-    // get application data
-    const items = await getApplicationInfo(pagename);
- 
+    let items;
+    if (applicationData) {
+      const context = applicationData?.find(f => f.path === appname);
+      const desiredPage = context.pages.find(page => page.PagePath === pagename);
+      if (!desiredPage) return;
+      items = await getApplicationInfo(desiredPage.ID);
+    } else {
+      items = await getApplicationInfo();
+    }
+
+      
     udpateLocalProgs(items)
     setBusy(false)
     return items;
+
+    // get application data
   }
  
   const refreshLib = async () => { 
@@ -373,7 +406,7 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
 
     }));
  
-    setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
+    // setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
     setPageClientState({})
     setApplicationData(update)
     setBusy(false)
@@ -396,8 +429,7 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   const setAppData = data => setApplicationData(s => data); 
   
   const getPageResourceState = () => pageResourceState;
-
-  const sessionID = uniqueId();
+ 
  
 
 
@@ -467,6 +499,9 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
         removeProgItem,
         monitorEvent,
         
+        pageTabs,  
+        addPageTab,
+        
         monitoredEvents, 
         setMonitoredEvents,
 
@@ -478,8 +513,7 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
         setDisableRequests,
         
         pageModalState, 
-        setPageModalState, 
-        sessionID,
+        setPageModalState,  
         ...appHistory,  
         ...modal,
         menuPos,

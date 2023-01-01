@@ -12,6 +12,7 @@ import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
 import { useTextTransform } from '../../hooks/useTextTransform';
 import { uniqueId } from '../library/util';
+import { childrenAllowed } from '../library';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -97,7 +98,7 @@ const ComponentPanel = ({
     return onMove && onMove(component.ID, null) 
   };
 
-  const others = componentList.filter(f => !!f.children)
+  const others = componentList.filter(f => !!Library[f.ComponentType] &&  Library[f.ComponentType].allowChildren)
 
   const changes = [onSettingsChange, onStyleChange, onEventChange];
   const onChange = !component && !!selectedPage 
@@ -130,7 +131,7 @@ const ComponentPanel = ({
   const sx = { borderBottom: 1, borderColor: 'divider'}
 
   const showApp = !collapsed && !(!!component?.ComponentName || selectedPage?.PageName);
-
+ 
 
   const importable = application.pages
   .filter(f => f.ID !== selectedPage?.ID)

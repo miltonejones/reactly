@@ -102,7 +102,7 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, too
 
   return {
     // outline: wide ? "" : "dotted 1px green",
-    height: short ? 56 : "calc(100vh - 64px)",
+    height: short ? 'fit-content' : "calc(100vh - 64px)",
     transition: "all .2s linear",
     ...args,
     overflow: "auto",
@@ -221,7 +221,7 @@ const Editor = ({ applications: apps = {} }) => {
   });
 
   
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
   const { handleResourceDelete, handleConnectionDelete } = useConnectionEdit(apps);
   const { copy, copied } = useClipboard();
   const [ collapsed, setCollapsed ] = React.useState({
@@ -230,6 +230,7 @@ const Editor = ({ applications: apps = {} }) => {
   });
   const [ showTabs,  setShowTabs ] = React.useState(true);
   const [ expandedNodes,  setExpandedNodes ] = React.useState({});
+  // const [ pageTabs,  setPageTabs ] = React.useState({});
   const [ popoverContent,  setPopoverContent ] = React.useState(null);
   const [ anchorEl, setAnchorEl ] = React.useState(null);
 
@@ -287,7 +288,10 @@ const Editor = ({ applications: apps = {} }) => {
     setPageError,
     setShowTrace,
     showTrace,
-    appContext
+    appContext,
+    pageTabs,  
+    addPageTab,
+    
 
   } = React.useContext(AppStateContext);
 
@@ -511,7 +515,7 @@ const Editor = ({ applications: apps = {} }) => {
     {
       name: "Show resource state",
       action: () => Alert(<Json>
-        {JSON.stringify(pageModalState, 0, 2)}
+        {JSON.stringify(pageResourceState, 0, 2)}
       </Json>)
     },
     {
@@ -623,7 +627,13 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handlePageNavigate = (name,  parameters) => {
     const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
-    if (!clickedPage) return navigate(`/edit/${appData.path}`);
+
+    addPageTab(clickedPage);
+
+    if (!clickedPage) { 
+      return navigate(`/edit/${appData.path}`);
+    }
+ 
 
     const suffix = !parameters 
       ? ''
@@ -842,8 +852,8 @@ const Editor = ({ applications: apps = {} }) => {
                   {!!componentParent?.components && <>
                   
                  <Box sx={{mb: 1}}>
-                 <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
-                      value={contentFilter} />
+                 {/* <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
+                      value={contentFilter} /> */}
                  </Box>
                   {contentTree}
                   </>
@@ -1013,6 +1023,37 @@ const Editor = ({ applications: apps = {} }) => {
               </TextBtn>
             </Flex>
           </Pane>
+ 
+         {!!pageTabs && !!Object.keys(pageTabs).length && <Pane   
+            short
+            item
+            xs={12}
+            sx={{ borderBottom: 1, borderColor: "divider", whiteSpace: 'nowrap' }}>
+
+              <Flex sx={{pl: 1}}>
+                <Text small active>Pages</Text>
+                <Tabs 
+                onChange={(event, index) => {
+                  const name = Object.keys(pageTabs)[index];
+                  const tab = pageTabs[name];
+                  handlePageNavigate(name, tab.parameters); 
+                }}
+                value={
+               Math.max(0,  Object.keys(pageTabs)
+               .map(tab => pageTabs[tab].path)
+               .indexOf(selectedPage?.PagePath))
+              } sx={{minHeight: 24, ml: 1, mb: 0 }} >
+              {Object.keys(pageTabs)
+              .map(tab => <TabButton key={tab} label={tab} icon={<TinyButton 
+                onClick={() => handlePageNavigate() } icon={Close} />} iconPosition="end" />)}
+            </Tabs>
+
+
+
+              </Flex>
+      
+          </Pane>}
+          
           {!(componentType?.modal || parentOpen) && <>
             {navigationPane}
           </>}

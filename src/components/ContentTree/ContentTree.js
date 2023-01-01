@@ -21,7 +21,7 @@ const NodeText = styled(Typography)(({ theme, on, indent }) => ({
 const componentOrder = (a,b) => a.order - b.order;
 
 const Content = styled(Box)(({ theme }) => ({
-  height: 'calc(100vh - 440px)',
+  height: 'calc(100vh - 460px)',
   overflow: 'auto',
   padding: theme.spacing(0, 1),
   border: 'solid 1px #777', 
@@ -127,7 +127,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
   }
 
   const baseIcon = expanded ? Remove : Add;
-  const ExpandIcon = !!kids.length ? baseIcon : RadioButtonUnchecked;
+  const ExpandIcon = (!!kids.length || allowChildren) ? baseIcon : RadioButtonUnchecked;
 
   const iconOwner = !tree ? null : Library[tree.ComponentType];
 
@@ -149,8 +149,8 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
         onMouseLeave={() => setOver(false)}
         >
        <ListItemIcon sx={{minWidth: 24}}>
-          {!!kids.length && <Tiny sx={{mr: 1}} onClick={()  => expand(tree.ID)} icon={ExpandIcon} />}
-           <Tiny sx={{mr: 1}} icon={Icon} />
+          {(!!kids.length || allowChildren) && !!tree && <Tiny sx={{mr: 1}} onClick={()  => expand(tree.ID)} icon={ExpandIcon} />}
+           <Tiny sx={{mr: 1}} icon={Icon} /> 
         </ListItemIcon>
 
 

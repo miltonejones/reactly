@@ -19,24 +19,40 @@ export const downloadApplicationScripts = async (appID) => {
 
 const intercept = async (method, request, response) => {
   // if (window.location.href.indexOf('localhost') > 0) {
-    const endpoint = 'http://localhost:6009/intercept'
-    const requestOptions = {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({method, request, response}, 0, 2),
-    }; 
+    // const endpoint = 'http://localhost:6009/intercept'
+    // const requestOptions = {
+    //   method: 'POST',
+    //   headers: { 'Content-Type': 'application/json' },
+    //   body: JSON.stringify({method, request, response}, 0, 2),
+    // }; 
    
   
-    // send GET request
-    const res = await fetch(endpoint, requestOptions);
-    try {
-      return await res.json(); 
-    } catch (e) {
-      console.log ({e});
-      return false;
-    }
+    // // send GET request
+    // const res = await fetch(endpoint, requestOptions);
+    // try {
+    //   return await res.json(); 
+    // } catch (e) {
+    //   console.log ({e});
+    //   return false;
+    // }
   // }
 }
+
+// relocateComponent method
+export const relocateComponent = async (ID, pageID) => {
+  
+  // send relocateComponent GET request
+  const response = await fetch(API_ENDPOINT + `/move/${ID}/${pageID}`);
+
+  try {
+    return await response.json(); 
+  } catch (e) {
+    console.log ({e});
+    return false;
+  }
+}
+
+
 
 
 export const getApplications = async () => {

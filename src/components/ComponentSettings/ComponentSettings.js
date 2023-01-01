@@ -19,6 +19,7 @@ import {
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
 import ReferenceComponentInput from './components/ReferenceComponentInput/ReferenceComponentInput';
+import { truth } from '../library/util';
 
 const KeypressTextBox = ({ onChange, ...props }) => {
   const [dir, setDir] = React.useState(false);
@@ -652,10 +653,13 @@ const ComponentSettings = ({ selectedPage, component, onChange, showSettings, re
 
   const debug =  <>
   <Flex sx={{ borderBottom: 1, borderColor: 'divider', pl: 1}}
-    onClick={() => onChange(component.ID, 'debug', !args.debug )}
+    onClick={() => {
+      alert (truth(args.debug).toString())
+      onChange(component.ID, 'debug', !truth(args.debug) )
+    }}
     >
-   <Switch checked={args.debug} /> 
-   <Text active={args.debug} small>Debug mode</Text>
+   <Switch checked={truth(args.debug)} /> 
+   <Text active={truth(args.debug)} small>Debug mode</Text>
   </Flex>  
   </>
 

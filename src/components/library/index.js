@@ -154,7 +154,9 @@ const ComponentList = {
   Equalizer: ReactlyEqualizer
 }
 
-
+export const childrenAllowed = component => !!component && 
+  !!ComponentList[component.ComponentType] && 
+  !!ComponentList[component.ComponentType].allowChildren;
 
 export {
   expandLibrary ,

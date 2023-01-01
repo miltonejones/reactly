@@ -197,8 +197,11 @@ const ListTableComponentInput = ({
       <QuickSelect value={resource?.name} options={resources.map(f => f.name)} onChange={value => {
         const res = resources.find(f => f.name === value);
         if (!res) return;
-        setState(s => ({...s, 
-          dirty: 1, resourceID: res.ID}))
+        setState(s => ({
+          ...s, 
+          dirty: 1, 
+          resourceID: res.ID
+        }))
       }}/>
 
       <Box sx={{mt: 2}}>

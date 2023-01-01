@@ -34,7 +34,7 @@ export const useRunScript = () => {
   const { copy } = useClipboard();
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
-  const { getResourceByName } = useDataResource()
+  const { getResourceByName, setResourceByName } = useDataResource()
 
   const refreshScripts = React.useCallback(async () => {
     const scripts = await downloadApplicationScripts(appContext.ID);
@@ -210,6 +210,7 @@ const handleScriptRequest =  (block, opts, title) => {
         shout,
         shuffle,
         getResourceByName ,
+        setResourceByName,
         execResourceByName,
         copy,
         moment,

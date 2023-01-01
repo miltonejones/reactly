@@ -23,7 +23,10 @@ export const useOpenLink = () => {
     Alert,
     setApplicationClientState,
     applicationClientState,
-    debugMode
+    debugMode,
+    pageTabs,  
+    addPageTab,
+    
   } = React.useContext(AppStateContext);
 
 
@@ -186,6 +189,8 @@ export const useOpenLink = () => {
       const path = values.join('/'); 
       const value = `/${prefix}/${appContext.path}/${targetPage.PagePath}`;
       const url = [value].concat(!!path ? [path] : []).join('/');  
+
+      addPageTab(targetPage, parameters)
   
       listening('openLink') && 
         hello ( { url, path, pageParams, values }, `Navigating to ${value}`)

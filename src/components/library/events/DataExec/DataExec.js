@@ -17,11 +17,19 @@ const DataExec = ({ event, resources, page, handleSave, selectedType, selectedEv
     appContext
   } = React.useContext(AppStateContext);
 
+  let actionDesc
+  switch (selectedType) {
+    case 'dataReset':
+      actionDesc = 'Reset';
+      break;
+    case 'dataRefresh':
+      actionDesc = 'Refresh';
+      break;
+    default:
+      actionDesc = 'Execute';
+  }
   
-  const actionReset = selectedType === 'dataReset';
-  const actionDesc = actionReset
-    ? 'Reset'
-    : 'Execute' 
+  const actionReset = ['dataReset',  'dataRefresh'].find(f => selectedType === f); 
 
   const target = !event.action 
     ? null

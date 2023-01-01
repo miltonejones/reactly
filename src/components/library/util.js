@@ -146,21 +146,43 @@ export const getStyles = styles => {
   return args;
 }
 
+export const recurse = (page, selected, open = false) => { 
+ 
+  const types = ['Drawer', 'Collapse']
 
-export const recurse = ({
-  page,
-  app
-}, selected, tag, open = false) => {
-  const parents = (page?.components||[]).concat(app?.components||[]);
+  if (!selected) {
+    return open;
+  }
   
-  const kids = parents.filter(f => f.componentID === tag.ID);
-  if (kids?.length) {
-    const out = kids.map(kid => recurse({ page, app }, selected, kid, open || selected?.ID === kid.ID )) 
+  const parents = page?.components?.filter(f => f.ID === selected.componentID);
+
+
+  if (parents?.length) {
+    const out = parents.map(kid => { 
+      return recurse(page, kid, open || types.find(f => kid.ComponentType === f) )
+    }) 
     const ok = out.some(f => !!f);
     return ok
   }
-  return open;
+
+  return open || types.find(f => page.ComponentType === f);
 }
+
+
+// export const recurse = ({
+//   page,
+//   app
+// }, selected, tag, open = false) => {
+//   const parents = (page?.components||[]).concat(app?.components||[]);
+  
+//   const kids = parents.filter(f => f.componentID === tag.ID);
+//   if (kids?.length) {
+//     const out = kids.map(kid => recurse({ page, app }, selected, kid, open || selected?.ID === kid.ID )) 
+//     const ok = out.some(f => !!f);
+//     return ok
+//   }
+//   return open;
+// }
 
 export const getMax = array => array.reduce((count, res) => { 
   return Math.max(res, count);
@@ -308,10 +330,15 @@ export const map = async (list, fn, index = 0, out = []) => {
     // transform 'dot' notation values
     if (value?.indexOf('.') > 0) {
 
+      const [name, propKey] = value.split('.');
+      if (name === 'application') {
+        !!shout && shout({name, propKey, ...logData}, `getPropertyValueFromString: application value "${state[propKey]}""`)
+        return state[propKey]
+      }
+
       if (value.indexOf('parameters.') === 0) {
-        const [name, key] = value.split('.');
-        !!shout && shout({name, key, ...logData}, `getPropertyValueFromString: Resolved "${value}" as parameter "${routeParams[key] }"`)
-        return routeParams[key]  
+        !!shout && shout({name, propKey, ...logData}, `getPropertyValueFromString: Resolved "${value}" as parameter "${routeParams[propKey] }"`)
+        return routeParams[propKey]  
       }  
 
       // must have eventParams to transform values 
@@ -336,10 +363,6 @@ export const map = async (list, fn, index = 0, out = []) => {
       // values with 2 parts are pulled from the 
       // event fired by the calling component
       const [key, prop] = values;
-      if (key === 'application') {
-        !!shout && shout({key, prop, ...logData}, `getPropertyValueFromString: application value "${state[prop]}""`)
-        return state[prop]
-      }
       !!shout && shout({key, prop, ...logData}, `getPropertyValueFromString: Event data "${eventParams[prop]}""`)
       return eventParams[prop]
     }

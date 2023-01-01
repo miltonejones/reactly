@@ -49,10 +49,17 @@ const HandlerCard = ({ ID, event: eventName, action, application, page, selected
       act = <Box>Set the value of "{action.target}" to <b>{label}</b></Box>
       break;
     case 'dataExec':
-      act = <>Execute "{obj.name} - {obj.method}"</>
+      if (obj) {
+        act = <>Execute "{obj.name} - {obj.method}"</>
+      } else {
+        ok = false
+      }
       break;
     case 'dataReset': 
       act = <>Reset  "{obj.name} - {obj.method}"</>
+      break;
+    case 'dataRefresh': 
+      act = <>Refresh  "{obj.name} - {obj.method}"</>
       break;
     case 'openLink':
       const targetPage = pages.find(e => e.ID === action.target);
@@ -232,7 +239,13 @@ const ComponentEvents = ({
   {
     name: 'Reset data resource',
     value: 'dataReset'
-  } ]: []).filter(f => !f.when || !!f.when());
+  },
+  {
+    name: 'Refresh data resource',
+    value: 'dataRefresh'
+  } ]: [])
+  .filter(f => !f.when || !!f.when())
+  .sort((a,b) => a.name > b.name ? 1 : -1);
 
   const forms = {
     setState: SetState,
@@ -240,6 +253,7 @@ const ComponentEvents = ({
     openLink: OpenLink,
     dataExec: DataExec,
     dataReset: DataExec,
+    dataRefresh: DataExec,
     modalOpen: ModalOpen,
     methodCall: MethodCall
     
@@ -310,8 +324,7 @@ const ComponentEvents = ({
 
 
       {!!selectedHandler && !!selectedEvent && 
-        eventOwner.events
-          .filter(f => f.ID === selectedHandler)
+        eventOwner.events?.filter(f => f.ID === selectedHandler)
           .map (e => {
             const Editor = forms[e.action.type];
             if (!Editor) return <>could not render editor {e.type}</>

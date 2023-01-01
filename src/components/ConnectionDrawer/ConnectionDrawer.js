@@ -81,7 +81,7 @@ const ConnectionNode = ({
 
 
       <DeleteConfirmMenu message={`Delete resource ${kid.name}?`} 
-            onDelete={(e) => !!e && resourceDrop && resourceDrop(ID, true)}   />
+            onDelete={(e) => !!e && resourceDrop && resourceDrop(kid.ID, true)}   />
 
       {/* <Tiny icon={Delete}  onClick={() => resourceDrop && resourceDrop(kid.ID)} />  */}
 

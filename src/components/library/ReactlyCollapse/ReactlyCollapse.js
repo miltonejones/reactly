@@ -17,10 +17,13 @@ const ReactlyComponentCollapse = ({ children, ...props }) => {
   const { componentEditing, preview, ...rest } = props;
   const args = getSettings(props.settings);
 
-  const childOpen = recurse({
-    selectedPage,
-    app
-  }, selectedComponent, props) ; 
+  const componentParent = selectedPage || app;
+  const parentOpen = recurse(componentParent,  selectedComponent) ; 
+
+  // const childOpen = recurse({
+  //   selectedPage,
+  //   app
+  // }, selectedComponent, props) ; 
  
   const open =  props.in || Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
@@ -38,8 +41,8 @@ const ReactlyComponentCollapse = ({ children, ...props }) => {
   <> 
  {/* {props.ID}[{args.in?.toString()}][{props.in?.toString()}] */}
   {/*  {JSON.stringify(Object.keys(pageModalState))} */}
-  <ReactlyComponent component={(componentEditing && preview) || childOpen ? Faux :Collapse} {...props}
-   in={open || componentEditing || (childOpen && preview )} 
+  <ReactlyComponent component={(componentEditing && preview) || parentOpen ? Faux :Collapse} {...props}
+   in={open || componentEditing || (parentOpen && preview )} 
   >
       {children}
    </ReactlyComponent>

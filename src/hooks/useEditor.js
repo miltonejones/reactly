@@ -3,6 +3,7 @@ import { getComponent } from '../components/library/util';
 import { uniqueId } from '../components/library/util';
 import { getMax } from '../components/library/util';
 import { dropObject } from '../connector/sqlConnector';
+import { relocateComponent } from '../connector/sqlConnector';
 import { setApplication } from '../connector/sqlConnector';
 import { clonePage } from '../util';
 import { AppStateContext } from './AppStateContext';
@@ -70,7 +71,10 @@ export const useEditor = (apps) => {
 
       await edit(component, page, app);
       
-      page.components = page.components.map((c) => c.ID === componentID ? component : c);
+      page.components = page.components.map((c) => c.ID === componentID ? {
+         ...component,
+         dirty: true
+        } : c);
       return component;
     });
     return res;
@@ -160,7 +164,8 @@ export const useEditor = (apps) => {
 
   const dropResource = async(appID, ID) => { 
     editProg(appID, async (app) => {
-      app.resources = app.resources.filter(f => f.ID !== ID) 
+      app.resources = app.resources.filter(f => f.ID !== ID) ;    
+      dropObject('resources', ID);
     })
   }
 
@@ -329,14 +334,10 @@ export const useEditor = (apps) => {
   const pasteComponentProps = async (appID, pageID, componentID, type, props) => { 
     editComponent(appID, pageID, componentID, async (component, sourcePage) => {
       
-      const settings = component[type]
-          .filter(dead => 
-            !props.find(added =>
-              added.SettingName === dead.SettingName) );
-      const added = settings.concat(props)
+     
 
       Object.assign(component, {
-        [type]: added
+        [type]: props
       }) 
 
     });
@@ -349,32 +350,40 @@ export const useEditor = (apps) => {
         ...c, 
         pageID: destID,
         events: []
-      }))
+      }));
+
+     
+      Object.assign(sourcePage, { components: sourcePage.components
+        .filter(component => !dressed.find(ex => ex.ID === component.ID))
+      });
+
+
       
       // alert (JSON.stringify(redressed))
 
-      const dependentProps = redressed.reduce((out, comp) => {  
-        const props = comp.boundProps;
-        if (!props) return out;
-        props.map(({ boundTo }) => {
-          const state = sourcePage.state?.find(f => f.Key === boundTo);
-          !!state && out.push({...state, ID: uniqueId()});
-        });
-        return out;
-      }, [])
+      // const dependentProps = redressed.reduce((out, comp) => {  
+      //   const props = comp.boundProps;
+      //   if (!props) return out;
+      //   props.map(({ boundTo }) => {
+      //     const state = sourcePage.state?.find(f => f.Key === boundTo);
+      //     !!state && out.push({...state, ID: uniqueId()});
+      //   });
+      //   return out;
+      // }, [])
 
-      await app.Alert (<pre>{JSON.stringify(dependentProps,0,2)}</pre>)
+      // await app.Alert (<pre>{JSON.stringify(dependentProps,0,2)}</pre>)
 
 
       editPage(appID, destID, async (page) => {
         
-        page.components = (page.components||[])
-        .filter(c => !redressed.find(r => r.ID === c.ID))
+        page.components = (page.components||[]) 
         .concat(redressed);
 
-        page.state = (page.state||[])
-        .filter(c => !dependentProps.find(r => r.Key === c.Key))
-        .concat(dependentProps);
+        relocateComponent(componentID, destID || 'NULL');
+
+        // page.state = (page.state||[])
+        // .filter(c => !dependentProps.find(r => r.Key === c.Key))
+        // .concat(dependentProps);
 
         console.log ({ redressed:  page.components })
 

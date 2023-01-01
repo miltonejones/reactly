@@ -191,8 +191,10 @@ export const usePageContext = () => {
     const response = await fetch(endpoint, requestOptions);
     let json = await response.json();
 
+    shout ({json, res}, res.name + ' data received');
     if (transform && isGetRequest) {
       const transformID = transform.ID || transform;
+      shout ({transform}, 'transforming');
       const script = scriptList?.find((f) => f.ID === transformID);
       json = await executeScript(script.ID, json, execResourceByName);
     }
@@ -277,9 +279,39 @@ export const usePageContext = () => {
       // for non-GET requests
       querystring = payload;
     }
+ 
+   return await commitComponentRequest(connections, querystring, resource); 
 
-    // await Alert (querystring);
+  }
 
+  const clearResource = (resource) => {
+
+    const datum = {
+      resourceID: resource.ID,
+      name: resource.name ,
+      records: []
+    };
+ 
+    if (listening("dataExec")) { 
+      hello(
+        { datum },
+        `Clearing ${resource.name}`
+      );
+    }
+
+    if (!pageResourceState) {
+      setPageResourceState([datum]);
+    } else {
+      setPageResourceState((s) =>
+        (s || [])
+          .filter((e) => e.resourceID !== resource.ID)
+          .concat(datum)
+      );
+    }
+
+  }
+
+  const commitComponentRequest = async ( connections, querystring, resource) => {
 
     const records = await executeComponentRequest(
       connections,
@@ -292,6 +324,7 @@ export const usePageContext = () => {
       resourceID: resource.ID,
       name: resource.name,
       records,
+      querystring
     };
 
     if (!pageResourceState) {
@@ -302,8 +335,7 @@ export const usePageContext = () => {
           .filter((e) => e.resourceID !== resource.ID)
           .concat(datum)
       );
-    }
-
+    } 
 
   }
 
@@ -352,7 +384,7 @@ export const usePageContext = () => {
       speakable &&
         shout(
           { trigger, options },
-          `Trigger ${index}. ${trigger.action.type} on ${trigger.action.target}`
+          `Trigger ${index}. ${trigger.action.type}.${name} on ${trigger.action.target}`
         );
  
 
@@ -484,6 +516,28 @@ export const usePageContext = () => {
           );
 
           break;
+        case "dataRefresh":
+         
+          const resourceState = pageResourceState.find( 
+            f => f.resourceID === trigger.action.target 
+          );
+
+
+          const refresher = appContext.resources.find(
+            (f) => f.ID === trigger.action.target
+          );
+
+          if (!resourceState) {
+            return Alert('Could not find resource')
+          }
+
+         clearResource(refresher);
+         
+         await commitComponentRequest(appContext.connections, resourceState.querystring, refresher); 
+
+         console.log ({ resourceState }); 
+
+          break;
         case "openLink":
           return openLink(
             // ID of the target link
@@ -526,24 +580,32 @@ export const usePageContext = () => {
           // set URL delimiter
           const delimiter = resource.format === "rest" ? "/" : "&";
 
-          let querystring;
+          // let querystring;
 
-          const datum = {
-            resourceID: resource.ID,
-            name: resource.name ,
-            records: []
-          };
+          clearResource(resource);
+
+          // const datum = {
+          //   resourceID: resource.ID,
+          //   name: resource.name ,
+          //   records: []
+          // };
        
+          // if (listening("dataExec")) { 
+          //   hello(
+          //     { datum },
+          //     `Executing ${resource.name}`
+          //   );
+          // }
 
-          if (!pageResourceState) {
-            setPageResourceState([datum]);
-          } else {
-            setPageResourceState((s) =>
-              (s || [])
-                .filter((e) => e.resourceID !== resource.ID)
-                .concat(datum)
-            );
-          }
+          // if (!pageResourceState) {
+          //   setPageResourceState([datum]);
+          // } else {
+          //   setPageResourceState((s) =>
+          //     (s || [])
+          //       .filter((e) => e.resourceID !== resource.ID)
+          //       .concat(datum)
+          //   );
+          // }
       
           // quick method to get a property value from a term key
           const getProp = (value) => {
@@ -643,11 +705,7 @@ export const usePageContext = () => {
                 );
               }
               return;
-            }
-
- 
-
-
+            } 
           } 
        
           if (listening("dataExec")) {

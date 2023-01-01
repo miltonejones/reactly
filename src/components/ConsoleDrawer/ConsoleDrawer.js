@@ -78,7 +78,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
     setLoud,
     supportedEvents,
     monitorEvent,
-    
+    pageResourceState,
     monitoredEvents, 
     setMonitoredEvents,
   } = React.useContext(AppStateContext);
@@ -99,10 +99,11 @@ const ConsoleDrawer = ({ handleSwitch }) => {
   const states = [
     pageClientState,
     applicationClientState,
-    getParametersInScope()
+    getParametersInScope(),
+    pageResourceState
   ]
 
-  const triggerTypes = ['methodCall','setState','modalOpen','dataReset', 'onApplicationLoad',
+  const triggerTypes = ['methodCall','setState','modalOpen','dataReset', 'dataRefresh', 'onApplicationLoad',
   'executeComponentRequest','createPageParams', 'openPath', 'attachEventHandlers',
   'openLink','scriptRun','dataExec','onPageLoad'].map(name => ({ name }));
   const triggerNames = [
@@ -189,6 +190,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
             <TabButton label="Page" />
             <TabButton label="Application" />
             <TabButton label="Route parameters" />
+            <TabButton label="Resource state" />
           </Tabs>
          </Flex>
           <Box sx={{height: 500, p: 2, overflow: 'auto'}}>

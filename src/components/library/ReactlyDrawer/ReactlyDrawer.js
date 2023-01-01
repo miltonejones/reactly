@@ -15,11 +15,10 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
   const { componentEditing, preview, ...rest } = props;
   const { selectedComponent } = queryState;
 
+  const componentParent = selectedPage || app;
+  const parentOpen = recurse(componentParent, selectedComponent) ; 
 
-  const childOpen = recurse({
-    selectedPage,
-    app
-  }, selectedComponent, props) ; 
+  // const childOpen = recurse(componentParent, selectedComponent, props) ; 
  
   const open = Object.keys(pageModalState)
     .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  || props.open || args.open ;
@@ -33,7 +32,7 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
       setPageModalState(state)
      }
   
-  const drawerOpen = open || componentEditing || (childOpen && preview );
+  const drawerOpen = open || componentEditing || (parentOpen && preview );
 
  return (
  <>
@@ -42,8 +41,8 @@ const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
     onClose={handleClose}
     open={drawerOpen} 
     {...rest}
-    hideBackdrop={!!args.hideBackdrop || componentEditing || (childOpen && preview )} 
-    component={componentEditing||childOpen ? Faux : Drawer} 
+    hideBackdrop={!!args.hideBackdrop || componentEditing || (parentOpen && preview )} 
+    component={componentEditing||parentOpen ? Faux : Drawer} 
     >
       {children}
    </ReactlyComponent> 

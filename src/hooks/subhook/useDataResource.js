@@ -9,30 +9,36 @@ import { usePageRef } from '.';
 export const useDataResource = () => {
   
   
-  const {  
-    Alert,
-    setPageResourceState, 
-    getPageResourceState,
-    pageResourceState,
+  const {   
+    setPageResourceState,  
   } = React.useContext(AppStateContext); 
 
+ 
 
-  const execResourceByName =  (name, fn) => { 
+  const getResourceByName =  (name) => new Promise(yes => {
     setPageResourceState(resourceState => { 
       const state = resourceState.find(e => e.name === name); 
-      fn(state);
+      yes(state);
       return resourceState;
     }) 
-  } 
+  })
 
-  const getResourceByName =  (name) => {
-    const state = getPageResourceState();
-    return state?.find(e => e.name === name);
-  } 
+
+  const setResourceByName =  (resource) => new Promise(yes => {
+    setPageResourceState(resourceState => { 
+      const state = resourceState.map(e => e.name === resource.name
+          ? resource
+          : e); 
+      yes(state);
+      return state;
+    }) 
+  })
+
+
 
   return {
-    getResourceByName,
-    execResourceByName
+    getResourceByName ,
+    setResourceByName
   }
 
 }

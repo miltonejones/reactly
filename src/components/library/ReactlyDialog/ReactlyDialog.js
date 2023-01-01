@@ -17,11 +17,13 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
   const { selectedComponent  } = queryState;
 
  
+  const componentParent = selectedPage || app;
+  const parentOpen = recurse(componentParent,  selectedComponent) ; 
 
-  const childOpen = recurse({
-    selectedPage,
-    app
-  }, selectedComponent, props) ; 
+  // const childOpen = recurse({
+  //   selectedPage,
+  //   app
+  // }, selectedComponent, props) ; 
  
 
 
@@ -49,7 +51,7 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
    extra={extra}
       onClose={handleClose}
         component={open || !preview ? Dialog : Faux} 
-        open={open || componentEditing || (childOpen && preview )} 
+        open={open || componentEditing || (parentOpen && preview )} 
         {...rest}
         >
       {children} 
