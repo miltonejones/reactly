@@ -19,12 +19,12 @@ const conseq = (count, out = []) => { for (var e=0;++e<count + 1;out.push(e)); r
 
 
 export const useLibrary = () => {
-  const { config, commitComponent, updateLib} = React.useContext(AppStateContext);
+  const { libraryJSON, uploadReactlyComponent, updateLibrary} = React.useContext(AppStateContext);
 
    
   const createComponent = (componentKey) => {
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
         Icon: 'Add',
         dirty: true,
@@ -44,23 +44,23 @@ export const useLibrary = () => {
         Defaults: {}
       }
     } 
-    updateLib(updated)
+    updateLibrary(updated)
   }
 
   const setComponentProps = (componentKey, propName, propVal) => {
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         dirty: true,
         [propName]: propVal
       }
     } 
-    updateLib(updated)
+    updateLibrary(updated)
   }
 
   const setComponentDefaults =  (componentKey, propName, propVal, type = 'Defaults') => {
-    const ex = config[componentKey][type] || {}; 
+    const ex = libraryJSON[componentKey][type] || {}; 
 
     if (!propVal || (typeof propVal === 'string' && !propVal?.length)) {
       delete ex[propName]
@@ -70,15 +70,15 @@ export const useLibrary = () => {
 
     
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
         dirty: true,
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         [type] : ex
       }
     } 
    // alert (JSON.stringify(ex))
-    updateLib(updated)
+    updateLibrary(updated)
   }
 
   const importComponentChild = (
@@ -88,23 +88,23 @@ export const useLibrary = () => {
    ) => {
 
     const [sourceKey, sourceName] = sourceProp.split('.');
-    const sourceNode = config[sourceKey][settingType].categories
+    const sourceNode = libraryJSON[sourceKey][settingType].categories
         .find(f => f.name === sourceName);
 
     if (!sourceNode) return alert ('NO NODE!');
 
     const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
           [settingType]: {
-            categories: config[componentKey][settingType].categories
+            categories: libraryJSON[componentKey][settingType].categories
               .concat({ ...sourceNode })
           }
         }
       }     
-    updateLib(updated)
+    updateLibrary(updated)
 
   }
 
@@ -113,19 +113,19 @@ export const useLibrary = () => {
     sourceProp
    ) => {
  
-    const sourceNode = config[sourceProp].Events;
+    const sourceNode = libraryJSON[sourceProp].Events;
 
     if (!sourceNode) return alert ('NO NODE!');
 
     const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
-          Events: (config[componentKey].Events||[]).concat([...sourceNode])
+          Events: (libraryJSON[componentKey].Events||[]).concat([...sourceNode])
         }
       }     
-    updateLib(updated)
+    updateLibrary(updated)
 
   }
 
@@ -142,12 +142,12 @@ export const useLibrary = () => {
     }))
 
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         dirty: true,
         [settingType]: {
-          categories: config[componentKey][settingType].categories.map( category => {
+          categories: libraryJSON[componentKey][settingType].categories.map( category => {
             return category.name !== categoryName ? category : {
               ...category,
               [childName]: (category[childName] || []).concat(settings)
@@ -157,7 +157,7 @@ export const useLibrary = () => {
         }
       }
     } 
-    updateLib(updated)
+    updateLibrary(updated)
   }
 
   const addComponentChild = (
@@ -195,17 +195,17 @@ export const useLibrary = () => {
       }))
 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
           [settingType]: {
-            categories: config[componentKey][settingType].categories 
+            categories: libraryJSON[componentKey][settingType].categories 
               .concat(settings)
           }
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const dropCategory = (
@@ -214,17 +214,17 @@ export const useLibrary = () => {
     categoryName ) => {
  
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
           [settingType]: {
-            categories: config[componentKey][settingType].categories 
+            categories: libraryJSON[componentKey][settingType].categories 
               .filter(f => f.name !== categoryName)
           }
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const setCategoryProp = (
@@ -232,17 +232,17 @@ export const useLibrary = () => {
     settingType,
     category ) => { 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
           [settingType]: {
-            categories: config[componentKey][settingType].categories 
+            categories: libraryJSON[componentKey][settingType].categories 
               .map(f => f.ID === category.ID ? category : f)
           }
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const addEvent = (
@@ -257,14 +257,14 @@ export const useLibrary = () => {
       }))
 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
-          [type]:  (config[componentKey][type]||[]).concat(settings)
+          [type]:  (libraryJSON[componentKey][type]||[]).concat(settings)
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const dropEvent = (
@@ -274,14 +274,14 @@ export const useLibrary = () => {
  
 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
-          [type]:  (config[componentKey][type]||[]).filter(f => f.name !== eventName)
+          [type]:  (libraryJSON[componentKey][type]||[]).filter(f => f.name !== eventName)
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const editEvent = (
@@ -293,28 +293,28 @@ export const useLibrary = () => {
  
 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
-          [type]:  (config[componentKey][type]||[]).map(f => f.name !== eventName ? f : {
+          [type]:  (libraryJSON[componentKey][type]||[]).map(f => f.name !== eventName ? f : {
             ...f,
             [key]: value
           })
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
 
   const relocateProp = (componentKey, sourceProp, destProp, setting) => {
 
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         dirty: true,
         Settings: {
-          categories: config[componentKey].Settings.categories.map( category => {
+          categories: libraryJSON[componentKey].Settings.categories.map( category => {
               if (category.name === sourceProp) {
                 return {
                   ...category,
@@ -334,7 +334,7 @@ export const useLibrary = () => {
     } 
 
     
-    updateLib(updated)
+    updateLibrary(updated)
 
 
   }
@@ -348,12 +348,12 @@ export const useLibrary = () => {
  
 
       const updated = {
-        ...config,
+        ...libraryJSON,
         [componentKey]: {
-          ...config[componentKey],
+          ...libraryJSON[componentKey],
           dirty: true,
           [settingType]: {
-            categories: config[componentKey][settingType].categories.map( category => {
+            categories: libraryJSON[componentKey][settingType].categories.map( category => {
               return category.name !== categoryName ? category : {
                 ...category,
                 [childName]: (category[childName] || []).filter(f => f.label !== settingName)
@@ -363,7 +363,7 @@ export const useLibrary = () => {
           }
         }
       } 
-      updateLib(updated)
+      updateLibrary(updated)
   }
   
   const setComponentChild = (
@@ -376,12 +376,12 @@ export const useLibrary = () => {
      
 
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         dirty: true,
         [settingType]: {
-          categories: config[componentKey][settingType].categories.map( category => {
+          categories: libraryJSON[componentKey][settingType].categories.map( category => {
             return category.name !== categoryName ? category : {
               ...category,
               [childName]: category[childName]
@@ -391,12 +391,12 @@ export const useLibrary = () => {
         }
       }
     } 
-    updateLib(updated)
+    updateLibrary(updated)
 }
 
   const commit = (componentKey) => {
-    const { dirty, ...rest} = config[componentKey];
-    commitComponent(componentKey, rest)
+    const { dirty, ...rest} = libraryJSON[componentKey];
+    uploadReactlyComponent(componentKey, rest)
   }
 
   const setCategoryAlways = (
@@ -406,12 +406,12 @@ export const useLibrary = () => {
         always 
       ) => { 
     const updated = {
-      ...config,
+      ...libraryJSON,
       [componentKey]: {
-        ...config[componentKey],
+        ...libraryJSON[componentKey],
         dirty: true,
         [settingType]: {
-          categories: config[componentKey][settingType].categories.map( category => {
+          categories: libraryJSON[componentKey][settingType].categories.map( category => {
             return category.name !== categoryName ? category : {
               ...category ,
               always
@@ -420,7 +420,7 @@ export const useLibrary = () => {
         }
       }
     } 
-    updateLib(updated)
+    updateLibrary(updated)
   }
 
   return {
@@ -1028,7 +1028,7 @@ const ComponentRow = ({ Name, allowChildren, Icon,
   const [css, setCss] = React.useState('');
   const [busy, setBusy] = React.useState('')
   const [adv, setAdv] = React.useState(false)
-  const { Library , config} = React.useContext(AppStateContext);
+  const { Library , libraryJSON} = React.useContext(AppStateContext);
   const { setComponentProps, addCategory } = useLibrary();
 
   const def = Object.keys(Defaults).map(s => `${s}: ${Defaults[s].toString()}`);
@@ -1178,7 +1178,7 @@ const ComponentRow = ({ Name, allowChildren, Icon,
 
 const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eventSources, styleCategories, settingsCategories}) => {
   const { commit } = useLibrary();
-  const { Library, refreshLib } = React.useContext(AppStateContext);
+  const { Library, downloadReactlyLibrary } = React.useContext(AppStateContext);
   const [value, setValue] = React.useState(0);
   const { copy } = useClipboard()
  
@@ -1223,7 +1223,7 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
        {!!component.dirty && <>
 
         <TinyButton icon={Icons.Undo} 
-        onClick={() => refreshLib()}
+        onClick={() => downloadReactlyLibrary()}
         />
 
         <TinyButton icon={Icons.Save} 
@@ -1281,12 +1281,12 @@ const LibraryNode = ({ component, keys, name, eventNames, expanded, expand , eve
 }
  
 const LibraryTree = ({onClose}) => {
-  const { Library , config} = React.useContext(AppStateContext);
+  const { Library , libraryJSON} = React.useContext(AppStateContext);
   const [expanded, setExpanded] = React.useState('');
   const [filter, setFilter] = React.useState('');
   const { createComponent } = useLibrary();
 
-  const f = Object.keys(Library).find(f => !Object.keys(config).find(k => k === f));
+  const f = Object.keys(Library).find(f => !Object.keys(libraryJSON).find(k => k === f));
   
   // const expand = node => {
   //   setExpanded(nodes => nodes.indexOf(node) > -1 
@@ -1332,7 +1332,7 @@ const LibraryTree = ({onClose}) => {
       <Stack>
 
      <Flex sx={{ml: 6}}>
-       <Typography variant="caption">{Object.keys(config).length} components</Typography>
+       <Typography variant="caption">{Object.keys(libraryJSON).length} components</Typography>
       <PopoverPrompt 
       onChange={val => !!val && createComponent(val)}
           endIcon={<Icons.LibraryAdd />} label={`Add component`}  > 
@@ -1352,7 +1352,7 @@ const LibraryTree = ({onClose}) => {
       <SearchBox onClose={() => setFilter('')} label="filter" value={filter} onChange={e => setFilter(e.target.value)}/>
     </Flex>
     <Divider sx={{mt: 1}} />
-     {Object.keys(config)
+     {Object.keys(libraryJSON)
       .filter(f => !filter || f.toLowerCase()
           .indexOf(filter.toLowerCase()) > -1 )
       .sort((a,b) => a > b ? 1 : -1)
@@ -1361,11 +1361,11 @@ const LibraryTree = ({onClose}) => {
       return <LibraryNode expand={expand} 
       settingsCategories={settingsCategories} 
       eventNames={eventNames}
-      keys={Object.keys(config)}
+      keys={Object.keys(libraryJSON)}
       eventSources={eventSources}
       styleCategories={styleCategories} 
       settingsCategories={settingsCategories} 
-        expanded={expanded} key={name} name={name} component={config[name]} />
+        expanded={expanded} key={name} name={name} component={libraryJSON[name]} />
      })}
   </Layout>
  );

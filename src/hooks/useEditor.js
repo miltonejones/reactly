@@ -158,8 +158,8 @@ export const useEditor = (apps) => {
     
     // app.setAppData(updated)
     // app.setDirty(true)
-    // await app.commitProg(prog);
-    app.refreshProgs()
+    // await app.uploadApplicationConfig(prog);
+    app.downloadApplicationConfig()
   };
 
   const dropResource = async(appID, ID) => { 

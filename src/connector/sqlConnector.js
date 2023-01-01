@@ -55,6 +55,17 @@ export const relocateComponent = async (ID, pageID) => {
 
 
 
+export const getApplicationByName = async (app, page) => {
+  // send GET request
+  const response = await fetch(API_ENDPOINT + `/name/${app}/${page}`);
+  try {
+    return await response.json(); 
+  } catch (e) {
+    console.log ({e});
+    return false;
+  }
+}
+
 export const getApplications = async () => {
   // send GET request
   const response = await fetch(API_ENDPOINT + `/applications`);
@@ -121,11 +132,11 @@ export const dropObject = async (source, ID) => {
 }
 
 // getPageByPath method
-export const getPageByPath = async (path) => {
+export const getPageByPath = async (app, path) => {
    
 
   // send getPageByPath GET request
-  const response = await fetch(API_ENDPOINT + `/page/${path}`);
+  const response = await fetch(API_ENDPOINT + `/page/${app}/${path}`);
 
   try {
     const res = await response.json(); 

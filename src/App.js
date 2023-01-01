@@ -1,49 +1,22 @@
 import * as React from "react";
 import { BrowserRouter, Routes, Route,useParams, Navigate, useLocation } from "react-router-dom"; 
 import "./App.css";
-import {
-  Popover,
-  Drawer,
-  Grid,
-  Box,
-  Chip,
-  styled,
-  InputAdornment,
-  TextField,
-  Menu,
-  Button,
-  Stack,
-  Divider,
-  Typography,
-  Snackbar,
-  Avatar,
-  Switch
-} from "@mui/material";
-import { Flex, TextBtn, QuickMenu, Spacer, ContentTree, PageTree } from "./components";
-import { AppData } from "./data";
-import { Home, Editor, Renderer, Detail } from "./components/pages";
-import { Launch, Save, Sync, Add } from "@mui/icons-material";
-
-import { useAppHistory } from "./hooks/useAppHistory";
-import { AppStateContext } from "./hooks/AppStateContext";
-import { useLocalStorage } from "./hooks/useLocalStorage";
+import { styled ,Snackbar } from "@mui/material";  
+import { Home, Editor, Renderer, Detail } from "./components/pages"; 
+ 
+import { AppStateContext } from "./hooks/AppStateContext"; 
 import Modal, { useModal } from "./components/Modal/Modal";
-
-import Library from "./components/library";
-import { expandLibrary, config } from "./components/library";
-import { objectReduce } from "./components/library/util";
+   
 import useDynamoStorage from "./hooks/DynamoStorage";
 import LibraryTree from "./components/LibraryTree/LibraryTree";
-import { reduceComponent } from "./components/library/library";
-import { useAppParams } from "./hooks/AppStateContext";
-import { uniqueId } from "./components/library/util";
-import { getApplications } from "./connector/sqlConnector";
-import { setApplication } from "./connector/sqlConnector";
-import { getApplicationInfo } from "./connector/sqlConnector";
-import { getPageByPath } from "./connector/sqlConnector";
-import { getPageByID } from "./connector/sqlConnector";
-  
  
+import { useApplicationState } from "./hooks/useApplicationState";
+import { useApplicationLoader } from "./hooks/useApplicationLoader";
+import { useApplicationUtil } from "./hooks/useApplicationUtil";
+import { useReactlyLibrary } from "./hooks/useReactlyLibrary";
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
+import Redirector from "./components/Redirector/Redirector";
+   
 
 function App() { 
  
@@ -61,7 +34,7 @@ function App() {
         <Route path="/edit/:appname/:pagename" element={<RenderComponent preview component={Editor}  />} />  
         <Route path="/edit/:appname/:pagename/*" element={<RenderComponent preview component={Editor}  />} />  
 
-        <Route path="/info/:appname" element={<RenderComponent component={Detail}  />} />  
+        <Route path="/info/:appname" element={<RenderComponent preview component={Detail}  />} />  
 
 
         <Route path="/apps/:appname" element={<RenderComponent redirect component={Renderer} />} />  
@@ -77,369 +50,56 @@ function App() {
 }
  
 function RenderComponent({ preview, debug, component: Component, ...props}) {
-  const appHistory = useAppHistory();
-  const location = useLocation();
-  const monitoredText = localStorage.getItem('monitored');
-  const monitored = !monitoredText ? [] : JSON.parse(monitoredText);
+ 
+  const modal = useModal();
+  const location = useLocation(); 
 
-  const params =  useParams ();
-  const { appname, pagename } = params;
+  const { appname, pagename } =  useParams ();
+  const { removeProgItem } = useDynamoStorage();
+ 
+  const state = useApplicationState();
+  const util = useApplicationUtil(state);
+  const loader = useApplicationLoader(state);
+  const reactly = useReactlyLibrary(state); 
+
+  // get current context based on location
+  const { homePage, appContext, selectedPage } = loader.getApplicationContext();
+
+  // download library and application components before rendering
+  const initializePage = React.useCallback(async () => {
+
+    state.setBusy(`Loading initial data...`);
+    
+    // download app config
+    await loader.downloadApplicationConfig();
+
+    // download reactly component library
+    await reactly.getReactlyConfig();
+  }, [state]);
+ 
+
+  // runs on location, i.e. route, change
+  React.useEffect(() => { 
+    if (!pagename || !state.applicationData) return;
+    util.shout({ location, pagename }, 
+      'Loading page from server', 'green', 600);
+    loader.downloadCurrentPage(pagename) ; 
+  }, [location, pagename]);
   
-  const [ pageError,  setPageError ] = React.useState(null)
-  const [loud, setLoud] = React.useState(false);
-  const [jsonLog, setMessages] = React.useState([]);
-  const [pageRefState, setPageRefState] = React.useState({}); 
-   
-  const [ pageTabs,  setPageTabs ] = React.useState({});
-  const [showTrace, setShowTrace] = React.useState(false);
-  const [disableLinks, setDisableLinks] = React.useState(false);
-  const [disableRequests, setDisableRequests] = React.useState(false);
-  const [openTraceLog, setOpenTraceLog] = React.useState({});
-  const [dynamoProgs, setDynamoProgs] = React.useState(null)
-  const [supportedEvents, setSupportedEvents] = React.useState([])
-  const [dbItems, setDbItems] = React.useState({});
-  const [libraryJSON, setLibraryJSON] = React.useState({});
-  const [hydratedLibrary, setHydratedLibrary] = React.useState({});
-  const [libraryLoaded, setLibraryLoaded] = React.useState(false);
-  const [busy, setBusy] = React.useState(false);
-  const [applicationClientState, setApplicationClientState] = React.useState({});
 
-  const [monitoredEvents, setMonitoredEvents] = React.useState(monitored)
-  const [applicationData, setApplicationData] = React.useState(null);
-
-  const [pageModalState, setPageModalState] = React.useState({});
-  // const [pageClientState, setPageClientState] = React.useState({});
-  const [pageResourceState, setPageResourceState] = React.useState([]);
-  const [queryState, setQueryState] = React.useState({
-    loaded: false,
-    data: null,
-    appLoaded: false,
-    loadTime: new Date().getTime()
-  });
-  const [dirty, setDirty] = React.useState(false);
-  let [t, setT] = React.useState(0);
+ // runs on page load. downloads initial config
+  React.useEffect(() => { 
+    if (!state.libraryLoaded) {
+      initializePage(); 
+      state.setLibraryLoaded(true);
+    }
+  },  [state])
 
  
-  const addPageTab = (page, parameters) => {
-
-    if (!page) {
-
-      return setPageTabs(tabs => ({
-        ...tabs,
-        [appname]: {
-          path: '/',
-          parameters
-        }
-      }));
-  
-    }
-
-    setPageTabs(tabs => ({
-      ...tabs,
-      [page.PageName]: {
-        path: page.PagePath,
-        parameters
-      }
-    }))
-
-  }
-
-  const monitorEvent = eventName => setMonitoredEvents(e => {
-    const monitored = e.indexOf(eventName) > -1 ? e.filter(f => f !== eventName) : e.concat(eventName);
-    localStorage.setItem('monitored', JSON.stringify(monitored))
-    return monitored;
-  } )
-
-  const shout =  async( j, m = 'message', color, fontWeight) => {
-      
-    setMessages(msgs => msgs.concat({
-          json: j,
-          message: m,
-          color,
-          fontWeight,
-          timestamp: new Date().getTime()
-        }) 
-      ) 
-      if (loud) {
-        console.log("%s\n------------------\n%o", m, j)
-      }
+  if  (!(!!state.applicationData && !!appContext)) { 
+    return <LoadingScreen />
   } 
 
-  const store = useLocalStorage({
-    menu_pos: "bottom",
-    use_menus: "1",
-    page_dyno_items: JSON.stringify(AppData),
-    app_library: '{}',
-    page_resource_state: '[]'
-  });
-
-  const commitProg = async (app) => { 
-    setBusy(`Committing changes...`)
-    // console.log ({app})
-    // const { pages, ...rest} = app;
-    // let total = 0;
-    // app.pages.map(page => {
-    //   total += JSON.stringify(page).length;
-    //   console.log (page, JSON.stringify(page).length)
-    // })
-    // total += JSON.stringify(rest).length;
-    // console.log (rest, JSON.stringify(rest).length)
-    // console.log ({ total })
-
-    await setApplication(app);
-
-    //  await setProgItem(`app-${app.ID}`, app);
-
-    await refreshProgs()
-   }
-
-
-   const udpateLocalProgs = async (updated) => {
-    const converted =  updated.map(app => ({
-      ...app, 
-      pages: app.pages?.map(page => ({
-        ...page,
-        components: page.components?.map(component => ({
-          pageID: page.ID,
-          ...component, 
-          children: Library[component.ComponentType].allowChildren
-        })),
-        scripts: page.scripts?.map(script => ({
-          pageID: page.ID,
-          ...script, 
-        }))
-      }))
-    }));
-    setApplicationData(converted)
-    setDynamoProgs(updated);
-
- 
-   }
-
-   React.useEffect(() => {
-    // runs on location, i.e. route, change
-    console.log('handle route change here', location)
-    if (!pagename) return;
-    shout({location, pagename}, 'Loading page from server', 'green', 600);
-    getCurrentPage(pagename) ;
-   
-  }, [location, pagename]);
- 
-   const refreshProgs = async () => { 
-    setBusy(`Reloading data for "${pagename || 'application'}"...`);
-
-    let items;
-    if (applicationData) {
-      const context = applicationData?.find(f => f.path === appname);
-      const desiredPage = context.pages.find(page => page.PagePath === pagename);
-      if (!desiredPage) return;
-      items = await getApplicationInfo(desiredPage.ID);
-    } else {
-      items = await getApplicationInfo();
-    }
-
-      
-    udpateLocalProgs(items)
-    setBusy(false)
-    return items;
-
-    // get application data
-  }
- 
-  const refreshLib = async () => { 
-    setBusy(`Reloading data...`);
-
-    // get library components
-    const items = await getItems();
-    const converted = Object.keys(items).reduce((out, item) => {
-      const [label, key] = item.split('-');
-      out[key] = JSON.parse(atob(items[item]))
-      return out;
-    }, {});
-    setLibraryJSON(s => converted);
-    setBusy(false)
-    return converted;
-  }
- 
-  const commitComponent = async (key, data) => { 
-    setBusy(`Saving ${key}...`); 
-    console.log ({ data })
-    const x = reduceComponent(data);
-    
-    console.log ({ x });
-
-    await setItem(`reactly-${key}`, JSON.stringify(x))
-    const updated = await refreshLib();
-    updateLib(updated)
-  }
-
-  const processLib = lib => {
-
-    const eventNames = Object.keys(lib).reduce ((out, key) => {
-      const events = lib[key].Events;
-      if (!events) return out;
-      out = out.concat(events.filter(e => !out.find(f => f.name === e.name) ));
-      return out;
-    }, [])
- 
-    setSupportedEvents(eventNames);
-
-  
-
-    setHydratedLibrary(s => lib)  
-  }
-
-  const updateLib = async (conf) => {
-    const lib = expandLibrary(Library, conf); 
-    setLibraryJSON(conf)
-    processLib(lib)  
-    setBusy(false)
-  }
- 
-  React.useEffect(() => { 
-  
-    if (!libraryLoaded) {
-      (async () => {
-        await refreshProgs()
-        setBusy(`Loading initial data...`)
-        const f = await refreshLib()
-        setLibraryJSON(f);
-        const lib = expandLibrary(Library, f);
-        processLib(lib)  
-        setBusy(false)
-      })();
-    }
-    setLibraryLoaded(true)
-  },  [libraryLoaded, store, config])
-
-  const menuPos = store.getItem("menu_pos");
-  const useMenus = store.getItem("use_menus");
-  const appLib = store.getItem("app_library");
-  const PopComponent = useMenus === "1" ? Popover : Drawer;
-  const MenuComponent = useMenus === '1' ? Menu : Drawer;
-  const modal = useModal();
-  const { setItem, getItems,  removeProgItem, getProgItems, setProgItem } = useDynamoStorage()
-  
- 
-  const [pageClientState, setPageClientState] = React.useState({});
-
-
-  const getPageClientStateAsync = fn => {
-    setPageClientState( state => fn(state) );
-  }
-
-  const getApplicationClientStateAsync = fn => {
-    setApplicationClientState( state => fn(state) );
-  }
-
-  const createBreadcrumbs = React.useCallback((pages, node, items = []) => {
-    if (!pages) return items.concat('huh');
-    const currentPage  = pages.find(f => f.ID === node.pageID);
-
-    if (currentPage) {  
-      return createBreadcrumbs(pages, currentPage).concat(node.PageName);
-    }
-
-    return items.concat(node.PageName); //.concat(node.PageName)
-  } , [  ])
-   
-
-  //  return <pre>{JSON.stringify(applicationData,0,2)}</pre>
- 
-
-  const appContext = applicationData?.find(f => f.path === appname);
-  const homePageID =  appContext?.HomePage;
-  const defaultPage = !homePageID
-   ? appContext?.pages?.[0]
-   : appContext?.pages?.find(f => f.ID === homePageID) ;
-
-  const targetPage = !!pagename ? appContext?.pages?.find(f => f.PagePath === pagename) : defaultPage;
-   
-  const selectedPage = (preview && (!pagename || (!!queryState && !!queryState.page)))  ? queryState.page : targetPage;
-
-  const  getLoadWaitTime = () => new Promise(yes => {
-    setQueryState(state => {
-      const{ loadTime } = state;
-      yes(new Date().getTime() - loadTime < 5000)
-      return state;
-    })
-  })
-
-  const getCurrentPage = React.useCallback(async (requestedPage) => { 
-    const tooQuick = await getLoadWaitTime();
-    if (tooQuick) {
-      return console.log ({ tooQuick });
-    }
-    shout ({ tooQuick }, 'Checking cadence')
-    const lookupPage = requestedPage || pagename;
-    if (!lookupPage || (!requestedPage && !targetPage?.skeleton)) {
-      return shout({lookupPage, targetPage}, 'Not reloading this page', 'purple')
-    }
-    setBusy(`Reloading page "${lookupPage}"...`);
-    const desiredPage = appContext.pages.find(page => page.PagePath === lookupPage);
-    if (!desiredPage) return;
- 
-    const currentPage = await getPageByID(desiredPage.ID);
-
-    shout(currentPage, 'Got server page ' + currentPage?.PageName);
- 
-
-    const stateProps = !currentPage?.state
-    ? null
-    : objectReduce(currentPage.state); 
-
-    const update = applicationData.map(app => ({
-
-      ...app,
-
-      pages: app.pages.map(page => page.ID === currentPage.ID 
-        ? currentPage 
-        : page)
-        .map(page => ({
-          ...page,
-          components: page.components?.map(component => ({
-            ...component,
-            children: Library[component.ComponentType].allowChildren
-          }))
-        }))
-
-
-    }));
- 
-    // setQueryState(qs => ({...qs,  pageLoaded: false}))  ;
-    setPageClientState({})
-    setApplicationData(update)
-    setBusy(false)
-    
-    // alert (JSON.stringify(update));
-   }, [pagename, appContext, targetPage])
-  
-  if (!applicationData) {
-    return <>Loading application data</>
-   }
-
-
-  const stateProps = !selectedPage?.state
-    ? {}
-    : objectReduce(selectedPage.state); 
-     
-
-  const homePage = appContext?.HomePage;
-
-  const setAppData = data => setApplicationData(s => data); 
-  
-  const getPageResourceState = () => pageResourceState;
- 
- 
-
-
-  if (!dynamoProgs) {
- 
-    return <Flex sx={{width: '100vw', height: '100vh', justifyContent: 'center'}}>
-     <Avatar className="App-logo" src="/logo192.png" alt="loader" >A</Avatar>
-    Loading application info from database...
-     </Flex>
-  }
  
   if (!!homePage && !pagename && !preview && appContext) {
     // setQueryState(s => ({...s, pageLoaded: false}));
@@ -455,83 +115,46 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   return (
     <AppStateContext.Provider
       value={{
-        applicationClientState, 
-        setApplicationClientState,
-        Library: hydratedLibrary,
-        setHydratedLibrary,
-        config: libraryJSON,
-        updateLib,
-        commitComponent,
-        appData: applicationData,
-        setAppData,
-        queryState,
-        setQueryState,
-        supportedEvents,
-        refreshLib,
-        commitProg,
-        refreshProgs,
-        appBusy: busy,
+        ...state,
+        ...util, 
+        ...modal,
+        ...reactly,
+        ...loader,
+
+        Library: state.hydratedLibrary, 
+        appBusy: state.busy,
+        appData: state.applicationData,
+  
+
+        // app methods
+        setAppData:  state.setApplicationData,
+        removeProgItem,
+
+        // should be state variables
+        // maybe one? as an object?
         appContext,
         selectedPage,
+
         preview,
-        showTrace, 
-        setShowTrace,
+
+        // remove
         pagename,
-        // "persistent" state values 
-        setBusy,
-        getCurrentPage,
-        setPageError, 
-        pageError ,
-        shout,
-        openTraceLog, 
-        setOpenTraceLog,
-        jsonLog, 
-        setMessages,
-        loud, 
-        setLoud,
-        pageRefState, 
-        setPageRefState,
+
+        // true when navigating with the ConsoleDrawer enabled
         debugMode: debug,
-        pageClientState, 
-        setPageClientState,
-        getPageClientStateAsync,
-        getApplicationClientStateAsync,
-        removeProgItem,
-        monitorEvent,
-        
-        pageTabs,  
-        addPageTab,
-        
-        monitoredEvents, 
-        setMonitoredEvents,
-
-        pageResourceState, 
-        getPageResourceState,
-        setPageResourceState, 
-
-        disableRequests, 
-        setDisableRequests,
-        
-        pageModalState, 
-        setPageModalState,  
-        ...appHistory,  
-        ...modal,
-        menuPos,
-        MenuComponent,
-        PopComponent,
-        dirty, 
-        setDirty,
-        createBreadcrumbs
+          
       }}
     > 
-  
- {/* [{queryState.pageLoaded?.toString()}][{pagename}] */}
-      <Component debug={debug} {...props} appData={applicationData} applications={applicationData} />
+      <Redirector />
  
+      <Component debug={debug} {...props} appData={state.applicationData} applications={state.applicationData} />
+ 
+      {/* global modal component  */}
       <Modal {...modal.modalProps}/>
-      <Snackbar message={busy.toString()} open={busy} anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} >
 
-      </Snackbar>
+      {/* app notifications  */}
+      <Snackbar message={state.busy.toString()} open={state.busy} 
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} />
     </AppStateContext.Provider>
   );
 }

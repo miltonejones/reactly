@@ -12,7 +12,7 @@ const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 const ApplicationTree = ({ application, queryState, loadPage, children, ...props }) => {
 
   const { handleComponentEvent } = usePageContext(); 
-  const { applicationClientState, setQueryState, setApplicationClientState } = React.useContext(AppStateContext); 
+  const { applicationClientState,   setQueryState, setApplicationClientState } = React.useContext(AppStateContext); 
  
   const applicationProps = !application?.state
     ? null
@@ -37,14 +37,21 @@ const ApplicationTree = ({ application, queryState, loadPage, children, ...props
     setQueryState(qs =>  {
       if(qs.appLoaded) return qs 
       // alert(JSON.stringify(application?.events,0,2)) 
+      if (application?.events) {
 
-      !!application?.events && handleComponentEvent(null, {
-        name: 'onApplicationLoad',
-        component: application,
-        options: {
-          ID: application.ID 
-        }
-      })
+        (async () => {
+          await handleComponentEvent(null, {
+            name: 'onApplicationLoad',
+            component: application,
+            options: {
+              ID: application.ID 
+            }
+          }); 
+        })();
+        
+      }
+ 
+
       
       return {...qs, appLoaded: true, appContext: application}
     })  

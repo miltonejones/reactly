@@ -246,8 +246,7 @@ const Editor = ({ applications: apps = {} }) => {
     disableLinks: false, 
     showSettings: false,  
     message: 'Unknown action', 
-    showTrace: false, 
-    pageError: null,  
+    showTrace: false,  
   });
 
   const [ 
@@ -276,16 +275,14 @@ const Editor = ({ applications: apps = {} }) => {
     Prompt,
     pageClientState, 
     setPageClientState,
-    pageResourceState, 
-    getPageResourceState,
+    pageResourceState,  
     setPageResourceState,
     applicationClientState, 
     pageModalState,
     Library,
-    commitProg,
+    uploadApplicationConfig,
     dirty,
-    setDirty,
-    setPageError,
+    setDirty, 
     setShowTrace,
     showTrace,
     appContext,
@@ -452,8 +449,7 @@ const Editor = ({ applications: apps = {} }) => {
         ...s,
         page: pg,
         pageLoaded: false,
-        appLoaded: false,
-        pageError: false
+        appLoaded: false, 
       }))
     });
   }
@@ -620,8 +616,7 @@ const Editor = ({ applications: apps = {} }) => {
     setPageClientState,
     setEditorState,
     editorState,
-    pageResourceState, 
-    getPageResourceState,
+    pageResourceState,  
     setPageResourceState, 
   };
 
@@ -1015,7 +1010,7 @@ const Editor = ({ applications: apps = {} }) => {
                 sx={{ cursor: !copied ? "pointer !important" : "progress" }}
                 onClick={() => {
                   // copy(JSON.stringify(applications, 0, 2));
-                  commitProg(appData);
+                  uploadApplicationConfig(appData);
                   setDirty(false);
                 }}
               >

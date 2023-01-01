@@ -18,8 +18,7 @@ const Renderer = ({ applications: apps = {} }) => {
   const { appname, pagename } =params;
   const { 
     debugMode,
-  pageResourceState, 
-  getPageResourceState,
+  pageResourceState,  
   setPageResourceState,
   appContext,
   selectedPage,
@@ -27,8 +26,7 @@ const Renderer = ({ applications: apps = {} }) => {
   setShowTrace,
   setQueryState ,
   pageClientState,  
-  setPageClientState,
-  getCurrentPage
+  setPageClientState, 
 } = React.useContext(AppStateContext);
   const [loaded, setLoaded] = React.useState(false)
   const applications = typeof apps === 'object'
@@ -63,8 +61,7 @@ const Renderer = ({ applications: apps = {} }) => {
     pageClientState, 
     setPageClientState,
     
-    pageResourceState, 
-    getPageResourceState,
+    pageResourceState,  
     setPageResourceState,
  
   }

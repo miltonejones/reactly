@@ -127,8 +127,7 @@ const ComponentTree = ({
   setPageClientState,
   setEditorState,
   editorState, 
-  pageResourceState, 
-  getPageResourceState,
+  pageResourceState,  
   setPageResourceState,
   onEventDelete,
   observer
@@ -148,12 +147,9 @@ const ComponentTree = ({
     setPageRefState, 
     openTraceLog, 
     setMessages, 
-    setOpenTraceLog,
-    setPageError, 
-    pageError ,
+    setOpenTraceLog,  
     setDisableLinks,
-    disableLinks,
-    getCurrentPage,
+    disableLinks, 
     selectedPage: thisPage,
     appBusy,
     setBusy
@@ -263,8 +259,7 @@ const ComponentTree = ({
 
           // "persistent" state values
           
-          handleClick,
-          setPageError,
+          handleClick, 
           loud,
           shout,
 
@@ -279,8 +274,7 @@ const ComponentTree = ({
           pageRefState,
           setPageRefState,
           pageClientState, 
-          setPageClientState,
-          getPageResourceState,
+          setPageClientState, 
           pageResourceState, 
           setPageResourceState,
           setQueryState,

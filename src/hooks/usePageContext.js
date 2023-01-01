@@ -34,8 +34,7 @@ export const eventTypes = [
 export const usePageContext = () => {
   const { handleClick, loud } = React.useContext(PageStateContext);
 
-  const {
-    setPageError,
+  const { 
     pageResourceState,
     setPageResourceState,
     getPageResourceState,
@@ -350,8 +349,7 @@ export const usePageContext = () => {
     const triggers = (events || component?.events).filter(
       (e) => e.event === name
     );
-
-    setPageError && setPageError(null);
+ 
 
     // const triggerLog = {}
 
@@ -384,7 +382,9 @@ export const usePageContext = () => {
       speakable &&
         shout(
           { trigger, options },
-          `Trigger ${index}. ${trigger.action.type}.${name} on ${trigger.action.target}`
+          `Trigger ${index}. ${trigger.action.type}.${name} on ${trigger.action.target}`,
+          'firebrick',
+          800
         );
  
 

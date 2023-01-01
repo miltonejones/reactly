@@ -15,7 +15,7 @@ export const usePageResourceState = (settings) => {
   const componentProps = getSettings(settings);
   if (componentProps.bindings)  {
     bindingObject = JSON.parse(componentProps.bindings); 
-    console.log(bindingObject, 'usePageResourceState')
+    // console.log(bindingObject, 'usePageResourceState')
     columnMap = bindingObject.columnMap || Object.keys(bindingObject.bindings) 
     typeMap = bindingObject.typeMap || {}
     const id = bindingObject.resourceID;

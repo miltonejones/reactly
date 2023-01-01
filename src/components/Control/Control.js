@@ -11,6 +11,7 @@ import {
   IconButton, 
   Chip,
   InputAdornment,  
+  Popover,
   styled } from "@mui/material";
   import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
@@ -110,8 +111,7 @@ export const PopoverInput = ( {
     children ,
     helperText,
     saveIcon = Save
-  } ) => { 
-  const { PopComponent, menuPos } = React.useContext(AppStateContext);
+  } ) => {  
 
   const open = Boolean(anchorEl);
  
@@ -120,11 +120,10 @@ export const PopoverInput = ( {
     onChange(false);
   };
 
-  return <PopComponent 
+  return <Popover 
       open={open}
       anchorEl={anchorEl}
-      onClose={handlePopoverClose}
-      anchor={menuPos}
+      onClose={handlePopoverClose} 
       anchorOrigin={{
         vertical: 'bottom',
         horizontal: 'left',
@@ -140,7 +139,7 @@ export const PopoverInput = ( {
           onChange && onChange(value)
         }}
       />}
-    </PopComponent>
+    </Popover>
 }
 
 

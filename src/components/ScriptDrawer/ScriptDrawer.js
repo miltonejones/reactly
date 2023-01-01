@@ -318,8 +318,7 @@ const ScriptDrawer = ({
     "getRef",
     "getRefByName",
     "openLink",
-    "openPath",
-    "getPageResourceState",
+    "openPath", 
     "pageResourceState",
     "Alert",
     "getResourceByName",
@@ -329,7 +328,7 @@ const ScriptDrawer = ({
     "moment",
   ];
 
-  const folderList = scripts.filter((f) => !f.code);
+  const folderList = [];// scripts.filter((f) => !f.code);
   const filtered = scriptList
     .filter((f) => !!f.code)
     .filter(
@@ -338,7 +337,7 @@ const ScriptDrawer = ({
         f.name.toLowerCase().indexOf(filter.toLowerCase()) > -1
     );
 
-  const toptLevel = scripts.filter((f) => !f.code && !f.parentID);
+  const toptLevel = scripts?.filter((f) => !f.code && !f.parentID);
 
   return (
     <Drawer open={open} anchor="bottom">

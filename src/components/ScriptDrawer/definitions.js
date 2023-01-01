@@ -26,12 +26,7 @@ export const definitions = {
   },
 
   api: { 
-
-    // getPageResourceState,
-    // pageResourceState,
-    // getRef, 
-    // getRefByName, 
-    // getResourceByName ,
+ 
 
     Confirm:  {
       description: 'Opens a modal prompt for user confirmation',

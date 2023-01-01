@@ -11,10 +11,11 @@ export const usePageLoader = () =>{
 
   const { 
     setQueryState, 
+    queryState,
     selectedPage,
     setPageClientState,
     setBusy,
-    shout
+    shout, 
   } = React.useContext(AppStateContext);
 
   const location = useLocation()
@@ -25,7 +26,7 @@ export const usePageLoader = () =>{
    * returns a resolved Promise when a full page loads
    */
   const handlePageLoad = React.useCallback(() =>  new Promise(resolve => {
-
+    shout(selectedPage, 'staring page load')
     // set pageClientState before attempting any events
     new Promise (report => {
 
@@ -35,6 +36,7 @@ export const usePageLoader = () =>{
       }
       setBusy && setBusy('loading page...');
       setPageState('Setting page state...');
+      shout(selectedPage, 'Setting page state...')
 
 
       const stateProps = !selectedPage?.state
@@ -65,7 +67,9 @@ export const usePageLoader = () =>{
       }
       setBusy && setBusy('page loaded...')
       setPageState('Firing page events...');
+      shout(selectedPage, 'Firing page events...')
        
+ 
 
       const solvable = !!selectedPage?.events
       shout({ selectedPage, solvable  }, 'loading '+(selectedPage.skeleton ? "skeleton" : "full")+' page events', 
@@ -97,17 +101,21 @@ export const usePageLoader = () =>{
     pagename, 
     appname
   ]);
-
+ 
   // sets pageLoaded to FALSE on navigation
   React.useEffect(() => {  
-    shout (location, 'Handling route change');
+
+    shout ({
+      ...location,
+      pageLoaded: queryState.pageLoaded
+    }, 'Handling route change');
 
     // clear page state for the next page
-    setPageClientState({});
+   // setPageClientState({});
     
     // set page loaded to false to force state to reload
-    setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
-  }, [location]);
+    // setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
+  }, [location, queryState]);
 
 
 

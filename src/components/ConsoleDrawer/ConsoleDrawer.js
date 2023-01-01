@@ -75,6 +75,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
     setOpenTraceLog,  
     setMessages,
     loud,
+    queryState,
     setLoud,
     supportedEvents,
     monitorEvent,
@@ -100,7 +101,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
     pageClientState,
     applicationClientState,
     getParametersInScope(),
-    pageResourceState
+    queryState
   ]
 
   const triggerTypes = ['methodCall','setState','modalOpen','dataReset', 'dataRefresh', 'onApplicationLoad',
@@ -178,7 +179,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
         {!!jsonLog?.length && <Grid xs={5} item {...gridProps}>
           <SectionHead>Log</SectionHead>
           <Stack sx={{height: 560, overflow: 'auto'}}>
-            {jsonLog?.sort((a,b) => a.timestamp > b.timestamp ? 1 : -1).map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
+            {jsonLog?.map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
           </Stack>
         </Grid>}
 
@@ -190,7 +191,7 @@ const ConsoleDrawer = ({ handleSwitch }) => {
             <TabButton label="Page" />
             <TabButton label="Application" />
             <TabButton label="Route parameters" />
-            <TabButton label="Resource state" />
+            <TabButton label="Query state" />
           </Tabs>
          </Flex>
           <Box sx={{height: 500, p: 2, overflow: 'auto'}}>

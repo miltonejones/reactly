@@ -21,8 +21,7 @@ export const useRunScript = () => {
     Alert,
     Confirm,
     shout,
-    setPageClientState,
-    getPageResourceState,
+    setPageClientState, 
     pageResourceState,
     appContext,
     selectedPage,
@@ -191,8 +190,7 @@ const handleScriptRequest =  (block, opts, title) => {
         state: applicationClientState
       },
 
-      api: { 
-        getPageResourceState,
+      api: {  
         pageResourceState,
         Confirm,
 

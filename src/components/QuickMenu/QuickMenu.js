@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Divider, Typography, Stack, MenuItem } from '@mui/material';
+import { styled, Box, Divider, Typography, Stack, Menu, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../hooks/AppStateContext';
 import { AU, TinyButton, TextInput, Tiny, Flex, OptionSwitch, Text } from '..';
 import { ExpandMore, Delete } from "@mui/icons-material";
@@ -46,8 +46,7 @@ const handleClick = (event) => {
 const handleClose = (value) => {  
   setAnchorEl(null);
   onChange && onChange(value)
-}; 
-const { MenuComponent, menuPos } = React.useContext(AppStateContext);
+};  
 
 const equals = (source, dest) => {
   if (typeof source === 'object') {
@@ -76,10 +75,9 @@ return <>
     {label || 'Choose'}</AU> 
 {!!caret && <TinyButton onClick={handleClick} icon={ExpandMore} deg={open ? 180 : 0} />}
 
-<MenuComponent  
+<Menu  
 dense
-  anchorEl={anchorEl || input}
-  anchor={menuPos}
+  anchorEl={anchorEl || input} 
   open={open}
   onClose={() => handleClose()} 
 > 
@@ -116,7 +114,7 @@ dense
 </MenuItem>}
 
 
-</MenuComponent>
+</Menu>
 </>
 
 
