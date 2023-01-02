@@ -8,8 +8,8 @@ import { setApplication } from '../connector/sqlConnector';
 import { clonePage } from '../util';
 import { AppStateContext } from './AppStateContext';
 
-export const useEditor = (apps) => {
-  // const [applications, setApplications] = React.useState(apps);
+export const useEditor = () => {
+  
   const app = React.useContext(AppStateContext);
   const { Prompt, Alert } = app;
   const { Library, appData } = React.useContext(AppStateContext)

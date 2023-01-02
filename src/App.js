@@ -1,21 +1,21 @@
 import * as React from "react";
-import { BrowserRouter, Routes, Route,useParams, Navigate, useLocation } from "react-router-dom"; 
+import { BrowserRouter, Routes, Route,useParams,  useLocation } from "react-router-dom"; 
 import "./App.css";
-import { styled ,Snackbar } from "@mui/material";  
-import { Home, Editor, Renderer, Detail } from "./components/pages"; 
+
+import {  Snackbar } from "@mui/material";  
+
+import { Home, Editor, Renderer, Detail } from "./components/pages";  
+import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
+import Redirector from "./components/Redirector/Redirector";
  
 import { AppStateContext } from "./hooks/AppStateContext"; 
 import Modal, { useModal } from "./components/Modal/Modal";
    
-import useDynamoStorage from "./hooks/DynamoStorage";
-import LibraryTree from "./components/LibraryTree/LibraryTree";
- 
+import useDynamoStorage from "./hooks/DynamoStorage";  
 import { useApplicationState } from "./hooks/useApplicationState";
 import { useApplicationLoader } from "./hooks/useApplicationLoader";
 import { useApplicationUtil } from "./hooks/useApplicationUtil";
 import { useReactlyLibrary } from "./hooks/useReactlyLibrary";
-import LoadingScreen from "./components/LoadingScreen/LoadingScreen";
-import Redirector from "./components/Redirector/Redirector";
    
 
 function App() { 
@@ -26,9 +26,7 @@ function App() {
       <Routes>
 
 
-        <Route path="/" element={<RenderComponent component={Home} />} />  
-        <Route path="/library" element={<RenderComponent component={LibraryTree}  />} />  
-        <Route path="/library/:appname" element={<RenderComponent component={LibraryTree}  />} />  
+        <Route path="/" element={<RenderComponent component={Home} />} />   
         
         <Route path="/edit/:appname" element={<RenderComponent preview component={Editor}  />} />  
         <Route path="/edit/:appname/:pagename" element={<RenderComponent preview component={Editor}  />} />  
@@ -54,34 +52,39 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   const modal = useModal();
   const location = useLocation(); 
 
-  const { appname, pagename } =  useParams ();
+  const { pagename } =  useParams ();
   const { removeProgItem } = useDynamoStorage();
  
+  // manages state vars for the app context
   const state = useApplicationState();
-  const util = useApplicationUtil(state);
+  
+  // app utils
+  const utils = useApplicationUtil(state);
+  
+  // loads the application and any pages
   const loader = useApplicationLoader(state);
+
+  // manages the reactly component library
   const reactly = useReactlyLibrary(state); 
 
   // get current context based on location
-  const { homePage, appContext, selectedPage } = loader.getApplicationContext();
+  const {  appContext, selectedPage } = loader.getApplicationContext();
 
   // download library and application components before rendering
   const initializePage = React.useCallback(async () => {
-
-    state.setBusy(`Loading initial data...`);
     
     // download app config
     await loader.downloadApplicationConfig();
 
     // download reactly component library
     await reactly.getReactlyConfig();
-  }, [state]);
+  }, [loader, reactly]);
  
 
   // runs on location, i.e. route, change
   React.useEffect(() => { 
     if (!pagename || !state.applicationData) return;
-    util.shout({ location, pagename }, 
+    utils.shout({ location, pagename }, 
       'Loading page from server', 'green', 600);
     loader.downloadCurrentPage(pagename) ; 
   }, [location, pagename]);
@@ -96,27 +99,16 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   },  [state])
 
  
-  if  (!(!!state.applicationData && !!appContext)) { 
+  if  (!(Boolean(state.applicationData) && Boolean(appContext))) { 
     return <LoadingScreen />
-  } 
-
- 
-  if (!!homePage && !pagename && !preview && appContext) {
-    // setQueryState(s => ({...s, pageLoaded: false}));
-    const path = appContext.pages.find(f => f.ID === homePage).PagePath;
-    if (path) {
-      const rootPath = debug ? 'debug' : 'apps';
-      const redirectPath = `/${rootPath}/${appname}/${path}`;
-      return <Navigate to={redirectPath} />
-    }
-  }
+  }  
 
 
   return (
     <AppStateContext.Provider
       value={{
         ...state,
-        ...util, 
+        ...utils, 
         ...modal,
         ...reactly,
         ...loader,
@@ -145,14 +137,17 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
           
       }}
     > 
+
+      {/* redirect to app home page if no page specified  */}
       <Redirector />
+ 
  
       <Component debug={debug} {...props} appData={state.applicationData} applications={state.applicationData} />
  
-      {/* global modal component  */}
+ 
       <Modal {...modal.modalProps}/>
 
-      {/* app notifications  */}
+      {/* app notifications */}
       <Snackbar message={state.busy.toString()} open={state.busy} 
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} />
     </AppStateContext.Provider>

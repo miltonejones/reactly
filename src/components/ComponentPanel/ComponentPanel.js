@@ -13,6 +13,7 @@ import { ApplicationForm } from '..';
 import { useTextTransform } from '../../hooks/useTextTransform';
 import { uniqueId } from '../library/util';
 import { childrenAllowed } from '../library';
+import { useReactly } from '../../hooks/useReactly';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -26,26 +27,14 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
 }));
 
 const ComponentPanel = ({ 
-    component, 
-    onSettingsChange,
-    onStyleChange ,
-    onPropChange,
-    onThemeChange,
-    onEventChange,
-    setEditorState,
-    editorState, 
-    onMove,
+    // component,  
+
     onCollapse,
-    onEventDelete,
     collapsed,
-    themes,
-    onComponentImport,
-    connections,
-    resources,
-    application,
-    Confirm,
-    onPageMove,
-    onSettingsPaste
+ 
+    setEditorState,
+    editorState,  
+
  }) => {
  
   const [ 
@@ -60,6 +49,7 @@ const ComponentPanel = ({
 
 
   const { 
+    appContext,
     queryState,
     setQueryState, 
     setMessages, 
@@ -67,12 +57,18 @@ const ComponentPanel = ({
     setShowTrace,
     showTrace,        
     selectedPage = {},
-    setDisableRequests,disableRequests,
-    jsonLog, appData  } = React.useContext(AppStateContext);
+    setDisableRequests,
+    disableRequests,
+    jsonLog, 
+    appData , 
+    Confirm 
+  } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
-  const [value, setValue] = React.useState(0);
+  const [ value, setValue ] = React.useState(0);
+  const { selectedComponent: component } = queryState;
+  const { themes, connections, resources } = appContext;
 
-
+  const reactly = useReactly();
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
   const Panel = panels[value];
@@ -85,7 +81,7 @@ const ComponentPanel = ({
   //   return <>TBD</>
   // }
 
-  const componentList = selectedPage?.components || application.components || [];
+  const componentList = selectedPage?.components || appContext.components || [];
 
   const handleMove = (name) => {
     if (!name) return;
@@ -93,31 +89,36 @@ const ComponentPanel = ({
     const target = componentList.find(f => f.ComponentName === title.trim());
  
     if (target) {
-      return onMove && onMove(component.ID, target.ID) 
+      return reactly.onMove(component.ID, target.ID) 
     } 
-    return onMove && onMove(component.ID, null) 
+    return reactly.onMove(component.ID, null) 
   };
 
   const others = componentList.filter(f => !!Library[f.ComponentType] &&  Library[f.ComponentType].allowChildren)
 
-  const changes = [onSettingsChange, onStyleChange, onEventChange];
+  const changes = [
+    reactly.onSettingsChange, 
+    reactly.onStyleChange, 
+    reactly.onEventChange
+  ];
+
   const onChange = !component && !!selectedPage 
-    ? onPropChange
+    ? reactly.onPropChange
     : changes[value];
 
   const selectedComponent = Library[component?.ComponentType];
 
   const panelProps = {
-    onEventDelete:onEventDelete, 
+    onEventDelete: reactly.onEventDelete, 
     component:component,  
-    selectedPage:selectedPage || application, 
+    selectedPage:selectedPage || appContext, 
     onChange:onChange, 
-    onThemeChange:onThemeChange,
+    onThemeChange:reactly.onThemeChange,
     connections:connections,
     resources:resources,
     themes:themes,
     showSettings,
-    application
+    application: appContext
   }
   // setQueryState(s => ({...s, selectedComponent:on ? null :  component}))
 
@@ -133,7 +134,7 @@ const ComponentPanel = ({
   const showApp = !collapsed && !(!!component?.ComponentName || selectedPage?.PageName);
  
 
-  const importable = application.pages
+  const importable = appContext.pages
   .filter(f => f.ID !== selectedPage?.ID)
   .reduce((out, pg) => {
     pg.components?.filter(f => !f.componentID).map(c => {
@@ -153,7 +154,7 @@ const ComponentPanel = ({
       <Text small active error>Process does not clone event mappings.</Text>
     </Stack>)
     if (!ok) return; 
-    onComponentImport(sourceID, destID, tag.ID);
+    reactly.onComponentImport(sourceID, destID, tag.ID);
   }
 
   const pasteTypes = ['settings', 'styles', 'events'];
@@ -170,7 +171,7 @@ const ComponentPanel = ({
 
       {showApp && <>
       
-        <Chip label={application.Name} />
+        <Chip label={appContext.Name} />
 
       <Spacer />
 
@@ -236,7 +237,7 @@ const ComponentPanel = ({
         label={<>Paste <b>{queryState.clipboard.type}: {queryState.clipboard.name}</b> {pasteTypes[value]}</>}
         onClick={() => {
           const content = queryState.clipboard[pasteTypes[value]]
-          onSettingsPaste(component.ID, pasteTypes[value], content); 
+          reactly.onSettingsPaste(component.ID, pasteTypes[value], content); 
         }}
         deleteIcon={ <Close />} onDelete={() => { 
           setQueryState(s => ({
@@ -267,28 +268,9 @@ const ComponentPanel = ({
            caret label="Move" icon={Input}/>
         </Flex>}
         , 
+ 
 
-        <Flex onClick={() => setDisableRequests(!disableRequests)} sx={sx}>
-          <Switch checked={disableRequests} /> 
-          <Text small>disable Requests</Text> 
-        </Flex> 
-
-        <Flex onClick={() => setDisableLinks(!disableLinks)} sx={sx}>
-          <Switch checked={disableLinks} /> 
-          <Text small>Disable links</Text> 
-        </Flex> 
-
-        <Flex onClick={() => setShowTrace(!showTrace)} sx={sx}>
-          <Switch checked={showTrace} /> 
-          <Text small>Show stack trace</Text>
-        </Flex>
-        
-        <Flex onClick={() => setShowTrace(!showTrace)} sx={sx}>
-           <TextBtn onClick={() =>{
-            setMessages([]);
-            setOpenTraceLog({})
-          }}>clear stack trace ({jsonLog?.length})</TextBtn>
-        </Flex>
+       
         
         </Box>
     </Collapse>
@@ -296,12 +278,12 @@ const ComponentPanel = ({
     {(!!component?.ComponentName || value === 3) && <Panel  {...panelProps} />}
 
     {!component?.ComponentName && !!selectedPage?.PageName &&  value === 0 && <PageSettings 
-      onComponentImport={onComponentImport}
+      onComponentImport={reactly.onComponentImport}
       Confirm={Confirm}
       importable={importable}
       promptImport={promptImport}
-      onPageMove={onPageMove}
-      application={application} themes={themes} 
+      onPageMove={reactly.onPageMove}
+      application={appContext} themes={themes} 
       page={selectedPage} onChange={onChange} />}
 
 

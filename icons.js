@@ -1,28 +1,48 @@
 const fs = require('fs');
-const data = require ('./data.js')
+// const data = require ('./data.js')
 
 
-function camelize(str) {
-  return  camelize2(str
-      .replace('.min.js', '')
-      .replace(/\./g, '')
-      )
-      .replace(/-/g, '')
-}
+// function camelize(str) {
+//   return  camelize2(str
+//       .replace('.min.js', '')
+//       .replace(/\./g, '')
+//       )
+//       .replace(/-/g, '')
+// }
 
-function camelize2(str) {
-  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
-    return index === 0 ? word.toLowerCase() : word.toUpperCase();
-  }).replace(/\s+/g, '');
-}
+// function camelize2(str) {
+//   return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(word, index) {
+//     return index === 0 ? word.toLowerCase() : word.toUpperCase();
+//   }).replace(/\s+/g, '');
+// }
 
 
- const filenames = fs.readdirSync('node_modules/react-syntax-highlighter/dist/esm/styles/prism');
-const all = filenames.filter(d => d.indexOf('min.js') > 0).map(camelize);//.join(', ');
-const line = `import {${all}} from 'react-syntax-highlighter/dist/esm/styles/prism'`
-const lihe = `const stylenames = {${all}}`
+ const hooks = fs.readdirSync('src/hooks');
+// const all = filenames.filter(d => d.indexOf('min.js') > 0).map(camelize);//.join(', ');
+// const line = `import {${all}} from 'react-syntax-highlighter/dist/esm/styles/prism'`
+// const lihe = `const stylenames = {${all}}`im
+
+const barrel = hooks.reduce((out, hook) => {
+  if (hook.indexOf('use') < 0) return out;
+  const name = hook.replace('.js', '');
+  out.imports.push(`import ${name} from "./${name}";`);
+  out.exports.push(name);
+  return out;
+}, {
+  imports: [],
+  exports: []
+});
+
+const indexjs = [
+  barrel.imports.join('\n'),
+  `export {\n  ${barrel.exports.join(', \n  ')}\n}`
+].join('\n\n\n')
   
-console.log (all)
+console.log (indexjs);
+
+fs.writeFileSync('src/hooks/index.js', indexjs)
+
+
 /**
 connection endpoints
 ------------------------------------------------------------------

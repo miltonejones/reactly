@@ -20,5 +20,6 @@ const Redirector = () => {
 
   return <i />
 }
+
 Redirector.defaultProps = {};
 export default Redirector;

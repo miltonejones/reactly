@@ -83,23 +83,7 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, too
     minWidth: `var(--${side}${state}-width)`,  //  wide ? "calc(100vw - var(--workspace-width))" : "var(--sidebar-width)",
     maxWidth: `var(--${side}${state}-width)`  // wide ? "calc(100vw - var(--workspace-width))" : "var(--sidebar-width)",
   };
-  // if (thin) {
-  //   Object.assign(args, {
-  //     minWidth: 60,
-  //     maxWidth: 60,
-  //   });
-  // } else if (left && right && wide) {
-  //   Object.assign(args, {
-  //     minWidth: "calc(100vw - 180px)",
-  //     maxWidth: "calc(100vw - 180px)",
-  //   });
-  // } else if ((left || right) && wide) {
-  //   Object.assign(args, {
-  //     minWidth: "calc(100vw - 510px)",
-  //     maxWidth: "calc(100vw - 510px)",
-  //   });
-  // }
-
+ 
   return {
     // outline: wide ? "" : "dotted 1px green",
     height: short ? 'fit-content' : "calc(100vh - 64px)",
@@ -205,8 +189,11 @@ const Editor = ({ applications: apps = {} }) => {
     setPage, 
     duplicatePage,
     importComponent,
-    dropPage,setTheme, dropTheme, setPageEvent,
-    setResourceEvent, dropResourceEvent,
+    dropPage,setTheme, 
+    dropTheme, 
+    setPageEvent,
+    setResourceEvent, 
+    dropResourceEvent,
     setPageParent,
     setParameter, 
     dropParameter,
@@ -286,8 +273,7 @@ const Editor = ({ applications: apps = {} }) => {
     setShowTrace,
     showTrace,
     appContext,
-    pageTabs,  
-    addPageTab,
+    pageTabs,   
     
 
   } = React.useContext(AppStateContext);
@@ -312,10 +298,9 @@ const Editor = ({ applications: apps = {} }) => {
     return <>error</>;
   }
   const appData = appContext;// applications.find((f) => f.path === appname);
+ 
 
-  const queriedPage = appContext.pages?.find(p => p.PagePath === pagename);
-
-  const componentParent = queriedPage || selectedPage || appData;
+  const componentParent = selectedPage || appData;
 
   const path = ["apps", appData.path].concat(
     !selectedPage?.PagePath ? [] : selectedPage.PagePath
@@ -337,10 +322,10 @@ const Editor = ({ applications: apps = {} }) => {
     pasteComponentProps(appData.ID, selectedPage?.ID, componentID, type, props)
   }
 
-  const handleSettingsChange = (componentID, label, value) => {
-  // alert(JSON.stringify({label, value}, 0, 2))
+  const handleSettingsChange = (componentID, label, value) => { 
     setComponentProp(appData.ID, selectedPage?.ID, componentID, label, value);
   };
+
   const handleNameChange = async (componentID, old) => {
     const name = await Prompt(
       `Enter a new name for "${old}"`,
@@ -622,8 +607,7 @@ const Editor = ({ applications: apps = {} }) => {
 
   const handlePageNavigate = (name,  parameters) => {
     const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
-
-    addPageTab(clickedPage);
+ 
 
     if (!clickedPage) { 
       return navigate(`/edit/${appData.path}`);
@@ -1112,29 +1096,14 @@ const Editor = ({ applications: apps = {} }) => {
  
             {!!componentParent && (
               <ComponentPanel
+
                 onCollapse={() =>
                   setCollapsed((s) => ({ ...s, right: !collapsed.right }))
                 } 
-                onSettingsPaste={handleSettingsPaste}
-                setEditorState={setEditorState} 
-                editorState={editorState}
-                onPageMove={handlePageMove}
-                connections={appData.connections}
-                resources={appData.resources}
-                themes={appData.themes}
-                application={appData}
-                onMove={handleMove}
-                Confirm={Confirm}
                 collapsed={collapsed.right}
-                selectedPage={selectedPage}
-                onPropChange={handlePropChange}
-                onComponentImport={handleComponentImport}
-                onThemeChange={handleThemeChange}
-                onStyleChange={handleStyleChange}
-                onSettingsChange={handleSettingsChange}
-                onEventChange={handleEventChange}
-                onEventDelete={handledEventDelete}
-                component={queryState.selectedComponent}
+                setEditorState={setEditorState} 
+                editorState={editorState} 
+
               />
             )}
           </Pane>
@@ -1148,7 +1117,7 @@ const Editor = ({ applications: apps = {} }) => {
 
       <ScriptDrawer
         scripts={componentParent?.scripts}
-        application={appData}
+        application={appContext}
         handleDrop={handleDropScript}
         handleChange={handleScriptChange}
         handleScriptPromote={handleScriptPromote}
@@ -1206,7 +1175,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
     setAnchorEl(null); 
   };
 
-  const handleButtonClick = (event) => {
+  const handleButtonClick = (event) => { 
     if (parameters && 
         Object.keys(parameters).length) {
       return handlePopoverClick(event);
@@ -1237,16 +1206,15 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
     startAdornment,
     endAdornment: (
       <InputAdornment
-        sx={{ cursor: "pointer" }}
-      
-        position="end" 
+        sx={{ cursor: "pointer" }} 
+        position="end"   onClick={handleButtonClick}
       >
-        <>
+        {/* <>
         <Text small active error={!pageLoaded}>Loaded</Text>
         <Switch size="small" checked={appLoaded} />app  
         <Switch size="small" checked={pageLoaded} />page 
-        </>
-        <Launch  onClick={handleButtonClick} />
+        </> */}
+        <Launch />
         Open
 
       </InputAdornment>
@@ -1257,8 +1225,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
    <>
  
    <TextField
-      size="small"
-      disabled
+      size="small" 
       {...props}
       sx={{ width: "calc(100vw - 700px)" }}
       value={value}

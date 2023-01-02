@@ -1,43 +1,41 @@
 import * as React from "react"; 
 import { useApplicationState } from "./useApplicationState";
 import { getApplicationInfo } from "../connector/sqlConnector";
-import {useParams } from "react-router-dom"; 
+import { useLocation, useParams } from "react-router-dom"; 
 import { getApplicationByName } from "../connector/sqlConnector";
 import { getPageByPath } from "../connector/sqlConnector";
 import { objectReduce } from "../components/library/util"; 
 import { useApplicationUtil } from "./useApplicationUtil";
 import { setApplication } from "../connector/sqlConnector";
-
-
+ 
 export const useApplicationLoader = (state) => { 
 
+  const utils = useApplicationUtil(state);
+  const location = useLocation(); 
   const { appname, pagename } = useParams(); 
-  const util = useApplicationUtil();
-
  
+
   // get configuration for the all applications or,
   // if the route has a pagename, just the application with that page
   const downloadApplicationConfig = React.useCallback(async () => {  
      
     // downloads app info from server
-    const items = !!pagename
+    const applicationConfig = !!pagename
       ? await getApplicationByName(appname, pagename)
       : await getApplicationInfo();  
 
-    state.setApplicationData(items); 
+    state.setApplicationData(applicationConfig); 
     state.setBusy(false);
-    return items;
+    return applicationConfig;
  
-  }, [state, getApplicationInfo, appname, pagename]);
-
+  }, [state, getApplicationInfo, getApplicationByName, appname, pagename]);
 
   // save current application
   const uploadApplicationConfig = React.useCallback(async (app) => { 
     state.setBusy(`Committing changes...`) 
     await setApplication(app); 
-    await downloadApplicationConfig()
+    await downloadApplicationConfig();
   }, []);
-
 
   // replace a page in the application JSON with an updated one
   const updateApplicationData = React.useCallback((downloadedPage) => {
@@ -57,19 +55,18 @@ export const useApplicationLoader = (state) => {
 
   },  [state]);
 
-
   // gets the current page JSON from the server
   const downloadCurrentPage = React.useCallback(async () => { 
 
     if (!pagename) return;
-    util.shout ({pagename}, 'Downloading ' + pagename)
+    utils.shout ({pagename}, 'Downloading ' + pagename)
     
     state.setBusy(`Reloading page "${pagename}"...`);
     
     // download page JSON from server
     const selectedPage = await getPageByPath(appname, pagename);
     
-    util.shout(selectedPage, 'Got server page ' + selectedPage?.PageName);
+    utils.shout(selectedPage, 'Got server page ' + selectedPage?.PageName);
  
     // get initial state variables from the page config
     const stateProps = !selectedPage?.state
@@ -79,26 +76,28 @@ export const useApplicationLoader = (state) => {
     // update the local JSON with the new page
     updateApplicationData(selectedPage);  
 
-    util.shout( { stateProps }, 'adding initial properties', 'orange')
+    utils.shout( { stateProps }, 'adding initial properties', 'orange')
  
     // add initial state variables from the new page to pageClientState
     await state.setPageClientStateAsync(stateProps);
 
     // mark pageLoaded as FALSE to fire the pageOnLoad event
-    state.setQueryState(state => ({...state, pageLoaded: false })); 
+    await state.setQueryStateAsync({ pageLoaded: false }); 
 
     state.setBusy(false); 
 
-  }, [pagename, appname, state]);
-
+  }, [pagename, appname, utils, state]);
+ 
+  // return page node based in its name
+  const getPageByName = React.useCallback((app, name) =>  app.pages.find(f => f.PagePath === name) , []);
 
   const getApplicationContext = React.useCallback(() => {
       
     if (!state.applicationData) {
       return { }
     }
-    //  all of this should be loaded in state
-    const appContext = state.applicationData.find(f => f.path === appname);
+    // TODO: all of this should be loaded in state
+    const appContext = utils.getAppByName(appname);
     
     if (!appContext) {
       return { }
@@ -110,19 +109,17 @@ export const useApplicationLoader = (state) => {
 
     const homePage =  appContext.HomePage;
     const defaultPage = !homePage
-    ? appContext.pages[0]
-    : appContext.pages.find(f => f.ID === homePage) ;
+      ? appContext.pages[0]
+      : appContext.pages.find(f => f.ID === homePage) ;
 
     const selectedPage = !!pagename 
-      ? appContext.pages.find(f => f.PagePath === pagename) 
+      ? utils.getPageByName(appContext, pagename)  
       : defaultPage;
 
-    return {
-      appContext, selectedPage, homePage
-    }
+    return { appContext, selectedPage, homePage };
 
   }, [state, appname, pagename])
-
+ 
   return { 
     downloadApplicationConfig,
     downloadCurrentPage,

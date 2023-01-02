@@ -1,12 +1,33 @@
 import * as React from "react";
 import useDynamoStorage from "./DynamoStorage";
 import { useApplicationState } from "./useApplicationState";
-import {useParams } from "react-router-dom"; 
+import {useParams, useLocation } from "react-router-dom"; 
 
 
 export const useApplicationUtil = (state) => { 
  
-  const { appname } = useParams()
+  const { appname, pagename } = useParams()
+  const location = useLocation();
+ 
+  // return application node based in its name
+  const getAppByName = React.useCallback(name => state.applicationData.find(f => f.path === name), [state]);
+  
+  // return page node based in its name
+  const getPageByName = React.useCallback((app, name) =>  app.pages.find(f => f.PagePath === name) , [state]);
+
+
+  const addTabByLocation = pathname => {
+    if (!state.applicationData) {
+      return { }
+    }
+    const [space, subroutine, app, path] = pathname.split('/');
+    const application = getAppByName(app);
+    if (path) {
+      const page = getPageByName(application, path)
+      return  addPageTab(page, page.parameters);
+    }
+    addPageTab()
+  }
 
   const addPageTab = React.useCallback((page, parameters) => {
 
@@ -66,11 +87,18 @@ export const useApplicationUtil = (state) => {
   } , [  ])
    
 
+  // add tabs to editor based on location
+  React.useEffect(() => { 
+    addTabByLocation(location.pathname)
+  }, [location]);
+  
+
 
   return {
     shout,
-    monitorEvent,
-    addPageTab,
-    createBreadcrumbs
+    monitorEvent, 
+    createBreadcrumbs,
+    getAppByName,
+    getPageByName
   }
 }

@@ -14,10 +14,7 @@ export  const useApplicationState = () => {
   const [ disableLinks, setDisableLinks ] = React.useState(false);
   const [ disableRequests, setDisableRequests] = React.useState(false);
   const [ openTraceLog, setOpenTraceLog ] = React.useState({});
-  
-  // contains local ref to reactly library
-  // const [ dynamoProgs, setDynamoProgs ] = React.useState(null)
-  
+   
   // lisr of events supported by the system
   const [ supportedEvents, setSupportedEvents ] = React.useState([])
   
@@ -50,8 +47,9 @@ export  const useApplicationState = () => {
   const [environment, setEnvironment] = React.useState({
     appContext: null,
     selectedPage: null
-  })
+  });
 
+  // create async versions of state setters than need waiting for
   const asyncable = {
     setPageClientState, 
     setPageRefState,
@@ -61,10 +59,10 @@ export  const useApplicationState = () => {
     setMonitoredEvents,
     setQueryState,
     setEnvironment
-  }
+  };
 
   const asynced = Object.keys(asyncable).reduce((out, key) => {
-    const stateSetter = asyncable[key]
+    const stateSetter = asyncable[key];
     out[`${key}Async`] = (props) => new Promise(resolve => {
     
       stateSetter(old => {
@@ -81,37 +79,54 @@ export  const useApplicationState = () => {
     return out;
   }, {});
 
-
-
   return {
-    loud, setLoud, jsonLog, setMessages, pageClientState, 
+    loud, 
     
-    environment, setEnvironment,
+    environment, 
 
-    pageTabs, setPageTabs, disableLinks, setDisableLinks,
-    disableRequests, setDisableRequests, openTraceLog, setOpenTraceLog,
-    // dynamoProgs, setDynamoProgs,
-    supportedEvents, setSupportedEvents,
-    // dbItems, setDbItems,
-    libraryJSON, setLibraryJSON,hydratedLibrary, 
-    setHydratedLibrary,libraryLoaded, setLibraryLoaded,
-    busy, setBusy,pageRefState, showTrace, setShowTrace,
-    applicationClientState, 
-    setApplicationClientState,
-    
-    applicationData, 
-    
-    ...asyncable,
-
-    // async versions of key state setters for extra oomph
-    ...asynced,
-
+    pageTabs, 
+    disableLinks, 
+    disableRequests, 
+    openTraceLog, 
+    supportedEvents, 
+    libraryJSON, 
+    hydratedLibrary, 
+    libraryLoaded, 
+    busy, 
+    pageRefState, 
     pageModalState, 
     pageResourceState, 
     monitoredEvents, 
     queryState, 
+    jsonLog, 
+    pageClientState, 
+    applicationData, 
     
-    dirty, setDirty 
+    dirty, 
+
+    setPageTabs, 
+    setLoud, 
+    setMessages,
+    setEnvironment,
+    setDisableLinks,
+    setDisableRequests, 
+    setOpenTraceLog,
+    setSupportedEvents,
+    setLibraryJSON,
+    setHydratedLibrary,
+    setLibraryLoaded,
+    showTrace, 
+    setBusy,
+    setShowTrace,
+    applicationClientState, 
+    setApplicationClientState,
+    setDirty ,
+    
+    ...asyncable,
+
+    // async versions of key state setters  
+    ...asynced,
+
 
   }
 
