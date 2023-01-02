@@ -9,12 +9,29 @@ export const useReactlyLibrary = (state) => {
 
   const { getItems, setItem } = useDynamoStorage();
 
+  const getLibraryItems = React.useCallback(async () => {
+    const cache = localStorage.getItem('reactly-library');
+    if (cache) {
+      try {
+        return JSON.parse(cache); 
+      } catch (e) {
+        // do nothing
+      }
+    }
+    const items = await getItems();
+    const json = JSON.stringify(items);
+    localStorage.setItem('reactly-library', json);
+    return items;
+  }, [getItems]);
+
   // download reactly component library
   const downloadReactlyLibrary = React.useCallback( async () => {
     state.setBusy(`Reloading data...`);
 
     // get library components
-    const items = await getItems();
+    const items = await getLibraryItems();
+
+
 
     // decode base64 values
     const converted = Object.keys(items).reduce((out, item) => {

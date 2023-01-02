@@ -62,7 +62,7 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
   const utils = useApplicationUtil(state);
   
   // loads the application and any pages
-  const loader = useApplicationLoader(state);
+  const loader = useApplicationLoader(state, preview);
 
   // manages the reactly component library
   const reactly = useReactlyLibrary(state); 

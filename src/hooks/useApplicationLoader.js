@@ -8,7 +8,7 @@ import { objectReduce } from "../components/library/util";
 import { useApplicationUtil } from "./useApplicationUtil";
 import { setApplication } from "../connector/sqlConnector";
  
-export const useApplicationLoader = (state) => { 
+export const useApplicationLoader = (state, preview) => { 
 
   const utils = useApplicationUtil(state);
   const location = useLocation(); 
@@ -112,9 +112,11 @@ export const useApplicationLoader = (state) => {
       ? appContext.pages[0]
       : appContext.pages.find(f => f.ID === homePage) ;
 
+    const currentPage = preview ? null : defaultPage;
+
     const selectedPage = !!pagename 
       ? utils.getPageByName(appContext, pagename)  
-      : defaultPage;
+      : currentPage;
 
     return { appContext, selectedPage, homePage };
 

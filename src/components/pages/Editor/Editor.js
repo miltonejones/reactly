@@ -300,7 +300,7 @@ const Editor = ({ applications: apps = {} }) => {
   const appData = appContext;// applications.find((f) => f.path === appname);
  
 
-  const componentParent = selectedPage || appData;
+  const componentParent = selectedPage || appContext;
 
   const path = ["apps", appData.path].concat(
     !selectedPage?.PagePath ? [] : selectedPage.PagePath
@@ -843,7 +843,7 @@ const Editor = ({ applications: apps = {} }) => {
             )}
           </Pane>;
 
-
+ 
   return (
     <EditorStateContext.Provider value={{ 
       appData 
@@ -1116,12 +1116,14 @@ const Editor = ({ applications: apps = {} }) => {
        />
 
       <ScriptDrawer
-        scripts={componentParent?.scripts}
-        application={appContext}
         handleDrop={handleDropScript}
         handleChange={handleScriptChange}
         handleScriptPromote={handleScriptPromote}
+        
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
+
+        application={appContext}
+        scripts={componentParent?.scripts}
         open={scriptOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, scriptOpen: false }));
@@ -1129,19 +1131,22 @@ const Editor = ({ applications: apps = {} }) => {
       />
 
       <ConnectionDrawer
+
         appID={appData.ID}
         application={appData}
         selectedPage={selectedPage}
-        dropResource={handleResourceDelete}
-        dropConnection={handleConnectionDelete}
-        setResource={setResource}
-        setConnection={setConnection}
-        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         connections={appData.connections}
         resources={appData.resources}
+
+        setResource={setResource}
+        setConnection={setConnection}
+        dropResource={handleResourceDelete}
+        dropConnection={handleConnectionDelete}
         onEventChange={handleEventChange}
         onEventDelete={handledEventDelete}
         onStateChange={handleStateChange}
+
+        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
         open={connectOpen}
         handleClose={() => {
           setDrawerState((s) => ({ ...s, connectOpen: false }));
