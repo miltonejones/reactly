@@ -58,7 +58,8 @@ import {
   Save,
 } from "@mui/icons-material";
 import { PopoverInput } from "../Control/Control";
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { useReactly } from '../../hooks';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { ScriptLine, RefsMenu, Bar } from "./components";
@@ -107,31 +108,29 @@ const SearchLine = ({ children, active, filter, onClick }) => {
   );
 };
 
-const ScriptDrawer = ({
-  open,
-  scripts = [],
-  application,
-  handleSwitch,
-  handleScriptPromote,
-  handleDrop,
-  handleClose,
-  handleChange: handleScriptChange,
-}) => {
+const ScriptDrawer = ( ) => {
+ 
+
+  const { scriptOpen: open, setDrawerState} = React.useContext(EditorStateContext);
+  const handleSwitch = state => setDrawerState(s => ({ ...s, ...state}));
+  const handleClose = () =>  setDrawerState((s) => ({ ...s, scriptOpen: false }));
+
+  const reactly = useReactly();
   const handleChange = (scriptID, name, code, fn, existingName, pageID) => {
-    handleScriptChange(scriptID, name, code, { fn, existingName, pageID });
+    reactly.onScriptChange(scriptID, name, code, { fn, existingName, pageID });
   };
 
   const createScriptFolder = (scriptID, name, parentID) => {
-    handleScriptChange(scriptID, name, null, { parentID });
+    reactly.onScriptChange(scriptID, name, null, { parentID });
   };
 
   const addScriptComment = (script, comment) => {
     const { ID, name, code, parentID } = script;
-    handleScriptChange(ID, name, code, { parentID, comment });
+    reactly.onScriptChange(ID, name, code, { parentID, comment });
   }
 
   const saveScriptToFolder = (scriptID, name, code, parentID, pageID) => {
-    handleScriptChange(scriptID, name, code, { pageID, parentID });
+    reactly.onScriptChange(scriptID, name, code, { pageID, parentID });
 
     // save updated code to tabs array
     setSelected({
@@ -202,8 +201,9 @@ const ScriptDrawer = ({
     EditCode,
     Alert: Shout,
     setShowTrace,
-    selectedPage: targetPage,
+    selectedPage,
   } = React.useContext(AppStateContext);
+  const { scripts = [] } = (selectedPage || appContext) ?? { scripts: [] };
 
   const [availableScripts, setAvailableScripts] = React.useState([])
   React.useEffect(() =>{
@@ -281,7 +281,7 @@ const ScriptDrawer = ({
 
   const scriptList = getApplicationScripts();
 
-  const appScripts = targetPage?.PageName
+  const appScripts = selectedPage?.PageName
     ? [
         {
           name: <b>Application</b>,
@@ -297,8 +297,8 @@ const ScriptDrawer = ({
     : [];
 
   const scriptMenu = appScripts.concat(
-    application.pages
-      ?.filter((f) => f.ID !== targetPage?.ID)
+    appContext.pages
+      ?.filter((f) => f.ID !== selectedPage?.ID)
       .reduce((items, page) => {
         !!page.scripts?.length &&
           items.push({
@@ -344,7 +344,7 @@ const ScriptDrawer = ({
       <Layout big={big}>
         <Flex>
           <Typography variant="subtitle1">
-            <b>{targetPage?.PageName || "Application"} scripts</b>
+            <b>{selectedPage?.PageName || "Application"} scripts</b>
           </Typography>
 
           <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>
@@ -374,13 +374,13 @@ const ScriptDrawer = ({
             />
           </Box>
 
-          {!!selected.ID && !!targetPage?.PageName && (
+          {!!selected.ID && !!selectedPage?.PageName && (
             <TextBtn
               sx={{ mb: 1 }}
               variant="contained"
               color="warning"
               onClick={async () => {
-                const ok = await handleScriptPromote(ID);
+                const ok = await reactly.onScriptPromote(ID);
                 // if (!ok) return;
                 setSelected({ code: "" });
                 setDirty(false);
@@ -460,7 +460,7 @@ const ScriptDrawer = ({
                 folderList={folderList}
                 setSelected={setSelected}
                 handleChange={handleChange}
-                handleDrop={handleDrop}
+                handleDrop={reactly.onDropScript}
               />
 
              </Box>

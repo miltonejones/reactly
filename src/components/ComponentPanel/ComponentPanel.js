@@ -7,13 +7,12 @@ import { Spacer , QuickSelect , PopoverPrompt} from '..';
 import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, ContentPaste, CopyAll, Input, Add, Delete } from "@mui/icons-material";
-import { AppStateContext } from '../../hooks/AppStateContext'; 
+import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext'; 
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
-import { useTextTransform } from '../../hooks/useTextTransform';
+import { useTextTransform, useReactly } from '../../hooks';
 import { uniqueId } from '../library/util';
-import { childrenAllowed } from '../library';
-import { useReactly } from '../../hooks/useReactly';
+import { childrenAllowed } from '../library'; 
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -26,16 +25,7 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
   fontSize: '0.85rem' 
 }));
 
-const ComponentPanel = ({ 
-    // component,  
-
-    onCollapse,
-    collapsed,
- 
-    setEditorState,
-    editorState,  
-
- }) => {
+const ComponentPanel = () => {
  
   const [ 
      
@@ -45,7 +35,6 @@ const ComponentPanel = ({
   ] = [ 'disableLinks', 'showSettings', ]
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const {   disableLinks, showSettings } = editorState;
 
 
   const { 
@@ -64,14 +53,27 @@ const ComponentPanel = ({
     Confirm 
   } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
+  const { 
+    setCollapsed,
+    collapsed: collapse,
+    setEditorState,
+    editorState 
+  } = React.useContext(EditorStateContext)
   const [ value, setValue ] = React.useState(0);
   const { selectedComponent: component } = queryState;
   const { themes, connections, resources } = appContext;
 
+  const { disableLinks, showSettings } = editorState;
   const reactly = useReactly();
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
   const Panel = panels[value];
+
+  const collapsed = collapse.right;
+  const onCollapse = () => setCollapsed(state => ({
+    ...state,
+    right: !collapse.right
+  }))
 
   const handleChange = (event, newValue) => {
     setValue(newValue);

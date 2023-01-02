@@ -268,8 +268,8 @@ export const usePageContext = () => {
             : terms[term];
 
           return resource.format === "rest"
-            ? property
-            : `${key || term}=${property}`;
+            ? encodeURIComponent(property)
+            : `${key || term}=${encodeURIComponent(property)}`;
         })
         .join(delimiter);
   

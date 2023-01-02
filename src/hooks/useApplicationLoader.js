@@ -18,7 +18,7 @@ export const useApplicationLoader = (state, preview) => {
   // get configuration for the all applications or,
   // if the route has a pagename, just the application with that page
   const downloadApplicationConfig = React.useCallback(async () => {  
-     
+      
     // downloads app info from server
     const applicationConfig = !!pagename
       ? await getApplicationByName(appname, pagename)
@@ -88,6 +88,7 @@ export const useApplicationLoader = (state, preview) => {
 
   }, [pagename, appname, utils, state]);
  
+
   // return page node based in its name
   const getPageByName = React.useCallback((app, name) =>  app.pages.find(f => f.PagePath === name) , []);
 

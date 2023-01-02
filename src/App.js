@@ -86,8 +86,8 @@ function RenderComponent({ preview, debug, component: Component, ...props}) {
     if (!pagename || !state.applicationData) return;
     utils.shout({ location, pagename }, 
       'Loading page from server', 'green', 600);
-    loader.downloadCurrentPage(pagename) ; 
-  }, [location, pagename]);
+    loader.downloadCurrentPage() ; 
+  }, [location, ]);
   
 
  // runs on page load. downloads initial config

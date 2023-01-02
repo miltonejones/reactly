@@ -161,6 +161,15 @@ export const useReactly = () => {
     editor.appendComponent(ok, componentID, options);
   }, [editor, appContextID, selectedPageID]);
 
+  methods.onScriptChange = React.useCallback(async (
+    scriptID, name, code, 
+   { fn, existingName, pageID , parentID, comment }
+  ) => { 
+    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
+    if (!scriptName) return;
+    editor.setPageScript(appContextID, pageID || selectedPageID, scriptID, scriptName, code, fn, parentID, comment);
+}, [editor, appContextID, selectedPageID]);
+
   return methods;
 
 }

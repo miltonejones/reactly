@@ -25,7 +25,7 @@ const fs = require('fs');
 const barrel = hooks.reduce((out, hook) => {
   if (hook.indexOf('use') < 0) return out;
   const name = hook.replace('.js', '');
-  out.imports.push(`import ${name} from "./${name}";`);
+  out.imports.push(`import { ${name} } from "./${name}";`);
   out.exports.push(name);
   return out;
 }, {

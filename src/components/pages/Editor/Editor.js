@@ -593,17 +593,7 @@ const Editor = ({ applications: apps = {} }) => {
   } else if (collapsed.left) {
     center_state = '-left'
   }
-
-  const componentTreeProps = {
-    loud,
-    setLoud,
-    pageClientState, 
-    setPageClientState,
-    setEditorState,
-    editorState,
-    pageResourceState,  
-    setPageResourceState, 
-  };
+ 
 
   const handlePageNavigate = (name,  parameters) => {
     const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
@@ -843,10 +833,19 @@ const Editor = ({ applications: apps = {} }) => {
             )}
           </Pane>;
 
- 
+//  return JSON.stringify(editorState)
   return (
     <EditorStateContext.Provider value={{ 
-      appData 
+      appData ,
+      setDrawerState,
+      ...drawerState,
+      setCollapsed,
+      collapsed,
+      setEditorState,
+      editorState,
+      hilit
+
+
       }}>
       <Flex spacing={0} baseline fullWidth>
         <Stack
@@ -1067,20 +1066,7 @@ const Editor = ({ applications: apps = {} }) => {
  
             <ApplicationTree {...applicationTreeProps} application={appData} />
 
-           {  !!selectedPage &&   <ComponentTree
-                  
-                  {...componentTreeProps}
-                  loadID={uniqueId()}
-                  onEventDelete={handledEventDelete}
-                  hilit={hilit}
-                  themes={appData?.themes || []}
-                  appContext={appData}
-                  loaded={loaded}
-                  setLoaded={setLoaded}
-                  preview
-                  selectedPage={selectedPage}
-
-                />}
+           {  !!selectedPage &&   <ComponentTree  />}
                 
             </Collapse>
           </Pane>
@@ -1094,18 +1080,7 @@ const Editor = ({ applications: apps = {} }) => {
             sx={{ borderLeft: 1, borderColor: "divider" }}
           >
  
-            {!!componentParent && (
-              <ComponentPanel
-
-                onCollapse={() =>
-                  setCollapsed((s) => ({ ...s, right: !collapsed.right }))
-                } 
-                collapsed={collapsed.right}
-                setEditorState={setEditorState} 
-                editorState={editorState} 
-
-              />
-            )}
+            {!!componentParent && <ComponentPanel  />}
           </Pane>
         </Grid>
       </Flex>
@@ -1115,20 +1090,7 @@ const Editor = ({ applications: apps = {} }) => {
         handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
        />
 
-      <ScriptDrawer
-        handleDrop={handleDropScript}
-        handleChange={handleScriptChange}
-        handleScriptPromote={handleScriptPromote}
-        
-        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
-
-        application={appContext}
-        scripts={componentParent?.scripts}
-        open={scriptOpen}
-        handleClose={() => {
-          setDrawerState((s) => ({ ...s, scriptOpen: false }));
-        }}
-      />
+      <ScriptDrawer   />
 
       <ConnectionDrawer
 

@@ -21,8 +21,8 @@ import {
  Edit,
  ExpandMore,
  Settings
-} from "@mui/icons-material";
-import { AppStateContext } from "../../hooks/AppStateContext"; 
+} from "@mui/icons-material"; 
+import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext"; 
 import { Helmet } from "react-helmet";
 import { Flex, Text, Spacer, DeleteConfirmMenu, TextBtn, TextInput, TinyButton } from ".."; 
 import { Json } from "../../colorize"; 
@@ -115,29 +115,19 @@ const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
 
 
-const ComponentTree = ({
-  selectedPage,
-  preview,
-  loaded,
-  setLoaded,
-  appContext,
-  themes = [],
-  hilit,
-  pageClientState, 
-  setPageClientState,
-  setEditorState,
-  editorState, 
-  pageResourceState,  
-  setPageResourceState,
-  onEventDelete,
-  observer
-
-}) => {
-  const componentTree = selectedPage?.components;
+const ComponentTree = ( ) => {
   const {
     queryState = {},
     setQueryState,
     createBreadcrumbs, 
+    pageClientState, 
+    setPageClientState,
+    pageResourceState,  
+    setPageResourceState,
+    selectedPage,
+    appContext,
+
+    preview,
     Shout,
     shout,
     jsonLog, 
@@ -149,14 +139,22 @@ const ComponentTree = ({
     setMessages, 
     setOpenTraceLog,  
     setDisableLinks,
-    disableLinks, 
-    selectedPage: thisPage,
+    disableLinks,  
     appBusy,
     setBusy
-  } = React.useContext(AppStateContext);
+  } = React.useContext(AppStateContext); 
+
+
+  const { themes = []} = appContext;
+  const componentTree = selectedPage?.components;
   const { selectedComponent = {} } = queryState;
  
   
+  const {  
+    setEditorState,
+    editorState ,
+    hilit
+  } = React.useContext(EditorStateContext)
 
   const stateProps = !selectedPage?.state
     ? null
@@ -178,7 +176,7 @@ const ComponentTree = ({
 
 
   const [pageModalState, setPageModalState] = React.useState({});
-  // const [pageRefState, setPageRefState] = React.useState({});
+  
   const [pageLoaded, setPageLoaded] = React.useState(0);
   const [menuCommand, setMenuCommand] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);

@@ -103,21 +103,32 @@ export const usePageLoader = () =>{
   ]);
  
   // sets pageLoaded to FALSE on navigation
-  React.useEffect(() => {  
+  // React.useEffect(() => {  
 
-    shout ({
-      ...location,
-      pageLoaded: queryState.pageLoaded
-    }, 'Handling route change');
+  //   shout ({
+  //     ...location,
+  //     pageLoaded: queryState.pageLoaded
+  //   }, 'Handling route change');
 
-    // clear page state for the next page
-   // setPageClientState({});
+  //   // clear page state for the next page
+  //  // setPageClientState({});
     
-    // set page loaded to false to force state to reload
-    // setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
-  }, [location, queryState]);
+  //   // set page loaded to false to force state to reload
+  //   // setQueryState(qs => ({...qs, selectedComponent: null, pageLoaded: false}))  ;
+  // }, [location, queryState]);
 
-
+  const firePageLoad = React.useCallback((props) => { 
+    !!selectedPage?.events && handleComponentEvent(null, {
+      name: 'onPageLoad',
+      component: selectedPage,
+      options: {
+        ID: selectedPage?.ID,
+        pagename, 
+        appname,
+        ...props
+      }
+    }) ; 
+  }, [selectedPage, handleComponentEvent, pagename, appname])
 
   // fires when pageLoaded is FALSE
   React.useEffect(() => {   
