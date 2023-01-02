@@ -5,6 +5,7 @@ import { Close, ExpandMore, Gamepad, AutoStories,Code,RecentActors } from "@mui/
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { JsonView } from "../../colorize";
 import { useTextTransform } from '../../hooks/useTextTransform';
+import { DrawerNavigation } from '../pages/Editor/components';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -64,7 +65,7 @@ const LogEntry = (props) => {
   </Box>
 }
  
-const ConsoleDrawer = ({ handleSwitch }) => {
+const ConsoleDrawer = () => {
   const {  
     setShowTrace,
     showTrace,
@@ -134,44 +135,8 @@ const ConsoleDrawer = ({ handleSwitch }) => {
         {window.location.href}
           </Text>
           
-          <IconButton  disabled>
-            <Gamepad />
-          </IconButton>
-
-          <IconButton 
-              color="inherit" 
-              onClick={() => { 
-                handleSwitch({  connectOpen: 1});
-                setShowTrace(false);
-              }}>
-            <AutoStories />
-          </IconButton>
-
-            <IconButton
-              color="inherit" 
-              onClick={() => { 
-                handleSwitch({ scriptOpen: 1 });
-                setShowTrace(false);
-              }}
-            >
-              <Code />
-            </IconButton>
-
-
-            <IconButton
-              color="inherit" 
-              onClick={() => {
-                handleSwitch({ stateOpen: 1});
-                setShowTrace(false);
-              }}
-            >
-              <RecentActors />
-            </IconButton>
-
-
-        <IconButton  onClick={() => setShowTrace(false)}>
-          <Close />
-        </IconButton>
+        <DrawerNavigation  onClose={() => setShowTrace(false)} horizontal /> 
+         
       </Flex>
       <Divider />
      

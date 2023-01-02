@@ -1,18 +1,28 @@
 import React from 'react';
-import { styled, List, Link, ListItemButton, Typography,
+import {  List, ListItemButton, Typography,
   ListItemIcon, ListItemText, ListItemSecondaryAction 
   } from "@mui/material";
-  import { Article, MoreVert, Close, Delete } from "@mui/icons-material";
+  import { Article, MoreVert, Close } from "@mui/icons-material";
   import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
 import ParameterPopover from '../pages/Editor/components/ParameterPopover/ParameterPopover';
+import { useReactly } from '../../hooks';
+import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext';
   
  
-const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClick}) => {
+const PageTree = () => {
+
   const [parameters, setParameters] = React.useState(null)
   const [pageName, setPageName] = React.useState(null)
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const open = Boolean(anchorEl);
+  const [anchorEl, setAnchorEl] = React.useState(null); 
+
+  const { appContext, selectedPage = {} } = React.useContext(AppStateContext);
+  const { handlePageNavigate: onClick } = React.useContext(EditorStateContext);
+  
+  const tree = appContext.pages || [];
+  const selected = selectedPage?.PageName
+
+  const reactly = useReactly();
 
   const handlePopoverClick =  (event, name, params) => {  
     setParameters(params);
@@ -55,9 +65,9 @@ const PageTree = ({tree = [], selected, setPage, dropPage, duplicatePage, onClic
   <>
    <List dense>
    {tree.filter(f => !f.pageID || f.pageID === 'null').map(c => <Pages 
-   dropPage={dropPage}
-   setPage={setPage}
-   duplicatePage={duplicatePage}
+   dropPage={reactly.dropPage}
+   setPage={reactly.createPage}
+   duplicatePage={reactly.duplicatePage}
    {...popProps}
    selected={selected} onClick={onClick} key={c.PageName} tree={c} trees={tree}/> )}
    </List>

@@ -1,6 +1,6 @@
 import React from 'react';
-import { styled, Box , Collapse, Tabs, Grid, Chip, IconButton, Typography, Divider,Stack} from '@mui/material'; 
-import { Flex, Spacer, TextInput, TextBtn, Text, QuickSelect, QuickMenu } from "..";
+import { Stack} from '@mui/material'; 
+import { Flex, Spacer, TextInput, TextBtn, Text, QuickSelect  } from "..";
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { useEditor } from '../../hooks/useEditor';
 import {  Save, Delete } from "@mui/icons-material"; 
@@ -12,8 +12,7 @@ const ApplicationForm = ({ applications, importable }) => {
   const editor = useEditor(applications);
 
   const {
-    removeProgItem,
-    queryState,
+    removeProgItem, 
     appContext,
     setQueryState
   } = React.useContext(AppStateContext)

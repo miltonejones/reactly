@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Collapse, Box, Alert, Link, Card, Stack, Typography } from '@mui/material'; 
+import { styled, Collapse, Box, Alert, Card, Stack } from '@mui/material'; 
 import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
 import { Add, Close, Delete , Error} from "@mui/icons-material";
 import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events';
@@ -34,8 +34,7 @@ const HandlerCard = ({ ID, event: eventName, action, application, page, selected
   const { appData  } = React.useContext(EditorStateContext);
   const { supportedEvents } = React.useContext(AppStateContext);
   const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
-  const { pages, resources } = appData;
-  const [rise, setRise] = React.useState(1);
+  const { pages, resources } = appData; 
   
   if (!action) return <u />
   const chosenEvent = includedEvents.find(f => f.name === eventName)
@@ -177,7 +176,7 @@ const ComponentEvents = ({
   const availableEvents = isInApplicationScope ? appEvents : Events;
   const availableOwner = isInApplicationScope ? application : selectedPage;
   const defaultEvents = !addedEvents ? availableEvents : addedEvents;
-  const supportedEvents = !!addedEvents || !component ? defaultEvents : Library [component.ComponentType].Events  ;
+  const supportedEvents = !!addedEvents || !component ? defaultEvents : Library[component.ComponentType].Events  ;
 
 
   const eventOwner = !component ? availableOwner : component;
@@ -199,8 +198,7 @@ const ComponentEvents = ({
     event: selectedEvent
   }
 
-  const modalsExist = !!selectedPage?.components && ['Dialog', 'Menu', 'Drawer', 'Collapse', 'Snackbar', 'Popover']
-      .some(type => selectedPage.components.find(f => f.ComponentType === type)) 
+ 
 
   const handleSave = state => {  
     setSelectedEvent(null); 

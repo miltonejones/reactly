@@ -14,6 +14,7 @@ export const useReactly = () => {
     CreateComponent, 
     Confirm, 
     Prompt,  
+    setPageClientState,
   } = React.useContext(AppStateContext);
 
   const componentParent = selectedPage || appContext;
@@ -22,21 +23,55 @@ export const useReactly = () => {
 
   const methods = {};
 
-  methods.onSettingsChange = React.useCallback((componentID, label, value) => { 
-    editor.setComponentProp(appContextID, selectedPageID, componentID, label, value);
+  // state methods
+  methods.onStateChange = React.useCallback( (stateID, label, value, type) => { 
+    const update =  {}
+ 
+    label?.split(',').map(key => {
+      editor.setPageState(appContextID, selectedPageID, stateID, key, value, type, pg => {
+        setQueryState(s => ({
+          ...s,
+          page: pg
+        }))
+      });
+      Object.assign(update, {[key]: value});
+    })
+    setPageClientState(s => ({
+      ...s, 
+      ...update
+    }))
+    ;
+  },  [editor, appContextID, selectedPageID]);
+ 
+  methods.onStateDrop = React.useCallback((stateID) => {
+    editor.dropPageState(appContextID, selectedPageID, stateID);
   },  [editor, appContextID, selectedPageID]);
 
-  methods.onStyleChange = React.useCallback((componentID, label, value, selector) => { 
-    editor.setComponentStyle(
-      appContextID,
-      selectedPageID,
-      componentID,
-      label,
-      value,
-      selector
+  // connection methods
+  methods.setResource = editor.setResource;
+  methods.setConnection = editor.setConnection;
+
+  methods.onResourceDelete =  React.useCallback(async (ID, confirmed) => {
+    const ok = confirmed || await Confirm(
+      "Are you sure you want to delete this resource?",
+      "Confirm delete"
     );
+    if (!ok) return;
+    editor.dropResource(appContextID, ID);
   },  [editor, appContextID, selectedPageID]);
 
+  methods.onConnectionDelete = React.useCallback(async (ID, confirmed) => {
+    const ok =confirmed ||  await Confirm(
+      "Are you sure you want to delete this connection?",
+      "Confirm delete"
+    );
+    if (!ok) return;
+    editor.dropConnection(appContextID, ID);
+  },  [editor, appContextID, selectedPageID]);
+
+
+
+  // event methods
   methods.onEventChange = React.useCallback((componentID, event, type) => {
     const command = type === 'connection' 
       ? editor.setResourceEvent
@@ -45,15 +80,7 @@ export const useReactly = () => {
       command(appContextID, selectedPageID, componentID, event);
   },  [editor, appContextID, selectedPageID]);
 
-  methods.onSettingsPaste = React.useCallback((componentID, type, props) => {
-    editor.pasteComponentProps(appContextID, selectedPageID, componentID, type, props)
-  }, [editor, appContextID, selectedPageID]);
-
-  methods.onMove = React.useCallback((componentID, parentID) => {
-    editor.setComponentParent(appContextID, selectedPageID, componentID, parentID);
-  }, [editor, appContextID, selectedPageID]);
-
-  methods.ondEventDelete = React.useCallback(async (componentID, eventID, type, confirmed) => {
+  methods.onEventDelete = React.useCallback(async (componentID, eventID, type, confirmed) => {
     const command = type === 'connection' 
       ? editor.dropResourceEvent
       : editor.dropComponentEvent
@@ -64,6 +91,12 @@ export const useReactly = () => {
     if (!ok) return;
     command(appContextID, selectedPageID, componentID, eventID);
   }, [editor, appContextID, selectedPageID]);
+
+
+  // page methods
+  methods.duplicatePage = React.useCallback(id => {
+    editor.duplicatePage(appContextID, id)
+  }, [appContextID, editor]) ;
 
   methods.onPageMove = React.useCallback(async (pageID) => {
     editor.setPageParent(appContextID, selectedPageID, pageID)
@@ -76,8 +109,13 @@ export const useReactly = () => {
     editor.setPageProps(appContextID, selectedPageID, props);
   }, [editor, appContextID, selectedPageID]);
 
-  methods.onComponentImport = React.useCallback(async (sourceID, destID, componentID) => {
-    editor.importComponent(appContextID, sourceID, destID, componentID);
+  methods.onPageDelete = React.useCallback(async (pageID, confirmed) => {
+    const ok = confirmed || await Confirm(
+      "Are you sure you want to delete this page?",
+      "Confirm delete"
+    );
+    if (!ok) return;
+    editor.dropPage(appContextID, pageID);
   }, [editor, appContextID, selectedPageID]);
 
   methods.onThemeChange = React.useCallback(async (themeID, themeName, theme) => {
@@ -86,6 +124,27 @@ export const useReactly = () => {
     editor.setTheme (appContextID, theme, ok)
   }, [editor, appContextID, selectedPageID]);
 
+  methods.createPage = React.useCallback(async (pageID, pageName) => {
+    const PageName = pageName || 
+      await Prompt('Enter a name for your page', 'Create Page');
+    if (!PageName) return;
+    const page = {
+      PageName,
+      PagePath: PageName.toLowerCase().replace(/\s/g, '-'),
+      pageID,
+      components: [],
+    }
+    editor.setPage(appContextID, page, pg => { 
+      setQueryState((s) => ({
+        ...s,
+        page: pg,
+        pageLoaded: false,
+        appLoaded: false, 
+      }))
+    });
+  }, [editor, Prompt, appContextID, selectedPageID])
+
+  // script methods
   methods.onScriptPromote = React.useCallback(async (scriptID) => {
     const ok = await Confirm(
       <Stack>
@@ -107,15 +166,25 @@ export const useReactly = () => {
     editor.dropPageScript(appContextID, selectedPageID, scriptID);
   }, [editor, appContextID, selectedPageID]);
 
-  methods.onPageDelete = React.useCallback(async (pageID, confirmed) => {
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this page?",
-      "Confirm delete"
-    );
-    if (!ok) return;
-    editor.dropPage(appContextID, pageID);
+  methods.onScriptChange = React.useCallback(async (
+    scriptID, name, code, 
+   { fn, existingName, pageID , parentID, comment }
+  ) => { 
+      const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
+      if (!scriptName) return;
+      editor.setPageScript(appContextID, pageID || selectedPageID, scriptID, scriptName, code, fn, parentID, comment);
   }, [editor, appContextID, selectedPageID]);
 
+
+  // component methods
+  methods.onSettingsPaste = React.useCallback((componentID, type, props) => {
+    editor.pasteComponentProps(appContextID, selectedPageID, componentID, type, props)
+  }, [editor, appContextID, selectedPageID]);
+
+  methods.onMove = React.useCallback((componentID, parentID) => {
+    editor.setComponentParent(appContextID, selectedPageID, componentID, parentID);
+  }, [editor, appContextID, selectedPageID]);
+  
   methods.onDropComponent = React.useCallback(async (componentID, confirmed) => {
     const ok = confirmed || await Confirm(
       "Are you sure you want to delete this component?" + componentID,
@@ -130,11 +199,11 @@ export const useReactly = () => {
       (componentParent.components || []).filter((f) => f.ComponentType === selected)
         .length + 1;
     const name = `${selected}-${max}`;
-    return editor.appendComponent({
+    return methods.appendComponent({
       selected,
       name,
     }, componentID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [methods.appendComponent, appContextID, selectedPageID]);
 
   methods.appendComponent = React.useCallback((ok, componentID, options) => { 
     const component = {
@@ -148,7 +217,7 @@ export const useReactly = () => {
       scripts: [],
       data: [],
     };
-   const res = editor.addComponent(appContextID, selectedPageID, component, {...options, 
+    editor.addComponent(appContextID, selectedPageID, component, {...options, 
     fn: (comp) => {
       // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
       setQueryState(s => ({...s, selectedComponent: comp}));
@@ -158,18 +227,54 @@ export const useReactly = () => {
   methods.createComponent = React.useCallback(async (componentID, options) => {
     const ok = await CreateComponent(componentParent.components);
     if (!ok) return;
-    editor.appendComponent(ok, componentID, options);
+    methods.appendComponent(ok, componentID, options);
+  }, [methods.appendComponent, appContextID, selectedPageID]);
+
+  methods.onComponentImport = React.useCallback(async (sourceID, destID, componentID) => {
+    editor.importComponent(appContextID, sourceID, destID, componentID);
   }, [editor, appContextID, selectedPageID]);
 
-  methods.onScriptChange = React.useCallback(async (
-    scriptID, name, code, 
-   { fn, existingName, pageID , parentID, comment }
-  ) => { 
-    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
-    if (!scriptName) return;
-    editor.setPageScript(appContextID, pageID || selectedPageID, scriptID, scriptName, code, fn, parentID, comment);
-}, [editor, appContextID, selectedPageID]);
+  methods.onSettingsChange = React.useCallback((componentID, label, value) => { 
+    editor.setComponentProp(appContextID, selectedPageID, componentID, label, value);
+  },  [editor, appContextID, selectedPageID]);
 
+  methods.onStyleChange = React.useCallback((componentID, label, value, selector) => { 
+    editor.setComponentStyle(
+      appContextID,
+      selectedPageID,
+      componentID,
+      label,
+      value,
+      selector
+    );
+  },  [editor, appContextID, selectedPageID]);
+
+  methods.onNameChange = React.useCallback(async (componentID, old) => {
+    const name = await Prompt(
+      `Enter a new name for "${old}"`,
+      "Rename component",
+      old
+    );
+    if (!name) return;
+    editor.setComponentName(appContextID, selectedPageID, componentID, name);
+  },  [editor, appContextID, Prompt, selectedPageID]);
+ 
+  methods.onCustomName = React.useCallback(async (componentID) => {
+    const customName = await Prompt('Enter name for custom component', 'Name component');
+    if (!customName) return 
+    editor.setComponentCustomName(appContextID, selectedPageID, componentID, customName);
+  },  [editor, appContextID, Prompt, selectedPageID]);
+
+  methods.onDropComponent = React.useCallback(async (componentID, confirmed) => {
+    const ok = confirmed || await Confirm(
+      "Are you sure you want to delete this component?" + componentID,
+      "Confirm delete"
+    );
+    if (!ok) return;
+    editor.dropComponent(appContextID, selectedPageID, componentID);
+  },  [editor, appContextID, Prompt, selectedPageID]);
+
+ 
   return methods;
 
 }

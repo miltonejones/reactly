@@ -125,23 +125,15 @@ const ComponentTree = ( ) => {
     pageResourceState,  
     setPageResourceState,
     selectedPage,
-    appContext,
-
+    appContext, 
     preview,
     Shout,
-    shout,
-    jsonLog, 
-    loud,
-    setLoud,
+    shout, 
+    loud, 
     pageRefState, 
-    setPageRefState, 
-    openTraceLog, 
-    setMessages, 
-    setOpenTraceLog,  
-    setDisableLinks,
+    setPageRefState,  
     disableLinks,  
-    appBusy,
-    setBusy
+    appBusy, 
   } = React.useContext(AppStateContext); 
 
 
@@ -154,46 +146,23 @@ const ComponentTree = ( ) => {
     setEditorState,
     editorState ,
     hilit
-  } = React.useContext(EditorStateContext)
-
-  const stateProps = !selectedPage?.state
-    ? null
-    : objectReduce(selectedPage.state); 
+  } = React.useContext(EditorStateContext) 
      
-  const [   
-    setShowSettings, 
-    setShowTrace ,  
+  const [    
     setMessage, 
-  ] = !setEditorState ? [] : [
-     'showSettings', 
-      'showTrace', 'message']
+  ] = !setEditorState ? [] : [ 'message']
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const { showSettings,  message, showTrace} = editorState ?? {};
+  const {  message} = editorState ?? {};
 
-
-  const location = useLocation()
+ 
 
 
   const [pageModalState, setPageModalState] = React.useState({});
-  
-  const [pageLoaded, setPageLoaded] = React.useState(0);
+   
   const [menuCommand, setMenuCommand] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
-
-  const [loadState, setLoadState] = React.useState({
-    editorID: null,
-    editorChanges: 0,
-    applicationID: null,
-    applicationChanges: 0,
-  })
-
-  const { editorID, editorChanges ,
-    applicationID,
-    applicationChanges
-  } = loadState;
-
-
+ 
   const open = Boolean(anchorEl) ;
 
   const handleClick = (event, data) => {
@@ -209,9 +178,7 @@ const ComponentTree = ( ) => {
   const handleClose = (value) => {  
     setAnchorEl(null); 
   }; 
-
-  const { handleComponentEvent } = usePageContext(); 
-
+ 
   const defaultTheme = useTheme();
   
   const { pageState } = usePageLoader();
@@ -221,6 +188,8 @@ const ComponentTree = ( ) => {
   let path;
   if (selectedPage) {
     path = createBreadcrumbs(appContext.pages, selectedPage);
+  } else {
+    return <>No page is loaded to render.</>
   }
  
 

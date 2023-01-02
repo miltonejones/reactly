@@ -1,6 +1,6 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip, Collapse,
-  Typography, Divider, Alert, Switch } from '@mui/material'; 
+   Divider, Alert } from '@mui/material'; 
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect , PopoverPrompt} from '..';
@@ -11,8 +11,7 @@ import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
 import { useTextTransform, useReactly } from '../../hooks';
-import { uniqueId } from '../library/util';
-import { childrenAllowed } from '../library'; 
+import { uniqueId } from '../library/util'; 
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -28,11 +27,10 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
 const ComponentPanel = () => {
  
   const [ 
-     
-    setDisableLinks, 
+      
     setShowSettings,  
  
-  ] = [ 'disableLinks', 'showSettings', ]
+  ] = [  'showSettings', ]
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
 
@@ -40,17 +38,11 @@ const ComponentPanel = () => {
   const { 
     appContext,
     queryState,
-    setQueryState, 
-    setMessages, 
-    setOpenTraceLog,  
-    setShowTrace,
-    showTrace,        
-    selectedPage = {},
-    setDisableRequests,
-    disableRequests,
-    jsonLog, 
+    setQueryState,  
+    selectedPage = {},  
     appData , 
-    Confirm 
+    Confirm ,
+    Alert
   } = React.useContext(AppStateContext);
   const { Library } = React.useContext(AppStateContext);
   const { 
@@ -63,7 +55,7 @@ const ComponentPanel = () => {
   const { selectedComponent: component } = queryState;
   const { themes, connections, resources } = appContext;
 
-  const { disableLinks, showSettings } = editorState;
+  const {  showSettings } = editorState;
   const reactly = useReactly();
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
@@ -79,9 +71,9 @@ const ComponentPanel = () => {
     setValue(newValue);
   };
 
-  // if (!selectedPage) {
-  //   return <>TBD</>
-  // }
+  if (!component) {
+    return <>TBD</>
+  }
 
   const componentList = selectedPage?.components || appContext.components || [];
 
@@ -89,7 +81,7 @@ const ComponentPanel = () => {
     if (!name) return;
     const [type, title] = name.split(':')
     const target = componentList.find(f => f.ComponentName === title.trim());
- 
+    Alert (`Moved ${type} component`);
     if (target) {
       return reactly.onMove(component.ID, target.ID) 
     } 
@@ -140,7 +132,7 @@ const ComponentPanel = () => {
   .filter(f => f.ID !== selectedPage?.ID)
   .reduce((out, pg) => {
     pg.components?.filter(f => !f.componentID).map(c => {
-      out.push ({
+      return out.push ({
         label: `${pg.PageName}.${c.ComponentName}`,
         action: text => promptImport(pg.ID, selectedPage?.ID, c)
       });
@@ -168,7 +160,7 @@ const ComponentPanel = () => {
   }
 
   
-  return <Stack>
+  return <Stack sx={{mb: 10}}>
      <Flex sx={{ m: 1}}>
 
       {showApp && <>
@@ -303,9 +295,9 @@ const ComponentPanel = () => {
 
 
 function PageSettings({ page, application, themes = [], onChange, importable, onPageMove, onComponentImport }) {
-  const { queryState } = React.useContext(AppStateContext);
-  const [imported, setImported] = React.useState(''); 
-  const [param, setParam] = React.useState('');  
+  // const { queryState } = React.useContext(AppStateContext);
+  // const [imported, setImported] = React.useState(''); 
+  // const [param, setParam] = React.useState('');  
   const [state, setState] = React.useState(page); 
   const { PageName, PagePath} = state;
 
@@ -314,12 +306,12 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
   const parentPage = application.pages?.find(p => p.ID === page.pageID)
  
 
-  const handleImport = text => {
-    setImported('')
-    if (!text) return;
-    const { action } = importable.find(f => f.label === text);
-    !!action && action()
-  }
+  // const handleImport = text => {
+  //   setImported('')
+  //   if (!text) return;
+  //   const { action } = importable.find(f => f.label === text);
+  //   !!action && action()
+  // }
 
   const handlePageMove = text => {
     const targetPage = application.pages?.find(p => p.PageName === text);
@@ -394,7 +386,7 @@ function PageSettings({ page, application, themes = [], onChange, importable, on
               }; 
               return updated
             });
-            setParam('')
+            // setParam('')
           }} >Add</PopoverPrompt>
         </Flex>
 

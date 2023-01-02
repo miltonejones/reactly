@@ -6,7 +6,8 @@ import { styled, List, Link, ListItemButton,
  
 import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
 import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
-import { AppStateContext } from '../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext';
+import { useReactly } from "../../hooks";
 
 
 const NodeText = styled(Typography)(({ theme, on, indent }) => ({
@@ -21,43 +22,54 @@ const NodeText = styled(Typography)(({ theme, on, indent }) => ({
 const componentOrder = (a,b) => a.order - b.order;
 
 const Content = styled(Box)(({ theme }) => ({
-  height: 'calc(100vh - 460px)',
+  height: 'calc(100vh - var(--content-height-offset))',
   overflow: 'auto',
   padding: theme.spacing(0, 1),
   border: 'solid 1px #777', 
 }))
+ 
 
-const filterProp = filter => f =>  !filter || 
-  f.ComponentName.toLowerCase().indexOf(filter.toLowerCase()) > -1 || 
-  f.ComponentType.toLowerCase().indexOf(filter.toLowerCase()) > -1
+const ContentTree = (props) => {
 
-const ContentTree = ({ tree, onCreate, onNameChange, selectComponent, 
-    onDrop, filter, onCustomName, quickComponent, ...props }) => {
-  const { queryState = {}, setQueryState, selectedPage  } = React.useContext(AppStateContext);
+  const { queryState = {}, appContext, selectedPage  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
+  const componentParent = selectedPage || appContext;
+  const reactly = useReactly();
+  const { selectComponent } = React.useContext(EditorStateContext);
+  if (!componentParent) {
+    return <i />
+  }
+  const tree = componentParent.components;
+  const onCreate = (type, options) => reactly.createComponent(type, options)
+
   if (!tree) return <i />
   const components = tree.filter(f => !f.componentID);
   return (
     <Content> 
       <List dense>
-        {components
-        .filter(filterProp(filter))
+        {components 
         .sort(componentOrder)
-        .map(c => <Contents 
-          filter={filter}
-          onCustomName={onCustomName}
-          quickComponent={quickComponent}
+        .map(c => <Contents  
+          onSelect={selectComponent} 
+
+          onCustomName={reactly.onCustomName}
+          quickComponent={reactly.quickComponent}
           onCreate={onCreate} 
+          onNameChange={reactly.onNameChange} 
+          onDrop={reactly.onDropComponent} 
+
           key={c.ID}
           {...props}
-          onNameChange={onNameChange}
-          onSelect={selectComponent} selectedComponent={selectedComponent} onDrop={onDrop} trees={tree} key={c.ComponentName} tree={c} /> )} 
+          selectedComponent={selectedComponent} 
+          trees={tree} 
+          key={c.ComponentName} 
+          tree={c} /> )} 
       </List>
     </Content>
   );
 };
 
-const Contents = ({ filter, tree, parentID, onDrop, trees, 
+const Contents = ({  tree, parentID, onDrop, trees, 
   onCustomName, quickComponent, label, indent = 0, onNameChange, 
   onCreate, onSelect, selectedComponent, ...props  }) => { 
   const { Library } = React.useContext(AppStateContext);
@@ -66,7 +78,7 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
   const [over, setOver] = React.useState(false);
   // const [expanded, setExpanded] = React.useState(true)
 
-  const { expandedNodes,setExpandedNodes } = props;
+  const { expandedNodes, setExpandedNodes } = React.useContext(EditorStateContext);
   const expanded = !!tree && !!expandedNodes[tree.ID]
 
 
@@ -178,13 +190,11 @@ const Contents = ({ filter, tree, parentID, onDrop, trees,
       
       <Collapse in={expanded}>
         
-        {!!kids?.length && <>{kids
-          .filter(filterProp(filter))
+        {!!kids?.length && <>{kids 
           .sort(componentOrder)
           .map(c => <Contents 
             {...props}
-            quickComponent={quickComponent}
-            filter={filter}
+            quickComponent={quickComponent} 
             onCreate={onCreate} 
             onDrop={onDrop} 
             onCustomName={onCustomName}

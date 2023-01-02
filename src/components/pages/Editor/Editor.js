@@ -1,22 +1,16 @@
 import React from "react";
 import {
-  Popover,
-  Drawer,
+  Popover, 
   Grid,
   Box,
   Chip,
   styled,
   InputAdornment,
-  TextField,
-  Menu,
+  TextField, 
   Stack,
-  Divider,
-  Typography,
-  IconButton,
-  FormControlLabel,
-  Switch,
-  Collapse,
-  Tabs,
+  Divider, 
+  IconButton, 
+  Collapse, 
 } from "@mui/material";
 import {
   Flex,
@@ -24,32 +18,25 @@ import {
   QuickMenu,
   Spacer,
   StateDrawer,
-  RotateButton,
-  useClipboard,
+  RotateButton, 
   ScriptDrawer,
   ComponentPanel,
   ContentTree,
   PageTree,
   ComponentTree,
   ConnectionDrawer,
-  PopoverPrompt,
-  SearchBox, 
+  PopoverPrompt, 
   LibraryTree,
-  Text,
-  TabButton,
+  Text, 
 } from "../..";
 import {
   ExpandMore,
   Close,
   Launch,
-  Save,
-  CopyAll,
-  Sync,
+  Save, 
   Add,
-  Home,
-  AutoStories,
-  AppRegistration,
-  RecentActors,
+  Home, 
+  AppRegistration, 
   Code,
   Article,
   Gamepad,
@@ -58,20 +45,19 @@ import {
 import {
   AppStateContext,
   EditorStateContext,
-} from "../../../hooks/AppStateContext";
-import { useParams } from "react-router-dom";
+} from "../../../hooks/AppStateContext"; 
 import { useEditor } from "../../../hooks/useEditor";
-import { Json } from "../../../colorize"; 
-import { TextInput } from "../..";
+import { Json } from "../../../colorize";  
 import { Icons } from "../../library/icons";
-import { JsonView } from "../../../colorize";
-import { ChipBox, TinyButton } from "../..";
+import { JsonView } from "../../../colorize"; 
 import { ApplicationTree } from "../..";
-import StatusPane from "../../StatusPane/StatusPane";
-import { uniqueId } from "../../library/util"; 
+import StatusPane from "../../StatusPane/StatusPane"; 
 import { ConsoleDrawer } from "../..";
 import { useNavigate  } from "react-router-dom";
-import { ParameterPopover } from "./components";
+import { DrawerNavigation, NavigationTabs, ComponentTabs, ParameterPopover, ControlButton } from "./components";
+import { useReactly } from "../../../hooks"; 
+import { recurse } from "../../library/util";
+import { Hide, Sidebar, SidePane, Treebox } from "./styled";
 
 const BorderButton = styled(IconButton)(({ active , theme}) => ({
   // borderWidth: active ? 1  : 0,
@@ -94,17 +80,16 @@ const Pane = styled(Grid)(({ short, wide, left, right, thin, state="", side, too
 });
 
 export const useConnectionEdit = (apps) => {
-  const { appname } = useParams();
-  const {
-    applications,
+  
+  const { 
     dropConnection,
     dropResource,
     setConnection,
     setResource,
   } = useEditor(apps);
-  const { Confirm } = React.useContext(AppStateContext);
+  const { Confirm, appContext } = React.useContext(AppStateContext);
+ 
 
-  const appData = applications.find((f) => f.path === appname);
 
   const handleResourceDelete = async (ID, confirmed) => {
     const ok = confirmed || await Confirm(
@@ -112,7 +97,7 @@ export const useConnectionEdit = (apps) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropResource(appData.ID, ID);
+    dropResource(appContext.ID, ID);
   };
 
   const handleConnectionDelete = async (ID, confirmed) => {
@@ -121,7 +106,7 @@ export const useConnectionEdit = (apps) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropConnection(appData.ID, ID);
+    dropConnection(appContext.ID, ID);
   };
 
   return {
@@ -133,18 +118,16 @@ export const useConnectionEdit = (apps) => {
 };
 
 export const useResourceEdit = (apps) => {
-  const { appname } = useParams();
-  const {
-    applications,
+  
+  const { 
     setComponentEvent,
     dropComponentEvent, 
   } = useEditor(apps);
-  const { Confirm, queryState , selectedPage} = React.useContext(AppStateContext);
-
-  const appData = applications.find((f) => f.path === appname);
+  const { Confirm, appContext , selectedPage} = React.useContext(AppStateContext);
+ 
 
   const handleEventChange = (componentID, event) => {
-    setComponentEvent(appData.ID, selectedPage?.ID, componentID, event);
+    setComponentEvent(appContext.ID, selectedPage?.ID, componentID, event);
   };
 
   const handledEventDelete = async (componentID, eventID, confirmed) => {
@@ -153,7 +136,7 @@ export const useResourceEdit = (apps) => {
       "Confirm delete"
     );
     if (!ok) return;
-    dropComponentEvent(appData.ID, selectedPage?.ID, componentID, eventID);
+    dropComponentEvent(appContext.ID, selectedPage?.ID, componentID, eventID);
   };
 
   return {
@@ -165,42 +148,9 @@ export const useResourceEdit = (apps) => {
 
 }
 
-const Editor = ({ applications: apps = {} }) => {
-  const { appname, pagename } = useParams();
-  const {
-    applications,
-    setComponentProp,
-    setPageState,
-    setComponentEvent,
-    dropComponent,
-    setComponentName,
-    dropPageState,
-    setComponentStyle,
-    setPageProps,
-    addComponent,
-    setResource,
-    dropComponentEvent,
-    setComponentParent,
-    setPageScript,
-    dropPageScript,
-    dropResource,
-    dropConnection,
-    setConnection,
-    setPage, 
-    duplicatePage,
-    importComponent,
-    dropPage,setTheme, 
-    dropTheme, 
-    setPageEvent,
-    setResourceEvent, 
-    dropResourceEvent,
-    setPageParent,
-    setParameter, 
-    dropParameter,
-    setComponentCustomName,
-    promotePageScript,
-    pasteComponentProps
-  } = useEditor(apps);
+const Editor = () => { 
+ 
+
   const [drawerState, setDrawerState] = React.useState({
     stateOpen: false,
     scriptOpen: false,
@@ -208,15 +158,12 @@ const Editor = ({ applications: apps = {} }) => {
   });
 
   
-  const navigate = useNavigate(); 
-  const { handleResourceDelete, handleConnectionDelete } = useConnectionEdit(apps);
-  const { copy, copied } = useClipboard();
+  const navigate = useNavigate();  
   const [ collapsed, setCollapsed ] = React.useState({
     left: false,
     right: false,
   });
-  const [ showTabs,  setShowTabs ] = React.useState(true);
-  const [ expandedNodes,  setExpandedNodes ] = React.useState({});
+  const [ showTabs,  setShowTabs ] = React.useState(true); 
   // const [ pageTabs,  setPageTabs ] = React.useState({});
   const [ popoverContent,  setPopoverContent ] = React.useState(null);
   const [ anchorEl, setAnchorEl ] = React.useState(null);
@@ -230,6 +177,7 @@ const Editor = ({ applications: apps = {} }) => {
     hilit: false,
     contentFilter: '',
     box: {},  
+    expandedNodes: {},
     disableLinks: false, 
     showSettings: false,  
     message: 'Unknown action', 
@@ -238,45 +186,36 @@ const Editor = ({ applications: apps = {} }) => {
 
   const [ 
     setJSON, 
-    setShowLib, 
-    setLoaded, 
-    setContentFilter ,
-    setHilit
-  ] = [ 'json', 'showLib', 'loaded', 'contentFilter', 'hilit']
+    setShowLib,  
+    setHilit,
+    setExpandedNodes
+  ] = [ 'json', 'showLib',  'hilit', 'expandedNodes']
     .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
 
-  const { json, hilit, showLib, loaded, contentFilter } = editorState;
-  const { stateOpen, scriptOpen, connectOpen } = drawerState;
-
+  const { json, hilit, showLib, expandedNodes } = editorState; 
+ 
   const {
     loud,
     setLoud, 
     selectedPage,
     queryState = {},
-    setQueryState,
-    setAppData,
-    CreateComponent,
-    Shout,
-    Alert,
-    Confirm,
-    Prompt,
-    pageClientState, 
-    setPageClientState,
-    pageResourceState,  
-    setPageResourceState,
-    applicationClientState, 
-    pageModalState,
+    setQueryState,  
+    Alert, 
+    pageClientState,  
+    pageResourceState,   
+    applicationClientState,  
     Library,
     uploadApplicationConfig,
     dirty,
     setDirty, 
-    setShowTrace,
-    showTrace,
+    setShowTrace, 
     appContext,
     pageTabs,   
     
 
   } = React.useContext(AppStateContext);
+
+  const reactly = useReactly();
 
   React.useEffect(() => {
     console.log ('editor loading')
@@ -292,153 +231,15 @@ const Editor = ({ applications: apps = {} }) => {
   const handlePopoverClose = () => {
     setAnchorEl(null); 
   };
-
-
-  if (!applications.find) {
-    return <>error</>;
-  }
-  const appData = appContext;// applications.find((f) => f.path === appname);
- 
+  
 
   const componentParent = selectedPage || appContext;
 
-  const path = ["apps", appData.path].concat(
+  const path = ["apps", appContext.path].concat(
     !selectedPage?.PagePath ? [] : selectedPage.PagePath
   );
-
-  const handleStyleChange = (componentID, label, value, selector) => {
-    // alert (selector) //white
-    setComponentStyle(
-      appData.ID,
-      selectedPage?.ID,
-      componentID,
-      label,
-      value,
-      selector
-    );
-  };
-
-  const handleSettingsPaste =(componentID, type, props) => {
-    pasteComponentProps(appData.ID, selectedPage?.ID, componentID, type, props)
-  }
-
-  const handleSettingsChange = (componentID, label, value) => { 
-    setComponentProp(appData.ID, selectedPage?.ID, componentID, label, value);
-  };
-
-  const handleNameChange = async (componentID, old) => {
-    const name = await Prompt(
-      `Enter a new name for "${old}"`,
-      "Rename component",
-      old
-    );
-    if (!name) return;
-    setComponentName(appData.ID, selectedPage?.ID, componentID, name);
-  };
-
-  const handleStateChange = (stateID, label, value, type) => { 
-    const update =  {}
  
-    label?.split(',').map(key => {
-      setPageState(appData.ID, selectedPage?.ID, stateID, key, value, type, pg => {
-        setQueryState(s => ({
-          ...s,
-          page: pg
-        }))
-      });
-      Object.assign(update, {[key]: value});
-    })
-    setPageClientState(s => ({
-      ...s, 
-      ...update
-    }))
-    ;
-  };
-
-  const handlePageMove = async (pageID) => {
-    setPageParent(appData.ID, selectedPage?.ID, pageID)
-  }
-
-  const handleComponentImport = async (sourceID, destID, componentID) => {
-    importComponent(appData.ID, sourceID, destID, componentID);
-  }
-
-  const handleScriptChange = async (
-      scriptID, name, code, 
-     { fn, existingName, pageID , parentID, comment }
-    ) => {
-      //  alert(JSON.stringify({scriptID,name,code,parentID},0,2))
-    const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
-    if (!scriptName) return;
-    setPageScript(appData.ID, pageID || selectedPage?.ID, scriptID, scriptName, code, fn, parentID, comment);
-  };
-
-  const handlePropChange = (props, state) => {
-    if (state) {
-      return setPageEvent(appData.ID, selectedPage?.ID, state); //alert (JSON.stringify(state))
-    }
-    setPageProps(appData.ID, selectedPage?.ID, props);
-  };
-
-  const handleEventChange = (componentID, event, type) => {
-    const command = type === 'connection' 
-      ? setResourceEvent
-      : setComponentEvent
-      // alert (command.toString())
-      command(appData.ID, selectedPage?.ID, componentID, event);
-  };
-
-  const handledEventDelete = async (componentID, eventID, type, confirmed) => {
-    const command = type === 'connection' 
-      ? dropResourceEvent
-      : dropComponentEvent
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this event?",
-      "Confirm delete"
-    );
-    if (!ok) return;
-    command(appData.ID, selectedPage?.ID, componentID, eventID);
-  };
-
-  const handleThemeChange = async (themeID, themeName, theme) => {
-    const ok = themeName || await Prompt('Enter a theme name');
-    if (!ok) return;
-    setTheme (appData.ID, theme, ok)
-  };
-
-  const handleStateDrop = (stateID) => {
-    dropPageState(appData.ID, selectedPage?.ID, stateID);
-  };
-
-  const handleMove = (componentID, parentID) => {
-    setComponentParent(appData.ID, selectedPage?.ID, componentID, parentID);
-  };
-
-  const handleCustomName = async (componentID) => {
-    const customName = await Prompt('Enter name for custom component', 'Name component');
-    if (!customName) return 
-    setComponentCustomName(appData.ID, selectedPage?.ID, componentID, customName);
-  }
-
-  const createPage = async (pageID, pageName) => {
-    const PageName = pageName || await Prompt('Enter a name for your page', 'Create Page');
-    if (!PageName) return;
-    const page = {
-      PageName,
-      PagePath: PageName.toLowerCase().replace(/\s/g, '-'),
-      pageID,
-      components: [],
-    }
-    setPage(appData.ID, page, pg => { 
-      setQueryState((s) => ({
-        ...s,
-        page: pg,
-        pageLoaded: false,
-        appLoaded: false, 
-      }))
-    });
-  }
-
+ 
   const closeLib = () => {
     setShowLib(!showLib);
     setCollapsed((s) => ({ ...s, left: !showLib, right: !showLib }))
@@ -503,84 +304,9 @@ const Editor = ({ applications: apps = {} }) => {
       name: "Status Pane",
       action: () => Alert(<StatusPane />)
     },
-  ]; 
-
-  const handleScriptPromote = async (scriptID) => {
-    const ok = await Confirm(
-      <Stack>
-        Are you sure you want to promote this script?
-        <Text small active error>This will remove it from the current page</Text>
-      </Stack>,
-      "Confirm promote"
-    );
-    if (!ok) return;
-    promotePageScript(appData.ID, selectedPage?.ID, scriptID)
-  }
-
-  const handleDropScript = async (scriptID, confirmed) => {
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this script?",
-      "Confirm delete"
-    );
-    if (!ok) return;
-    dropPageScript(appData.ID, selectedPage?.ID, scriptID);
-  };
-
-  const handlePageDelete = async (pageID, confirmed) => {
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this page?",
-      "Confirm delete"
-    );
-    if (!ok) return;
-    dropPage(appData.ID, pageID);
-  };
-
-  const handleDropComponent = async (componentID, confirmed) => {
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this component?" + componentID,
-      "Confirm delete"
-    );
-    if (!ok) return;
-    dropComponent(appData.ID, selectedPage?.ID, componentID);
-  };
-
-  const quickComponent = async (selected, componentID) => {
-    const max =
-      (componentParent.components || []).filter((f) => f.ComponentType === selected)
-        .length + 1;
-    const name = `${selected}-${max}`;
-    return appendComponent({
-      selected,
-      name,
-    }, componentID);
-  };
-
-  const appendComponent = (ok, componentID, options) => { 
-    const component = {
-      ComponentType: ok.selected,
-      ComponentName: ok.name,
-      componentID,
-      children: Library[ok.selected].allowChildren, // , ok.selected === 'Box' ,
-      state: [],
-      styles: [],
-      events: [],
-      settings: [],
-      scripts: [],
-      data: [],
-    };
-   const res = addComponent(appData.ID, selectedPage?.ID, component, {...options, 
-    fn: (comp) => {
-      // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
-      setQueryState(s => ({...s, selectedComponent: comp}));
-    }}); 
-  };
-
-  const createComponent = async (componentID, options) => {
-    const ok = await CreateComponent(componentParent.components);
-    if (!ok) return;
-    appendComponent(ok, componentID, options);
-  };
-
+  ];  
+   
+ 
   const libraryKeys = Object.keys(Library)
     .filter(f => !Library[f].hidden)
     .sort((a,b) => a > b ? 1 : -1);
@@ -596,11 +322,11 @@ const Editor = ({ applications: apps = {} }) => {
  
 
   const handlePageNavigate = (name,  parameters) => {
-    const clickedPage = !!name && appData.pages?.find((f) => f.PageName === name);
+    const clickedPage = !!name && appContext.pages?.find((f) => f.PageName === name);
  
 
     if (!clickedPage) { 
-      return navigate(`/edit/${appData.path}`);
+      return navigate(`/edit/${appContext.path}`);
     }
  
 
@@ -608,11 +334,9 @@ const Editor = ({ applications: apps = {} }) => {
       ? ''
       : `/${Object.values(parameters).join('/')}`
  
-      navigate(`/edit/${appData.path}/${clickedPage.PagePath}${suffix}`);
+      navigate(`/edit/${appContext.path}/${clickedPage.PagePath}${suffix}`);
   }
-
-  const componentTabs = queryState.tabs?.[selectedPage?.PageName];
-
+ 
   const selectComponentByID = (ID, on) => {
     const component = componentParent.components.find(f => f.ID === ID);
     !!component && selectComponent(component, on);
@@ -654,477 +378,318 @@ const Editor = ({ applications: apps = {} }) => {
     });
 
   }
+  /**  --left-width: 320px;
+  --left-off-width: 40px; */
 
-  const pageTree =  <PageTree
-    tree={appData.pages}
-    selected={selectedPage?.PageName}
-    setPage={createPage}
-    dropPage={handlePageDelete}
-    duplicatePage={id => duplicatePage(appData.ID, id)}
-    onClick={handlePageNavigate}
-  />;
+  const PANE_HEIGHT = 'calc(100vh - 64px)';
+  const LEFT_PANE_WIDTH = collapsed.left ? 40 : 280;
+  const RIGHT_PANE_WIDTH = collapsed.left ? 40 : 380;
 
-  const applicationTreeProps = {  
-    selectedComponent: queryState.selectedComponent,
-    preview: true,
-    queryState,
-    setQueryState,  
-    hilit
+  let centerOffset = 56;
+  centerOffset += LEFT_PANE_WIDTH;
+  centerOffset += RIGHT_PANE_WIDTH;
+  
+  const paneProps = {
+    width: '100vw',
+    height: '100vh',
+    overflow: 'hidden',
+    margin: 0,
+    padding: 0,
+    '--left-pane-height': PANE_HEIGHT,
+    '--left-pane-width': LEFT_PANE_WIDTH + 'px',
+    '--left-pane-overflow': collapsed.left ? 'hidden' : 'auto',
+    '--top-pane-width': '100vw',
+    '--top-pane-height': 'fit-content',
+    '--right-pane-height': PANE_HEIGHT,
+    '--right-pane-width': RIGHT_PANE_WIDTH + 'px',
+    '--center-pane-width': `calc(100vw - ${centerOffset}px)`,
+    '--right-pane-overflow': collapsed.right ? 'hidden' : 'auto',
+    '--content-height-offset': !!pageTabs && !!Object.keys(pageTabs).length ? '460px' : '420px'
   }
-
-  const contentTree =  <ContentTree
-    filter={contentFilter}
-    onDrop={handleDropComponent}
-    onNameChange={handleNameChange}
-    onCustomName={handleCustomName}
-    quickComponent={quickComponent}
-    selectComponent={selectComponent}
-    expandedNodes={expandedNodes}
-    setExpandedNodes={setExpandedNodes}
-    onCreate={(type, options) => createComponent(type, options)}
-    tree={componentParent?.components}
-  />
 
   const componentType = Library[queryState.selectedComponent?.ComponentType];
-
-  const recurse = (page, selected, open = false) => { 
  
-
-    if (!selected) {
-      return open;
-    }
-    
-    const parents = page?.components?.filter(f => f.ID === selected.componentID);
- 
-
-    if (parents?.length) {
-      const out = parents.map(kid => { 
-        return recurse(page, kid, open || kid.ComponentType === 'Drawer' )
-      }) 
-      const ok = out.some(f => !!f);
-      return ok
-    }
-
-    return open || page.ComponentType === 'Drawer';
-  }
-  
   const isInApplicationScope = !!componentParent.Name
   const parentOpen = recurse(componentParent, queryState.selectedComponent) ; 
+ 
+  const menuProps = {
+    component: {
+      onChange: reactly.quickComponent,
+      options: libraryKeys,
+      icons: libraryKeys.map(
+          (e) => Icons[Library[e].Icon]
+        ),
+      label: <TextBtn endIcon={<Add />}>Add</TextBtn>
+    },
+    page: {
+      onChange: handlePageNavigate,
+      options: appContext.pages?.map((f) => f.PageName),
+      small: true,
+      caret: true,
+      label: selectedPage?.PageName || <b>{ appContext.Name}</b>,
+      title: "Choose Page"
+    },
+    toolbar: {
+      onChange: (n) => {
+        if (!n) return;
+        const { action } = menuOptions.find((f) => f.name === n);
+        action();
+      },
+      title: "App Menu",
+      value: getMenuOption(),
+      options: menuOptions.map((f) => f.name),
+      label: "Menu",
+      small: true,
+      caret: true,
+    }
+  }
 
+  const navigationButtons = [
+    {
+      deg: !parentOpen ? 270 : 90,
+      onClick: () =>  setCollapsed((s) => ({ ...s, left: !collapsed.left })),
+      icon: collapsed.left ? <ExpandMore /> : <Close />
+    },
+    { 
+      onClick: () => handlePopoverClick(<PageTree />),
+      icon: <Article />,
+      hidden: !collapsed.left
+    },
+    { 
+      onClick: () => handlePopoverClick(<ContentTree />),
+      icon: <Newspaper />,
+      hidden: !collapsed.left
+    }
+  ]
 
   const navigationPane = 
-          <Pane
-            item
-            side="left"
-            state={collapsed.left ? "-off" : ""}
-            sx={{ borderRight: 1, borderColor: "divider" }}
-            thin={collapsed.left ? 1 : 0}
-          >
+          <SidePane item side="left">
  
             <Stack sx={{ p: collapsed.left ? 0 : 1, height: 300 }}>
+
               <Flex nowrap spacing={1}>
-                {!collapsed.left && (
-                  <>
-                   {!!selectedPage?.PageName && <Text small>
-                      <b>Page</b>
-                    </Text>}
-                    <QuickMenu
-                      small
-                      caret
-                      options={appData?.pages?.map((f) => f.PageName)}
-                      title="Choose Page"
-                      label={selectedPage?.PageName || <b>{ appData.Name}</b>}
-                      onChange={handlePageNavigate}
-                    />
+                <Hide hidden={collapsed.left}>
+                  {!!selectedPage?.PageName && <Text small>
+                    <b>Page</b>
+                  </Text>}
 
-                    <Spacer /> 
-                    <PopoverPrompt 
-                    onChange={(value) => !!value && createPage(null, value)}
-                      label="Enter a name for your page" endIcon={<Add />} >Create</PopoverPrompt>
-                  </>
-                )}
+                  <QuickMenu {...menuProps.page}  />
 
-                    <Popover 
-                  open={open}
-                  anchorEl={anchorEl}
-                  onClose={handlePopoverClose} 
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                >
-                <Box sx={{width: 300, p: 2}}>
-                  {popoverContent}
-                </Box>
+                  <Spacer /> 
 
-                </Popover>
-  
+                  <PopoverPrompt 
+                    onChange={(value) => !!value && reactly.createPage(null, value)}
+                    label="Enter a name for your page" 
+                    endIcon={<Add />} 
+                    >Create</PopoverPrompt> 
+                </Hide>
+                
                <Stack>
-                  <RotateButton
-                    deg={!parentOpen ? 270 : 90}
-                    onClick={() =>
-                      setCollapsed((s) => ({ ...s, left: !collapsed.left }))
-                    }
-                  >
-                    {collapsed.left ? <ExpandMore /> : <Close />}
-                  </RotateButton>
-                  
-                  {collapsed.left && <>
-                  <RotateButton 
-                    onClick={handlePopoverClick(pageTree)}
-                  >
-                    <Article />
-                  </RotateButton>
-                  <RotateButton 
-                    onClick={handlePopoverClick(contentTree)}
-                  >
-                    <Newspaper />
-                  </RotateButton>
-                  </>}
+                 {navigationButtons
+                  .map((button, i) => <ControlButton key={i} {...button} />)} 
                </Stack>
+
               </Flex>
 
-              {!collapsed.left && (
-                <>
-                  <Box sx={{ border: "solid 1px gray", height: 240, overflow: 'auto', p: 1 }}>
-                   {pageTree}
-                  </Box>
-                </>
-              )}
+
+
+              <Treebox hidden={collapsed.left}>
+                <PageTree />
+               </Treebox>
             </Stack>
 
-            {!collapsed.left && (
-              <>
-                <Divider />
+            <Hide hidden={collapsed.left || !componentParent }> 
+              <Divider />
 
-                <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
-                  {!!componentParent && (
-                    <Flex spacing={1}>
-                      <Flex fullWidth>
-                        <Text small>
-                          <b>Content</b>
-                        </Text>
+              <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
+                <Flex spacing={1}>
+                  <Flex fullWidth>
+                    <Text small>
+                      <b>Content</b>
+                    </Text>
 
-                        <Spacer />
-                        <QuickMenu
-                          onChange={quickComponent}
-                          options={libraryKeys}
-                          icons={libraryKeys.map(
-                            (e) => Icons[Library[e].Icon]
-                          )}
-                          label={<TextBtn endIcon={<Add />}>Add</TextBtn>}
-                        />
-                        {/* <TextBtn onClick={() => createComponent()} endIcon={<Add />}>Add</TextBtn> */}
-                      </Flex>
-                    </Flex>
-                  )}
-                  {!!componentParent?.components && <>
+                    <Spacer />
+                    <QuickMenu {...menuProps.component} />
                   
-                 <Box sx={{mb: 1}}>
-                 {/* <SearchBox label="Search" size="small" onChange={e => setContentFilter(e.target.value)} 
-                      value={contentFilter} /> */}
-                 </Box>
-                  {contentTree}
-                  </>
-                    
-                  }
-                </Stack>
-              </>
-            )}
-          </Pane>;
+                  </Flex>
+                </Flex>
 
-//  return JSON.stringify(editorState)
+                <ContentTree   />
+
+              </Stack>
+            </Hide>
+          
+          </SidePane>;
+
+ 
   return (
     <EditorStateContext.Provider value={{ 
-      appData ,
+      appData: appContext ,
+      selectComponent,
       setDrawerState,
       ...drawerState,
       setCollapsed,
       collapsed,
       setEditorState,
       editorState,
-      hilit
-
+      setShowTrace,
+      handlePageNavigate,
+      hilit,
+      setExpandedNodes, 
+      expandedNodes,
+      selectComponentByID,
+      showTabs
 
       }}>
-      <Flex spacing={0} baseline fullWidth>
-        <Stack
-          sx={{
-            justifyContent: "space-between",
-            alignItems: "center",
-            height: "100vh",
-            width: 48,
-            color: "white",
-            backgroundColor: (t) => t.palette.primary.dark,
-          }}
-        >
-          <Box>
-            <IconButton href="/" sx={{ mt: 4 }} color="inherit">
-              <Home />
-            </IconButton>
-          </Box>
+      <Box style={paneProps}>
 
-          <Stack>
-          <IconButton
-              color="inherit"
-              sx={{ mt: 1 }}
-              onClick={() => {
-                setDrawerState((s) => ({ ...s, 
-                  connectOpen: !1 , 
-                  scriptOpen: !1 , 
-                  connectOpen: !1 
-                }));
-                setShowTrace(true);
-              }}
-            >
-              <Gamepad />
-            </IconButton>
+        <Flex spacing={0} baseline fullWidth>
+          <Sidebar >
+            <Box>
+              <IconButton href="/" sx={{ mt: 4 }} color="inherit">
+                <Home />
+              </IconButton>
+            </Box>
 
-            {!!componentParent && <>
-                        <IconButton
-              color="inherit"
-              sx={{ mt: 1 }}
-              onClick={() => {
-                setDrawerState((s) => ({ ...s, connectOpen: !connectOpen }));
-              }}
-            >
-              <AutoStories />
-            </IconButton>
-            <IconButton
-              color="inherit"
-              sx={{ mt: 1 }}
-              onClick={() => {
-                setDrawerState((s) => ({ ...s, scriptOpen: !scriptOpen }));
-              }}
-            >
-              <Code />
-            </IconButton>
+            <DrawerNavigation /> 
+          </Sidebar>
+
+
+          <Grid container >
+            {/* toolbar  */}
+            <SidePane item xs={12} side="top" >
+              <Flex sx={{ p: 1 }}>
+                <Flex
+                  sx={{ borderRight: 1, borderColor: "divider", pr: 2, mr: 1 }}
+                >
+                  <AppRegistration />
+                  <b>Reactly</b>
+                </Flex>
+
+                <IconButton onClick={() => window.history.back()}>
+                  <ArrowBack />
+                </IconButton>
+
+                <Chip color="primary" 
+                  onClick={() => handlePageNavigate()}
+                  variant={isInApplicationScope ? "outlined" : "filled" } label={<b>{appContext.Name}</b>} />
+
+                <Flex nowrap>
+                  <QuickMenu {...menuProps.toolbar} />
+                </Flex>
+                    
+                {(queryState.pageLoaded || queryState.appLoaded) && <Addressbox value={`/${path.join("/")}`}  
+                  queryState={queryState}
+                  setQueryState={setQueryState}
+                  selectedPage={selectedPage}
+                />}
+
+
+              <BorderButton active={showLib} disabled={!!json} onClick={() => closeLib()}>
+                  <Construction />
+                </BorderButton>
+
+                <BorderButton active={json} disabled={showLib} onClick={() => setJSON(!json)}>
+                  <Code />
+                </BorderButton>
+
+                <IconButton 
+                  size="small"
+                  onClick={() => window.open(`/${path.join("/")}`.replace('apps',  'debug'))} 
+                >
+                
+                  <Gamepad  />
+                </IconButton>
+            
+            
+                <TextBtn
+                  variant="contained"
+                  endIcon={<Save />}
+                  disabled={!dirty} 
+                  onClick={() => { 
+                    uploadApplicationConfig(appContext);
+                    setDirty(false);
+                  }}
+                >
+                  Save
+                </TextBtn>
+              </Flex>
+            </SidePane>
+  
+            <SidePane item xs={12} side="top"  >
+                
+                <NavigationTabs />
+              
+            </SidePane> 
+            
+            {!(componentType?.modal || parentOpen) && <>
+              {navigationPane}
             </>}
 
-            <IconButton
-              color="inherit"
-              sx={{ mt: 1, mb: 4 }}
-              onClick={() => {
-                setDrawerState((s) => ({ ...s, stateOpen: !stateOpen }));
-              }}
-            >
-              <RecentActors />
-            </IconButton>
-          </Stack>
-        </Stack>
-        <Grid container >
-
-          <Pane
-            short
-            item
-            xs={12}
-            sx={{ borderBottom: 1, borderColor: "divider", whiteSpace: 'nowrap' }}
-          >
-            <Flex sx={{ p: 1 }}>
-              <Flex
-                sx={{ borderRight: 1, borderColor: "divider", pr: 2, mr: 1 }}
-              >
-                <AppRegistration />
-                <b>Reactly</b>
-              </Flex>
-
-              <IconButton onClick={() => window.history.back()}>
-                <ArrowBack />
-              </IconButton>
-
-              <Chip color="primary" 
-                onClick={() => handlePageNavigate()}
-                variant={isInApplicationScope ? "outlined" : "filled" } label={<b>{appData.Name}</b>} />
-
-              <Flex nowrap>
-                <QuickMenu
-                  small
-                  caret
-                  value={getMenuOption()}
-                  options={menuOptions.map((f) => f.name)}
-                  title="App Menu"
-                  label="Menu"
-                  onChange={(n) => {
-                    if (!n) return;
-                    const { action } = menuOptions.find((f) => f.name === n);
-                    action();
-                  }}
-                />
-              </Flex>
-                  
-              {(queryState.pageLoaded || queryState.appLoaded) && <Addressbox value={`/${path.join("/")}`}  
-                queryState={queryState}
-                setQueryState={setQueryState}
-                selectedPage={selectedPage}
-              />}
-
-
-             <BorderButton active={showLib} disabled={!!json} onClick={() => closeLib()}>
-                <Construction />
-              </BorderButton>
-
-              <BorderButton active={json} disabled={showLib} onClick={() => setJSON(!json)}>
-                <Code />
-              </BorderButton>
-
-              <IconButton 
-                size="small"
-                onClick={() => window.open(`/${path.join("/")}`.replace('apps',  'debug'))} 
-              >
-              
-                <Gamepad  />
-              </IconButton>
-              {/* [{selectedPage?.dirty?.toString()}] */}
-              {/* <FormControlLabel
-                sx={{ m: 1 }}
-                label={<Text small>Show JSON</Text>}
-                control={
-                  <Switch
-                    checked={json}
-                    size="small"
-                    onChange={(e) => setJSON(e.target.checked)}
-                  />
-                }
-              /> */}
-              <TextBtn
-                variant="contained"
-                endIcon={<Save />}
-                disabled={!dirty}
-                sx={{ cursor: !copied ? "pointer !important" : "progress" }}
-                onClick={() => {
-                  // copy(JSON.stringify(applications, 0, 2));
-                  uploadApplicationConfig(appData);
-                  setDirty(false);
-                }}
-              >
-                Save
-              </TextBtn>
-            </Flex>
-          </Pane>
- 
-         {!!pageTabs && !!Object.keys(pageTabs).length && <Pane   
-            short
-            item
-            xs={12}
-            sx={{ borderBottom: 1, borderColor: "divider", whiteSpace: 'nowrap' }}>
-
-              <Flex sx={{pl: 1}}>
-                <Text small active>Pages</Text>
-                <Tabs 
-                onChange={(event, index) => {
-                  const name = Object.keys(pageTabs)[index];
-                  const tab = pageTabs[name];
-                  handlePageNavigate(name, tab.parameters); 
-                }}
-                value={
-               Math.max(0,  Object.keys(pageTabs)
-               .map(tab => pageTabs[tab].path)
-               .indexOf(selectedPage?.PagePath))
-              } sx={{minHeight: 24, ml: 1, mb: 0 }} >
-              {Object.keys(pageTabs)
-              .map(tab => <TabButton key={tab} label={tab} icon={<TinyButton 
-                onClick={() => handlePageNavigate() } icon={Close} />} iconPosition="end" />)}
-            </Tabs>
-
-
-
-              </Flex>
-      
-          </Pane>}
-          
-          {!(componentType?.modal || parentOpen) && <>
-            {navigationPane}
-          </>}
-
-          <Pane wide {...collapsed} item sx={{ p: 1 }} 
-       
-            state={center_state}
-            side="work">
- 
-
-            <Collapse in={showLib && !json}>
-             {!!showLib && <LibraryTree onClose={closeLib} />}
-            </Collapse>
-
-            <Collapse in={json && !showLib}>
-              {!!json &&  <JsonView json={appData}/>} 
-            </Collapse>
+            <SidePane item sx={{ p: 1 }} side="center">
   
-            <Collapse in={!json && !showLib}>
+              
+              {/* component library editor */}
+              <Collapse in={showLib && !json}>
+              {!!showLib && <LibraryTree onClose={closeLib} />}
+              </Collapse>
 
-              {!!componentTabs && showTabs &&  <Box sx={{mb: 1, borderBottom: 1, borderColor: 'divider'}}>
-                <Tabs  sx={{minHeight: 24, ml: 1, mb: 0 }} 
-                onChange={(e, index) => selectComponentByID(Object.keys(componentTabs)[index])}
-                    value={Object.keys(componentTabs).indexOf(queryState.selectedComponent?.ID)}>
-                  {Object.keys(componentTabs).map((tab) => <TabButton 
-                    icon={<TinyButton 
-                      onClick={() => selectComponentByID(tab, 1) } icon={Close} />} 
-                    iconPosition="end"
-                    key={tab} label={componentTabs[tab]} />)}
-                </Tabs>
-                </Box>}
- 
-            <ApplicationTree {...applicationTreeProps} application={appData} />
+              {/* application JSON */}
+              <Collapse in={json && !showLib}>
+                {!!json &&  <JsonView json={appContext}/>} 
+              </Collapse>
+              
+              {/* editor workspace  */}
+              <Collapse in={!json && !showLib}>
 
-           {  !!selectedPage &&   <ComponentTree  />}
-                
-            </Collapse>
-          </Pane>
-        {(componentType?.modal || parentOpen) && <>
-          {navigationPane}
-        </>}
-          <Pane
-            item
-            side="right"
-            state={collapsed.right ? "-off" : ""}
-            sx={{ borderLeft: 1, borderColor: "divider" }}
-          >
- 
-            {!!componentParent && <ComponentPanel  />}
-          </Pane>
-        </Grid>
-      </Flex>
+                {/* component tabs */}
+                <ComponentTabs />
+  
+                {/* application scope components */}
+                <ApplicationTree  />
 
-      
-      <ConsoleDrawer
-        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
-       />
+                {/* page scope components */}
+                <ComponentTree  />
+                  
+              </Collapse>
+            </SidePane>
 
-      <ScriptDrawer   />
+            {/* right side navigation panel */}
+            {(componentType?.modal || parentOpen) && <>
+              {navigationPane}
+            </>}
+            
+            {/* component settings panel */}
+            <SidePane item side="right" >
+  
+              {!!componentParent && <ComponentPanel  />}
+            </SidePane>
+          </Grid>
+        </Flex>
 
-      <ConnectionDrawer
+        
+        <ConsoleDrawer />
+        <ScriptDrawer />
+        <ConnectionDrawer /> 
+        <StateDrawer  />
 
-        appID={appData.ID}
-        application={appData}
-        selectedPage={selectedPage}
-        connections={appData.connections}
-        resources={appData.resources}
+      </Box>
 
-        setResource={setResource}
-        setConnection={setConnection}
-        dropResource={handleResourceDelete}
-        dropConnection={handleConnectionDelete}
-        onEventChange={handleEventChange}
-        onEventDelete={handledEventDelete}
-        onStateChange={handleStateChange}
-
-        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
-        open={connectOpen}
-        handleClose={() => {
-          setDrawerState((s) => ({ ...s, connectOpen: false }));
+      <Popover 
+        open={open}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose} 
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
         }}
-      />
+      >
+        <Box sx={{width: 300, p: 2}}>
+          {popoverContent}
+        </Box>
 
-      <StateDrawer
-        handleDrop={handleStateDrop}
-        handleChange={handleStateChange}
-        handleSwitch={ state => setDrawerState(s => ({ ...s, ...state}))}
-        state={componentParent?.state}
-        open={stateOpen}
-        handleClose={() => {
-          setDrawerState((s) => ({ ...s, stateOpen: false }));
-        }}
-      />
+      </Popover>
+  
     </EditorStateContext.Provider>
   );
 };
@@ -1164,8 +729,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
     }))
   }
 
-
-  const { appLoaded, pageLoaded} = queryState
+ 
 
   const startAdornment = <InputAdornment position="start">URL</InputAdornment>;
 
@@ -1192,6 +756,7 @@ export const Addressbox = ({ value, onChange, onClose, queryState, setQueryState
    <>
  
    <TextField
+    disabled
       size="small" 
       {...props}
       sx={{ width: "calc(100vw - 700px)" }}

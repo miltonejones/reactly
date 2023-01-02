@@ -1,12 +1,15 @@
 import React from 'react';
-import { styled, Box, IconButton, Drawer,  
+import { styled, Box,  Drawer,  
  Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
-import {  Flex, Spacer, TextBtn, QuickSelect, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
+import {  Flex, Spacer, TextBtn, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
 import { Close, Gamepad, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
 import { objectReduce } from '../library/util';
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { useReactly } from "../../hooks";
+
+import { DrawerNavigation } from '../pages/Editor/components';
  
 const Layout = styled(Box)(({ theme }) => ({
  padding: theme.spacing(2),
@@ -55,15 +58,17 @@ export const StateValue = ({ ID, Key, tab, Value, Type, handleChange, ...props }
   } value={displayValue} onChange={handleValueChange}  />
 }
  
-const StateDrawer = ({
-  open, 
-  state = [], 
-  handleClose, 
-  handleSwitch, 
-  handleChange, 
-  handleDrop 
-}) => {
+const StateDrawer = ( ) => {
 
+  const { 
+    appContext, 
+    selectedPage,
+  } = React.useContext(AppStateContext);
+  const { state = [] } = (selectedPage || appContext) ?? { scripts: [] };
+
+  const { stateOpen: open, setDrawerState} = React.useContext(EditorStateContext); 
+  const handleClose = () =>  setDrawerState((s) => ({ ...s, stateOpen: false }));
+  
   const [page, setPage] = React.useState(1);
   const [filter, setFilter] = React.useState('');
   const args = {
@@ -72,10 +77,11 @@ const StateDrawer = ({
     sx: { mr: 1 }
   };
 
-  const {  
-    setShowTrace
-  } = React.useContext(AppStateContext);
+  const reactly = useReactly();
+  const handleChange = reactly.onStateChange;
+  const handleDrop = reactly.onStateDrop;
 
+ 
   const [anchorEl, setAnchorEl] = React.useState(null);
   const handleAliasOpen = event => {
     setAnchorEl(event.currentTarget)
@@ -128,40 +134,8 @@ const StateDrawer = ({
       <TextBtn onClick={handleAliasOpen} endIcon={<Add />}>Add</TextBtn>
       <Spacer />
 
-      <IconButton  
-          color="inherit" 
-          onClick={() => { 
-            handleSwitch({  stateOpen: false});
-            setShowTrace(true);
-          }}
-      >
-        <Gamepad />
-      </IconButton>
-
-
-          <IconButton
-              color="inherit" 
-              onClick={() => {
-                handleSwitch({ connectOpen: 1, stateOpen: false})
-              }}
-            >
-              <AutoStories />
-            </IconButton>
-            <IconButton
-              color="inherit" 
-              onClick={() => { 
-                handleSwitch({ scriptOpen: 1, stateOpen: false})
-              }}
-            >
-              <Code />
-            </IconButton>
-
-      <IconButton disabled>
-        <RecentActors />
-      </IconButton>
-      <IconButton  onClick={handleClose}>
-        <Close />
-      </IconButton>
+      <DrawerNavigation selected="stateOpen" onClose={handleClose} horizontal /> 
+    
     </Flex>
     <Divider />
 

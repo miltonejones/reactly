@@ -4,14 +4,14 @@ import { styled, Box, IconButton, Drawer, TextField, Link,
 import { Tiny, TinyButton, PopoverInput, Flex, Text, Spacer, TextBtn ,PopoverPrompt,
   QuickSelect, QuickMenu, DeleteConfirmMenu, TextBox, PillMenu} from '..';
 import { Close, Gamepad, RecentActors, Add, Code, Bolt, DatasetLinked, Settings,
-    AutoStories, Delete, Save, CheckCircleOutline, CheckCircle, Edit } from "@mui/icons-material";  
-import { Json } from '../../colorize'; 
-import { useEditor } from '../../hooks/useEditor';
+    AutoStories, Delete, Save, CheckCircleOutline, CheckCircle, Edit } from "@mui/icons-material";   
 import ComponentEvents from '../ComponentEvents/ComponentEvents';
 import { JsonModal } from '../../colorize';
 import { useRunScript } from '../../hooks/subhook/useRunScript';
 import { StateComponentInput } from '../ComponentSettings/components';
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { useReactly } from '../../hooks';
+import { DrawerNavigation } from '../pages/Editor/components';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -453,30 +453,34 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
 }
  
  
-const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
-    resources = [], connections = [], appID, handleDrop, selectedPage,
-    setConnection, dropConnection, handleClose, handleChange ,
-    onEventChange, onEventDelete, application, onStateChange}) => {
-  // const { setResource } = useEditor()
+const ConnectionDrawer = () => {
+ 
   const [selected, setSelected] = React.useState({})
   const [selectedConnection, setSelectedConnection] = React.useState({})
   const [terms, setTerms] = React.useState({});
   const [dirty, setDirty] = React.useState(null)
   const [useClient, setUseClient] = React.useState(null)
-  const [answer, setAnswer] = React.useState(null)
-  const [fields, setFields] = React.useState([])
-  const { ID, connectionID, path, format, method, transform, 
-    values, columns, body, node, contentID } = selected;
+  const [answer, setAnswer] = React.useState(null);
+
+  const reactly = useReactly();
+
+  const {  connectionID, path , method, transform, body, contentID } = selected;
  
+  const { connectOpen: open, setDrawerState} = React.useContext(EditorStateContext); 
+  const handleClose = () =>  setDrawerState((s) => ({ ...s, connectOpen: false }));
+  
     const { 
       Alert, 
-      setShowTrace
+      setShowTrace,
+      appContext,
+      selectedPage
     } = React.useContext(AppStateContext);
     const {
       executeScript,
       getApplicationScripts 
     } = useRunScript()
- 
+    const appID = appContext.ID;
+    const { resources = [], connections = [] } = appContext;
     const isGetRequest = method === 'GET';
   
   const previewConnectionRequest = async (format) => {
@@ -586,7 +590,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
   }
 
   const handleConnectionCommit = () => {
-    setConnection(appID, selectedConnection);
+    reactly.setConnection(appID, selectedConnection);
   }
 
   const handleResourceCommit = () => { 
@@ -600,7 +604,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
     // alert (JSON.stringify(selected.values,0,2))
     // alert (JSON.stringify(committed,0,2))
     // return alert (JSON.stringify(terms,0,2))
-    setResource(appID, committed)
+    reactly.setResource(appID, committed)
     setDirty(false);
   }
 
@@ -668,42 +672,8 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
          <TextBtn endIcon={<Add />} onClick={() => setSelectedConnectionByID('new')}>add</TextBtn>
         <Spacer />
 
-          <IconButton  
-              color="inherit" 
-              onClick={() => { 
-                handleSwitch({  connectOpen: false});
-                setShowTrace(true);
-              }}
-          >
-            <Gamepad />
-          </IconButton>
+        <DrawerNavigation selected="connectOpen" onClose={handleClose} horizontal /> 
 
-        <IconButton disabled>
-            <AutoStories />
-          </IconButton>
-
-            <IconButton
-              color="inherit" 
-              onClick={() => { 
-                handleSwitch({ scriptOpen: 1, connectOpen: false})
-              }}
-            >
-              <Code />
-            </IconButton>
-
-
-        <IconButton
-              color="inherit" 
-              onClick={() => {
-                handleSwitch({ connectOpen: false, stateOpen: 1})
-              }}
-            >
-              <RecentActors />
-            </IconButton>
-
-        <IconButton  onClick={handleClose}>
-          <Close />
-        </IconButton>
       </Flex>
       <Divider />
      
@@ -729,8 +699,8 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
                 selectedConnectionID={selectedConnection?.ID}
                 connectionClick={(e) => setSelectedConnectionByID(e)}
                 key={connection.ID} 
-                resourceDrop={dropResource}
-                connectionDrop={dropConnection}
+                resourceDrop={reactly.onResourceDelete}
+                connectionDrop={reactly.onConnectionDelete}
                 dirty={dirty}
                 {...connection} />)}
 
@@ -748,7 +718,7 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
 
         {!!selected?.name && <Grid item xs={isGetRequest ? 4 : 3} sx={{borderRight: 1, borderColor: 'divider'}}>
           <ResourceForm 
-          onStateChange={onStateChange}
+          onStateChange={reactly.onStateChange}
             setDirty={setDirty}
             dirty={dirty}
             answer={answer}
@@ -840,12 +810,12 @@ const ConnectionDrawer = ({ open, setResource, dropResource, handleSwitch,
           <Box sx={{...sx, pl: 2}}>
             <ComponentEvents 
             onChange={(id, event) => {
-              onEventChange(id, event, 'connection')
+              reactly.onEventChange(id, event, 'connection')
             }}
             onEventDelete={(componentID, eventID) => {
-              onEventDelete(componentID, eventID, 'connection')
+              reactly.onEventDelete(componentID, eventID, 'connection')
             }}
-            application={application}
+            application={appContext}
             selectedPage={selectedPage}
             component={selected}
             addedEvents={Events}

@@ -1,50 +1,50 @@
 import React from 'react';
-import { Flex, Text, Spacer, TinyButton } from ".."; 
-import { styled, Avatar } from '@mui/material';
+import { Flex  } from ".."; 
+import { Avatar } from '@mui/material';
 import { AppStateContext } from "../../hooks/AppStateContext";
 import { RenderComponent } from '../ComponentTree/ComponentTree';
 import { usePageContext } from "../../hooks/usePageContext";
-import { objectReduce } from "../library/util";
+// import { objectReduce } from "../library/util";
   
 
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 
-const ApplicationTree = ({ application, queryState, loadPage, children, ...props }) => {
+const ApplicationTree = ({ children, ...props }) => {
 
   const { handleComponentEvent } = usePageContext(); 
-  const { applicationClientState,   setQueryState, setApplicationClientState } = React.useContext(AppStateContext); 
+  const { setQueryState, queryState, preview, appContext  } = React.useContext(AppStateContext); 
  
-  const applicationProps = !application?.state
-    ? null
-    : objectReduce(application.state); 
+  // const applicationProps = !application?.state
+  //   ? null
+  //   : objectReduce(application.state); 
 
-  const setAppState = () => new Promise(resolve => {
-    setApplicationClientState(state => {
-      if(queryState.appLoaded) return state 
-      console.log ({ applicationProps })
-      if (!(!!state && !!Object.keys(state).length ) && !!applicationProps) {
-        resolve(applicationProps)
-        return applicationProps;
-      }
-      resolve(state)
-      return state;
-    }); 
-  })
+  // const setAppState = () => new Promise(resolve => {
+  //   setApplicationClientState(state => {
+  //     if(queryState.appLoaded) return state 
+  //     console.log ({ applicationProps })
+  //     if (!(!!state && !!Object.keys(state).length ) && !!applicationProps) {
+  //       resolve(applicationProps)
+  //       return applicationProps;
+  //     }
+  //     resolve(state)
+  //     return state;
+  //   }); 
+  // })
 
 
   const handleAppLoad = React.useCallback(async () => {
-    const state = await setAppState();
+  
     setQueryState(qs =>  {
       if(qs.appLoaded) return qs 
       // alert(JSON.stringify(application?.events,0,2)) 
-      if (application?.events) {
+      if (appContext?.events) {
 
         (async () => {
           await handleComponentEvent(null, {
             name: 'onApplicationLoad',
-            component: application,
+            component: appContext,
             options: {
-              ID: application.ID 
+              ID: appContext.ID 
             }
           }); 
         })();
@@ -53,9 +53,9 @@ const ApplicationTree = ({ application, queryState, loadPage, children, ...props
  
 
       
-      return {...qs, appLoaded: true, appContext: application}
+      return {...qs, appLoaded: true, appContext }
     })  
-  }, [setAppState, application, handleComponentEvent ])  
+  }, [  appContext, setQueryState, handleComponentEvent ])  
 
   React.useEffect(() => {  
     // if(queryState.appLoaded) return 
@@ -68,18 +68,17 @@ const ApplicationTree = ({ application, queryState, loadPage, children, ...props
     //   return state;
     // }); 
     // alert('APP LOADED')
-  }, [applicationProps, queryState, setQueryState, application, setApplicationClientState]);
+  }, [handleAppLoad]);
 
      
   if (!queryState.appLoaded) {
-    return <Flex
-    onClick={loadPage} >
-    <Avatar className="App-logo" onLoad={loadPage} src="/logo192.png" alt="loader" >A</Avatar>
+    return <Flex  >
+    <Avatar className="App-logo" src="/logo192.png" alt="loader" >A</Avatar>
     Loading application components...
     </Flex>
   }
   
-  const componentTree = application.components;
+  const componentTree = appContext.components;
   const components = componentTree?.filter((f) => !f.componentID);
 
   return <>

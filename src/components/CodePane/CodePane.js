@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Collapse } from '@mui/material';
+import { styled, Box } from '@mui/material';
 import { Flex } from '..';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import {a11yDark, atomDark, base16AteliersulphurpoolLight, cb, coldarkCold, coldarkDark, coyWithoutShadows, coy, 
@@ -17,8 +17,7 @@ const Layout = styled(Box)(({ theme }) => ({
  
 const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props }) => {
   const syntaxRef = React.useRef(null) 
-  const [bs, setBS] = React.useState(code);
-  const [msg, setMsg] = React.useState('ok');
+  const [bs, setBS] = React.useState(code); 
   const [showLineNumbers, setShowLineNumbers] = React.useState(true);
   const args = {
     ref: externalRef || syntaxRef
@@ -34,7 +33,7 @@ const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props
  return (
    <Layout data-testid="test-for-CodePane" {...args}> 
 {!code && (<Flex 
-      sx={{ justifyContent: 'center', border: 1, borderColor: 'divider', height: args.ref.current?.offsetHeight}}>
+      sx={{ justifyContent: 'center', border: 1, borderColor: 'divider'}}>
     No code in the abode
     </Flex>)} 
  
@@ -50,10 +49,9 @@ const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props
           onBlur={e => {
             try {
               setShowLineNumbers(true) 
-              if (!bs || code === bs) return setMsg('No change');
+              if (!bs || code === bs) return;
               onCodeChange(''); 
-              setTimeout(() => onCodeChange(bs), 9)
-              setMsg(' changed code ');
+              setTimeout(() => onCodeChange(bs), 9) 
             } catch (e) {
               console.log(e.message)
             }

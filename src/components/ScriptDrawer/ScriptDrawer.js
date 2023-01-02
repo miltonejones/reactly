@@ -69,6 +69,7 @@ import { useRunScript } from "../../hooks/subhook/useRunScript";
 import { definitionMenu } from "./definitions";
 import ScriptAssist from "./components/ScriptAssist/ScriptAssist";
 import { downloadApplicationScripts } from "../../connector/sqlConnector";
+import { DrawerNavigation } from "../pages/Editor/components";
 
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -194,13 +195,10 @@ const ScriptDrawer = ( ) => {
     });
   };
 
-  const {
-    appBusy,
-    queryState,
+  const { 
     appContext,
     EditCode,
-    Alert: Shout,
-    setShowTrace,
+    Alert: Shout, 
     selectedPage,
   } = React.useContext(AppStateContext);
   const { scripts = [] } = (selectedPage || appContext) ?? { scripts: [] };
@@ -392,41 +390,8 @@ const ScriptDrawer = ( ) => {
 
           <Spacer />
 
-          <IconButton
-            color="inherit"
-            onClick={() => {
-              handleSwitch({ scriptOpen: false });
-              setShowTrace(true);
-            }}
-          >
-            <Gamepad />
-          </IconButton>
-
-          <IconButton
-            color="inherit"
-            onClick={() => {
-              handleSwitch({ connectOpen: 1, scriptOpen: false });
-            }}
-          >
-            <AutoStories />
-          </IconButton>
-
-          <IconButton disabled>
-            <Code />
-          </IconButton>
-
-          <IconButton
-            color="inherit"
-            onClick={() => {
-              handleSwitch({ scriptOpen: false, stateOpen: 1 });
-            }}
-          >
-            <RecentActors />
-          </IconButton>
-
-          <IconButton onClick={handleDrawerClose}>
-            <Close />
-          </IconButton>
+          <DrawerNavigation selected="scriptOpen" onClose={handleDrawerClose} horizontal /> 
+       
         </Flex>
         <Divider />
 
