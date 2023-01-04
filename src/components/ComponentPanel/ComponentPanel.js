@@ -158,7 +158,7 @@ const ComponentPanel = () => {
   }
 
   const componentLabel = !!component 
-  ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName
+  ? `${component.ComponentType}: ${component.ComponentName}` : (selectedPage?.PageName || appContext.Name)
   
   return <Stack sx={{mb: 10}}>
      <Flex sx={{ m: 1}} direction={collapsed ? 'column' : 'row'}>
@@ -295,8 +295,10 @@ const ComponentPanel = () => {
 
       </>}
 
-    {showApp && value !== 2 && <ApplicationForm applications={appContext} 
-      importable={importable}/> }
+    {showApp && value !== 2 && <ApplicationForm 
+      applications={appContext} 
+      importable={importable}
+      /> }
  
 
     </Stack>

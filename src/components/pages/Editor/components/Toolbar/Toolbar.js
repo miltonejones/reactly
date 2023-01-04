@@ -80,7 +80,7 @@ const Toolbar = () => {
         <MainMenu />
       </Flex>
           
-      <Hide hidden={!(queryState.pageLoaded || queryState.appLoaded)}>
+      <Hide hidden={!queryState.pageLoaded || !queryState.appLoaded}>
         <Addressbox value={`/${currentPagePath.join("/")}`}   />
       </Hide>
     

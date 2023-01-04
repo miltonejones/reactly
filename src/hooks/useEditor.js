@@ -88,7 +88,7 @@ export const useEditor = () => {
         Object.assign(page, { parameters: []});
       }
 
-      page.parameters  = page.parameters .filter(f => f.name === param)
+      page.parameters  = page.parameters.filter(f => f.name === param)
        .concat({name: param, ID: uniqueId()});
       return page;
     });
