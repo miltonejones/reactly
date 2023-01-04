@@ -1,11 +1,10 @@
-import * as React from 'react';
-import { PageStateContext } from '../PageStateContext';
+import * as React from 'react'; 
 import { Box } from '@mui/material'; 
 import moment from 'moment';
 import { useOpenLink } from '.';
 import { usePageRef } from '.';
 import { useDataResource } from '.';
-import { AppStateContext } from '../AppStateContext';
+import { AppStateContext, PageStateContext } from '../../context';
 import { useClipboard } from '../../components';
 import { map } from '../../components/library/util';
 import { Json } from '../../colorize';

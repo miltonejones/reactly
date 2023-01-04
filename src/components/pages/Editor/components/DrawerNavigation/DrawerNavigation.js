@@ -1,10 +1,11 @@
 import React from 'react';
 import {  Stack, IconButton } from '@mui/material'; 
 import { RecentActors, Gamepad, AutoStories, Close, Code } from "@mui/icons-material";
-import { EditorStateContext } from '../../../../../hooks/AppStateContext';
+import { EditorStateContext, AppStateContext } from '../../../../../context';
 
 const DrawerNavigation = ( { horizontal, selected, onClose } ) => {
-  const { setDrawerState, setShowTrace } = React.useContext(EditorStateContext);
+  const { setDrawerState } = React.useContext(EditorStateContext);
+  const { setShowTrace } = React.useContext(AppStateContext);
   const buttons = {
     connectOpen: <AutoStories />,
     scriptOpen: <Code />,

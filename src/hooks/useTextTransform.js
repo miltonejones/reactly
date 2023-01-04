@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useParams } from "react-router-dom"; 
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext } from '../context';
 
 export const useTextTransform = () => {
 

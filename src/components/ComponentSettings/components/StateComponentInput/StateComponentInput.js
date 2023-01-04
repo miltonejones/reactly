@@ -1,14 +1,10 @@
 import React from 'react';
-import { Alert, Stack, IconButton } from '@mui/material';
-import { TextInput, QuickMenu,  Flex, PillMenu } from '../../..';
-import {
-  AppStateContext, EditorStateContext
-} from "../../../../hooks/AppStateContext";
+import {  Stack, IconButton } from '@mui/material';
+import { TextInput, QuickMenu  } from '../../..';
+import { AppStateContext } from "../../../../context";
 import { useEditor } from "../../../../hooks/useEditor";
-import { MoreVert, LinkOff } from "@mui/icons-material";
-import { PageStateContext } from '../../../../hooks/usePageContext';
-  
-const NEW_STATE_TEXT = 'New state variable...'
+import { MoreVert, LinkOff } from "@mui/icons-material"; 
+   
  
 const StateComponentInput = ({
   selectedPage,
@@ -21,18 +17,9 @@ const StateComponentInput = ({
   menu = true, 
 }) => {
 
-  const { 
-    Prompt ,
-    appData,
-    queryState,
-    appContext
-  } = React.useContext(AppStateContext);
   const {  
-    appData: application
-  } = React.useContext(EditorStateContext);
-  const { 
-    setPageState, 
-  } = useEditor(appData);
+    appContext
+  } = React.useContext(AppStateContext);  
  
 
   const onChange = React.useCallback(async (value) => {  
@@ -41,7 +28,7 @@ const StateComponentInput = ({
 
   
   if (!selectedPage?.state && !selectedPage?.parameters && !appContext.state) {
-    return <i>[{JSON.stringify(application.state) }]</i>
+    return <i>[{JSON.stringify(appContext.state) }]</i>
   }
  
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppStateContext } from "./AppStateContext";
+import { AppStateContext } from "../context";
 import { useRunScript } from "./subhook/useRunScript";
 
 export const useScriptReferences = () => {

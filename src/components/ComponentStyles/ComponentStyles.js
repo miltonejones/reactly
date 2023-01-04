@@ -3,7 +3,7 @@ import { styled, Alert, Box, Paper, FormControlLabel, Collapse, Stack, Switch } 
 import { getStyles } from '../library/util'; 
 import { ComponentCollapse, QuickSelect , Text} from '..';
 import { Json } from '../../colorize';
-import {  AppStateContext } from '../../hooks/AppStateContext'; 
+import {  AppStateContext } from '../../context'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
@@ -14,6 +14,11 @@ const ComponentStyles = ({ component, onChange }) => {
   const [checked, setChecked] = React.useState(false);
   const [css, setCss] = React.useState('');
   const { Library } = React.useContext(AppStateContext);
+
+  if (!component) {
+    return <>No component is selected </>
+  }
+
   const { selectors } = Library[component.ComponentType];
   const { categories } =  Library[component.ComponentType].Styles  ?? {}
   if (!(categories && component?.styles)) {

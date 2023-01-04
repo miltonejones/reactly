@@ -1,12 +1,18 @@
 import React from 'react';
-import { styled, List, ListItemButton, ListItemText, Box, Stack, Card, Tabs, Switch, Grid, Collapse, Drawer, Typography, Divider, IconButton } from '@mui/material';
+import { styled, List, ListItemButton, ListItemText, Box, Stack, Tabs, Switch, Grid, Collapse, Drawer, Typography, Divider } from '@mui/material';
 import { Flex, TinyButton, TextBtn, TabButton, Text, Spacer } from '..';
-import { Close, ExpandMore, Gamepad, AutoStories,Code,RecentActors } from "@mui/icons-material";  
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { ExpandMore  } from "@mui/icons-material";  
+import { AppStateContext } from "../../context";
 import { JsonView } from "../../colorize";
 import { useTextTransform } from '../../hooks/useTextTransform';
 import { DrawerNavigation } from '../pages/Editor/components';
+import moment from 'moment';
  
+const humanize = time => { 
+  var duration = moment.duration(new Date().getTime() - time);
+  return duration.humanize() + ' ago'
+}
+
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
   minHeight: '65vh'
@@ -28,15 +34,17 @@ const SectionHead = ({ children }) => {
 
 const LogEntry = (props) => {
 
-  const {  
-    openTraceLog,
-    setOpenTraceLog,  
+  const {   
+    openTraceLog,  
+    setOpenTraceLog
   } = React.useContext(AppStateContext);
 
-  const { id, message, json, color, fontWeight } = props;
+  const { id, message, json, color, timestamp, fontWeight } = props;
   const boxProps = { 
     sx: {borderBottom: 1, borderColor: 'divider', color, fontWeight }, 
   }
+
+  const now = new Date().getTime()
 
   return <Box>
 
@@ -50,6 +58,7 @@ const LogEntry = (props) => {
         }))
       }} small active={openTraceLog[id]}>{message}</Text>
  
+      {/* {(now - timestamp) / 1000}ms ago */}
 
     </Flex>
 
@@ -58,8 +67,10 @@ const LogEntry = (props) => {
      {!!openTraceLog[id] && <Box {...boxProps}>
      {!!json.trigger && <JsonView initial={0} string json={json.trigger}/>}
      {!json.trigger &&  <JsonView initial={0} string short json={json}/> }
+
         {/* <pre>{JSON.stringify(json, 0, 2)}</pre>  */}
       </Box>}
+      <Text small muted>{humanize(timestamp)}</Text>
     </Collapse>
 
   </Box>
@@ -69,20 +80,17 @@ const ConsoleDrawer = () => {
   const {  
     setShowTrace,
     showTrace,
-    jsonLog,  
+    messages,  
     applicationClientState,
-    pageClientState,
-    openTraceLog,
+    pageClientState, 
     setOpenTraceLog,  
     setMessages,
     loud,
     queryState,
     setLoud,
     supportedEvents,
-    monitorEvent,
-    pageResourceState,
-    monitoredEvents, 
-    setMonitoredEvents,
+    monitorEvent, 
+    monitoredEvents,  
   } = React.useContext(AppStateContext);
   const [tab, setTab] = React.useState(0)
   const [evt, setEvent] = React.useState(0);
@@ -141,10 +149,10 @@ const ConsoleDrawer = () => {
       <Divider />
      
      <Grid container sx={{height: '100%'}}>
-        {!!jsonLog?.length && <Grid xs={5} item {...gridProps}>
+        {!!messages?.length && <Grid xs={5} item {...gridProps}>
           <SectionHead>Log</SectionHead>
           <Stack sx={{height: 560, overflow: 'auto'}}>
-            {jsonLog?.map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
+            {messages?.map((entry, i) => <LogEntry {...entry} key={i} id={`box${i}`} {...entry} />)}
           </Stack>
         </Grid>}
 
@@ -155,8 +163,8 @@ const ConsoleDrawer = () => {
          <Tabs value={tab} sx={{minHeight: 24, ml: 1, mb: 0 }} onChange={handleChange(setTab)}>
             <TabButton label="Page" />
             <TabButton label="Application" />
-            <TabButton label="Route parameters" />
-            <TabButton label="Query state" />
+            <TabButton label="Route params" />
+            <TabButton label="App state" />
           </Tabs>
          </Flex>
           <Box sx={{height: 500, p: 2, overflow: 'auto'}}>

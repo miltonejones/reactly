@@ -1,5 +1,4 @@
-import ConnectionModal from "./ConnectionModal/ConnectionModal";
-import MenuDrawer from "./MenuDrawer/MenuDrawer";  
+import ConnectionModal from "./ConnectionModal/ConnectionModal"; 
 import QuickMenu, { DeleteConfirmMenu } from './QuickMenu/QuickMenu';
 import QuickSelect from './QuickSelect/QuickSelect';
 import ContentTree from './ContentTree/ContentTree'
@@ -36,8 +35,7 @@ export {
   ApplicationForm,
   DeleteConfirmMenu,
   ConnectionModal,
-  PopoverPrompt,
-  MenuDrawer, 
+  PopoverPrompt, 
   SearchBox,
   Tiny,
   PillMenu,

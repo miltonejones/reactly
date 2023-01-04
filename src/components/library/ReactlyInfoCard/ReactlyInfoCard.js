@@ -6,7 +6,7 @@ import { iconSettings } from '../settings';
 import { ContactMail , MoreVert} from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
-import { RepeaterContext } from '../../../hooks/AppStateContext';
+import { RepeaterContext } from '../../../context';
   
 const DEFAULT_IMAGE = 'https://www.sky-tunes.com/assets/default_album_cover.jpg';
 

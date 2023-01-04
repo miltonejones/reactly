@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppStateContext } from "./AppStateContext";
+import { AppStateContext } from "../context";
 import { getSettings } from '../components/library/util';
 
 

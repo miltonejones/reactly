@@ -4,7 +4,7 @@ import { GenericStyles } from '../styles';
 import { Inventory } from '@mui/icons-material';
 import ReactlyComponent, { Faux }  from '../reactly';
 import { PageStateContext } from '../../../hooks/usePageContext';
-import { AppStateContext } from "../../../hooks/AppStateContext";
+import { AppStateContext } from "../../../context";
 import { recurse } from '../util';
 import { getSettings } from '../util';
   

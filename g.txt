@@ -1,0 +1,76 @@
+#!/bin/bash
+ 
+if [[ $# -eq 0 ]] ; then
+   echo 'Please provide a component name!'
+   exit 1
+fi
+ 
+OLDIFS=$IFS
+IFS='/'
+read -a strarr <<< "$1"
+IFS=$OLDIFS
+directory="src/components/$1"
+storypath="../components/$1"
+component=${strarr[${#strarr[@]}-1]}
+ 
+mkdir -p $directory
+ 
+# Generate JS file
+echo "import React from 'react';
+import { styled, Box } from '@mui/material';
+ 
+const Layout = styled(Box)(({ theme }) => ({
+ margin: theme.spacing(4)
+}));
+ 
+const $component = () => {
+ return (
+   <Layout data-testid=\"test-for-$component\">
+     $component Component
+   </Layout>
+ );
+}
+$component.defaultProps = {};
+export default $component;" > "$directory/$component.js"
+echo "Created $directory/$component.js"
+ 
+ 
+# Generate DEFAULT EXPORT file
+echo "export { default } from \"./$component\";" > "$directory/index.js"
+echo "Created $directory/index.js"
+ 
+ 
+# Generate TEST file
+echo "import React from 'react';
+import { render, screen, cleanup } from '@testing-library/react';
+import $component from './$component';
+ 
+afterEach(() => cleanup());
+ 
+describe('<$component/>', () => {
+ it('$component mounts without failing', () => {
+   render(<$component />);
+   expect(screen.getAllByTestId(\"test-for-$component\").length).toBeGreaterThan(0);
+ });
+});
+" > "$directory/$component.test.js"
+echo "Created $directory/$component.test.js"
+ 
+ 
+# Generate STORIES file
+echo "import React from 'react';
+import $component from './$component';
+ 
+export default {
+ title: '$component',
+ component: $component
+};
+ 
+const Template = (args) => <$component {...args} />;
+export const DefaultView = Template.bind({});
+DefaultView.args = {};" > "$directory/$component.stories.js"
+echo "Created $directory/$component.stories.js"
+ 
+
+
+

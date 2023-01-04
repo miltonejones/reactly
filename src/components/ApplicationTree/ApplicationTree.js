@@ -1,10 +1,10 @@
 import React from 'react';
 import { Flex  } from ".."; 
 import { Avatar } from '@mui/material';
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext } from "../../context";
 import { RenderComponent } from '../ComponentTree/ComponentTree';
 import { usePageContext } from "../../hooks/usePageContext";
-// import { objectReduce } from "../library/util";
+ import { objectReduce } from "../library/util";
   
 
 const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
@@ -12,11 +12,11 @@ const componentOrder = (a, b) => (a.order > b.order ? 1 : -1);
 const ApplicationTree = ({ children, ...props }) => {
 
   const { handleComponentEvent } = usePageContext(); 
-  const { setQueryState, queryState, preview, appContext  } = React.useContext(AppStateContext); 
+  const { setQueryState, setApplicationClientState, queryState, preview, appContext  } = React.useContext(AppStateContext); 
  
-  // const applicationProps = !application?.state
-  //   ? null
-  //   : objectReduce(application.state); 
+  const applicationProps = !appContext?.state
+    ? null
+    : objectReduce(appContext.state); 
 
   // const setAppState = () => new Promise(resolve => {
   //   setApplicationClientState(state => {
@@ -58,15 +58,15 @@ const ApplicationTree = ({ children, ...props }) => {
   }, [  appContext, setQueryState, handleComponentEvent ])  
 
   React.useEffect(() => {  
-    // if(queryState.appLoaded) return 
     handleAppLoad();
-    // setApplicationClientState(state => {
-    //   console.log ({ applicationProps })
-    //   if (!(!!state && !!Object.keys(state).length ) && !!applicationProps) {
-    //     return applicationProps;
-    //   }
-    //   return state;
-    // }); 
+     if(queryState.appLoaded) return 
+    setApplicationClientState(state => {
+      console.log ({ applicationProps })
+      if (!(!!state && !!Object.keys(state).length ) && !!applicationProps) {
+        return applicationProps;
+      }
+      return state;
+    }); 
     // alert('APP LOADED')
   }, [handleAppLoad]);
 

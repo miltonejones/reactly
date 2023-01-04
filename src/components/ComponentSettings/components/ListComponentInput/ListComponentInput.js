@@ -5,7 +5,7 @@ import { TextInput, Text, Flex, Spacer, TextBtn, PopoverInput, QuickSelect, Tiny
 import { getMax } from '../../../library/util';
 import { IconComponentInput } from '..';
 
-import { AppStateContext } from '../../../../hooks/AppStateContext';
+import { AppStateContext } from '../../../../context';
 
 const attempt = str => {
   try {

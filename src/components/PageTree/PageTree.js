@@ -6,7 +6,7 @@ import {  List, ListItemButton, Typography,
   import { QuickMenu, Tiny, DeleteConfirmMenu } from "..";
 import ParameterPopover from '../pages/Editor/components/ParameterPopover/ParameterPopover';
 import { useReactly } from '../../hooks';
-import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../context';
   
  
 const PageTree = () => {

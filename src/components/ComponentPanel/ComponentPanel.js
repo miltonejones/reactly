@@ -7,11 +7,12 @@ import { Spacer , QuickSelect , PopoverPrompt} from '..';
 import { TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, ContentPaste, CopyAll, Input, Add, Delete } from "@mui/icons-material";
-import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext'; 
+import { AppStateContext, EditorStateContext } from '../../context'; 
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
 import { useTextTransform, useReactly } from '../../hooks';
 import { uniqueId } from '../library/util'; 
+import { ContentPopover } from '../pages/Editor/components';
  
 const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
 
@@ -25,22 +26,12 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
 }));
 
 const ComponentPanel = () => {
- 
-  const [ 
-      
-    setShowSettings,  
- 
-  ] = [  'showSettings', ]
-    .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
-
-
-
+  
   const { 
     appContext,
     queryState,
     setQueryState,  
-    selectedPage = {},  
-    appData , 
+    selectedPage = {},   
     Confirm ,
     Alert
   } = React.useContext(AppStateContext);
@@ -48,17 +39,17 @@ const ComponentPanel = () => {
   const { 
     setCollapsed,
     collapsed: collapse,
-    setEditorState,
-    editorState 
+    setShowSettings,
+    showSettings 
   } = React.useContext(EditorStateContext)
   const [ value, setValue ] = React.useState(0);
   const { selectedComponent: component } = queryState;
   const { themes, connections, resources } = appContext;
-
-  const {  showSettings } = editorState;
+ 
   const reactly = useReactly();
 
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
+  const buttons = [Settings, Palette, Bolt, FormatColorFill];
   const Panel = panels[value];
 
   const collapsed = collapse.right;
@@ -71,9 +62,9 @@ const ComponentPanel = () => {
     setValue(newValue);
   };
 
-  if (!component) {
-    return <>TBD</>
-  }
+  // if (!component) {
+  //   return <>TBD</>
+  // }
 
   const componentList = selectedPage?.components || appContext.components || [];
 
@@ -161,7 +152,7 @@ const ComponentPanel = () => {
 
   
   return <Stack sx={{mb: 10}}>
-     <Flex sx={{ m: 1}}>
+     <Flex sx={{ m: 1}} direction={collapsed ? 'column' : 'row'}>
 
       {showApp && <>
       
@@ -209,17 +200,31 @@ const ComponentPanel = () => {
         <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
              {collapsed ? <ExpandMore /> : <Close />}
         </RotateButton>
+
+
+        {collapsed && <Stack>
+          {buttons.map((Btn, i)=> {
+          const Content = panels[i];
+          return <ContentPopover icon={Btn} key={i}>
+            <Content  {...panelProps} />
+          </ContentPopover>})}
+          </Stack>}
+
      </Flex>
 
       {!collapsed && (!!component || selectedPage) && <>
-      
+        
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
-        <TabButton disabled={!selectedPage && !selectedComponent?.Settings} icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
-        <TabButton disabled={!component || !selectedComponent?.Styles} 
-          icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+
+        <TabButton icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
+
+        <TabButton icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
+
         <TabButton  icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
+
         <TabButton icon={<Tiny icon={FormatColorFill}/>} iconPosition="start"  label="Theme"  />
+
       </Tabs>
     </Box>
 
@@ -285,7 +290,7 @@ const ComponentPanel = () => {
 
       </>}
 
-    {showApp && value !== 2 && <ApplicationForm applications={appData} 
+    {showApp && value !== 2 && <ApplicationForm applications={appContext} 
       importable={importable}/> }
  
 

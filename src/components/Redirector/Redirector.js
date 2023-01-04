@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Navigate } from "react-router-dom"; 
-import { AppStateContext } from '../../hooks/AppStateContext';
+import { AppStateContext } from '../../context';
   
  // redirect user to the application homepage if no page is 
  // specified in the route

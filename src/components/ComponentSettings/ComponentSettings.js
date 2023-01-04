@@ -1,7 +1,7 @@
 import React from 'react';
 import {  Grid, FormControlLabel, Collapse, Slider,
     Switch, Box, Alert, IconButton, Stack, Typography, Popover } from '@mui/material'; 
-import { AppStateContext } from '../../hooks/AppStateContext'; 
+import { AppStateContext } from '../../context'; 
 import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
 import { getSettings } from '../library/util';
 import { ExpandMore, Remove, Add, MoreVert, AddLink, LinkOff } from "@mui/icons-material";

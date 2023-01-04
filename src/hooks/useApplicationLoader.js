@@ -30,6 +30,8 @@ export const useApplicationLoader = (state, preview) => {
  
   }, [state, getApplicationInfo, getApplicationByName, appname, pagename]);
 
+
+
   // save current application
   const uploadApplicationConfig = React.useCallback(async (app) => { 
     state.setBusy(`Committing changes...`) 
@@ -39,6 +41,8 @@ export const useApplicationLoader = (state, preview) => {
 
   // replace a page in the application JSON with an updated one
   const updateApplicationData = React.useCallback((downloadedPage) => {
+
+    if (!state.applicationData) return;
 
     state.setApplicationData(apps => apps.map(app => ({
 
@@ -58,6 +62,13 @@ export const useApplicationLoader = (state, preview) => {
   // gets the current page JSON from the server
   const downloadCurrentPage = React.useCallback(async () => { 
 
+    // const { pageLoaded, loadTime } = await state.getQueryState();   
+    
+    // if (new Date().getTime() - loadTime < 2000) {
+    //   utils.shout({ loadTime }, 'page loaded too quickly', 'red')
+    //   return;
+    // }
+    
     if (!pagename) return;
     utils.shout ({pagename}, 'Downloading ' + pagename)
     
@@ -69,20 +80,20 @@ export const useApplicationLoader = (state, preview) => {
     utils.shout(selectedPage, 'Got server page ' + selectedPage?.PageName);
  
     // get initial state variables from the page config
-    const stateProps = !selectedPage?.state
-      ? null
-      : objectReduce(selectedPage.state); 
+    // const stateProps = !selectedPage?.state
+    //   ? null
+    //   : objectReduce(selectedPage.state); 
 
     // update the local JSON with the new page
     updateApplicationData(selectedPage);  
 
-    utils.shout( { stateProps }, 'adding initial properties', 'orange')
+    // utils.shout( { stateProps }, 'adding initial properties', 'orange')
  
-    // add initial state variables from the new page to pageClientState
-    await state.setPageClientStateAsync(stateProps);
+    // clear initial state variables  
+     state.setPageClientState({});
 
     // mark pageLoaded as FALSE to fire the pageOnLoad event
-    await state.setQueryStateAsync({ pageLoaded: false }); 
+     state.setQueryState(e => ({ ...e, pageLoaded: false  })); 
 
     state.setBusy(false); 
 

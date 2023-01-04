@@ -1,7 +1,7 @@
 import * as React from "react"; 
-import { AppStateContext } from "./AppStateContext";
+import { AppStateContext } from "../context";
 import { useEditor } from "./useEditor";
-import {  Stack } from "@mui/material";  
+import { Stack } from "@mui/material";  
 import { Text } from '../components';
 
 export const useReactly = () => {
@@ -68,7 +68,6 @@ export const useReactly = () => {
     if (!ok) return;
     editor.dropConnection(appContextID, ID);
   },  [editor, appContextID, selectedPageID]);
-
 
 
   // event methods
@@ -195,6 +194,7 @@ export const useReactly = () => {
   }, [editor, appContextID, selectedPageID]);
 
   methods.quickComponent = React.useCallback(async (selected, componentID) => {
+    if (!selected) return;
     const max =
       (componentParent.components || []).filter((f) => f.ComponentType === selected)
         .length + 1;

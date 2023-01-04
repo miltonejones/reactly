@@ -6,7 +6,7 @@ import { styled, List, Link, ListItemButton,
  
 import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
 import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
-import { AppStateContext, EditorStateContext } from '../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../context';
 import { useReactly } from "../../hooks";
 
 
@@ -25,7 +25,7 @@ const Content = styled(Box)(({ theme }) => ({
   height: 'calc(100vh - var(--content-height-offset))',
   overflow: 'auto',
   padding: theme.spacing(0, 1),
-  border: 'solid 1px #777', 
+  border: 'solid 1px ' + theme.palette.divider, 
 }))
  
 

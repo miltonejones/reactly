@@ -4,20 +4,39 @@ import { reduceComponent } from "../components/library/library";
 import { expandLibrary  } from "../components/library";
 import Library from "../components/library";
 
+const eventTypes = [
+  {
+    name: "onPageLoad",
+    description: "Page  finishes loading.",
+  },
+  {
+    name: "dataLoaded",
+    description: "Data finishes loading.",
+  },
+  {
+    name: "loadStarted",
+    description: "Data starts loading.",
+  }, 
+  {
+    name: 'onApplicationLoad', 
+    description: 'Application finishes loading.'
+  },  
+];
+
 export const useReactlyLibrary = (state) => {
 
 
   const { getItems, setItem } = useDynamoStorage();
 
   const getLibraryItems = React.useCallback(async () => {
-    const cache = localStorage.getItem('reactly-library');
-    if (cache) {
-      try {
-        return JSON.parse(cache); 
-      } catch (e) {
-        // do nothing
-      }
-    }
+    // const cache = localStorage.getItem('reactly-library');
+    // if (cache) {
+    //   try {
+    //     return JSON.parse(cache); 
+    //   } catch (e) {
+    //     // do nothing
+    //   }
+    // }
     const items = await getItems();
     const json = JSON.stringify(items);
     localStorage.setItem('reactly-library', json);
@@ -74,7 +93,7 @@ export const useReactlyLibrary = (state) => {
       return out;
     }, []);
 
-    state.setSupportedEvents(eventNames);
+    state.setSupportedEvents(eventNames.concat(eventTypes));
     state.setHydratedLibrary(library);
   }
 

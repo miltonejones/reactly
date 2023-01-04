@@ -1,13 +1,9 @@
 import React from 'react';
 import { Tabs } from '@mui/material';
 import { TabButton, TinyButton } from '../../../..';
-import { AppStateContext, EditorStateContext } from '../../../../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../../../../context';
 import { Close } from "@mui/icons-material";
-import { styled, Box } from '@mui/material';
- 
-const Layout = styled(Box)(({ theme }) => ({
- margin: theme.spacing(4)
-}));
+import { Box } from '@mui/material'; 
  
 const ComponentTabs = () => {
   const { selectedPage, queryState } = React.useContext(AppStateContext);

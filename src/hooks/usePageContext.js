@@ -1,9 +1,9 @@
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AppStateContext } from "./AppStateContext";
+import { AppStateContext } from "../context";
 import moment from "moment";
 import Observer from "../util/Observer";
-import { PageStateContext } from "./PageStateContext";
+import { PageStateContext } from "../context";
 import { useOpenLink } from "./subhook";
 import { usePageRef } from "./subhook";
 import { useDataResource } from "./subhook";
@@ -11,25 +11,7 @@ import { useRunScript } from "./subhook";
 import { getPropertyValueFromString } from "../components/library/util";
 import { map } from "../components/library/util";
 import { useTextTransform } from "./useTextTransform";
-
-export const eventTypes = [
-  {
-    name: "onPageLoad",
-    description: "Page  finishes loading.",
-  },
-  {
-    name: "dataLoaded",
-    description: "Data finishes loading.",
-  },
-  {
-    name: "loadStarted",
-    description: "Data starts loading.",
-  }, 
-  {
-    name: 'onApplicationLoad', 
-    description: 'Application finishes loading.'
-  },  
-];
+ 
 
 export const usePageContext = () => {
   const { handleClick, loud } = React.useContext(PageStateContext);
@@ -84,10 +66,7 @@ export const usePageContext = () => {
 
   const { interpolateText, getParametersInScope, getPropertyScope } =
     useTextTransform();
-
-  const includedEvents = eventTypes.concat(
-    !supportedEvents ? [] : supportedEvents
-  );
+ 
   const routeParams = useParams();
   const navigate = useNavigate();
 
@@ -737,13 +716,8 @@ export const usePageContext = () => {
       const { Methods } = Library[component.ComponentType] ?? {};
  
 
-     // console.log ( `%cattachEventHandle  ${component.ComponentName || component.name}`, 'color: yellow') 
-
-// console.log ({ 
-//   names: includedEvents
-//   .map((e) => e.namer, 
-// })
-      const eventHandlers = includedEvents 
+ 
+      const eventHandlers = supportedEvents 
         .reduce((handlers, event) => {
           const eventName = event.name;
           const supported = events?.find((f) => f.event === eventName);

@@ -4,7 +4,7 @@ import { GenericStyles } from '../styles';
 import { Filter2 } from '@mui/icons-material';
 import ReactlyComponent, { useTextBind } from '../reactly'; 
 import useScrollCouple from "./useScrollCouple";
-import { AppStateContext } from "../../../hooks/AppStateContext";
+import { AppStateContext } from "../../../context";
 import { usePageContext } from "../../../hooks/usePageContext";
 import { getStyles, getSettings } from '../util';
   

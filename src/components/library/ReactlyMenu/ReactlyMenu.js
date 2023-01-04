@@ -6,7 +6,7 @@ import { PageStateContext } from '../../../hooks/usePageContext';
 import { getSettings } from '../util';
 import { Icons } from '../icons';
 import ReactlyComponent, { Faux } from '../reactly';
-import { AppStateContext } from '../../../hooks/AppStateContext';
+import { AppStateContext } from '../../../context';
 
 const FauxMenu = styled(MenuList)(({ open }) => ({
   maxWidth: 300,

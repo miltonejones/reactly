@@ -58,7 +58,7 @@ import {
   Save,
 } from "@mui/icons-material";
 import { PopoverInput } from "../Control/Control";
-import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../context";
 import { useReactly } from '../../hooks';
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dark } from "react-syntax-highlighter/dist/esm/styles/prism";

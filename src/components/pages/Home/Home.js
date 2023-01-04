@@ -1,21 +1,16 @@
 import React from 'react';
 import { styled, Box, Card, CardMedia, Link, Typography } from '@mui/material';
-import { AppRegistration, MoreVert, Edit, Add } from "@mui/icons-material"; 
-import { useEditor } from '../../../hooks/useEditor';
+import { AppRegistration,  Add } from "@mui/icons-material"; 
+import { useEditor } from '../../../hooks';
 import { Flex, PopoverPrompt  } from "../..";
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(0)
 }));
  
-const Home = ({ appData }) => {
+const Home = ({ applications }) => {
 
-  const { createProg } = useEditor(appData);
-  const create = async () => {
-    const name = window.prompt('Name?')
-    if (!name) return;
-    await createProg(name)
-  }
+  const { createProg } = useEditor(applications); 
 
  return (
    <Layout data-testid="test-for-Home">
@@ -27,7 +22,7 @@ const Home = ({ appData }) => {
   <Typography sx={{m:2}} variant="h4">Choose an application to edit or click Create Application</Typography>
   <Flex wrap baseline spacing={2} sx={{p: 2}}>
 
-  {appData.map(app => <Card sx={{p:2,m:1, width: 300}}>
+  {applications.map(app => <Card sx={{p:2,m:1, width: 300}}>
     {!!app.Photo && <CardMedia 
     
     component="img"

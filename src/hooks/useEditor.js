@@ -6,20 +6,20 @@ import { dropObject } from '../connector/sqlConnector';
 import { relocateComponent } from '../connector/sqlConnector';
 import { setApplication } from '../connector/sqlConnector';
 import { clonePage } from '../util';
-import { AppStateContext } from './AppStateContext';
+import { AppStateContext } from '../context';
 
 export const useEditor = () => {
   
   const app = React.useContext(AppStateContext);
   const { Prompt, Alert } = app;
-  const { Library, appData } = React.useContext(AppStateContext)
+  const { Library, applicationData } = React.useContext(AppStateContext)
 
 
-  const findProg = ID => appData.find(a => a.ID === ID);
+  const findProg = ID => applicationData.find(a => a.ID === ID);
 
   const updateProg = async (prog) =>{
     
-    const updated = appData.map((t) => (t.ID === prog.ID ? prog : t));
+    const updated = applicationData.map((t) => (t.ID === prog.ID ? prog : t));
  
     // await setApplication(prog);
 
@@ -612,7 +612,7 @@ export const useEditor = () => {
 
   return { 
     
-    applications: appData, 
+    applications: applicationData, 
 
     editProg, 
     editPage, 

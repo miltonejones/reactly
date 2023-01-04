@@ -3,7 +3,7 @@ import { styled, Box, Grid, Divider } from '@mui/material';
 import { Flex, Text, Tiny, Spacer, QuickSelect, TinyButton, QuickMenu, TextInput } from '../../../../..';
 import { CheckCircle, Settings, Edit, CheckCircleOutline } from "@mui/icons-material";  
 import { useRunScript } from '../../../../../../hooks/subhook/useRunScript';
-import { AppStateContext } from "../../../../../../hooks/AppStateContext";
+import { AppStateContext } from "../../../../../../context";
  
 const Check = ({ on }) => <Tiny icon={on ? CheckCircle : CheckCircleOutline} />
  

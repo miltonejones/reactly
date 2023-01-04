@@ -5,7 +5,7 @@ import { Icecream } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
 import { Flex, Spacer } from '../..';
-import { AppStateContext } from '../../../hooks/AppStateContext';
+import { AppStateContext } from '../../../context';
 import { useTextTransform } from '../../../hooks/useTextTransform';
 import { Icons } from '../icons';
   

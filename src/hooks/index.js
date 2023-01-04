@@ -11,10 +11,12 @@ import { useReactly } from "./useReactly";
 import { useReactlyLibrary } from "./useReactlyLibrary";
 import { useScriptReferences } from "./useScriptReferences";
 import { useStateManager } from "./useStateManager";
+import { useEditorState } from "./useEditorState";
 import { useTextTransform } from "./useTextTransform";
 
 
 export {
+  useEditorState,
   useAppHistory, 
   useApplicationLoader, 
   useApplicationState, 

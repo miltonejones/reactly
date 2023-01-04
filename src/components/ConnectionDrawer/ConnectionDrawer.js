@@ -9,7 +9,7 @@ import ComponentEvents from '../ComponentEvents/ComponentEvents';
 import { JsonModal } from '../../colorize';
 import { useRunScript } from '../../hooks/subhook/useRunScript';
 import { StateComponentInput } from '../ComponentSettings/components';
-import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../context";
 import { useReactly } from '../../hooks';
 import { DrawerNavigation } from '../pages/Editor/components';
  

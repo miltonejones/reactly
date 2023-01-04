@@ -4,12 +4,12 @@ import { useParams } from "react-router-dom";
 import { Flex, Spacer, TextInput, TextBtn, Tiny, ConnectionDrawer, Text, QuickMenu } from "../..";
 import { AppRegistration, Save, MoreVert, Edit, Add , Delete} from "@mui/icons-material"; 
 import { List, ListItemButton,ListSubheader,ListItemText, ListItemSecondaryAction, ListItemIcon } from '@mui/material'; 
-import { useConnectionEdit } from '../Editor/Editor';
+ 
 import { TabButton } from '../../ComponentPanel/ComponentPanel';
-import { useEditor } from '../../../hooks/useEditor';
+import { useEditor } from '../../../hooks';
 import {
   AppStateContext, 
-} from "../../../hooks/AppStateContext";
+} from "../../../context";
 
 
 
@@ -43,14 +43,9 @@ const Detail = ({ applications, onConnect }) => {
   } = React.useContext(AppStateContext)
   const { appname } = useParams();
   const application = applications.find(f => f.path === appname);
-  const editor = useEditor(applications);
+  const editor = useEditor(); 
 
-  const {
-    handleResourceDelete,
-    handleConnectionDelete,
-    setConnection, 
-    setResource 
-  } = useConnectionEdit(applications);
+ 
   
   const [settings, setSettings] = React.useState({
     Name: application.Name,
@@ -186,21 +181,7 @@ const Detail = ({ applications, onConnect }) => {
     </Grid>
   
       
-    <ConnectionDrawer 
-        appID={application.ID}
-
-        dropResource={handleResourceDelete}
-        dropConnection={handleConnectionDelete}
-        setResource={setResource}
-        setConnection={setConnection}
-
-        connections={application.connections}
-        resources={application.resources}
-        open={open} 
-        handleClose={() => {
-          setOpen(false)
-        }} 
-      />
+    <ConnectionDrawer   />
       
       
    </Layout>

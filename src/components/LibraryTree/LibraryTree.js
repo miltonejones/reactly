@@ -7,7 +7,7 @@ import { Flex, PopoverPrompt, Spacer, SearchBox, Tiny , Text, TextInput, useClip
 import { Icons, renderIconOption } from '../library/icons'; 
 import { JsonTree } from '../../colorize'; 
 import { TabButton } from '../ComponentPanel/ComponentPanel';
-import { AppStateContext } from '../../hooks/AppStateContext';
+import { AppStateContext } from '../../context';
 import { TextBtn } from '../Control/Control';
 import { JsonView } from '../../colorize';
 import { uniqueId } from '../library/util';

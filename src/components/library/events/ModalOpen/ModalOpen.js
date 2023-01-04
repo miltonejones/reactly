@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled, Box, Typography, FormControlLabel, Switch} from '@mui/material'; 
 import { QuickSelect, Flex, Spacer, Text, TextBtn, Pill } from '../../..';
-import { AppStateContext } from '../../../../hooks/AppStateContext'; 
+import { AppStateContext } from '../../../../context'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)

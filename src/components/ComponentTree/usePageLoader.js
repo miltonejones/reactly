@@ -1,6 +1,6 @@
 
 import React from "react";
-import { AppStateContext } from "../../hooks/AppStateContext"; 
+import { AppStateContext } from "../../context"; 
 import { usePageContext } from "../../hooks/usePageContext";
 import { useLocation, useParams } from 'react-router-dom';
 import { objectReduce } from "../library/util";
@@ -36,7 +36,6 @@ export const usePageLoader = () =>{
       }
       setBusy && setBusy('loading page...');
       setPageState('Setting page state...');
-      shout(selectedPage, 'Setting page state...')
 
 
       const stateProps = !selectedPage?.state
@@ -46,6 +45,9 @@ export const usePageLoader = () =>{
 
       // set client state if it is not already set
       setPageClientState(state => {     
+
+        shout({ stateProps, state }, 'Setting page state...');
+
         const hasState = !!state && !!Object.keys(state).length;
         shout({ hasState, stateProps }, 'loading page state');
         if ( !hasState && !!stateProps && !!Object.keys(stateProps).length ) {  
@@ -133,29 +135,35 @@ export const usePageLoader = () =>{
   // fires when pageLoaded is FALSE
   React.useEffect(() => {   
 
-    setPageState('Waiting for page definition...');
-    // dont bother running for skeleton loads
-    if (!selectedPage || selectedPage.skeleton) {
-      return;
-    }
-
      
     setQueryState(currentState => {
       
+      setPageState('Waiting for page definition...');
+      // dont bother running for skeleton loads
+      if (!selectedPage || selectedPage.skeleton) {
+        //  shout( currentState , 'Page is a skeleton', 'red', 400);
+        return currentState;
+      }
+
       // jot down the previous load time
       const{ loadTime, pageLoaded } = currentState;
 
       // stop here if the page is already loaded
-      if (pageLoaded) return currentState;
- 
-      // stop here if the previous call was less than 2 secs ago
-      if (new Date().getTime() - loadTime < 2000) {
-        shout({ loadTime }, 'page loaded to quickly', 'blue')
+      if (pageLoaded) {
+        // shout( currentState , 'Page is already loaded', 'red', 400);
         return currentState;
       }
 
+      // const since = new Date().getTime() - loadTime
+ 
+      // // stop here if the previous call was less than 2 secs ago
+      // if (since < 5000) {
+      //   shout({ loadTime, since }, 'page loaded too quickly: ' + since, 'blue')
+      //   return currentState;
+      // }
+
       // load the page
-      shout( currentState , 'Calling page load', 'red', 400);
+      shout( currentState , 'Calling page load', 'green', 600);
       handlePageLoad();
 
       setPageState('Loaded');
@@ -170,7 +178,7 @@ export const usePageLoader = () =>{
 
     })
  
-  }, [ 
+  }, [  
     selectedPage,
     handlePageLoad,
     shout 

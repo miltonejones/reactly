@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { PageStateContext } from '../PageStateContext'; 
-import { AppStateContext } from '../AppStateContext';
+import * as React from 'react'; 
+import { PageStateContext, AppStateContext } from '../../context';
 
 
 export const usePageRef = () => {

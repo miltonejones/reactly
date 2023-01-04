@@ -1,47 +1,29 @@
-import React from "react";
-import { useLocation } from 'react-router-dom';
+import React from "react"; 
 import {
   createTheme,
-  useTheme,
-  Tooltip,
-  Button,
-  ThemeProvider,
-  styled,
-  Box, 
-  Avatar,
-  MenuItem,
+  useTheme, 
+  ThemeProvider, 
+  Box,   
   Alert,
-  Menu,
-  Stack,
-  Collapse,
-  Switch
+  Menu,  
+  MenuItem, 
 } from "@mui/material";
 import {
  Close,
- Edit,
- ExpandMore,
- Settings
+ Edit,  
 } from "@mui/icons-material"; 
-import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext"; 
+import { AppStateContext, EditorStateContext } from "../../context"; 
 import { Helmet } from "react-helmet";
-import { Flex, Text, Spacer, DeleteConfirmMenu, TextBtn, TextInput, TinyButton } from ".."; 
-import { Json } from "../../colorize"; 
-import { objectReduce } from "../library/util";
+import { TinyButton } from "..";   
 import { getSettings } from '../library/util';
-import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
-import { uniqueId } from "../library/util";
-import Observer from "../../util/Observer";
-import { Icons } from '../library/icons';
+import { PageStateContext, usePageContext } from "../../hooks/usePageContext"; 
+import Observer from "../../util/Observer"; 
 import { truth } from "../library/util";
 import { usePageLoader } from "./usePageLoader";
 
 export const propertiesLoadedEvent = new Observer("scroll");
 
-
-const Layout = styled(Box)(({ theme }) => ({
-  margin: 0,
-}));
-
+ 
 
 const PreviewPane = (props) => {
   const [hover, setHover] = React.useState(false)
@@ -143,19 +125,11 @@ const ComponentTree = ( ) => {
  
   
   const {  
-    setEditorState,
-    editorState ,
+    setMessage,
+    message ,
     hilit
   } = React.useContext(EditorStateContext) 
-     
-  const [    
-    setMessage, 
-  ] = !setEditorState ? [] : [ 'message']
-    .map(name => (value) => setEditorState(key => ({ ...key, [name]: value })));
-
-  const {  message} = editorState ?? {};
-
- 
+      
 
 
   const [pageModalState, setPageModalState] = React.useState({});
@@ -209,8 +183,7 @@ const ComponentTree = ( ) => {
   const renderComponentProps = { 
     selectedPage,
     selectedComponent,
-    preview,
-    queryState,
+    preview, 
     setQueryState, 
     queryState,  
     hilit

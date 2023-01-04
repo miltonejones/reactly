@@ -6,7 +6,7 @@ import { Close, Gamepad, Add, Delete, Code, RecentActors, AutoStories } from "@m
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
 import { objectReduce } from '../library/util';
-import { AppStateContext, EditorStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext, EditorStateContext } from "../../context";
 import { useReactly } from "../../hooks";
 
 import { DrawerNavigation } from '../pages/Editor/components';

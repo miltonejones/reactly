@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from '@mui/material';
 import { Flex, Text, TabButton, TinyButton } from '../../../..';
-import { AppStateContext, EditorStateContext } from '../../../../../hooks/AppStateContext';
+import { AppStateContext, EditorStateContext } from '../../../../../context';
 import { Close } from "@mui/icons-material";
   
 const NavigationTabs = () => {

@@ -2,9 +2,8 @@ import React from 'react';
 import { styled, Collapse, Box, Alert, Card, Stack } from '@mui/material'; 
 import { Flex, TextBtn, Spacer, Tiny, QuickSelect, Text } from '..';
 import { Add, Close, Delete , Error} from "@mui/icons-material";
-import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events';
-import { eventTypes } from '../../hooks/usePageContext';
-import { EditorStateContext, AppStateContext } from '../../hooks/AppStateContext'; 
+import { SetState, RunScript, OpenLink, DataExec, ModalOpen, MethodCall } from '../library/events'; 
+import { EditorStateContext, AppStateContext } from '../../context'; 
 import { useRunScript } from '../../hooks/subhook/useRunScript';
  
 const Layout = styled(Box)(({ theme }) => ({
@@ -30,14 +29,12 @@ const EventCard = ({ name, title, description, selected, onClick }) => {
 }
 
 const HandlerCard = ({ ID, event: eventName, action, application, page, selected, onSelect, onDelete  }) => {
-  const { getApplicationScripts } = useRunScript()
-  const { appData  } = React.useContext(EditorStateContext);
-  const { supportedEvents } = React.useContext(AppStateContext);
-  const includedEvents = eventTypes.concat(!supportedEvents ? [] : supportedEvents)  
-  const { pages, resources } = appData; 
+  const { getApplicationScripts } = useRunScript() 
+  const { supportedEvents, appContext } = React.useContext(AppStateContext); 
+  const { pages, resources } = appContext; 
   
   if (!action) return <u />
-  const chosenEvent = includedEvents.find(f => f.name === eventName)
+  const chosenEvent = supportedEvents.find(f => f.name === eventName)
   const title = !chosenEvent ? `unknown event ${eventName}` : chosenEvent.description; 
   let act = 'Unknown action'
   const obj = resources.find(e => e.ID === action.target)
@@ -169,12 +166,12 @@ const ComponentEvents = ({
   const [selectedType, setSelectedType] = React.useState(false);
 
   
-  const { Library } = React.useContext(AppStateContext);
+  const { Library, appContext } = React.useContext(AppStateContext);
 
   const isInApplicationScope = !component && !selectedPage?.PageName;
 
   const availableEvents = isInApplicationScope ? appEvents : Events;
-  const availableOwner = isInApplicationScope ? application : selectedPage;
+  const availableOwner = isInApplicationScope ? appContext : selectedPage;
   const defaultEvents = !addedEvents ? availableEvents : addedEvents;
   const supportedEvents = !!addedEvents || !component ? defaultEvents : Library[component.ComponentType].Events  ;
 
@@ -210,12 +207,12 @@ const ComponentEvents = ({
     {
       name: 'Set state value',
       value: 'setState',
-      when: () => !!selectedPage?.state?.length || !!application.state?.length
+      when: () => eventOwner.state?.length
     },
     {
       name: 'Execute client script',
       value: 'scriptRun',
-      when: () => !!scriptList?.length // application.pages?.some(pg => pg.scripts?.length) // !!selectedPage?.scripts?.length
+      when: () => !!scriptList?.length // appContext.pages?.some(pg => pg.scripts?.length) // !!selectedPage?.scripts?.length
     } ,
     {
       name: 'Call a component method',
@@ -291,7 +288,7 @@ const ComponentEvents = ({
       {eventOwner.events?.map(e => <HandlerCard 
         selected={selectedHandler} 
         page={selectedPage}
-        application={application}
+        application={appContext}
         onSelect={(key, id) => {
         setSelectedEvent(key)
         setSelectedHandler(id)
@@ -311,7 +308,7 @@ const ComponentEvents = ({
             resources={resources}
             handleSave={handleSave}
             component={component}
-            application={application}
+            application={appContext}
             event={freshEvent} 
             selectedEvent={supportedEvent}
             page={selectedPage} 
@@ -331,7 +328,7 @@ const ComponentEvents = ({
             <Editor
               component={component}
               resources={resources}
-              application={application}
+              application={appContext}
               selectedEvent={supportedEvent}
               handleSave={handleSave}
               selectedType={e.action.type}

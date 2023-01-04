@@ -4,7 +4,7 @@ import { GenericStyles } from '../styles';
 import { SystemSecurityUpdateGood } from '@mui/icons-material';
 import ReactlyComponent from '../reactly'; 
 import { getSettings } from '../util';
-import { AppStateContext } from '../../../hooks/AppStateContext';
+import { AppStateContext } from '../../../context';
 import { Faux } from '../reactly';
   
 const ReactlyComponentPopover = ({ children, ...props }) => {

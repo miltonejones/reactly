@@ -4,8 +4,8 @@ import { GenericStyles, LayoutStyles } from '../styles';
 import { Loop } from '@mui/icons-material';
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
-import { AppStateContext } from '../../../hooks/AppStateContext';
-import { RepeaterContext } from '../../../hooks/AppStateContext';
+import { AppStateContext } from '../../../context';
+import { RepeaterContext } from '../../../context';
 
 
 

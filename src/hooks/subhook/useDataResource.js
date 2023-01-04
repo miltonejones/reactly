@@ -1,6 +1,5 @@
-import * as React from 'react';
-import { AppStateContext } from '../AppStateContext';
-import { PageStateContext } from '../PageStateContext';
+import * as React from 'react'; 
+import { AppStateContext, PageStateContext } from '../../context';
 import moment from 'moment';
 import { useOpenLink } from '.';
 import { usePageRef } from '.';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stack} from '@mui/material'; 
 import { Flex, Spacer, TextInput, TextBtn, Text, QuickSelect  } from "..";
-import { AppStateContext } from "../../hooks/AppStateContext";
+import { AppStateContext } from "../../context";
 import { useEditor } from '../../hooks/useEditor';
 import {  Save, Delete } from "@mui/icons-material"; 
   

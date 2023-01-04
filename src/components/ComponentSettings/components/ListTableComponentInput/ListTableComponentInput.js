@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Collapse, styled, Grid, Box, Stack } from '@mui/material';
 import { Flex, Spacer, TextBtn, TextInput, QuickSelect, Text, Tiny, TinyButton } from '../../..'; 
-import { AppStateContext } from '../../../../hooks/AppStateContext'; 
+import { AppStateContext } from '../../../../context'; 
 import { CheckCircle, Save, CheckCircleOutline, ExpandMore, ExpandLess } from "@mui/icons-material";  
 import { getSettings } from '../../../library/util';
 import { JsonModal } from '../../../../colorize';

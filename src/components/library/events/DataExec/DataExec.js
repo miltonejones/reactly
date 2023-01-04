@@ -3,7 +3,7 @@ import { styled, Box, Divider, Typography , Collapse, Switch, Stack} from '@mui/
 import { QuickSelect, Flex, Text, Spacer, TextBtn } from '../../..';
 import {
   AppStateContext 
-} from "../../../../hooks/AppStateContext";
+} from "../../../../context";
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1)
