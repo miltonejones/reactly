@@ -1,15 +1,42 @@
 import * as React from 'react'; 
 
-export const useStateManager = (settings) => {
+const attempt = str => {
+  try {
+    return JSON.parse(str)
+  } catch (e) {
+    return false;
+  }
+}
+
+export const useStateManager = (settings, persist) => {
+
+  const options = Object.keys(settings).reduce((out, setting) => { 
+    const store = attempt(localStorage.getItem(setting));
+    if (!!persist && !!store && persist.find(item => setting === item)) {
+      out[setting] = store 
+    } else {
+      out[setting] = settings[setting];
+    }
+    return out;
+  }, { });
+
+  React.useEffect(() => {
+    !!persist && console.log ({ options })
+  }, [options, persist])
  
-  const [ properties, setProperty ] = React.useState(settings);
+  const [ properties, setProperty ] = React.useState(options);
 
   const createSetter = (key) => (input) => {
     setProperty(property => {
       const value = typeof input === 'function'
         ? input(property[key])
         : input;
- 
+      
+        !!persist && console.log ({ key, value});
+
+      !!persist && 
+        persist.find(item => key === item) &&
+        localStorage.setItem(key, JSON.stringify(value));
 
       return {
         ...property,

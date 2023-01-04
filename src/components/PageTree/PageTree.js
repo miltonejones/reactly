@@ -153,7 +153,7 @@ const Pages = ({tree, trees, onClick, setPage, dropPage, duplicatePage, selected
 
          {!!tree && <ListItemSecondaryAction>
 
-          {on && <Tiny onClick={() =>  onClick && onClick() }  icon={Close}  sx={{mr: 1}} />}
+          {on && <Tiny onClick={() =>  onClick && onClick('/') }  icon={Close}  sx={{mr: 1}} />}
 
 
           <DeleteConfirmMenu hidden={!(on || over)}  sx={{mr: 1}} message={`Delete page ${tree.PageName}?`} 

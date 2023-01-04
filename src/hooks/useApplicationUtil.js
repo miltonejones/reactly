@@ -22,9 +22,15 @@ export const useApplicationUtil = (state) => {
     }
     const [space, subroutine, app, path] = pathname.split('/');
     const application = getAppByName(app);
-    if (path) {
+    if (!!path) {
       const page = getPageByName(application, path)
-      return  addPageTab(page, page.parameters);
+      if (page) {
+        return  addPageTab(page, page.parameters);
+      }
+      return alert(JSON.stringify({'Could not find': {
+        path,
+        pathname
+      }}, 0, 2))
     }
     addPageTab()
   }
@@ -89,7 +95,7 @@ export const useApplicationUtil = (state) => {
 
   // add tabs to editor based on location
   React.useEffect(() => { 
-    addTabByLocation(location.pathname)
+    !!location.pathname && addTabByLocation(location.pathname)
   }, [location]);
   
 

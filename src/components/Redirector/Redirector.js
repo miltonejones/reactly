@@ -7,17 +7,20 @@ import { AppStateContext } from '../../context';
 const Redirector = () => {
   const { appContext, preview, debugMode } = React.useContext(AppStateContext);
   const { appname, pagename } = useParams();
-  const { homePage } = appContext;
 
-  if (!!homePage && !pagename && !preview) {
-    const path = appContext.pages.find(f => f.ID === homePage).PagePath;
-    if (path) {
-      const rootPath = debugMode ? 'debug' : 'apps';
-      const redirectPath = `/${rootPath}/${appname}/${path}`;
-      return <Navigate to={redirectPath} />
+  if (!!appContext) {
+    const { homePage } = appContext;
+  
+    if (!!homePage && !pagename && !preview) {
+      const path = appContext.pages.find(f => f.ID === homePage).PagePath;
+      if (path) {
+        const rootPath = debugMode ? 'debug' : 'apps';
+        const redirectPath = `/${rootPath}/${appname}/${path}`;
+        return <Navigate to={redirectPath} />
+      }
     }
-  }
-
+  
+  } 
   return <i />
 }
 

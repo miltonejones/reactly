@@ -71,7 +71,7 @@ const Toolbar = () => {
       </IconButton>
 
       <Chip color="primary" 
-        onClick={() => handlePageNavigate()}
+        onClick={() => handlePageNavigate('/')}
         variant={isInApplicationScope ? "outlined" : "filled" } 
         label={<b>{appContext.Name}</b>} 
         />

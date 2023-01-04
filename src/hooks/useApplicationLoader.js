@@ -1,20 +1,15 @@
 import * as React from "react"; 
+import { getApplicationInfo, getApplicationByName, getPageByPath, setApplication } from "../connector/sqlConnector";
 import { useApplicationState } from "./useApplicationState";
-import { getApplicationInfo } from "../connector/sqlConnector";
-import { useLocation, useParams } from "react-router-dom"; 
-import { getApplicationByName } from "../connector/sqlConnector";
-import { getPageByPath } from "../connector/sqlConnector";
 import { objectReduce } from "../components/library/util"; 
 import { useApplicationUtil } from "./useApplicationUtil";
-import { setApplication } from "../connector/sqlConnector";
+import { useParams } from "react-router-dom"; 
  
 export const useApplicationLoader = (state, preview) => { 
 
-  const utils = useApplicationUtil(state);
-  const location = useLocation(); 
+  const utils = useApplicationUtil(state); 
   const { appname, pagename } = useParams(); 
  
-
   // get configuration for the all applications or,
   // if the route has a pagename, just the application with that page
   const downloadApplicationConfig = React.useCallback(async () => {  
@@ -29,8 +24,6 @@ export const useApplicationLoader = (state, preview) => {
     return applicationConfig;
  
   }, [state, getApplicationInfo, getApplicationByName, appname, pagename]);
-
-
 
   // save current application
   const uploadApplicationConfig = React.useCallback(async (app) => { 
@@ -60,46 +53,31 @@ export const useApplicationLoader = (state, preview) => {
   },  [state]);
 
   // gets the current page JSON from the server
-  const downloadCurrentPage = React.useCallback(async () => { 
-
-    // const { pageLoaded, loadTime } = await state.getQueryState();   
-    
-    // if (new Date().getTime() - loadTime < 2000) {
-    //   utils.shout({ loadTime }, 'page loaded too quickly', 'red')
-    //   return;
-    // }
+  const downloadCurrentPage = React.useCallback(async () => {  
     
     if (!pagename) return;
-    utils.shout ({pagename}, 'Downloading ' + pagename)
+    utils.shout ({ pagename }, 'Downloading settings for ' + pagename)
     
     state.setBusy(`Reloading page "${pagename}"...`);
     
     // download page JSON from server
     const selectedPage = await getPageByPath(appname, pagename);
     
-    utils.shout(selectedPage, 'Got server page ' + selectedPage?.PageName);
- 
-    // get initial state variables from the page config
-    // const stateProps = !selectedPage?.state
-    //   ? null
-    //   : objectReduce(selectedPage.state); 
-
+    utils.shout(selectedPage, 'Got server page ' + selectedPage.PageName);
+  
     // update the local JSON with the new page
-    updateApplicationData(selectedPage);  
-
-    // utils.shout( { stateProps }, 'adding initial properties', 'orange')
+    updateApplicationData(selectedPage);   
  
     // clear initial state variables  
-     state.setPageClientState({});
+    state.setPageClientState({});
 
     // mark pageLoaded as FALSE to fire the pageOnLoad event
-     state.setQueryState(e => ({ ...e, pageLoaded: false  })); 
+    state.setQueryState(e => ({ ...e, pageLoaded: false  })); 
 
     state.setBusy(false); 
 
   }, [pagename, appname, utils, state]);
  
-
   // return page node based in its name
   const getPageByName = React.useCallback((app, name) =>  app.pages.find(f => f.PagePath === name) , []);
 

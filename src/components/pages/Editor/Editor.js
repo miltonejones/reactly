@@ -66,10 +66,13 @@ const Editor = () => {
   }
  
   const handlePageNavigate = (name,  parameters) => {
-    const clickedPage = !!name && appContext.pages?.find((f) => f.PageName === name);
+    if (name === '/') { 
+      return navigate(`/edit/${appContext.path}`);
+    }
  
-    if (!clickedPage) { 
-      return// navigate(`/edit/${appContext.path}`);
+    const clickedPage = !!name && appContext.pages?.find((f) => f.PageName === name);
+    if (!clickedPage) {
+      return;// alert ('No page for ' + name)
     }
  
     const suffix = !parameters 

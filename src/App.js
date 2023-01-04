@@ -142,7 +142,7 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
     }
   }, [state]);
 
-  if (!(Boolean(state.applicationData) && Boolean(appContext))) {
+  if (!Boolean(state.applicationData)) {
     return <LoadingScreen />;
   }
 
@@ -156,8 +156,7 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
         ...loader,
 
         Library: state.hydratedLibrary,
-        appBusy: state.busy,
-        appData: state.applicationData,
+        appBusy: state.busy, 
 
         // app methods
         setAppData: state.setApplicationData,
@@ -182,8 +181,7 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
 
       <Component
         debug={debug}
-        {...props}
-        appData={state.applicationData}
+        {...props} 
         applications={state.applicationData}
       />
 
