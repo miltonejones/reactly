@@ -304,7 +304,10 @@ const ComponentEvents = ({
              }} /></>}
 
     {!selectedHandler && !!selectedType && !!selectedEvent && 
-      <><EventEditor
+      <>
+      
+     [ {selectedEvent}]
+      <EventEditor
             resources={resources}
             handleSave={handleSave}
             component={component}
@@ -318,13 +321,15 @@ const ComponentEvents = ({
  
 
 
-      {!!selectedHandler && !!selectedEvent && 
+      {!!selectedHandler && !!selectedEvent && supportedEvent &&
         eventOwner.events?.filter(f => f.ID === selectedHandler)
           .map (e => {
             const Editor = forms[e.action.type];
             if (!Editor) return <>could not render editor {e.type}</>
             return <>
-          
+            
+          <Text small sx={{ml: 1}}>When</Text>
+          <Text small active sx={{ml: 1}}>{supportedEvent.description}</Text>
             <Editor
               component={component}
               resources={resources}

@@ -127,7 +127,7 @@ const SetState = ({ event = {}, application, page, component, resources, handleS
 
   const stateList = ((page.state||[]).concat(application.state||[]));
 
-console.log ({ stateList, target: state.target })
+// console.log ({ stateList, target: state.target })
 
   const selectedState = !state.target ? {} : stateList?.find(f => {
     const [key,val] = state.target?.split('.');
@@ -168,10 +168,10 @@ console.log ({ stateList, target: state.target })
         }}
       />
 
-<pre>
+{/* <pre>
 [{JSON.stringify(state,0,2)}] 
 {state.target}
-</pre>
+</pre> */}
 
       <Flex>
         <Spacer />

@@ -1,12 +1,14 @@
 import React from 'react';
-import { styled, Box, IconButton , Popover} from '@mui/material';
+import { styled, Box, IconButton , Divider, Popover} from '@mui/material';
+import { Text } from '../../../..';
+import { BorderButton } from '../../styled';
  
 const Layout = styled(Box)(({ theme }) => ({
  padding: theme.spacing(2),
  width: 400,
 }));
  
-const ContentPopover = ({ icon: Icon, children }) => {
+const ContentPopover = ({ icon: Icon, title, children }) => {
   const [anchorEl, setAnchorEl] = React.useState(null);;
 
   const handlePopoverClose = () => setAnchorEl(null);
@@ -18,9 +20,9 @@ const ContentPopover = ({ icon: Icon, children }) => {
 
  return (
    <>
-  <IconButton onClick={handlePopoverClick}>
+  <BorderButton active={!!anchorEl} onClick={handlePopoverClick}>
     <Icon />
-  </IconButton>
+  </BorderButton>
   <Popover 
     open={!!anchorEl}
     anchorEl={anchorEl}
@@ -31,6 +33,10 @@ const ContentPopover = ({ icon: Icon, children }) => {
     }}
   >
     <Layout>
+      {!!title && <>
+        <Text small active>{title}</Text>
+        <Divider />
+      </>}
       {children}
     </Layout>
 

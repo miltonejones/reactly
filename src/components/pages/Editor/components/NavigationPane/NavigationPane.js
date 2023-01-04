@@ -19,6 +19,7 @@ import { Add, Article, Newspaper, Close, ExpandMore } from "@mui/icons-material"
 import { EditorStateContext, AppStateContext } from '../../../../../context';
 import { useReactly } from '../../../../../hooks';
 import { Treebox } from '../../styled';
+import { ContentPopover } from '..';
   
  
 const NavigationPane = ( ) => {
@@ -73,26 +74,16 @@ const NavigationPane = ( ) => {
 
   const navigationButtons = [
     {
-      // deg: !parentOpen ? 270 : 90,
+      deg: !collapsed.left ? 90 : 270,
       onClick: () => setCollapsed((s) => ({ ...s, left: !collapsed.left })),
       icon: collapsed.left ? <ExpandMore /> : <Close />
-    },
-    { 
-      onClick: () => handlePopoverClick(<PageTree />),
-      icon: <Article />,
-      hidden: !collapsed.left
-    },
-    { 
-      onClick: () => handlePopoverClick(<ContentTree />),
-      icon: <Newspaper />,
-      hidden: !collapsed.left
-    }
+    }, 
   ]
 
 
  return (
-  <SidePane item side="left">
-
+  <SidePane item side="left" sx={{pr: 1}}>
+ 
       <Stack sx={{ p: collapsed.left ? 0 : 1, height: 300 }}>
 
         <Flex nowrap spacing={1}>
@@ -112,11 +103,18 @@ const NavigationPane = ( ) => {
               >Create</PopoverPrompt> 
           </Hide>
           
-          <Stack>
-            {navigationButtons
-            .map((button, i) => <ControlButton key={i} {...button} />)} 
-          </Stack>
-
+            <Stack>
+              {navigationButtons
+              .map((button, i) => <ControlButton key={i} {...button} />)} 
+              <Hide hidden={!collapsed.left}>
+                <ContentPopover icon={Article} title="Pages">
+                  <PageTree />
+                </ContentPopover>
+                <ContentPopover title="Page contents" icon={Newspaper}>
+                  <ContentTree />
+                </ContentPopover>
+              </Hide>
+            </Stack>
         </Flex>
 
 

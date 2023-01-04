@@ -150,6 +150,15 @@ const ComponentPanel = () => {
     </Box>
   }
 
+  const tabNames = {
+    Settings: Settings,
+    Styles: Palette,
+    Events: Bolt,
+    Theme: FormatColorFill
+  }
+
+  const componentLabel = !!component 
+  ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName
   
   return <Stack sx={{mb: 10}}>
      <Flex sx={{ m: 1}} direction={collapsed ? 'column' : 'row'}>
@@ -165,8 +174,7 @@ const ComponentPanel = () => {
 
       {!collapsed && (!!component?.ComponentName || selectedPage?.PageName) && <>
 
-        <Chip variant="outlined" size="small" icon={<Article />} label={!!component 
-        ? `${component.ComponentType}: ${component.ComponentName}` : selectedPage?.PageName} 
+        <Chip variant="outlined" size="small" icon={<Article />} label={componentLabel} 
         deleteIcon={ <Close />} onDelete={onDelete}/> 
 
       <Spacer />
@@ -205,8 +213,11 @@ const ComponentPanel = () => {
         {collapsed && <Stack>
           {buttons.map((Btn, i)=> {
           const Content = panels[i];
-          return <ContentPopover icon={Btn} key={i}>
-            <Content  {...panelProps} />
+          return <ContentPopover title={<>
+          <Btn />
+          {componentLabel + " " + Object.keys(tabNames)[i]}
+          </>}  icon={Btn} key={i}>
+            <Content  {...panelProps}/>
           </ContentPopover>})}
           </Stack>}
 
@@ -216,15 +227,9 @@ const ComponentPanel = () => {
         
      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
-
-        <TabButton icon={<Tiny icon={Settings}/>} iconPosition="start"  label="Settings"   />
-
-        <TabButton icon={<Tiny icon={Palette}/>} iconPosition="start"  label="Styles"  />
-
-        <TabButton  icon={<Tiny icon={Bolt}/>} iconPosition="start"  label="Events"  />
-
-        <TabButton icon={<Tiny icon={FormatColorFill}/>} iconPosition="start"  label="Theme"  />
-
+        {Object.keys(tabNames).map(tab => (
+           <TabButton icon={<Tiny icon={tabNames[tab]}/>} iconPosition="start"  label={tab} key={tab}   />
+        ))}  
       </Tabs>
     </Box>
 

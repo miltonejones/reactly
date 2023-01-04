@@ -3,10 +3,10 @@ import { styled, Stack, Box, IconButton, Grid } from "@mui/material";
 export const Layout = styled(Grid)(({ collapsed, showTabs }) => {
 
   const PANE_HEIGHT = 'calc(100vh - 64px)';
-  const LEFT_PANE_WIDTH = collapsed.left ? 40 : 300;
-  const RIGHT_PANE_WIDTH = collapsed.right ? 40 : 360;
+  const LEFT_PANE_WIDTH = collapsed.left ? 60 : 300;
+  const RIGHT_PANE_WIDTH = collapsed.right ? 60 : 360;
 
-  let centerOffset = 56;
+  let centerOffset = 48;
   centerOffset += LEFT_PANE_WIDTH;
   centerOffset += RIGHT_PANE_WIDTH;
 
@@ -60,7 +60,7 @@ export const SidePane = styled(Grid)(({ theme, side }) => {
       [borders[side]]: 'solid 1px',
       borderColor: theme.palette.divider,
       '&:hover': {
-        borderColor: 'black'
+        borderColor: theme.palette.error.main,
       }
     })
   }
