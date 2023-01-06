@@ -5,6 +5,7 @@ import ListComponentInput from './ListComponentInput/ListComponentInput';
 import IconComponentInput from './IconComponentInput/IconComponentInput';
 import ListBinderComponentInput from './ListBinderComponentInput/ListBinderComponentInput';
 import ListTableComponentInput from './ListTableComponentInput/ListTableComponentInput';
+import InputContainer from './InputContainer/InputContainer';
 
 
 export {
@@ -14,5 +15,6 @@ export {
   ListComponentInput,
   IconComponentInput,
   ListBinderComponentInput,
-  ListTableComponentInput
+  ListTableComponentInput,
+  InputContainer
 }

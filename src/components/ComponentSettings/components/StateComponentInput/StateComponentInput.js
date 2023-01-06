@@ -3,7 +3,7 @@ import {  Stack, IconButton } from '@mui/material';
 import { TextInput, QuickMenu  } from '../../..';
 import { AppStateContext } from "../../../../context";
 import { useEditor } from "../../../../hooks/useEditor";
-import { MoreVert, LinkOff } from "@mui/icons-material"; 
+import { MoreVert, LinkOff, Code } from "@mui/icons-material"; 
    
  
 const StateComponentInput = ({
@@ -12,14 +12,20 @@ const StateComponentInput = ({
   value,
   header,
   binding,
+  scripts,
   handleChange,
   bindPropertyClicked,
+  bindingValue,
   menu = true, 
 }) => {
 
   const {  
     appContext
   } = React.useContext(AppStateContext);  
+
+  const [ scope, scriptID ] = bindingValue?.split('.');
+  const isScript = scope === 'scripts';
+  const code = !(isScript && scripts && scriptID) ? '' : scripts.find(f =>  f.ID === scriptID).code;
  
 
   const onChange = React.useCallback(async (value) => {  
@@ -42,25 +48,38 @@ const StateComponentInput = ({
   !!appContext.state && appContext.state.map(s => {
     return options.push(`application.${s.Key}`);
   })
+
+  const buttons = isScript ? [ <IconButton>
+    <Code />
+  </IconButton>] :  [ 
+           
+    <QuickMenu helperText={helperText} 
+ options={options}  
+ value={value} 
+ label={ 
+
+ <IconButton>
+   <MoreVert />
+ </IconButton>
+ 
+}
+ onChange={value => !!value && onChange(value)}/>,
+
+
+<IconButton onClick={bindPropertyClicked}>
+ <LinkOff />
+</IconButton>
+]
+
+
   return <Stack sx={{ width: '100%' }}>
-    {header} 
+  {header} 
     <TextInput 
+        disabled={isScript}
         fullWidth
-        value={value} 
+        value={isScript ? code : value} 
         size="small"
-      buttons={
-           [ <QuickMenu helperText={helperText} 
-        options={options}  
-        value={value} 
-        label={ <IconButton>
-          <MoreVert />
-        </IconButton>}
-        onChange={value => !!value && onChange(value)}/>,
-      <IconButton onClick={bindPropertyClicked}>
-        <LinkOff />
-      </IconButton>
-      ]
-      }
+      buttons={ buttons }
     />
 
 

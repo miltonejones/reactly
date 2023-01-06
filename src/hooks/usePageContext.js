@@ -1,12 +1,12 @@
 import * as React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+// import { useNavigate, useParams } from "react-router-dom";
 import { AppStateContext } from "../context";
-import moment from "moment";
-import Observer from "../util/Observer";
+// import moment from "moment";
+// import Observer from "../util/Observer";
 import { PageStateContext } from "../context";
 import { useOpenLink } from "./subhook";
 import { usePageRef } from "./subhook";
-import { useDataResource } from "./subhook";
+// import { useDataResource } from "./subhook";
 import { useRunScript } from "./subhook";
 import { getPropertyValueFromString } from "../components/library/util";
 import { map } from "../components/library/util";
@@ -14,37 +14,37 @@ import { useTextTransform } from "./useTextTransform";
  
 
 export const usePageContext = () => {
-  const { handleClick, loud } = React.useContext(PageStateContext);
+  // const { handleClick, loud } = React.useContext(PageStateContext);
 
   const { 
     pageResourceState,
     setPageResourceState,
-    getPageResourceState,
+    // getPageResourceState,
 
     preview,
 
-    pageModalState,
+    // pageModalState,/
     setPageModalState,
 
     shout,
 
-    pageRefState,
-    setPageRefState,
+    // pageRefState,/
+    // setPageRefState,
 
-    setQueryState,
+    // setQueryState,
     pageClientState,
     setPageClientState,
     // getPageClientState,
-    setDisableRequests,
+    // setDisableRequests,
     disableRequests,
     appContext,
     selectedPage,
     monitoredEvents,
     Alert,
-    queryState,
-    Library,
+    // queryState,
+    // Library,
     setApplicationClientState,
-    applicationClientState,
+    // applicationClientState,
     supportedEvents,
   } = React.useContext(AppStateContext);
 
@@ -53,10 +53,10 @@ export const usePageContext = () => {
 
   const listening = React.useCallback((name) => monitoredEvents.indexOf(name) > -1, [monitoredEvents]);
 
-  const { getApplicationScripts, executeScriptByName, executeScript } =
+  const { getApplicationScripts, invokeScriptSync, executeScript } =
     useRunScript();
 
-  const { getResourceByName } = useDataResource();
+  // const { getResourceByName } = useDataResource();
 
   // const applicationScope = !getPageClientState_
 
@@ -67,15 +67,16 @@ export const usePageContext = () => {
   const { interpolateText, getParametersInScope, getPropertyScope } =
     useTextTransform();
  
-  const routeParams = useParams();
-  const navigate = useNavigate();
+  // const routeParams = useParams();
+  // const navigate = useNavigate();
 
-  const hello = async (json, msg) => {
+  const hello = React.useCallback(async (json, msg) => {
     if (!shout) return console.log({ shoutless: json });
     await shout(json, msg);
-  };
+  }, [shout]);
 
-  const drillPath = (object, path) => {
+
+  const drillPath = React.useCallback((object, path) => {
  
     const arr = path.split(".");
     const first = arr.shift();
@@ -86,29 +87,10 @@ export const usePageContext = () => {
     }
 
     return node;
-  };
-  // trackName,artworkUrl100,collectionName,artistName
-  const execResourceByName = async ( name, options ) => {
+  }, []);
 
-    const resource = appContext.resources.find(
-      (f) => f.name === name
-    );
 
-    if (!resource) {
-      Alert (`No resource named ${name} was found`)
-      return false;
-    }
-
-    return await executeComponentRequest(
-      appContext.connections,
-      options,
-      resource,
-      resource.format === "rest" ? "/" : "?"
-    );
-
-  }
-
-  const executeComponentRequest = async (
+  const executeComponentRequest = React.useCallback(async (
     connections,
     querystring,
     res,
@@ -134,7 +116,7 @@ export const usePageContext = () => {
     if (events) {
       events
         .filter((e) => e.event === "loadStarted")
-        .map((e) => {
+        .map((e) =>  
           handleComponentEvent(
             {},
             {
@@ -145,8 +127,8 @@ export const usePageContext = () => {
               },
             },
             events
-          );
-        });
+          ) 
+        );
     }
 
     let requestOptions = null;
@@ -191,7 +173,7 @@ export const usePageContext = () => {
     if (events) {
       events
         .filter((e) => e.event === "dataLoaded")
-        .map((e) => {
+        .map((e) =>  
           handleComponentEvent(
             {},
             {
@@ -199,12 +181,34 @@ export const usePageContext = () => {
               options: json,
             },
             events
-          );
-        });
+          ) 
+       );
     }
 
     return collated;
-  };
+    // eslint-disable-next-line
+  },[drillPath, executeScript, getApplicationScripts,  hello, listening, shout]);
+
+  // trackName,artworkUrl100,collectionName,artistName
+  const execResourceByName = React.useCallback(async ( name, options ) => {
+
+    const resource = appContext.resources.find(
+      (f) => f.name === name
+    );
+
+    if (!resource) {
+      Alert (`No resource named ${name} was found`)
+      return false;
+    }
+
+    return await executeComponentRequest(
+      appContext.connections,
+      options,
+      resource,
+      resource.format === "rest" ? "/" : "?"
+    );
+
+  }, [Alert, appContext.connections, appContext.resources, executeComponentRequest]);
 
   const handleComponentRequest = (querystring, resource) => {
     executeComponentRequest(appContext.connections, querystring, resource).then(
@@ -223,73 +227,7 @@ export const usePageContext = () => {
   };
  
 
-  const executeTerms = async (  
-      terms, 
-      payload,
-      connections,
-      resource,  
-      getProp
-    ) => {
-
-    let querystring;
-    const delimiter = resource.format === "rest" ? "/" : "&";
-
-    // await Alert (<pre>{JSON.stringify(terms,0,2)}</pre>);
-
-    if (resource.method === "GET" && !!terms) {
-      // build query string from trigger params
-      querystring = Object.keys(terms)
-        .filter(f => !!terms[f])
-        .map((term) => {
-          const [scope, key] = term.split('.');
-          const property = !key 
-            ? getProp(terms[term])
-            : terms[term];
-
-          return resource.format === "rest"
-            ? encodeURIComponent(property)
-            : `${key || term}=${encodeURIComponent(property)}`;
-        })
-        .join(delimiter);
-  
-    } else {
-
-      // for non-GET requests
-      querystring = payload;
-    }
- 
-   return await commitComponentRequest(connections, querystring, resource); 
-
-  }
-
-  const clearResource = (resource) => {
-
-    const datum = {
-      resourceID: resource.ID,
-      name: resource.name ,
-      records: []
-    };
- 
-    if (listening("dataExec")) { 
-      hello(
-        { datum },
-        `Clearing ${resource.name}`
-      );
-    }
-
-    if (!pageResourceState) {
-      setPageResourceState([datum]);
-    } else {
-      setPageResourceState((s) =>
-        (s || [])
-          .filter((e) => e.resourceID !== resource.ID)
-          .concat(datum)
-      );
-    }
-
-  }
-
-  const commitComponentRequest = async ( connections, querystring, resource) => {
+  const commitComponentRequest = React.useCallback(async ( connections, querystring, resource) => {
 
     const records = await executeComponentRequest(
       connections,
@@ -315,11 +253,78 @@ export const usePageContext = () => {
       );
     } 
 
-  }
+  },[executeComponentRequest, pageResourceState, setPageResourceState]);
+
+  const executeTerms = React.useCallback(async (  
+      terms, 
+      payload,
+      connections,
+      resource,  
+      getProp
+    ) => {
+
+    let querystring;
+    const delimiter = resource.format === "rest" ? "/" : "&";
+
+    // await Alert (<pre>{JSON.stringify(terms,0,2)}</pre>);
+
+    if (resource.method === "GET" && !!terms) {
+      // build query string from trigger params
+      querystring = Object.keys(terms)
+        .filter(f => !!terms[f])
+        .map((term) => {
+          const vars = term.split('.');
+          const key = vars[1];
+          const property = !key 
+            ? getProp(terms[term])
+            : terms[term];
+
+          return resource.format === "rest"
+            ? encodeURIComponent(property)
+            : `${key || term}=${encodeURIComponent(property)}`;
+        })
+        .join(delimiter);
+  
+    } else {
+
+      // for non-GET requests
+      querystring = payload;
+    }
+ 
+   return await commitComponentRequest(connections, querystring, resource); 
+
+  },[commitComponentRequest]);
+
+  const clearResource = React.useCallback((resource) => {
+
+    const datum = {
+      resourceID: resource.ID,
+      name: resource.name ,
+      records: []
+    };
+ 
+    if (listening("dataExec")) { 
+      hello(
+        { datum },
+        `Clearing ${resource.name}`
+      );
+    }
+
+    if (!pageResourceState) {
+      setPageResourceState([datum]);
+    } else {
+      setPageResourceState((s) =>
+        (s || [])
+          .filter((e) => e.resourceID !== resource.ID)
+          .concat(datum)
+      );
+    }
+
+  },[ hello, listening, pageResourceState, setPageResourceState]);
 
 
-  const handleComponentEvent = async (event, eventProps, events) => {
-    const { component, name, options, sources, connect, stateProps } =
+  const handleComponentEvent = React.useCallback( async (event, eventProps, events) => {
+    const { component, name, options, sources, connect } =
       eventProps;
 
     if (!(events || component?.events))
@@ -367,7 +372,7 @@ export const usePageContext = () => {
         );
  
 
-      const { selectedComponent, ...rest } = queryState;
+      // const { selectedComponent, ...rest } = queryState;
 
       const currentParameters = getParametersInScope();
       const currentClientState = await new Promise(yes => {
@@ -529,7 +534,7 @@ export const usePageContext = () => {
             options
           );
 
-          break;
+          // break;
         case "dataExec":
 
           if (disableRequests) {
@@ -543,7 +548,7 @@ export const usePageContext = () => {
             return Alert("no resources were found to  meet this request.");
           }
 
-          const { triggers } = trigger.action;
+          // const { triggers } = trigger.action;
 
           const resource = resources.find(
             (f) => f.ID === trigger.action.target
@@ -554,10 +559,10 @@ export const usePageContext = () => {
           }
 
           // set state source to read values from
-          const clientState = !pageClientState ? stateProps : pageClientState;
+          // const clientState = !pageClientState ? stateProps : pageClientState;
 
           // set URL delimiter
-          const delimiter = resource.format === "rest" ? "/" : "&";
+          // const delimiter = resource.format === "rest" ? "/" : "&";
 
           // let querystring;
 
@@ -593,7 +598,7 @@ export const usePageContext = () => {
 
            if (listening("dataExec")) { 
             hello(
-              { scope, currentAppState, },
+              { scope, currentAppState, clientState, boundTo},
               `Getting scope`
             );
           }
@@ -707,13 +712,16 @@ export const usePageContext = () => {
       }
     });
 
-  };
+  }, [
+    Alert, appContext.components, appContext.connections, appContext.pages, appContext.resources, clearResource, commitComponentRequest, createPageParams, disableRequests, execRefByName, execResourceByName, executeScript, executeTerms, getParametersInScope, getPropertyScope, hello, listening, openLink, pageResourceState, preview, selectedPage?.PageName, selectedPage?.components, 
+    setApplicationClientState, setPageClientState, setPageModalState, setPageResourceState,  shout
+  ]);
  
 
   const attachEventHandlers = React.useCallback(
     (component) => {
-      const { settings, events, boundProps } = component;
-      const { Methods } = Library[component.ComponentType] ?? {};
+      const { events, boundProps, scripts } = component;
+      // const { Methods } = Library[component.ComponentType] ?? {};
  
 
  
@@ -756,12 +764,40 @@ export const usePageContext = () => {
 
       if (boundProps) {
         // get current state at the time the component renders
-        boundProps.map((boundProp) => {
+
+
+        map(boundProps, async (boundProp) => {
+
           const { attribute, boundTo: boundKey } = boundProp;
-          const { boundTo, clientState, stateSetter } =
+          const { scope, boundTo, clientState, stateSetter } =
             getPropertyScope(boundKey);
 
-          if (attribute && clientState) {
+          if (attribute && scope === 'scripts') {
+            try {
+
+              const script = scripts?.find(d => d.ID === boundTo)
+              const prop =  invokeScriptSync(script , component,  execResourceByName)
+            //  console.log ({ boundTo, attribute, prop, eventHandlers })
+
+            if (listening('attachEventHandlers')) {
+              console.log({ attribute, prop}, 
+                  `Setting ${attribute} to "${prop}"`)
+            }
+
+            Object.assign(eventHandlers, {
+              // set current component value to client state
+              [attribute]:  prop,
+            });
+            } catch (ex) {
+              Object.assign(eventHandlers, {
+                // set current component value to client state
+                [attribute]:  ex.message,
+              });
+            }
+            return;
+          } 
+          
+          if (attribute && clientState && scope !== 'scripts') {
             const currentParameters = getParametersInScope();
 
             //  console.log ({ currentParameters })
@@ -813,6 +849,8 @@ export const usePageContext = () => {
             }
           }
         });
+
+
       }
 
       // Object.keys(eventHandlers).map (key => console.log (key, typeof eventHandlers[key]))
@@ -821,7 +859,8 @@ export const usePageContext = () => {
       //   eventHandlers,
       //   keys: Object.keys(eventHandlers) 
       // })
- 
+ // 
+      // !!scripts && console.log( eventHandlers )
 
       return eventHandlers;
     },
@@ -833,9 +872,18 @@ export const usePageContext = () => {
       handleComponentEvent,
       openLink,
       openPath,
-      selectedPage,
-      queryState,
-      setPageClientState,
+      // selectedPage,
+      // queryState,
+      // setPageClientState,
+      // Library, 
+      execResourceByName, 
+      getParametersInScope, 
+      getPropertyScope, 
+      interpolateText, 
+      invokeScriptSync, 
+      listening, 
+      shout, 
+      supportedEvents
     ]
   );
 

@@ -43,7 +43,7 @@ const ComponentPanel = () => {
     showSettings 
   } = React.useContext(EditorStateContext)
   const [ value, setValue ] = React.useState(0);
-  const { selectedComponent: component } = queryState;
+  const { selectedComponent } = queryState;
   const { themes, connections, resources } = appContext;
  
   const reactly = useReactly();
@@ -51,6 +51,9 @@ const ComponentPanel = () => {
   const panels = [ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel];
   const buttons = [Settings, Palette, Bolt, FormatColorFill];
   const Panel = panels[value];
+
+  const componentParent = selectedPage || appContext;
+  const component = componentParent.components.find(c => c.ID === selectedComponent?.ID);
 
   const collapsed = collapse.right;
   const onCollapse = () => setCollapsed(state => ({
@@ -91,10 +94,17 @@ const ComponentPanel = () => {
     ? reactly.onPropChange
     : changes[value];
 
-  const selectedComponent = Library[component?.ComponentType];
+  // const selectedComponent = Library[component?.ComponentType];
 
   const panelProps = {
     onEventDelete: reactly.onEventDelete, 
+    onScriptChange: ( scriptID, name, code, attribute ) => reactly.onComponentScript( scriptID, name, code, component?.ID,
+        answer => {
+          onChange( component?.ID, 'boundTo', {  boundTo: `scripts.${answer.ID}`, attribute } )
+          alert(JSON.stringify({attribute, answer},0,2)) 
+        }
+        
+        ),
     component:component,  
     selectedPage:selectedPage || appContext, 
     onChange:onChange, 

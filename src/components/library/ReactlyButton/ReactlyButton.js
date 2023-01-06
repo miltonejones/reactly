@@ -1,5 +1,5 @@
 import React from 'react';
-import { styled, Box, Button } from '@mui/material'; 
+import {  Box, Button } from '@mui/material'; 
 import { GenericStyles } from '../styles';
 import { Icons } from '../icons';
 import { SmartButton } from "@mui/icons-material";
@@ -23,8 +23,15 @@ const ReactlyButtonComponent = (props) => {
  return (
    <> 
    <ReactlyComponent component={Button} {...props} {...icons}>
-   {args.Label || props.Label} 
+   {props.Label || args.Label} 
    </ReactlyComponent>
+   {/* <pre>
+    {JSON.stringify(args,0,2)}
+   </pre>
+   <hr />
+   <pre>
+   [ {JSON.stringify(props.Label,0,2)}]
+   </pre> */}
    </>
  );
 } 

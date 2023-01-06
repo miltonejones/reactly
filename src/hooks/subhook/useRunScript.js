@@ -4,19 +4,18 @@ import moment from 'moment';
 import { useOpenLink } from '.';
 import { usePageRef } from '.';
 import { useDataResource } from '.';
-import { AppStateContext, PageStateContext } from '../../context';
+import { AppStateContext } from '../../context';
 import { useClipboard } from '../../components';
 import { map } from '../../components/library/util';
 import { Json } from '../../colorize';
-import { downloadApplicationScripts } from '../../connector/sqlConnector';
+// import { downloadApplicationScripts } from '../../connector/sqlConnector';
 
 
 export const useRunScript = () => {
  
   const { 
     setApplicationClientState ,
-    applicationClientState,
-    queryState,
+    applicationClientState, 
     Alert,
     Confirm,
     shout,
@@ -33,11 +32,7 @@ export const useRunScript = () => {
   const { openLink, openPath } = useOpenLink()
   const { getRefByName, execRefByName, getRef } = usePageRef();
   const { getResourceByName, setResourceByName } = useDataResource()
-
-  const refreshScripts = React.useCallback(async () => {
-    const scripts = await downloadApplicationScripts(appContext.ID);
-  }, [appContext])
-
+ 
   
   const getApplicationScripts = (unfiltered) => {
     const filter = unfiltered 
@@ -59,6 +54,18 @@ export const useRunScript = () => {
       })))
 
     return appScripts.concat(appContext.pages.reduce((out, pg) => {
+      pg.components?.map(comp =>  
+        comp.scripts?.map(scr => 
+          out.push({
+            ...scr,
+            label: scr.name,
+            hidden: 1,
+            page: comp.ComponentName,
+            ID: scr.scr
+          })
+
+        )
+      )
       if (!pg.scripts?.length) {
         return out;
       }
@@ -74,6 +81,9 @@ export const useRunScript = () => {
           pageID: pg.ID,
           ID: s.ID
         })));
+
+      
+
       return out;
     }, []))
   }
@@ -106,6 +116,7 @@ const handleScriptRequestAsync = async (block, opts, title) => {
   //   await Alert(block, title, 1)
     // console.log ({ block, title})
     // call that function to get the client function
+    // eslint-disable-next-line no-eval
     const action = eval(`(${block})()`); 
     if (block.indexOf('async') > -1) { 
       // console.log ({ selectedPage, opts})
@@ -123,6 +134,7 @@ const handleScriptRequest =  (block, opts, title) => {
 
   try { 
     // call that function to get the client function
+    // eslint-disable-next-line no-eval
     const action = eval(`(${block})()`);  
     // call the client function
     return action(selectedPage, opts)
@@ -150,34 +162,22 @@ const handleScriptRequest =  (block, opts, title) => {
     .sort((a, b) => a.sort - b.sort)
     .map(({ value }) => value);
 
-  const executeScript = async (scriptID, options, execResourceByName) => {
+  const getState = () => new Promise (resolve => {
+    setPageClientState(state => {
+      resolve(state);
+      return state;
+    })
+  });
 
+  const getApplicationState = () => new Promise (resolve => {
+    setApplicationClientState(state => {
+      resolve(state);
+      return state;
+    })
+  });
 
-    // const { appContext } = queryState;
+  const createOpts = (script, options, execResourceByName) => ({
 
-    if (!appContext) {
-      return alert ('No appContext!')
-    } 
-
-    const scriptList = getApplicationScripts();
-    const scr = scriptList.find(f => f.ID === scriptID); 
-
-    const getState = () => new Promise (resolve => {
-      setPageClientState(state => {
-        resolve(state);
-        return state;
-      })
-    });
- 
-    const getApplicationState = () => new Promise (resolve => {
-      setApplicationClientState(state => {
-        resolve(state);
-        return state;
-      })
-    });
- 
-
-    const opts = {
       state: {} ,
       setState: setPageClientState, 
       getState,
@@ -193,8 +193,8 @@ const handleScriptRequest =  (block, opts, title) => {
         pageResourceState,
         Confirm,
 
-        Alert: (message, title, pre) => Alert(message, title || (scr.name + ' alert'), pre),
-        JSON: (json, title) => Alert(<Json>{JSON.stringify(json, 0, 2)}</Json>, title || (scr.name + ' alert')),
+        Alert: (message, title, pre) => Alert(message, title || (script.name + ' alert'), pre),
+        JSON: (json, title) => Alert(<Json>{JSON.stringify(json, 0, 2)}</Json>, title || (script.name + ' alert')),
 
         executeScriptByName: (scriptName, options) => executeScriptByName(scriptName, options, execResourceByName), 
 
@@ -203,7 +203,7 @@ const handleScriptRequest =  (block, opts, title) => {
 
         getRef, 
         getRefByName, 
-        execRefByName: (name, fn) => execRefByName(name, fn, scr.name),
+        execRefByName: (name, fn) => execRefByName(name, fn, script.name),
         shout,
         shuffle,
         getResourceByName ,
@@ -213,19 +213,57 @@ const handleScriptRequest =  (block, opts, title) => {
         moment,
         map
       }
-    }
+    
+  }); 
+
+
+  const invokeScript = async(script, options, execResourceByName) => {
+
+    const opts = createOpts(script, options, execResourceByName)
 
     // console.log ({opts, index})
-    if (scr) {  
-      if (scr.code.indexOf('async') > -1) { 
+    if (script) {  
+      if (script.code.indexOf('async') > -1) { 
         return await handleScriptRequestAsync(`function runscript() {
-          return  ${scr.code}
-        }`, opts, scr.name)
+          return  ${script.code}
+        }`, opts, script.name)
       }
       return handleScriptRequest(`function runscript() {
-        return  ${scr.code}
-      }`, opts, scr.name)
+        return  ${script.code}
+      }`, opts, script.name)
     } 
+ 
+  }
+
+  const invokeScriptSync = (script, options, execResourceByName) => {
+
+    const opts = createOpts(script, options, execResourceByName)
+
+    // console.log ({opts, index})
+    if (script) {   
+      return handleScriptRequest(`function runscript() {
+        return  ${script.code}
+      }`, opts, script.name)
+    } 
+ 
+  }
+
+  const executeScript = async (scriptID, options, execResourceByName) => {
+
+
+    // const { appContext } = queryState;
+
+    if (!appContext) {
+      return alert ('No appContext!')
+    } 
+
+    const scriptList = getApplicationScripts();
+    const scr = scriptList.find(f => f.ID === scriptID); 
+
+    if (scr) {
+      return await invokeScript(scr, options, execResourceByName)
+    }
+
     console.log ('Could not find script') 
     shout ({ scriptID }, 'Script does not exist');
   }
@@ -233,10 +271,12 @@ const handleScriptRequest =  (block, opts, title) => {
   return {
     executeScriptByName,
     executeScript,
+    invokeScriptSync,
     handleScriptRequest,
     getApplicationScripts,
     applicationScriptRenderOption,
     applicationScriptOptionLabel,
-    scriptList
+    scriptList,
+    invokeScript
   }
 }

@@ -11,7 +11,7 @@ import { AppStateContext } from '../context';
 export const useEditor = () => {
   
   const app = React.useContext(AppStateContext);
-  const { Prompt, Alert } = app;
+  const { Prompt  } = app;
   const { Library, applicationData } = React.useContext(AppStateContext)
 
 
@@ -410,26 +410,54 @@ export const useEditor = () => {
     });
   }
 
+  const setObjectScript = async(object, scriptID, setting, fn) => {
+    
+    
+    if (!object.scripts) {
+      Object.assign(object, { scripts: []});
+    } 
+
+    const scriptExists = object.scripts.find(f => f.ID === scriptID);
+    const createdScript = scriptExists ? {...setting, ID: scriptID} : {...setting, ID: uniqueId()}
+
+    object.scripts = scriptExists
+      ? object.scripts.map((script) => script.ID === scriptID ? createdScript : script)
+      : object.scripts.concat(createdScript);
+    
+    fn && fn (createdScript)
+  }
+
+  const setComponentScript =  async (appID, pageID, componentID, scriptID, name, code, fn) => {
+    editComponent(appID, pageID, componentID, async (component) => {
+      const setting = {
+        componentID, name, code, b64: !code ? '' : btoa(code)
+      } 
+
+      return await setObjectScript(component, scriptID, setting, fn); 
+    });
+  }
+
   
   const setPageScript = async (appID, pageID, scriptID, name, code, fn, parentID, comment) => {
     editPage(appID, pageID, async (page) => {
       const setting = {
         name, code, parentID, comment, pageID, b64: !code ? '' : btoa(code)
-      }
-
-      
-      if (!page.scripts) {
-        Object.assign(page, { scripts: []});
       } 
 
-      const scriptExists = page.scripts.find(f => f.ID === scriptID);
-      const createdScript = scriptExists ? {...setting, ID: scriptID} : {...setting, ID: uniqueId()}
- 
-      page.scripts = scriptExists
-        ? page.scripts.map((c) => c.ID === scriptID ? createdScript : c)
-        : page.scripts.concat(createdScript);
+      return await setObjectScript(page, scriptID, setting, fn);
       
-      fn && fn (createdScript)
+      // if (!page.scripts) {
+      //   Object.assign(page, { scripts: []});
+      // } 
+
+      // const scriptExists = page.scripts.find(f => f.ID === scriptID);
+      // const createdScript = scriptExists ? {...setting, ID: scriptID} : {...setting, ID: uniqueId()}
+ 
+      // page.scripts = scriptExists
+      //   ? page.scripts.map((c) => c.ID === scriptID ? createdScript : c)
+      //   : page.scripts.concat(createdScript);
+      
+      // fn && fn (createdScript)
     });
   }
 
@@ -467,7 +495,7 @@ export const useEditor = () => {
     editPage(appID, pageID, command);
   }
 
-  const setComponentBinding = async(appID, pageID, componentID, binding, key) => {
+  const setComponentBinding = async(appID, pageID, componentID, binding, key, fn) => {
 
     editComponent(appID, pageID, componentID, async (component) => {
  
@@ -476,9 +504,15 @@ export const useEditor = () => {
         Object.assign(component, {boundProps: []})
       }
  
+      const existing = component.boundProps.find(f => f.attribute === binding.attribute);
+    
+      //  alert (JSON.stringify({key, binding, existing: !!existing}, 0, 2));
+   
       // if boundTo is false, remove the binding
       if (!binding.attribute) {
-        return component.boundProps = component.boundProps.filter(f => f.attribute !== key)
+         component.boundProps = component.boundProps.filter(f => f.attribute !== key);
+         !!fn && fn(component)
+         return ;
       }
 
       // alert (JSON.stringify(binding,0,2))
@@ -486,15 +520,16 @@ export const useEditor = () => {
       component.boundProps = component.boundProps.find(f => f.attribute === binding.attribute)
         ? component.boundProps.map((c) => c.attribute === binding.attribute ? binding : c)
         : component.boundProps.concat({ ...binding, ID: uniqueId() });
+
+
     });
 
   }
   
-  const setComponentProp = async (appID, pageID, componentID, key, value) => {
+  const setComponentProp = async (appID, pageID, componentID, key, value, fn) => {
  
-
     if (value.hasOwnProperty('attribute')) {
-      return setComponentBinding(appID, pageID, componentID, value, key)
+      return setComponentBinding(appID, pageID, componentID, value, key, fn)
     }
  
 
@@ -641,6 +676,7 @@ export const useEditor = () => {
     setComponentParent, 
     pasteComponentProps, 
     setComponentCustomName,
+    setComponentScript,
 
     setPageState, 
     setPageProps,

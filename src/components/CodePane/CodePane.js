@@ -49,8 +49,8 @@ const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props
           onBlur={e => {
             try {
               setShowLineNumbers(true) 
-              if (!bs || code === bs) return;
-              onCodeChange(''); 
+              if (!bs || code === bs) return alert('No change');
+              onCodeChange('');  
               setTimeout(() => onCodeChange(bs), 9) 
             } catch (e) {
               console.log(e.message)

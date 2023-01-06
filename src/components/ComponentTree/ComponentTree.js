@@ -284,9 +284,15 @@ export const RenderComponent = ({
   const kids = componentList.filter((t) => t.componentID === component.ID);
   const { Library } = React.useContext(AppStateContext);
 
+  const [eventMap, setEventMap] = React.useState({});
+
   const { attachEventHandlers } = usePageContext();
  
  
+  React.useEffect(() =>{
+    setEventMap(attachEventHandlers(component))
+  }, [component, attachEventHandlers])
+
 
   if (! Library[component.ComponentType]) {
     return <Alert sx={{m: 2}}>Waiting for {component?.ComponentType} definition...</Alert>
@@ -295,11 +301,10 @@ export const RenderComponent = ({
   const { Component } = Library[component.ComponentType];
 
 
-  const eventMap = attachEventHandlers(component);
+  // const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
-
-
+ 
 
   return (
     <> 
@@ -314,7 +319,6 @@ export const RenderComponent = ({
         {...component}
         {...eventMap}
       >
-
         {!!kids.length && (
           <>
             {kids.sort(componentOrder).map((c) => (
@@ -333,6 +337,9 @@ export const RenderComponent = ({
           </>
         )}
       </Preview>}
+
+      {/* [[{JSON.stringify({eventMap, type: component.ComponentName})}]] */}
+
 
      {!!truth(settings.debug) && <> 
        

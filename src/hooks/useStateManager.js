@@ -20,9 +20,9 @@ export const useStateManager = (settings, persist) => {
     return out;
   }, { });
 
-  React.useEffect(() => {
-    !!persist && console.log ({ options })
-  }, [options, persist])
+  // React.useEffect(() => {
+  //   !!persist && console.log ({ options })
+  // }, [options, persist])
  
   const [ properties, setProperty ] = React.useState(options);
 

@@ -21,7 +21,7 @@ export const useReactly = () => {
   const appContextID = appContext.ID;
   const selectedPageID = selectedPage?.ID;
 
-  const methods = {};
+  const methods =  {};
 
   // state methods
   methods.onStateChange = React.useCallback( (stateID, label, value, type) => { 
@@ -34,14 +34,14 @@ export const useReactly = () => {
           page: pg
         }))
       });
-      Object.assign(update, {[key]: value});
+      return Object.assign(update, {[key]: value});
     })
     setPageClientState(s => ({
       ...s, 
       ...update
     }))
     ;
-  },  [editor, appContextID, selectedPageID]);
+  },  [editor, appContextID, setPageClientState, setQueryState, selectedPageID]);
  
   methods.onStateDrop = React.useCallback((stateID) => {
     editor.dropPageState(appContextID, selectedPageID, stateID);
@@ -58,7 +58,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.dropResource(appContextID, ID);
-  },  [editor, appContextID, selectedPageID]);
+  },  [editor, appContextID, Confirm]);
 
   methods.onConnectionDelete = React.useCallback(async (ID, confirmed) => {
     const ok =confirmed ||  await Confirm(
@@ -67,7 +67,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.dropConnection(appContextID, ID);
-  },  [editor, appContextID, selectedPageID]);
+  },  [editor, appContextID, Confirm]);
 
 
   // event methods
@@ -89,7 +89,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     command(appContextID, selectedPageID, componentID, eventID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID,Confirm,  selectedPageID]);
 
 
   // page methods
@@ -115,13 +115,13 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.dropPage(appContextID, pageID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Confirm]);
 
   methods.onThemeChange = React.useCallback(async (themeID, themeName, theme) => {
     const ok = themeName || await Prompt('Enter a theme name');
     if (!ok) return;
     editor.setTheme (appContextID, theme, ok)
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Prompt]);
 
   methods.createPage = React.useCallback(async (pageID, pageName) => {
     const PageName = pageName || 
@@ -141,7 +141,7 @@ export const useReactly = () => {
         appLoaded: false, 
       }))
     });
-  }, [editor, Prompt, appContextID, selectedPageID])
+  }, [editor, Prompt, setQueryState, appContextID])
 
   // script methods
   methods.onScriptPromote = React.useCallback(async (scriptID) => {
@@ -154,7 +154,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.promotePageScript(appContextID, selectedPageID, scriptID)
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Confirm, selectedPageID]);
 
   methods.onDropScript = React.useCallback(async (scriptID, confirmed) => {
     const ok = confirmed || await Confirm(
@@ -163,7 +163,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.dropPageScript(appContextID, selectedPageID, scriptID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Confirm, selectedPageID]);
 
   methods.onScriptChange = React.useCallback(async (
     scriptID, name, code, 
@@ -172,10 +172,14 @@ export const useReactly = () => {
       const scriptName = name || await Prompt('Enter a name for the script', 'Name new script', existingName);
       if (!scriptName) return;
       editor.setPageScript(appContextID, pageID || selectedPageID, scriptID, scriptName, code, fn, parentID, comment);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Prompt,  selectedPageID]);
 
 
   // component methods
+  methods.onComponentScript = React.useCallback(async( scriptID, name, code, componentID, callback) => {
+     editor.setComponentScript (appContextID, selectedPageID, componentID, scriptID, name, code,  callback)
+  }, [editor, appContextID, selectedPageID]);
+
   methods.onSettingsPaste = React.useCallback((componentID, type, props) => {
     editor.pasteComponentProps(appContextID, selectedPageID, componentID, type, props)
   }, [editor, appContextID, selectedPageID]);
@@ -191,7 +195,7 @@ export const useReactly = () => {
     );
     if (!ok) return;
     editor.dropComponent(appContextID, selectedPageID, componentID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, Confirm, selectedPageID]);
 
   methods.quickComponent = React.useCallback(async (selected, componentID) => {
     if (!selected) return;
@@ -203,7 +207,7 @@ export const useReactly = () => {
       selected,
       name,
     }, componentID);
-  }, [methods.appendComponent, appContextID, selectedPageID]);
+  }, [methods, componentParent.components ]);
 
   methods.appendComponent = React.useCallback((ok, componentID, options) => { 
     const component = {
@@ -222,20 +226,20 @@ export const useReactly = () => {
       // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
       setQueryState(s => ({...s, selectedComponent: comp}));
     }}); 
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID, setQueryState, selectedPageID]);
 
   methods.createComponent = React.useCallback(async (componentID, options) => {
     const ok = await CreateComponent(componentParent.components);
     if (!ok) return;
     methods.appendComponent(ok, componentID, options);
-  }, [methods.appendComponent, appContextID, selectedPageID]);
+  }, [methods, CreateComponent, componentParent.components ]);
 
   methods.onComponentImport = React.useCallback(async (sourceID, destID, componentID) => {
     editor.importComponent(appContextID, sourceID, destID, componentID);
-  }, [editor, appContextID, selectedPageID]);
+  }, [editor, appContextID]);
 
   methods.onSettingsChange = React.useCallback((componentID, label, value) => { 
-    editor.setComponentProp(appContextID, selectedPageID, componentID, label, value);
+    editor.setComponentProp(appContextID, selectedPageID, componentID, label, value );
   },  [editor, appContextID, selectedPageID]);
 
   methods.onStyleChange = React.useCallback((componentID, label, value, selector) => { 
@@ -265,16 +269,16 @@ export const useReactly = () => {
     editor.setComponentCustomName(appContextID, selectedPageID, componentID, customName);
   },  [editor, appContextID, Prompt, selectedPageID]);
 
-  methods.onDropComponent = React.useCallback(async (componentID, confirmed) => {
-    const ok = confirmed || await Confirm(
-      "Are you sure you want to delete this component?" + componentID,
-      "Confirm delete"
-    );
-    if (!ok) return;
-    editor.dropComponent(appContextID, selectedPageID, componentID);
-  },  [editor, appContextID, Prompt, selectedPageID]);
+  // methods.onDropComponent = React.useCallback(async (componentID, confirmed) => {
+  //   const ok = confirmed || await Confirm(
+  //     "Are you sure you want to delete this component?" + componentID,
+  //     "Confirm delete"
+  //   );
+  //   if (!ok) return;
+  //   editor.dropComponent(appContextID, selectedPageID, componentID);
+  // },  [editor, appContextID, Prompt, selectedPageID]);
 
  
-  return methods;
+  return React.useMemo(() => methods, [methods]);
 
 }

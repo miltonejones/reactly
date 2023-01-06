@@ -2,10 +2,10 @@ import React from 'react';
 import {  Grid, FormControlLabel, Collapse, Slider,
     Switch, Box, Alert, IconButton, Stack, Typography, Popover } from '@mui/material'; 
 import { AppStateContext } from '../../context'; 
-import { QuickSelect, QuickMenu, Tooltag, Flex, ChipBox, Text, TextInput, Spacer, RotateButton, TinyButton, PillMenu, Pill } from '..';
+import { QuickSelect, QuickMenu, Tooltag, Flex, Text, TextInput, Spacer, RotateButton, TinyButton,  Pill } from '..';
 import { getSettings } from '../library/util';
-import { ExpandMore, Remove, Add, MoreVert, AddLink, LinkOff } from "@mui/icons-material";
-import { getOptionColor } from '../library/styles';
+import { ExpandMore, Remove, Add, MoreVert, AddLink } from "@mui/icons-material";
+// import { getOptionColor } from '../library/styles';
 import { Icons, renderIconOption } from '../library/icons';
 import { SketchPicker } from 'react-color';
 import { 
@@ -14,58 +14,14 @@ import {
   BooleanComponentInput,
   ListComponentInput,
   ListBinderComponentInput,
-  ListTableComponentInput
+  ListTableComponentInput,
+  InputContainer
 } from './components' 
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
 import ReferenceComponentInput from './components/ReferenceComponentInput/ReferenceComponentInput';
 import { truth } from '../library/util';
-
-const KeypressTextBox = ({ onChange, ...props }) => {
-  const [dir, setDir] = React.useState(false);
-
-  React.useEffect(() => {
-    const { value } = props;
-    if (!value || isNaN(value)) {
-      return;
-    }
-    
-    !!dir && onChange && onChange({ target: { value: value + dir}})
-    !!dir && console.log ({value: value + dir})
-
-  }, [dir, props])
-
-  const trigger = (dir) => {
-    const { value } = props;
-    if (!value || isNaN(value)) {
-      return;
-    }
-    
-    !!dir && onChange && onChange({ target: { value: value + dir}})
-    !!dir && console.log ({value: value + dir})
-
-  }
-
-  const handlePress = e => {
-    switch(e.keyCode) {
-      case 38:
-        trigger(1)
-        break;
-      case 40:
-        trigger(-1)
-        break;
-      default:
-        // do nothing
-    }
-  }
-
-  return <TextInput {...props} 
-  onChange={onChange}
-  onKeyDown={handlePress}
-  onKeyUp={() => setDir(false)}
-    
-    />
-}
+ 
 
 const ColorInput = ({ title, color, onChange }) => {
   const [hue, setHue] = React.useState(color)
@@ -138,7 +94,7 @@ const attempt = value => {
 }
 
 export const ComponentInput = props => {
-    const { bindable, label, when, component, title, onChange, value, args = {} } = props;
+    const {   onScriptChange,  label, when, component, onChange,  args = {} } = props;
 
     const isBound = component.boundProps?.find(prop => prop.attribute === label);
       
@@ -147,24 +103,28 @@ export const ComponentInput = props => {
       }
 
       if (when &&  typeof when === 'string' ) {
+       // eslint-disable-next-line no-eval
         const ok = eval(when)(args);
         if (!ok) return <></>
       }
 
 
-    const bindProps = {
-      ...props,
-      title: `Bind ${title} to client state`,
-      label: 'bound',
-      type: 'boolean',
-      binding: label,
-      bindingValue: isBound,
-      trueProp: label,
-      onChange: (ignore, value) => {   
-        onChange( label, { attribute: value } )
-      }
-    }
+    // const bindProps = {
+    //   ...props,
+    //   title: `Bind ${title} to client state`,
+    //   label: 'bound',
+    //   type: 'boolean',
+    //   binding: label,
+    //   bindingValue: isBound,
+    //   trueProp: label,
+    //   onChange: (ignore, value) => {   
+    //     onChange( label, { attribute: value } )
+    //   }
+    // }
  
+    const bindPropertyClicked = () => { 
+      onChange( label, { attribute: isBound ? false : label } )
+    }
 
     const inputProps = isBound
       ? {
@@ -173,33 +133,28 @@ export const ComponentInput = props => {
           label: 'target',
           binding: label,
           bound: 1,
+          scripts: component.scripts,
           bindingValue: isBound.boundTo,
           type: 'state' ,
           onChange: (attribute, boundTo) => {  
-            onChange( 'boundTo', {boundTo, attribute} )
+            onChange( 'boundTo', {  boundTo, attribute } )
           }
         }
       : props; 
-        const LinkIcon =isBound ? LinkOff : AddLink
-    return <Flex fullWidth>
-{/* [{inputProps.type}][{label}] */}
+        // const LinkIcon =isBound ? LinkOff : AddLink
+    return <InputContainer  
+          label={label}
+          isBound={isBound}
+          scripts={component.scripts}
+          onScriptChange={(id, name, code) => onScriptChange(id, name, code, label)}
+          bindPropertyClicked={bindPropertyClicked}
+       >
+ 
       <ComponentInputBody {...inputProps} 
-        bindPropertyClicked={() => { 
-          onChange( label, { attribute: isBound ? false : label } )
-         }}
+        bindPropertyClicked={bindPropertyClicked}
         /> 
-
-
-      {/* <Spacer />
-      {!!bindable && <Tooltag component={IconButton} 
-      title={isBound ? `Remove data binding on "${label}"` : `Bind "${label}" to client state` }
-      onClick={() => { 
-       onChange( label, { attribute: isBound ? false : label } )
-      }}  ><LinkIcon /></Tooltag>} */}
-
-
-      {/* {!!bindable && <Box><ComponentInputBody {...bindProps} /></Box>} */}
-    </Flex>
+ 
+    </InputContainer>
 }
 
 const Flexible = ({ on, children, ...props}) => {
@@ -222,12 +177,12 @@ export const ComponentInputBody = (props) => {
     component,
     getOptionLabel, 
     bindPropertyClicked,
-    image,  
+    // image,  
     css,
     free,
-    bound,
+    // bound,
     renderOption, 
-    start, 
+    // start, 
     args = {}, 
     when, 
     onChange ,
@@ -274,12 +229,13 @@ export const ComponentInputBody = (props) => {
   }
 
   if (when &&  typeof when === 'string' ) {
+       // eslint-disable-next-line no-eval
     const ok = eval(when)(args);
     if (!ok) return <></>
   }
 
 
-  const { bindableProps }  = Library [component.ComponentType] ?? {}
+  const { bindableProps }  = Library[component.ComponentType] ?? {}
   const header = <>   
  
   <Typography sx={{whiteSpace: 'nowrap', fontSize: '0.85rem', textTransform: 'capitalize'}} small>{title}</Typography>
@@ -398,12 +354,12 @@ export const ComponentInputBody = (props) => {
   }
 
   const chip = type === 'chip' ;
-  const Component = type === 'chip' 
-    ? ChipBox
-    : TextInput;
+  // const Component = type === 'chip' 
+  //   ? ChipBox
+  //   : TextInput;
 
   const usePrompt = ['width','top','left','bottom', 'height', 'right'].some(f => !!title && title.toLowerCase().indexOf(f) > -1)
-    || type == 'prompt';
+    || type === 'prompt';
   
 
   return <Stack sx={{width: '100%'}}>
@@ -446,8 +402,28 @@ const CustomSwitch = ({ args, label, onChange, type = 'free'}) =>
 
   
 
-export const ComponentPanelSettings = ({ selectedPage, resources, component, css, settings , args, selector, onChange }) => { 
+export const ComponentPanelSettings = ({
+   selectedPage, 
+   resources, 
+   component, 
+   css, 
+   settings , 
+   args, 
+   selector, 
+   onChange,
+  ...props }) => { 
    
+ const inputProps = {
+
+    resources,
+    selectedPage,
+    args,
+    css,
+    selector, 
+    component,
+    onChange: (label, value) => onChange && onChange(component.ID, label, value),
+    ...props
+ }
 
  return (
    <Grid container data-testid="test-for-ComponentSettings" spacing={1} sx={{p: 1}}>
@@ -458,8 +434,8 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
         return <></>
       }
 
-      const hue = getOptionColor(args[setting.label], 'value');
-      const color = setting.label.indexOf('color') > 1 && hue;
+      // const hue = getOptionColor(args[setting.label], 'value');
+      // const color = setting.label.indexOf('color') > 1 && hue;
       const xs =   12; 
 
       const loop = !args[setting.label + '-edges'] ? [setting] : ['top', 'right', 'bottom', 'left']
@@ -516,15 +492,7 @@ export const ComponentPanelSettings = ({ selectedPage, resources, component, css
 
         {loop.map(item =>  <Grid sx={{alignItems: 'center'}} item xs={item.xs || xs}  key={item.label}> 
         
-        <ComponentInput {...item}   
-            resources={resources}
-            selectedPage={selectedPage} 
-            args={args} 
-            css={css}
-            selector={selector}
-            component={component}
-            onChange={(label, value) => onChange && onChange(component.ID, label, value)} 
-            />  
+        <ComponentInput {...item} {...inputProps}  />  
 
 
         </Grid>)}
@@ -549,7 +517,8 @@ export const ComponentCollapse = ({
     selectors,
     resources,
     open =  false ,
-    always = false
+    always = false,
+    ...props
   }) => {
 
   const [on, setOn] = React.useState(open || always);
@@ -561,14 +530,23 @@ export const ComponentCollapse = ({
 
   const closeCollapse = isOn => {
     if (!isOn && active) {
-      settings.map(setting => { 
-        onChange(component.ID, setting.label, null)
-      })
+      settings.map(setting => onChange(component.ID, setting.label, null))
     }
     setOn(isOn)
   }
   
   const Icon = !active ? ExpandMore : Add;
+  const settingsProps = {
+    resources,
+    args,
+    css,
+    selector,
+    settings,
+    component,
+    selectedPage,
+    onChange,
+    ...props
+  }
 
   return <Stack>
     <Box sx={{p: 1, cursor: 'pointer', 
@@ -582,15 +560,7 @@ export const ComponentCollapse = ({
     </Box> 
 
     <Collapse in={on || active}>
-      <ComponentPanelSettings 
-        resources={resources}
-        args={args}
-        css={css}
-        selector={selector}
-        settings={settings}
-        component={component}
-        selectedPage={selectedPage}
-        onChange={onChange}  />
+      <ComponentPanelSettings  {...settingsProps }/>
     </Collapse>
   </Stack>
  
@@ -632,7 +602,7 @@ const OrderSlider = ({ ticks, value, onChange }) => {
   </Stack>
 }
 
-const ComponentSettings = ({ selectedPage, component, onChange, showSettings, resources }) => {
+const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, showSettings, resources }) => {
   const [tick, setTick] = React.useState(1)
   const { Library } = React.useContext(AppStateContext);
   if (!component?.settings) {
@@ -683,9 +653,17 @@ const ComponentSettings = ({ selectedPage, component, onChange, showSettings, re
   </Collapse>
   </Box>
 
-  const componentType = Library [component.ComponentType];
+  const componentType = Library[component.ComponentType];
 
   const { categories } = componentType?.Settings ?? {}
+
+  const collapseProps = {
+    onScriptChange,
+    component,
+    resources,
+    onChange,
+    selectedPage
+  }
 
 
   if (!categories) {
@@ -701,10 +679,7 @@ const ComponentSettings = ({ selectedPage, component, onChange, showSettings, re
   {categories
     .sort(sortByOrder)
     .map(category => <ComponentCollapse
-      component={component}
-      resources={resources}
-      onChange={onChange}
-      selectedPage={selectedPage}
+      {...collapseProps} 
       {...category}
       args={args}
       key={category.name}
