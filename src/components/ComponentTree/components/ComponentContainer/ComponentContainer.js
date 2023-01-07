@@ -6,23 +6,25 @@ import { ComponentQuickMenu } from '../../../ContentTree/ContentTree';
 import { useReactly } from "../../../../hooks";
 import { AppStateContext } from "../../../../context"; 
  
-const Layout = styled(Box)(({ theme, active }) => ({ 
+const Layout = styled(Box)(({ theme, active, hilit }) => ({ 
+  outline: hilit ? `dotted 1px ${theme.palette.grey[600]}` : 'none',
   position:  'relative',  
+  // width: 'fit-content',
   '--editor-opacity':  active ? 1 : 0,
-  '&:hover': {
-    '--editor-opacity':  1,
-  }, 
+  // '&:hover': {
+  //   '--editor-opacity':  1,
+  // }, 
 }));
  
 const Tip = styled(Card)(({ theme, active , menu, offset}) => ({  
   position:  'absolute', 
   padding: theme.spacing(1),
-  [offset]: theme.spacing(-5), 
-  left: theme.spacing(1),  
+  [offset.vertical]: theme.spacing(-4), 
+  [offset.horizontal]: theme.spacing(2),  
   cursor: 'pointer',
   opacity: 'var(--editor-opacity)',
   color: theme.palette.common.white,
-  backgroundColor: theme.palette[active ? 'error' : 'primary'][menu ? 'light' : 'main'],
+  backgroundColor: theme.palette[active ? 'secondary' : 'warning'][menu ? 'light' : 'main'],
   zIndex: 3
 }));
  
@@ -30,36 +32,60 @@ const ComponentContainer = ({  name, ...props}) => {
   const reactly = useReactly();
   const ref = React.useRef(null);
   const [is, setIs] = React.useState(false); 
-  const [h, setH] = React.useState('top'); 
+  const [offset, setOffset] = React.useState({
+    vertical: 'top',
+    horizontal: 'left'
+  }); 
+ 
 
-  const { selectedPage } = React.useContext(AppStateContext);
+  const { selectedPage, preview, setQueryState, queryState } = React.useContext(AppStateContext);
+  const { children, on, ...selectedComponent } = props;
+  const { ComponentType, pageID, ID } = selectedComponent;
+  // const { selectedContainer } = queryState;
+ 
 
+  const handleMouseEnter = () => {
+    setQueryState(state => ({
+      ...state,
+      selectedContainer: ID
+    }));
 
-  React.useEffect(() => {
     if (ref.current) {
-      const rect = ref.current.getBoundingClientRect();
-      setH(rect.bottom > 300 ? 'top' : 'bottom') 
+      const rect = ref.current.getBoundingClientRect(); 
+      setOffset({
+        vertical: rect.bottom > 300 ? 'top' : 'bottom',
+        horizontal: rect.left < 1500 ? 'left' : 'right'
+      }) 
     } 
 
-  }, [ref])
-  const { children, setQueryState, on, ...selectedComponent } = props;
-  const { ComponentType, pageID, ID } = selectedComponent;
+  }
+
+  const handleMouseLeave = () => {
+    setQueryState(state => ({
+      ...state,
+      selectedContainer: null
+    }))
+  }
  
-  if (ComponentType === 'Spacer' || selectedPage?.ID !== pageID) return children;
+  if (!preview || ComponentType === 'Spacer' || selectedPage?.ID !== pageID) return children;
   
 const handleClick = () => {
   setQueryState(s => ({...s, selectedComponent: on ? null : selectedComponent}));
 }
  return (
-  <Layout ref={ref} active={is}>
-  <Tip active={on} menu={is} elevation={7} offset={h}><Flex
+  <Layout ref={ref} 
+    hilit={queryState.selectedContainer === ID }
+    active={is || queryState.selectedContainer === ID || on} 
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={handleMouseLeave}
+    
+    >
+  <Tip active={on} menu={is} elevation={7} offset={offset}><Flex
     >
 
-      <TinyButton onClick={handleClick}  sx={{color: 'inherit'}} icon={on ? Close : Edit}  />
-
-     
+      <TinyButton onClick={handleClick}  sx={{color: 'inherit'}} icon={on ? Close : Edit}  /> 
       
-      <Text onClick={handleClick} active small>{name}  </Text>
+      <Text onClick={handleClick} active small>{ComponentType}: {name}  </Text>
 
       <DeleteConfirmMenu  onOpen={() => setIs(1)} onClose={() => setIs(0)} hover="inherit" message={`Delete component ${name}?`} 
            onDelete={(value) => {

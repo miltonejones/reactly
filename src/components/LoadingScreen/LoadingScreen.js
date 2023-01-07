@@ -10,12 +10,12 @@ const Layout = styled(Box)(({ theme }) => ({
  gap: 4
 }));
  
-const LoadingScreen = () => {
+const LoadingScreen = ({message = "Loading application components..."}) => {
  return (
    <Layout data-testid="test-for-LoadingScreen">
    
     <Avatar className="App-logo" src="/logo192.png" alt="loader" >A</Avatar>
-    Loading application components...
+    {message}
     
    </Layout>
  );

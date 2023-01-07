@@ -159,7 +159,7 @@ export const usePageContext = () => {
       json = await executeScript(script.ID, json, execResourceByName);
     }
 
-    const rows = !node ? json : drillPath(json, node);
+    const rows = !(!!node && !!columns?.length) ? json : drillPath(json, node);
 
     const collated = !isGetRequest || !rows || !rows?.map
       ? json

@@ -23,9 +23,12 @@ const StateComponentInput = ({
     appContext
   } = React.useContext(AppStateContext);  
 
-  const [ scope, scriptID ] = bindingValue?.split('.');
-  const isScript = scope === 'scripts';
-  const code = !(isScript && scripts && scriptID) ? '' : scripts.find(f =>  f.ID === scriptID).code;
+  let code = '', isScript = false;
+  if (typeof bindingValue === 'string') {
+    const [ scope, scriptID ] = bindingValue?.split('.');
+     isScript = scope === 'scripts';
+    code = !(isScript && scripts && scriptID) ? '' : scripts.find(f =>  f.ID === scriptID).code;
+  }
  
 
   const onChange = React.useCallback(async (value) => {  

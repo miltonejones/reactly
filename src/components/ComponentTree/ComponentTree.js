@@ -167,7 +167,7 @@ const ComponentTree = ( ) => {
   }
  
 
-  if (!queryState.pageLoaded || appBusy) {
+  if (!queryState.pageLoaded) {
     return <>{pageState}</>
   }
  

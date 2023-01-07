@@ -116,7 +116,9 @@ const Editor = () => {
         } 
       }
 
-      return state
+      return {
+        ...state,
+        pageLoaded: true}
     }); 
   }
 

@@ -65,7 +65,7 @@ const ReactlyComponentList = ({ children, ...props }) => {
  }  
 
 
- const sortRows = !autoSort ? dataRows : dataRows.sort((a,b) => a.text > b.text ? 1 : -1);
+ const sortRows = !autoSort ? dataRows : dataRows.sort((a,b) => a.text.toLowerCase() > b.text.toLowerCase() ? 1 : -1);
  const headerText = interpolateText(header);
 
  return (

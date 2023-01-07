@@ -146,6 +146,10 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
     return <LoadingScreen />;
   }
 
+  if (!Boolean(state.applicationData.length)) {
+    return <LoadingScreen message="Application  data failed to load"/>;
+  }
+
   return (
     <AppStateContext.Provider
       value={{

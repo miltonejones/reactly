@@ -224,7 +224,7 @@ export const useReactly = () => {
     editor.addComponent(appContextID, selectedPageID, component, {...options, 
     fn: (comp) => {
       // return Alert(<pre>{JSON.stringify(comp,0,2)}</pre>)
-      setQueryState(s => ({...s, selectedComponent: comp}));
+      setQueryState(s => ({...s,  pageLoaded: true, selectedComponent: comp}));
     }}); 
   }, [editor, appContextID, setQueryState, selectedPageID]);
 

@@ -47,13 +47,17 @@ const Toolbar = () => {
   } = React.useContext(AppStateContext);
 
   const componentParent = selectedPage || appContext;
-  const isInApplicationScope = !!componentParent.Name 
+  const isInApplicationScope = !!componentParent?.Name 
  
  
 
-  const currentPagePath = ["apps", appContext.path].concat(
+  const currentPagePath = ["apps", appContext?.path].concat(
     !selectedPage?.PagePath ? [] : selectedPage.PagePath
   );
+
+  if (!appContext) {
+    return <>No application</>
+  }
  
 
  return (
@@ -80,7 +84,7 @@ const Toolbar = () => {
         <MainMenu />
       </Flex>
           
-      <Hide hidden={!queryState.pageLoaded || !queryState.appLoaded}>
+      <Hide>
         <Addressbox value={`/${currentPagePath.join("/")}`}   />
       </Hide>
     
