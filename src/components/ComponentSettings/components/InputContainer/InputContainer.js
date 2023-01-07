@@ -1,18 +1,31 @@
 import React from 'react';
-import { styled, ToggleButtonGroup, ToggleButton, Box } from '@mui/material';
+import { styled, ToggleButtonGroup, ToggleButton, Card, Box } from '@mui/material';
 import { Edit, Code, AddLink } from "@mui/icons-material";
 import { AppStateContext } from '../../../../context'; 
  
 const Layout = styled(Box)(({ theme }) => ({
  display: 'flex',
  position:  'relative',
+ border: 'solid 1px 1px 1px 6px red',
  padding: theme.spacing(0, 1),
- width:  '100%', 
+//  borderColor: 'white',
+ width:  'calc(100% - 8px)', 
  '--editor-opacity':  0,
  '&:hover': {
+  borderColor: theme.palette.grey[700], 
    '--editor-opacity':  1,
  }
 }));
+
+const EditTip = styled(Card)(({ theme }) => ({ 
+  position:  'absolute', 
+  top: theme.spacing(-2), 
+  right: theme.spacing(4),  
+  cursor: 'pointer',
+  opacity: 'var(--editor-opacity)',
+  backgroundColor: theme.palette.grey[200]
+}));
+ 
 
 const Ico = ({icon: Icon, active}) => <Icon sx={{
   color : t => active 
@@ -77,15 +90,6 @@ const EditGroup = ({ view, setView, ...props }) => {
   </>
   )
 }
- 
-const EditTip = styled(Box)(({ theme }) => ({ 
-  position:  'absolute', 
-  top: theme.spacing(-2), 
-  right: theme.spacing(4),  
-  cursor: 'pointer',
-  opacity: 'var(--editor-opacity)',
-  backgroundColor: theme.palette.grey[200]
-}));
  
 const def = (label) => `function transform (component, options) {
   const { getState, setState, api } = options;

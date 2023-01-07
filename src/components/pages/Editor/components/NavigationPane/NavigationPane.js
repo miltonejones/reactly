@@ -67,6 +67,7 @@ const NavigationPane = ( ) => {
       options: appContext.pages?.map((f) => f.PageName),
       small: true,
       caret: true,
+      value: selectedPage?.PageName,
       label: selectedPage?.PageName || <b>{ appContext.Name}</b>,
       title: "Choose Page"
     }, 

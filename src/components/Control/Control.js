@@ -18,15 +18,15 @@ import { ExpandMore, Search, Save, Close } from "@mui/icons-material";
 import { AppStateContext } from '../../context';
 import { Icons } from '../library/icons'; 
  
-export const AU = styled('span')(({ theme, active, error, small }) => ({
+export const AU = styled('span')(({ theme, active, error, small, hover }) => ({
   cursor: 'pointer',
   fontWeight: active ? 600 : 400,
   fontSize: small ? '0.85rem' : '1rem',
   // fontStyle: 'italic',
-  color: error ? theme.palette.error.main : '#222', 
+  // color: error ? theme.palette.error.main : '#222', 
   '&:hover': {
     textDecoration: 'underlined',
-    color: theme.palette.primary.dark
+    color: hover || theme.palette.primary.dark
   }
 })) 
 

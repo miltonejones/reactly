@@ -20,6 +20,7 @@ import { PageStateContext, usePageContext } from "../../hooks/usePageContext";
 import Observer from "../../util/Observer"; 
 import { truth } from "../library/util";
 import { usePageLoader } from "./usePageLoader";
+import { ComponentContainer } from "./components";
 
 export const propertiesLoadedEvent = new Observer("scroll");
 
@@ -66,15 +67,14 @@ const PreviewPane = (props) => {
 const Preview = ({
   component: Component,
   selectedPage, 
-  children, 
-  name,
+  children,  
   order,
   hilit,
   sx,
   ...props
 }) => {
   return (  
-    <PreviewPane {...props}>
+    <ComponentContainer {...props}>
         <Component
         {...props}
         selectedPage={selectedPage} 
@@ -87,7 +87,7 @@ const Preview = ({
       >
         {children}
       </Component> 
-    </PreviewPane>
+    </ComponentContainer>
 );
 };
 

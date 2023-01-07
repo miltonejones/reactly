@@ -26,7 +26,49 @@ const Content = styled(Box)(({ theme }) => ({
   overflow: 'auto',
   padding: theme.spacing(0, 1),
   border: 'solid 1px ' + theme.palette.divider, 
-}))
+}));
+
+export const ComponentQuickMenu = ({ component, onClose, parentID, ...props }) => {
+  const reactly = useReactly();
+  const onCreate = (type, options) => reactly.createComponent(type, options)
+  const componentID = parentID || component.componentID;
+
+  const options = [
+    {
+      name: 'Rename',
+      action: () => reactly.onNameChange(component.ID, component.ComponentName)
+    },
+    {
+      name: 'Add Component before ' ,
+      action: () => onCreate(componentID, { before: !0, order: component.order})
+    },  
+    {
+      name: 'Add Component after',
+      action: () => onCreate(componentID, { after: !0, order: component.order})
+    },   
+    {
+      name: '-', 
+    },
+    {
+      name: <b style={{color: 'red'}}>Delete Component</b> ,
+      action: () =>  reactly.onDropComponent (component.ID)
+    }
+  ];
+
+  return (
+    <QuickMenu 
+      hover="inherit"
+      options={options.map(f => f.name)} 
+      {...props}
+      onChange={value => {
+        onClose && onClose()
+        const { action } = options.find(f => f.name === value);
+        !!action && action()
+      }}
+      label={<Tiny sx={{color: 'inherit'}} icon={MoreVert} />}
+      />
+  )
+}
  
 
 const ContentTree = (props) => {
@@ -115,11 +157,7 @@ const Contents = ({  tree, parentID, onDrop, trees,
     {
       name: 'Add Component after',
       action: () => onCreate(parentID, { after: !0, order: tree.order})
-    },  
-    {
-      name: 'Save as Custom Component...',
-      action: () => onCustomName(tree.ID)
-    },  
+    },   
     {
       name: '-', 
     },
@@ -179,12 +217,14 @@ const Contents = ({  tree, parentID, onDrop, trees,
           <DeleteConfirmMenu hidden={!(on || over)}  sx={{mr: 1}} message={`Delete component ${nodeLabel}?`} 
               onDelete={(e) => !!e && onDrop(tree.ID, true)}/>
 
-          <QuickMenu options={options.map(f => f.name)} 
+          <ComponentQuickMenu parentID={parentID} component={tree} />
+
+          {/* <QuickMenu options={options.map(f => f.name)} 
           onChange={value => {
             const { action } = options.find(f => f.name === value);
             !!action && action()
           }}
-          label={<Tiny icon={MoreVert} />}/>
+          label={<Tiny icon={MoreVert} />}/> */}
         </ListItemSecondaryAction>}
       </Tooltag>  
       

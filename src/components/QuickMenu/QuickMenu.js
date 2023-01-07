@@ -34,6 +34,7 @@ const {
   onOpen,
   allowFind,
   maxItems,
+  hover,
   emptyMsg = '[Empty menu]'
 } = props;
 const [filter, setFilter] = React.useState(null);
@@ -68,7 +69,7 @@ const visible = !maxItems ? rows : rows.slice(0, maxItems)
 return <>
 
 
-<AU {...props} small={small}
+<AU {...props} small={small}  hover={hover}
   active={open ? 1 : 0} error={error || open ? 1 : 0} onClick={handleClick}
   >
     {!!LabelIcon && <TinyButton icon={LabelIcon}  sx={{mr: 1}}/>}

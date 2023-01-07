@@ -97,6 +97,7 @@ export const ComponentInput = props => {
     const {   onScriptChange,  label, when, component, onChange,  args = {} } = props;
 
     const isBound = component.boundProps?.find(prop => prop.attribute === label);
+    const isScript = isBound?.boundTo?.indexOf('scripts') === 0;
       
       if (when &&  typeof when === 'function' && !when(args)) {
         return <></>
@@ -129,7 +130,7 @@ export const ComponentInput = props => {
     const inputProps = isBound
       ? {
           ...props,
-          title: <>Bind <b>{component.ComponentName}.{label}</b> to client state variable:</>,
+          title: <>Bind <b>{component.ComponentName}.{label}</b> to {isScript ? "script" : "client state variable"}:</>,
           label: 'target',
           binding: label,
           bound: 1,
