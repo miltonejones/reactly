@@ -670,6 +670,21 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   if (!categories) {
     return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{orderer}{debug}</>
   }
+
+  const visibility = {
+    name: 'Visibility',
+    settings: [
+      {
+        label: 'invisible',
+        title: 'Hide component',
+        type: 'boolean',
+        order: -5
+      }
+    ]
+  }
+
+
+
   return <>  
 {showSettings && <>
 
@@ -677,7 +692,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   {debug}
 </>}
 
-  {categories
+  {[visibility].concat(categories)
     .sort(sortByOrder)
     .map(category => <ComponentCollapse
       {...collapseProps} 

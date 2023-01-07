@@ -20,7 +20,7 @@ const Tip = styled(Card)(({ theme, active , menu, offset}) => ({
   padding: theme.spacing(1),
   [offset.vertical]: theme.spacing(-4), 
   [offset.horizontal]: theme.spacing(2),  
-  transition: 'all 0.2s linear',
+  transition: 'opacity 0.2s linear',
   cursor: 'pointer',
   opacity: 'var(--editor-opacity)',
   color: theme.palette.common.white,
@@ -52,6 +52,8 @@ const ComponentContainer = ({  name, ...props}) => {
       }) ;
     } 
   }
+
+  React.useEffect(setContainerPosition, []);
  
   const handleMouseEnter = () => {
     setContainerPosition();
