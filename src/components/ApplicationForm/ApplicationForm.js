@@ -42,13 +42,13 @@ const ApplicationForm = ({ applications, importable }) => {
     value={settings.Name} 
     size="small" onChange={e => setSettings({...settings, dirty: 1, Name: e.target.value})} 
   />
-  <Text small>
+  {/* <Text small>
     Home Page
   </Text>
   <TextInput 
     value={settings.Photo} 
     size="small" onChange={e => setSettings({...settings, dirty: 1, Photo: e.target.value})} 
-  />
+  /> */}
 
 <Text small>
 Home Page

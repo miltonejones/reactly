@@ -7,42 +7,22 @@ import { PageStateContext } from '../../../hooks/usePageContext';
 import { AppStateContext } from "../../../context";
 import { recurse } from '../util';
 import { getSettings } from '../util';
+import { OpenDrawer } from '../..';
+import { useModalComponent } from '../../../hooks';
   
-const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => {
-  const args = getSettings(props.settings);
-  const { pageModalState, setPageModalState, selectedPage, appContext: app } = React.useContext(AppStateContext);
-  const { queryState = {} } = React.useContext(AppStateContext);
-  const { componentEditing, preview, ...rest } = props;
-  const { selectedComponent } = queryState;
-
-  const componentParent = selectedPage || app;
-  const parentOpen = recurse(componentParent, selectedComponent) ; 
-
-  // const childOpen = recurse(componentParent, selectedComponent, props) ; 
- 
-  const open = Object.keys(pageModalState)
-    .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  || props.open || args.open ;
-
-    const handleClose = () => {
-      onModalClose && onModalClose (1)
-      const state = {
-        ...pageModalState,
-        [props.ID]: false
-      } 
-      setPageModalState(state)
-     }
-  
-  const drawerOpen = open || componentEditing || (parentOpen && preview );
+const ReactlyComponentDrawer = ({ children, onModalClose, ...props }) => { 
+  const args = getSettings(props.settings)
+  const modal = useModalComponent(props);   
 
  return (
  <>
  
   <ReactlyComponent 
-    onClose={handleClose}
-    open={drawerOpen} 
-    {...rest}
-    hideBackdrop={!!args.hideBackdrop || componentEditing || (parentOpen && preview )} 
-    component={componentEditing||parentOpen ? Faux : Drawer} 
+    onClose={modal.handleClose}
+    open={modal.open  || props.open || args.open } 
+    {...props} 
+    debug
+    component={modal.componentEditing || modal.childOpen ? Faux : Drawer} 
     >
       {children}
    </ReactlyComponent> 

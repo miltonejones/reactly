@@ -4,8 +4,7 @@ import {
   styled,
   FormControlLabel,
   Box,
-  IconButton,
-  Drawer,
+  IconButton, 
   TextField,
   Collapse,
   Divider,
@@ -70,6 +69,7 @@ import { definitionMenu } from "./definitions";
 import ScriptAssist from "./components/ScriptAssist/ScriptAssist";
 import { downloadApplicationScripts } from "../../connector/sqlConnector";
 import { DrawerNavigation } from "../pages/Editor/components";
+import { OpenDrawer } from "..";
 
 const Layout = styled(Box)(({ theme, big }) => ({
   padding: theme.spacing(2),
@@ -92,16 +92,42 @@ const SearchItem = styled(Box)(({ theme, active }) => ({
   },
 }));
 
-const SearchLine = ({ children, active, filter, onClick }) => {
+export const SearchLine = ({ children, active, filter, onClick, text }) => {
   if (!(children && typeof children === "string")) {
-    return <i />;
+    return children;
   }
-  const [first, last] = children.split(filter);
-  const prefix = first?.substr(first.length - 40);
-  const suffix = last?.substr(0, 40);
+  if (!filter?.length) {
+    return children;
+  }
+  const index = children.toLowerCase().indexOf(filter.toLowerCase())
+  if (index < 0) {
+    return children;
+  }
 
+  const half = children.substr(0, index);
+  const post = children.substr(index + filter.length);
+  const middle = children.substr(index, filter.length)
+
+  const [first, last] = children.toLowerCase().split(filter);
+
+
+
+  const prefix = text ? first : first?.substr(first.length - 40);
+  const suffix = text ? last : last?.substr(0, 40);
+  if (text) {
+
+    return (
+      
+      <>
+        {half}
+        <b style={{ color: active ? "lime" : "blue" }}>{middle}</b>
+        {post}
+      </>
+    );
+
+  }
   return (
-    <code onClick={onClick} style={{ letterSpacing: 0.1, fontSize: "0.9rem" }}>
+    <code onClick={(e) => onClick && onClick(e)} style={{ letterSpacing: 0.1, fontSize: "0.9rem" }}>
       ...{prefix}
       <b style={{ color: active ? "lime" : "red" }}>{filter}</b>
       {suffix}...
@@ -338,7 +364,7 @@ const ScriptDrawer = ( ) => {
   const toptLevel = scripts?.filter((f) => !f.code && !f.parentID);
 
   return (
-    <Drawer open={open} anchor="bottom">
+    <OpenDrawer open={open} anchor="bottom">
       <Layout big={big}>
         <Flex>
           <Typography variant="subtitle1">
@@ -604,7 +630,7 @@ const ScriptDrawer = ( ) => {
         anchorEl={anchorEl}
         setAnchorEl={setAnchorEl}
       />
-    </Drawer>
+    </OpenDrawer>
   );
 };
 

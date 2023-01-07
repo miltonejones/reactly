@@ -32,16 +32,16 @@ const ComponentContainer = ({  name, ...props}) => {
   const reactly = useReactly();
   const ref = React.useRef(null);
   const [selected, setActive] = React.useState(false); 
-  const [offset, setOffset] = React.useState({
-    vertical: 'top',
-    horizontal: 'left'
-  }); 
+  const [offset, setOffset] = React.useState(null); 
  
   const { selectedPage, preview, setQueryState, queryState } = React.useContext(AppStateContext);
   const { children, on, ...component } = props;
   const { ComponentType, pageID, ID } = component; 
 
-  const suppressContainer = !preview || ComponentType === 'Spacer' || selectedPage?.ID !== pageID;
+  const suppressContainer = !preview || 
+    (!!queryState.selectedComponent && queryState.selectedComponent.ID !== ID) ||
+    ComponentType === 'Spacer' || 
+    selectedPage?.ID !== pageID;
 
   const setContainerPosition = () => {
     if (ref.current) {
@@ -82,7 +82,7 @@ const ComponentContainer = ({  name, ...props}) => {
     onMouseEnter={handleMouseEnter}
     onMouseLeave={handleMouseLeave} 
   >
-    <Tip active={on} menu={selected} elevation={7} offset={offset}>
+    {!!offset && <Tip active={on} menu={selected} elevation={7} offset={offset}>
       
       <TinyButton onClick={handleClick} sx={{color: 'inherit'}} icon={on ? Close : Edit}  /> 
       
@@ -117,7 +117,7 @@ const ComponentContainer = ({  name, ...props}) => {
         component={component} 
       />
   
-    </Tip>
+    </Tip>}
 
    { children }
  </Layout>

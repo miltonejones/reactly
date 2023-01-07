@@ -214,6 +214,7 @@ export const useReactly = () => {
       ComponentType: ok.selected,
       ComponentName: ok.name,
       componentID, 
+      dirty: 1,
       state: [],
       styles: [],
       events: [],

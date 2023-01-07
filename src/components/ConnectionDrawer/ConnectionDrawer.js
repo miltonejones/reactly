@@ -12,6 +12,7 @@ import { StateComponentInput } from '../ComponentSettings/components';
 import { AppStateContext, EditorStateContext } from "../../context";
 import { useReactly } from '../../hooks';
 import { DrawerNavigation } from '../pages/Editor/components';
+import { OpenDrawer } from '..';
  
 const Layout = styled(Box)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -663,7 +664,7 @@ const ConnectionDrawer = () => {
   
 
  return (
-  <Drawer open={open} anchor="bottom"> 
+  <OpenDrawer  open={open} anchor="bottom"> 
     <Layout data-testid="previewConnectionRequest-for-ConnectionDrawer">
       <Flex>
         <Typography variant="subtitle1">
@@ -833,7 +834,7 @@ const ConnectionDrawer = () => {
 
 
    </Layout>
-   </Drawer>
+   </OpenDrawer>
  );
 }
 ConnectionDrawer.defaultProps = {};

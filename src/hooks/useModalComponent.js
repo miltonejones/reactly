@@ -3,16 +3,29 @@ import React from 'react';
 import { AppStateContext } from '../context';
 import { PageStateContext } from './usePageContext';
 
+
+const recurse = (ID, page, out = []) => { 
+  const children = page.components?.filter(f => f.componentID === ID);
+  out.push(ID)
+  children.map(child => recurse(child.ID, page, out));
+  return out;
+}
+
 export const useModalComponent = (props) => {
   const { pageModalState, setPageModalState } = React.useContext(AppStateContext);
-  const { queryState = {} } = React.useContext(AppStateContext);
-  const { componentEditing, preview, ...rest } = props;
+  const { preview, queryState = {}, selectedPage, appContext } = React.useContext(AppStateContext);
+ 
   const { selectedComponent } = queryState;
 
-  const childOpen = selectedComponent?.componentID === props.ID  && preview;
+  const componentParent = selectedPage || appContext;
+  const componentChildren = recurse(props.ID, componentParent);
+  const componentEditing = selectedComponent?.ID === props.ID;
+
+  const childOpen = componentChildren.some(f => f === selectedComponent?.ID) && preview ;
+ 
 
   const open = Object.keys(pageModalState)
-    .find(state => state.toString() === props.ID.toString() && (preview || !!pageModalState[state]))  ;
+    .find(state => state.toString() === props.ID.toString() && !!pageModalState[state])  ;
 
   const handleClose = () => {
     const state = {
@@ -22,13 +35,14 @@ export const useModalComponent = (props) => {
     setPageModalState(state)
     }
 
-  return {
+  return { 
+    selectedComponentID: selectedComponent?.ID,
+    componentChildren,
     componentEditing, 
     preview,
     handleClose,
-    open, 
-    childOpen,
-    pageModalState
+    open: open || componentEditing || childOpen, 
+    childOpen 
   }
   
 }

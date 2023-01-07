@@ -18,6 +18,7 @@ import ApplicationTree from "./ApplicationTree/ApplicationTree";
 import ApplicationForm from "./ApplicationForm/ApplicationForm";
 import LibraryTree from "./LibraryTree/LibraryTree";
 import PageTree from './PageTree/PageTree'
+import OpenDrawer from './OpenDrawer/OpenDrawer'
 
 import { Flex, Tiny, TextInput, AU, ChipBox, Tooltag, PopoverTextBox, PopoverInput, 
     RotateExpand, OptionSwitch, Spacer, TextBtn, TinyButton, RotateButton,
@@ -27,6 +28,7 @@ const DATA_TYPES =  ['int', 'bit', 'bigint', 'text', 'mediumtext', 'varchar', 'd
 
 export {
   AU,
+  OpenDrawer,
   Area,
   CodePane,
   ChipBox,

@@ -153,7 +153,8 @@ export const Faux = styled(Paper)(({ open, anchor }) => {
   const obj = { 
     display: !open ? 'none' : 'block' ,
     margin: 16,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    maxWidth: '400px !important',
   }
 
   if (anchor) {

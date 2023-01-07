@@ -3,7 +3,7 @@ import { styled, Stack, Box, IconButton, Grid } from "@mui/material";
 export const Layout = styled(Grid)(({ collapsed, showTabs }) => {
 
   const PANE_HEIGHT = 'calc(100vh - 64px)';
-  const LEFT_PANE_WIDTH = collapsed.left ? 60 : 300;
+  const LEFT_PANE_WIDTH = collapsed.left ? 60 : 360;
   const RIGHT_PANE_WIDTH = collapsed.right ? 60 : 360;
 
   let centerOffset = 48;
@@ -28,7 +28,8 @@ export const Layout = styled(Grid)(({ collapsed, showTabs }) => {
     '--center-pane-width': `calc(100vw - ${centerOffset}px)`,
     '--center-pane-overflow': 'auto',
     '--right-pane-overflow': collapsed.right ? 'hidden' : 'auto',
-    '--content-height-offset': showTabs ? '460px' : '420px'
+    '--content-height-offset': showTabs ? '460px' : '420px',
+    '--center-background': 'url("/grid.jpg")'
   }
 
  
@@ -67,7 +68,8 @@ export const SidePane = styled(Grid)(({ theme, side }) => {
  
   return {
     // outline: "dotted 1px green",
-    whiteSpace: 'nowrap',
+    whiteSpace: 'nowrap', 
+    backgroundImage: `var(--${side}-background)`, 
     height: `var(--${side}-pane-height)`, 
     transition: "all .2s linear",
     ...args,

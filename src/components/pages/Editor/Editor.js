@@ -160,13 +160,13 @@ const Editor = () => {
             {/* toolbar  */}
             <Toolbar />
   
-            <SidePane item xs={12} side="top"  > 
+            <SidePane item xs={12} side="top" > 
               <NavigationTabs />    
             </SidePane> 
             
             <NavigationPane />
 
-            <SidePane item sx={{ p: 1 }} side="center">
+            <SidePane item side="center" >
  
               
               {/* component library editor */}
@@ -185,11 +185,14 @@ const Editor = () => {
                 {/* component tabs */}
                 <ComponentTabs />
   
-                {/* application scope components */}
-                <ApplicationTree  />
+                <Box sx={{m: 2 }}>
 
-                {/* page scope components */}
-                <ComponentTree  />
+                  {/* application scope components */}
+                  <ApplicationTree  />
+
+                  {/* page scope components */}
+                  <ComponentTree  />
+                </Box>
                   
               </Collapse>
             </SidePane>

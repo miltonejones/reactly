@@ -163,7 +163,7 @@ const ComponentTree = ( ) => {
   if (selectedPage) {
     path = createBreadcrumbs(appContext.pages, selectedPage);
   } else {
-    return <>No page is loaded to render.</>
+    return <Alert severity="warning" sx={{m: 2}}>You are editing in Application Scope. Proceed with caution.</Alert>
   }
  
 
@@ -275,14 +275,14 @@ export const RenderComponent = ({
   componentList = [],
   preview,
   hilit,
-  selectedComponent,
   selectedPage,
   setQueryState,
 }) => { 
 
+  const { Library, queryState } = React.useContext(AppStateContext);
+  const { selectedComponent } = queryState;
   const on = selectedComponent?.ID === component.ID;
   const kids = componentList.filter((t) => t.componentID === component.ID);
-  const { Library } = React.useContext(AppStateContext);
 
   // const [eventMap, setEventMap] = React.useState({});
 
@@ -307,7 +307,7 @@ export const RenderComponent = ({
  
 
   return (
-    <> 
+    <>  
      {!truth(settings.debug) &&  <Preview
         on={on}
         selectedPage={selectedPage}

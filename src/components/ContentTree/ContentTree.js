@@ -8,6 +8,7 @@ import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Rem
 import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
 import { AppStateContext, EditorStateContext } from '../../context';
 import { useReactly } from "../../hooks";
+import { SearchLine } from "../ScriptDrawer/ScriptDrawer";
 
 
 const NodeText = styled(Typography)(({ theme, on, indent }) => ({
@@ -92,8 +93,7 @@ const ContentTree = (props) => {
         {components 
         .sort(componentOrder)
         .map(c => <Contents  
-          onSelect={selectComponent} 
-
+          onSelect={selectComponent}  
           onCustomName={reactly.onCustomName}
           quickComponent={reactly.quickComponent}
           onCreate={onCreate} 
@@ -111,6 +111,13 @@ const ContentTree = (props) => {
   );
 };
 
+const getChildNames = (node, nodes, out = []) => { 
+  const children = nodes.filter(t => t.componentID === node.ID);
+  out.push(node.ComponentName.toLowerCase());
+  children.map(child => getChildNames(child, nodes, out));
+  return out;
+}
+
 const Contents = ({  tree, parentID, onDrop, trees, 
   onCustomName, quickComponent, label, indent = 0, onNameChange, 
   onCreate, onSelect, selectedComponent, ...props  }) => { 
@@ -118,11 +125,19 @@ const Contents = ({  tree, parentID, onDrop, trees,
   const kids = !!label ? [] : trees.filter(t => t.componentID === tree.ID);
   const on = !!label ? null : selectedComponent?.ID === tree.ID;
   const [over, setOver] = React.useState(false);
-  // const [expanded, setExpanded] = React.useState(true)
+
+  
 
   const { expandedNodes, setExpandedNodes } = React.useContext(EditorStateContext);
-  const expanded = !!tree && !!expandedNodes[tree.ID]
+  let expanded = !!tree && !!expandedNodes[tree.ID]
 
+ 
+  const { filterText } = props; 
+
+  if (filterText?.length && tree) {
+    const kidNames= getChildNames(tree, trees);
+    expanded = expanded || kidNames.find(kid => kid.indexOf(filterText.toLowerCase()) > -1); // .indexOf(tree.ComponentName?.toLowerCase()) > -1
+  }
 
   
   // const expand = node => {
@@ -144,28 +159,7 @@ const Contents = ({  tree, parentID, onDrop, trees,
   if (!Library) {
     return <>Loading...</>
   }
-  
-  const options = [
-    {
-      name: 'Rename',
-      action: () => onNameChange(tree.ID, tree.ComponentName)
-    },
-    {
-      name: 'Add Component before',
-      action: () => onCreate(parentID, { before: !0, order: tree.order})
-    },  
-    {
-      name: 'Add Component after',
-      action: () => onCreate(parentID, { after: !0, order: tree.order})
-    },   
-    {
-      name: '-', 
-    },
-    {
-      name: <b style={{color: 'red'}}>Delete Component</b> ,
-      action: () =>  onDrop (tree.ID)
-    }
-  ]
+   
   let allowedChildren;
   let allowChildren;
   try {
@@ -200,6 +194,7 @@ const Contents = ({  tree, parentID, onDrop, trees,
         >
        <ListItemIcon sx={{minWidth: 24}}>
           {(!!kids.length || allowChildren) && !!tree && <Tiny sx={{mr: 1}} onClick={()  => expand(tree.ID)} icon={ExpandIcon} />}
+          {!kids.length && <Tiny sx={{mr: 1}} icon={RadioButtonUnchecked} />}
            <Tiny sx={{mr: 1}} icon={Icon} /> 
         </ListItemIcon>
 
@@ -207,8 +202,11 @@ const Contents = ({  tree, parentID, onDrop, trees,
         <ListItemText sx={{pl: 0}} primary={<NodeText 
             indent={indent}
             onClick={() => onSelect && onSelect(tree, on)} 
-            sx={{fontWeight: on ? 600 : 400, fontSize: '0.85rem'}}
-         > {nodeLabel}</NodeText>} />
+            sx={{
+              fontWeight: on ? 600 : 400,  
+              fontSize: '0.85rem'
+            }}
+         > <SearchLine text filter={filterText}>{nodeLabel}</SearchLine></NodeText>} />
         {!!tree && <ListItemSecondaryAction> 
           {on && <Tiny onClick={() => onSelect && onSelect(tree, on)}  icon={Close}  sx={{mr: 1}} />}
 
@@ -218,13 +216,7 @@ const Contents = ({  tree, parentID, onDrop, trees,
               onDelete={(e) => !!e && onDrop(tree.ID, true)}/>
 
           <ComponentQuickMenu parentID={parentID} component={tree} />
-
-          {/* <QuickMenu options={options.map(f => f.name)} 
-          onChange={value => {
-            const { action } = options.find(f => f.name === value);
-            !!action && action()
-          }}
-          label={<Tiny icon={MoreVert} />}/> */}
+ 
         </ListItemSecondaryAction>}
       </Tooltag>  
       

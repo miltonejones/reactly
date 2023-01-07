@@ -54,18 +54,18 @@ export const useRunScript = () => {
       })))
 
     return appScripts.concat(appContext.pages.reduce((out, pg) => {
-      pg.components?.map(comp =>  
-        comp.scripts?.map(scr => 
-          out.push({
-            ...scr,
-            label: scr.name,
-            hidden: 1,
-            page: comp.ComponentName,
-            ID: scr.scr
-          })
+      // pg.components?.map(comp =>  
+      //   comp.scripts?.map(scr => 
+      //     out.push({
+      //       ...scr,
+      //       label: scr.name,
+      //       hidden: 1,
+      //       page: comp.ComponentName,
+      //       ID: scr.scr
+      //     })
 
-        )
-      )
+      //   )
+      // )
       if (!pg.scripts?.length) {
         return out;
       }

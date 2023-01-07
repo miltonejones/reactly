@@ -1,6 +1,6 @@
 import React from 'react';
-import { styled, List, ListItemButton, ListItemText, Box, Stack, Tabs, Switch, Grid, Collapse, Drawer, Typography, Divider } from '@mui/material';
-import { Flex, TinyButton, TextBtn, TabButton, Text, Spacer } from '..';
+import { styled, List, ListItemButton, ListItemText, Box, Stack, Tabs, Switch, Grid, Collapse, Typography, Divider } from '@mui/material';
+import { Flex, TinyButton, TextBtn, TabButton, Text, OpenDrawer, Spacer } from '..';
 import { ExpandMore  } from "@mui/icons-material";  
 import { AppStateContext } from "../../context";
 import { JsonView } from "../../colorize";
@@ -121,7 +121,7 @@ const ConsoleDrawer = () => {
     triggerTypes
   ]
  return (
-  <Drawer open={showTrace} anchor="bottom">
+  <OpenDrawer open={showTrace} anchor="bottom">
    <Layout data-testid="test-for-ConsoleDrawer">
    <Flex>
         <Typography variant="subtitle1">
@@ -204,7 +204,7 @@ const ConsoleDrawer = () => {
         </Grid>
      </Grid>
    </Layout>
-   </Drawer>
+   </OpenDrawer>
  );
 }
 ConsoleDrawer.defaultProps = {};

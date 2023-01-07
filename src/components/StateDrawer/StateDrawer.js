@@ -1,7 +1,7 @@
 import React from 'react';
-import { styled, Box,  Drawer,  
+import { styled, Box,   
  Divider, Typography, Stack, Grid, Card, Switch, Pagination } from '@mui/material';
-import {  Flex, Spacer, TextBtn, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
+import {  Flex, Spacer, OpenDrawer, TextBtn, QuickMenu, SearchBox, DeleteConfirmMenu, Text, TextInput } from '..';
 import { Close, Gamepad, Add, Delete, Code, RecentActors, AutoStories } from "@mui/icons-material"; 
 import { PopoverInput } from '../Control/Control';
 import { Json } from '../../colorize';
@@ -123,7 +123,7 @@ const StateDrawer = ( ) => {
 
 
  return (
-   <Drawer open={open} anchor="bottom"
+   <OpenDrawer open={open} anchor="bottom"
  
    data-testid="test-for-StateDrawer">
    <Layout> 
@@ -225,7 +225,7 @@ const StateDrawer = ( ) => {
     }} anchorEl={anchorEl} setAnchorEl={setAnchorEl}/>
 
 
-   </Drawer>
+   </OpenDrawer>
  );
 }
 StateDrawer.defaultProps = {};

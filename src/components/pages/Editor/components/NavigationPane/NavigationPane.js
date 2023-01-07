@@ -8,14 +8,16 @@ import {
   Text,  
   Spacer,
   QuickMenu,
+  TextInput,
   PopoverPrompt,
   ContentTree,
   PageTree,
-  TextBtn
+  TextBtn,
+  TinyButton
 } from "../../../..";
 
 import { ControlButton } from '..';
-import { Add, Article, Newspaper, Close, ExpandMore } from "@mui/icons-material";
+import { Add, Article, Newspaper, Search, Close, ExpandMore } from "@mui/icons-material";
 import { EditorStateContext, AppStateContext } from '../../../../../context';
 import { useReactly } from '../../../../../hooks';
 import { Treebox } from '../../styled';
@@ -39,7 +41,8 @@ const NavigationPane = ( ) => {
   } = React.useContext(AppStateContext);
   const reactly = useReactly();
   const handlePopoverClose = () => setAnchorEl(null);
-
+  const [filtertext, setFilterText] =React.useState('');
+  
   const handlePopoverClick = (content) => (event) => {
     setPopoverContent(content)
     setAnchorEl(event.currentTarget);
@@ -141,9 +144,23 @@ const NavigationPane = ( ) => {
       </Stack>
 
       <Hide hidden={collapsed.left || !componentParent }> 
+            <Box sx={{p: 1}}>
+            <TextInput 
+              label="Search"
+              fullWidth
+              size="small"
+              value={filtertext}
+              onChange={e => setFilterText(e.target.value)}
+              buttons={
+                <TinyButton icon={!!filtertext ? Close : Search} 
+                  onClick={() => setFilterText('')}
+                  />
+              }
+            />
+            </Box>
         <Divider />
 
-        <Stack sx={{ p: 1, height: "calc(100vh - 404px)" }}>
+        <Stack sx={{ p: 1, height: "calc(100vh - 464px)" }}>
           <Flex spacing={1}>
             <Flex fullWidth>
               <Text small>
@@ -156,7 +173,7 @@ const NavigationPane = ( ) => {
             </Flex>
           </Flex>
 
-          <ContentTree   />
+          <ContentTree  filterText={filtertext} />
 
         </Stack>
       </Hide>
