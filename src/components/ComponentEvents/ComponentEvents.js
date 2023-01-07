@@ -261,9 +261,14 @@ const ComponentEvents = ({
    <Layout>
  {/* [{JSON.stringify(isInApplicationScope.toString())}] */}
     {/* panel header  */}
-    <Flex sx={{ borderBottom: 1, borderColor: 'divider', mb: 1 }}>
+    <Flex sx={{ borderBottom: 1, borderColor: 'divider', pb: 1 }}>
       <Spacer />
-      <TextBtn onClick={() => setOpen(!open)} endIcon={<Icon />}>{args.label}</TextBtn>
+      <TextBtn 
+        size="small"
+        variant={open?"contained":"outlined"} 
+        onClick={() => setOpen(!open)} 
+        endIcon={<Icon />}
+        >{args.label}</TextBtn>
     </Flex>
 
     {/* events that the component supports  */}
@@ -306,7 +311,9 @@ const ComponentEvents = ({
     {!selectedHandler && !!selectedType && !!selectedEvent && 
       <>
       
-     [ {selectedEvent}]
+      <Text small sx={{ml: 1}}>When</Text>
+      <Text small active sx={{ml: 1}}>{supportedEvent.description}</Text>
+
       <EventEditor
             resources={resources}
             handleSave={handleSave}

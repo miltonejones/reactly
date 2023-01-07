@@ -1,6 +1,6 @@
 import React from 'react';
 import { styled, Box, Typography, Divider } from '@mui/material'; 
-import { EditorStateContext } from '../../../../context';
+import { AppStateContext } from '../../../../context';
 import { QuickSelect, Flex, Spacer, TextBtn } from '../../..';
 import { getPropertyOptions } from '../../util';
 import { JsonModal } from '../../../../colorize';
@@ -10,7 +10,7 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
  
 const OpenLink = ({ event , page, component, handleSave,  selectedEvent, resources }) => {
-  const { appContext  } = React.useContext(EditorStateContext);
+  const { appContext  } = React.useContext(AppStateContext);
   const [state, setState ] = React.useState({ ...event.action, type: 'openLink' });
 
   const { pages, state: appState } = appContext; 

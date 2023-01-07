@@ -284,14 +284,14 @@ export const RenderComponent = ({
   const kids = componentList.filter((t) => t.componentID === component.ID);
   const { Library } = React.useContext(AppStateContext);
 
-  const [eventMap, setEventMap] = React.useState({});
+  // const [eventMap, setEventMap] = React.useState({});
 
   const { attachEventHandlers } = usePageContext();
  
  
-  React.useEffect(() =>{
-    setEventMap(attachEventHandlers(component))
-  }, [component, attachEventHandlers])
+  // React.useEffect(() =>{
+  //   setEventMap(attachEventHandlers(component))
+  // }, [component, attachEventHandlers])
 
 
   if (! Library[component.ComponentType]) {
@@ -301,7 +301,7 @@ export const RenderComponent = ({
   const { Component } = Library[component.ComponentType];
 
 
-  // const eventMap = attachEventHandlers(component);
+  const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
  
