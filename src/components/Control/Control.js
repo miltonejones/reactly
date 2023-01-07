@@ -54,7 +54,7 @@ export const PopoverPrompt = ({
   return  <>
   
 
-  <Component onClick={handleAliasOpen} {...props}>{children}</Component>
+  <Tooltag title={label} component={Component} onClick={handleAliasOpen} {...props}>{children}</Tooltag>
 
   <PopoverInput label={label} value={value}
   helperText={helperText}
@@ -457,7 +457,7 @@ export const TextInput = ({ sx, prompt, buttons, ...props }) => {
   return  <TextField {...props} InputProps={adornment} sx={{ ...props.sx, fontSize: '0.85rem' }}/> 
 }
  
-export const Text = styled(Box)(({ theme, active, small, error, link, fullWidth, muted, spacing = 1 }) => ({
+export const Text = styled(Box)(({ theme, hover, active, small, error, link, fullWidth, muted, spacing = 1 }) => ({
   display: 'flex',
   color:muted 
     ? theme.palette.grey[600]
@@ -476,4 +476,7 @@ export const Text = styled(Box)(({ theme, active, small, error, link, fullWidth,
   padding: theme.spacing(0.5, 0),
   fontWeight: active ? 600 : 400,
   cursor: 'pointer', 
+  '&:hover': {
+    textDecoration: hover ? 'underline' : 'none',
+  }
 }));

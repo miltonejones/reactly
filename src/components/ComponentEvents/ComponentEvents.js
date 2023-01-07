@@ -206,8 +206,7 @@ const ComponentEvents = ({
   const options = [
     {
       name: 'Set state value',
-      value: 'setState',
-      when: () => eventOwner.state?.length
+      value: 'setState', 
     },
     {
       name: 'Execute client script',

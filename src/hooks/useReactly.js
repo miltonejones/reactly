@@ -253,8 +253,8 @@ export const useReactly = () => {
     );
   },  [editor, appContextID, selectedPageID]);
 
-  methods.onNameChange = React.useCallback(async (componentID, old) => {
-    const name = await Prompt(
+  methods.onNameChange = React.useCallback(async (componentID, old, componentName) => {
+    const name = componentName || await Prompt(
       `Enter a new name for "${old}"`,
       "Rename component",
       old

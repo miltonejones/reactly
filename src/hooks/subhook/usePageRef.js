@@ -11,6 +11,7 @@ export const usePageRef = () => {
     selectedPage,
     appContext,
     setPageRefState,
+    shout
   } = React.useContext(AppStateContext); 
  
 
@@ -32,6 +33,7 @@ export const usePageRef = () => {
       const component = ((selectedPage?.components||[]).concat((appContext?.components||[])) )
           .find(f => f.ComponentName === name);
       if (component) {
+        shout({ keys: Object.keys(refState) }, 'Executing command on ' + component.ComponentName)
         const ref = refState[component.ID]
         fn && fn(ref);
       } else {

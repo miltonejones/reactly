@@ -29,14 +29,14 @@ export const useReactlyLibrary = (state) => {
   const { getItems, setItem } = useDynamoStorage();
 
   const getLibraryItems = React.useCallback(async () => {
-    // const cache = localStorage.getItem('reactly-library');
-    // if (cache) {
-    //   try {
-    //     return JSON.parse(cache); 
-    //   } catch (e) {
-    //     // do nothing
-    //   }
-    // }
+    const cache = localStorage.getItem('reactly-library');
+    if (cache) {
+      try {
+        return JSON.parse(cache); 
+      } catch (e) {
+        // do nothing
+      }
+    }
     const items = await getItems();
     const json = JSON.stringify(items);
     localStorage.setItem('reactly-library', json);
