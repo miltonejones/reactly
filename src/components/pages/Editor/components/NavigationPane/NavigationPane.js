@@ -1,5 +1,5 @@
 import React from 'react';
-import {  Popover, Box, Divider, Stack } from '@mui/material';
+import { Popover, Box, Divider, Typography, Stack } from '@mui/material';
 import { SidePane } from '../../styled';
 import { Hide } from '../../styled';
 import { Icons } from "../../../../library/icons";
@@ -20,8 +20,54 @@ import { ControlButton } from '..';
 import { Add, Article, Newspaper, Search, Close, ExpandMore } from "@mui/icons-material";
 import { EditorStateContext, AppStateContext } from '../../../../../context';
 import { useReactly } from '../../../../../hooks';
-import { Treebox } from '../../styled';
+import { Treebox, LibraryItem } from '../../styled';
 import { ContentPopover } from '..';
+
+
+const ComponentItem = ({ item, icon: Icon, onChange }) => { 
+  return <LibraryItem onClick={() => onChange(item)}>
+    <Icon />
+    <Text tiny>{item.substr(0,12).replace(/([A-Z])/g, " $1")}</Text>
+  </LibraryItem>
+
+}
+
+const ComponentList = () => {
+  const reactly = useReactly();
+  const [filter, setFilter] = React.useState('');
+  const {  
+    Library, 
+  } = React.useContext(AppStateContext);
+  const libraryKeys = Object.keys(Library)
+    .filter(f => !Library[f].hidden)
+    .sort((a,b) => a > b ? 1 : -1);
+ 
+  return <Stack spacing={1}>
+    <TextInput
+      value={filter}
+      onChange={e => setFilter(e.target.value)}
+      buttons={
+        <TinyButton icon={!!filter ? Close : Search} onClick={() => setFilter('')} />
+      }
+      label="Filter"
+      size="small"
+      fullWidth
+      autoFocus
+      autoComplete="off"
+    />
+    <Box sx={{height: 400, pr: 1, overflowX: 'hidden', overflowY: 'auto'}}>
+      <Box sx={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr 1fr',
+      pt: 1, 
+    }}>
+      {libraryKeys
+      .filter(f => !filter || f.toLowerCase().indexOf(filter.toLowerCase()) > -1)
+      .map(key => <ComponentItem icon={Icons[Library[key].Icon]} onChange={reactly.quickComponent} item={key} key={key}/>)}
+    </Box>
+    </Box>
+  </Stack>
+}
   
  
 const NavigationPane = ( ) => {
@@ -59,6 +105,8 @@ const NavigationPane = ( ) => {
   const menuProps = {
     component: {
       onChange: reactly.quickComponent,
+      persist: true,
+      allowFind: true,
       options: libraryKeys,
       icons: libraryKeys.map(
           (e) => Icons[Library[e].Icon]
@@ -168,7 +216,12 @@ const NavigationPane = ( ) => {
               </Text>
 
               <Spacer />
-              <QuickMenu {...menuProps.component} />
+           
+              <ContentPopover control={TextBtn} endIcon={<Add />} title="Add Component" label="Add" width={700} >
+                  <ComponentList />
+                </ContentPopover>
+
+              {/* <QuickMenu {...menuProps.component} /> */}
             
             </Flex>
           </Flex>

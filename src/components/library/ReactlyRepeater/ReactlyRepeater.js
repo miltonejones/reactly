@@ -36,7 +36,10 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
  
  return (
   <>  
-  
+  {/* <pre>
+{JSON.stringify(dataRows,0,2)}
+
+</pre> */}
  <ReactlyComponent component={Box} {...props}>
       {dataRows?.map((row, i) => <RepeaterContext.Provider  
         value={{ 

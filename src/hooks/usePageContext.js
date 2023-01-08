@@ -766,7 +766,7 @@ export const usePageContext = () => {
         // get current state at the time the component renders
 
 
-        map(boundProps, async (boundProp) => {
+        boundProps.map((boundProp) => {
 
           const { attribute, boundTo: boundKey } = boundProp;
           const { scope, boundTo, clientState, stateSetter } =
@@ -797,7 +797,7 @@ export const usePageContext = () => {
             return;
           } 
           
-          if (attribute && clientState && scope !== 'scripts') {
+          if (attribute && clientState) {
             const currentParameters = getParametersInScope();
 
             //  console.log ({ currentParameters })
@@ -806,8 +806,8 @@ export const usePageContext = () => {
 
             if (attributeProp !== undefined && typeof attributeProp !== 'undefined') {
 
-              // attribute === 'options' && 
-              //   console.log ( {  component: component.ComponentName, attribute, attributeProp, boundTo })
+              //  component.ComponentName === 'Pagination-1' &&  
+              //    console.log ( {  eventHandlers, attribute, attributeProp, boundTo })
 
               Object.assign(eventHandlers, {
                 // set current component value to client state
@@ -860,7 +860,7 @@ export const usePageContext = () => {
       //   keys: Object.keys(eventHandlers) 
       // })
  // 
-      // !!scripts && console.log( eventHandlers )
+//  component.ComponentName === 'Pagination-1' && console.log( eventHandlers )
 
       return eventHandlers;
     },

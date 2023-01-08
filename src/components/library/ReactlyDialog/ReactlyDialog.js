@@ -7,13 +7,13 @@ import { useModalComponent } from '../../../hooks';
   
 const ReactlyComponentDialog = ({ children, ...props }) => {
   const args = getStyles(props.styles);   
-   const modal = useModalComponent(props);  
+  const modal = useModalComponent(props);  
 
-   const extra = { 
-     '& .MuiPaper-root': {
-      ...args,
-      width: 'fit-content'
-   }};
+  const extra = { 
+    '& .MuiPaper-root': {
+    ...args,
+    width: 'fit-content'
+  }};
 
  return (
   
@@ -21,8 +21,7 @@ const ReactlyComponentDialog = ({ children, ...props }) => {
   {/* <pre>
     {JSON.stringify(modal,0,2)}
   </pre> */}
-  <ReactlyComponent 
-    extra={extra}
+  <ReactlyComponent  
     onClose={modal.handleClose}
     component={modal.componentEditing || modal.childOpen ? Faux : Dialog} 
     open={modal.open  || props.open } 

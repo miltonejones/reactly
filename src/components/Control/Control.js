@@ -454,10 +454,10 @@ export const TextInput = ({ sx, prompt, buttons, ...props }) => {
     ? null  
     :  { endAdornment: <InputAdornment position="end">{buttons}</InputAdornment> }
 
-  return  <TextField {...props} InputProps={adornment} sx={{ ...props.sx, fontSize: '0.85rem' }}/> 
+  return  <TextField autoComplete="off" {...props} InputProps={adornment} sx={{ ...props.sx, fontSize: '0.85rem' }}/> 
 }
  
-export const Text = styled(Box)(({ theme, hover, active, small, error, link, fullWidth, muted, spacing = 1 }) => ({
+export const Text = styled(Box)(({ theme, hover, active, small, error, tiny, link, fullWidth, muted, spacing = 1 }) => ({
   display: 'flex',
   color:muted 
     ? theme.palette.grey[600]
@@ -471,7 +471,7 @@ export const Text = styled(Box)(({ theme, hover, active, small, error, link, ful
   gap: theme.spacing(spacing) ,
   alignItems: 'center',
   // borderBottom: small || error ? '' : 'solid 1px gray',
-  fontSize: small ? '0.85rem' : '1rem',
+  fontSize: small ? '0.85rem' : (tiny ? '0.75rem' : '1rem'),
   maxWidth: fullWidth ? '100%' : 400,
   padding: theme.spacing(0.5, 0),
   fontWeight: active ? 600 : 400,

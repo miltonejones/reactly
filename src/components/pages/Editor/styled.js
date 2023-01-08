@@ -1,4 +1,21 @@
 import { styled, Stack, Box, IconButton, Grid } from "@mui/material";
+
+
+export const LibraryItem = styled(Stack)(({ theme }) => ({
+  alignItems: 'center', 
+  margin: theme.spacing(0.25),
+  padding: theme.spacing(1,0),
+  width: 110,
+  overflow: 'hidden',
+  whiteSpace: 'nowrap',
+  textOverflow: 'ellipsis', 
+  cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white
+  }
+}));
+
  
 export const Layout = styled(Grid)(({ collapsed, showTabs }) => {
 

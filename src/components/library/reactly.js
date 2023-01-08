@@ -120,7 +120,7 @@ const ReactlyComponent = ({
       const val = interpolateText(args[arg], state);
       return {
         arg,
-        val: val || 'arg'
+        val: val || args[arg]
       }
     })
     .reduce((items, prop) => {

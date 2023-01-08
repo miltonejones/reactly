@@ -184,6 +184,7 @@ const handleScriptRequest =  (block, opts, title) => {
       data: options,
       pagename,
       application: {
+        pages: appContext.pages,
         setState: setApplicationClientState,
         getState: getApplicationState,
         state: applicationClientState

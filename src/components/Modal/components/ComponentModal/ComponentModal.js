@@ -11,11 +11,11 @@ const Layout = styled(Box)(({ theme }) => ({
 }));
  
 const ComponentModal = ({ onChange, components = [] }) => {
+  const { Library } = React.useContext(AppStateContext);
   const [state, setState] = React.useState({
     selected: null,
     name: null
   });
-  const { Library } = React.useContext(AppStateContext);
   const { selected, name } = state;
   
   const select = key => {

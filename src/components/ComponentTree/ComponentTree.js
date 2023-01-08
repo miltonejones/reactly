@@ -264,7 +264,9 @@ export const RenderComponent = ({
   const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
- 
+  if (eventMap.invisible) {
+    return <i/>
+  }
 
   return (
     <>  
@@ -304,10 +306,13 @@ export const RenderComponent = ({
      {!!truth(settings.debug) && <> 
        
       [<pre>
-      {JSON.stringify(settings,0,2)}
+      {JSON.stringify({eventMap},0,2)}
       </pre> ]
       [<pre>
-      {JSON.stringify(component,0,2)}
+      {JSON.stringify({settings},0,2)}
+      </pre> ]
+      [<pre>
+      {JSON.stringify({component},0,2)}
       </pre> ]
      </>
      }

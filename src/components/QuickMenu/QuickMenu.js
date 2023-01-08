@@ -2,7 +2,7 @@ import React from 'react';
 import { styled, Box, Divider, Typography, Stack, Menu, MenuItem } from '@mui/material';
 import { AppStateContext } from '../../context';
 import { AU, TinyButton, TextInput, Tiny, Flex, OptionSwitch, Text } from '..';
-import { ExpandMore, Delete } from "@mui/icons-material";
+import { ExpandMore, Close, Delete } from "@mui/icons-material";
  
  
 export const DeleteConfirmMenu = ({message, hidden, small,
@@ -35,7 +35,8 @@ const {
   allowFind,
   maxItems,
   hover,
-  emptyMsg = '[Empty menu]'
+  emptyMsg = '[Empty menu]',
+  persist
 } = props;
 const [filter, setFilter] = React.useState(null);
 const [anchorEl, setAnchorEl] = React.useState(null);
@@ -44,8 +45,8 @@ const handleClick = (event) => {
   setAnchorEl(event.currentTarget);
   onOpen && onOpen(event)
 };
-const handleClose = (value) => {  
-  setAnchorEl(null);
+const handleClose = (value, open) => {  
+  !open && setAnchorEl(null);
   onChange && onChange(value)
 };  
 
@@ -92,10 +93,13 @@ dense
 
 {!!allowFind && <MenuItem onKeyDown={(e) => e.stopPropagation()}>
         <TextInput
+         onKeyDown={(e) => e.stopPropagation()}
         size="small"
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-         
+          buttons={
+            filter?.length ? <TinyButton icon={Close} onClick={() => setFilter('')}/> : null
+          }
             label={"Filter Options"}
         />
     </MenuItem>}
@@ -103,7 +107,7 @@ dense
 {/* otherwise make a menu item list  */}
   {visible?.map ((option, index) => {
     const Icon = icons[index];
-    return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option)}
+    return option === '-'  ? <Divider /> : <MenuItem key={option} onClick={() => handleClose(option, persist)}
     sx={{fontWeight: equals(selected, option) ? 600 : 400, minWidth: 300}}
     >{!!Icon && <><Icon sx={{mr: 1}} /></>}{equals(selected, option)   && <>&bull;{" "}</>}{
       option

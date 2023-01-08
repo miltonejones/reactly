@@ -78,6 +78,7 @@ export const useReactlyLibrary = (state) => {
     
 
     await setItem(`reactly-${key}`, JSON.stringify(dehydratedComponent))
+    localStorage.removeItem('reactly-library'); 
     const updated = await downloadReactlyLibrary();
     updateLibrary(updated)
   }
@@ -103,6 +104,7 @@ export const useReactlyLibrary = (state) => {
     state.setLibraryJSON(configurationJSON);
     getSupportedEventList(library);  
     state.setBusy(false);
+
   }, [state, getSupportedEventList, expandLibrary]);
 
   const getReactlyConfig = async () => {
