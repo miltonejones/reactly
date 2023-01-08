@@ -8,16 +8,14 @@ import { usePageResourceState } from "../../../hooks/usePageResourceState";
 import moment from "moment";
 
 const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {  
-  const {
-    pageRefState,
+  const { 
     setPageRefState, 
   } = React.useContext(AppStateContext);
 
   const {
     onPlayerStart,
     onPlayerStop,
-    onProgress,
-    onPlayerPaused,
+    onProgress, 
     onPlayerEnded,
   } = props;
   const ref = React.useRef(null);
@@ -26,10 +24,8 @@ const ReactlyAudioComponent = ({ settings, styles, video, ...props }) => {
 
   const args = getSettings(settings);
   const style = getStyles(styles);
-
-  const properties = {};
-
-  const { bindingObject, resource, dataRows } = usePageResourceState(settings);
+ 
+ 
  
   let src = props.src || args.src; 
  

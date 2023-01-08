@@ -24,50 +24,10 @@ import { ComponentContainer } from "./components";
 
 export const propertiesLoadedEvent = new Observer("scroll");
 
- 
-
-const PreviewPane = (props) => {
-  const [hover, setHover] = React.useState(false)
-  const { children, setQueryState, on, ...selectedComponent } = props;
-  if (props.preview) {
-    return <Box sx={{ position: 'relative' }}
-    onMouseEnter={() => setHover(true)}
-    onMouseLeave={() => setHover(false)}
-      
-      >
-      <TinyButton 
-        icon={on ? Close : Edit}
-        onClick={() => { 
-          setQueryState(s => ({...s, selectedComponent: on ? null : selectedComponent}));
-        }}
-        sx={{
-          position: 'absolute',
-          right: 40,
-          top: 0,
-          backgroundColor: '#e0e0e0',
-          opacity: hover ? 0.25 : (on ? 1 : 0),
-          borderRadius: '50%',
-          transition: 'opacity 0.2s linear',
-          p: 1,
-          fontSize: '0.85rem',
-          cursor: 'pointer',
-          zIndex: 100,
-          '&:hover': {
-            opacity: 1,
-          }
-        }}
-            />
-      {children}
-    </Box>
-  }
-  return children;
-}
-
-
+  
 const Preview = ({
   component: Component,
   selectedPage, 
-  children,  
   order,
   hilit,
   sx,
@@ -85,7 +45,7 @@ const Preview = ({
           outlineOffset: 4,
         }}
       >
-        {children}
+        {props.children}
       </Component> 
     </ComponentContainer>
 );

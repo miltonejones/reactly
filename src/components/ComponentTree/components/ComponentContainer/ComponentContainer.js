@@ -35,7 +35,7 @@ const ComponentContainer = ({  name, ...props}) => {
   const [offset, setOffset] = React.useState(null); 
  
   const { selectedPage, preview, setQueryState, queryState } = React.useContext(AppStateContext);
-  const { children, on, ...component } = props;
+  const { on, ...component } = props;
   const { ComponentType, pageID, ID } = component; 
 
   const suppressContainer = !preview || 
@@ -74,7 +74,7 @@ const ComponentContainer = ({  name, ...props}) => {
     setQueryState(s => ({...s, selectedComponent: on ? null : component}));
   }
 
-  if (suppressContainer) return children;
+  if (suppressContainer) return props.children;
 
  return (
   <Layout 
@@ -121,7 +121,7 @@ const ComponentContainer = ({  name, ...props}) => {
   
     </Tip>}
 
-   { children }
+   { props.children }
  </Layout>
  );
 }

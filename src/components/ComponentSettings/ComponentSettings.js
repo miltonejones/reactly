@@ -683,7 +683,17 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
     ]
   }
 
-
+  const support = {
+    name: 'Support',
+    settings: [
+      {
+        label: 'debug',
+        title: 'Debug component',
+        type: 'boolean',
+        order: -7
+      }
+    ]
+  }
 
   return <>  
 {showSettings && <>
@@ -692,7 +702,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   {debug}
 </>}
 
-  {[visibility].concat(categories)
+  {[visibility, support].concat(categories)
     .sort(sortByOrder)
     .map(category => <ComponentCollapse
       {...collapseProps} 

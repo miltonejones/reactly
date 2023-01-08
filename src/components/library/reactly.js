@@ -15,13 +15,13 @@ export const ChildComponent = ({ component, children  }) => {
   const { attachEventHandlers } = usePageContext();
   const styles = getStyles(component.styles)
   const eventMap = attachEventHandlers(component);
-
+//  return JSON.stringify(eventMap)
   return  <Component 
     style={styles}
     {...component}
     {...eventMap}
     >
-      {children}
+      {eventMap.children || children} 
   </Component> 
 }
 
