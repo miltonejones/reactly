@@ -7,7 +7,7 @@ const Layout = styled(Box)(({ theme }) => ({
  display: 'flex',
  position:  'relative',
  border: 'solid 1px 1px 1px 6px red',
- padding: theme.spacing(0, 1),
+//  padding: theme.spacing(0, 1),
 //  borderColor: 'white',
  width:  'calc(100% - 8px)', 
  '--editor-opacity':  0,
@@ -23,7 +23,8 @@ const EditTip = styled(Card)(({ theme }) => ({
   right: theme.spacing(4),  
   cursor: 'pointer',
   opacity: 'var(--editor-opacity)',
-  backgroundColor: theme.palette.grey[200]
+  backgroundColor: theme.palette.grey[200],
+  height: 24
 }));
  
 
@@ -71,7 +72,7 @@ const EditGroup = ({ view, setView, ...props }) => {
     >
       {Object.keys(views).map(v => (
       <ToggleButton 
-        sx={{ width: 32,  height: 32, p: 1 }}
+        sx={{ width: 24,  height: 24, p: 1 }}
         key={v} 
         size="small" 
         onClick={() => setView(v)}

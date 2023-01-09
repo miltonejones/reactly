@@ -1,5 +1,5 @@
 import React from 'react';
- import { styled, Box,  Stack, Tabs, Tab, Chip, Collapse,
+ import { styled, Box,  Stack, Tabs, Tab, Chip, Collapse, LinearProgress,
    Divider, Alert } from '@mui/material'; 
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
@@ -101,7 +101,7 @@ const ComponentPanel = () => {
     onScriptChange: ( scriptID, name, code, attribute ) => reactly.onComponentScript( scriptID, name, code, component?.ID,
         answer => {
           onChange( component?.ID, 'boundTo', {  boundTo: `scripts.${answer.ID}`, attribute } )
-          alert(JSON.stringify({attribute, answer},0,2)) 
+          // alert(JSON.stringify({attribute, answer},0,2)) 
         }
         
         ),
@@ -156,6 +156,7 @@ const ComponentPanel = () => {
 
   if (queryState.componentLoading) {
     return <Box sx={{p: 2}}>
+      <LinearProgress />
       Loading component settings...
     </Box>
   }

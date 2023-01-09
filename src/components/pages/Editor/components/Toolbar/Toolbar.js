@@ -48,6 +48,7 @@ const Toolbar = () => {
 
   const componentParent = selectedPage || appContext;
   const isInApplicationScope = !!componentParent?.Name 
+  const { pageLoaded } = queryState;
  
  
 
@@ -70,10 +71,6 @@ const Toolbar = () => {
         <b>Reactly</b>
       </Flex>
 
-      <IconButton onClick={() => window.history.back()}>
-        <ArrowBack />
-      </IconButton>
-
       <Chip color="primary" 
         onClick={() => handlePageNavigate('/')}
         variant={isInApplicationScope ? "outlined" : "filled" } 
@@ -84,7 +81,11 @@ const Toolbar = () => {
         <MainMenu />
       </Flex>
           
-      <Hide>
+      <IconButton onClick={() => window.history.back()}>
+        <ArrowBack />
+      </IconButton>
+
+      <Hide hidden={!pageLoaded}>
         <Addressbox value={`/${currentPagePath.join("/")}`}   />
       </Hide>
     

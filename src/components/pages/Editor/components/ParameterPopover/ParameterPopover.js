@@ -21,13 +21,13 @@ const ParameterPopover = ({ anchorEl, onClose, handleParameterChange, openPage, 
         horizontal: 'left',
       }}
     >
-     <Box sx={{width: 300, p: 2}}>
+     <Box sx={{width: 300, p: 1}}>
       <Text small><b>Set page parameters</b></Text>
      </Box>
 
       <Divider />
 
-     <Box sx={{width: 300, p: 2}}>
+     <Box sx={{width: 300, p: 1}}>
 
       {Object.keys(parameters).map(param => <Flex sx={{mt: 1}}>
         {param} <TextInput 

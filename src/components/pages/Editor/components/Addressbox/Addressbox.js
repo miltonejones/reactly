@@ -1,14 +1,20 @@
 import React from 'react';
 import { styled, InputAdornment, TextField } from '@mui/material';
+import { useTextTransform } from '../../../../../hooks';
 import { AppStateContext, EditorStateContext } from '../../../../../context';
-import { ParameterPopover} from '..';
+import { ParameterPopover   } from '..';
 import { Launch } from "@mui/icons-material";
+import { Flex } from '../../../..';
+import { Text } from '../../../..';
+import { Spacer } from '../../../..';
  
 const Addressbox = ( { value, onChange, ...props }) => {
   const { queryState, setQueryState, selectedPage } = React.useContext(AppStateContext); 
   const [parameters, setParameters] = React.useState(selectedPage?.parameters)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const { getParametersInScope } = useTextTransform();
+  const routeParams = getParametersInScope();
 
   const handlePopoverClick =  (event) => {  
     setAnchorEl(event.currentTarget);
@@ -58,20 +64,47 @@ const Addressbox = ( { value, onChange, ...props }) => {
     ),
   };
 
+  const suffix = !(parameters && Object.values(parameters).length)
+    ? ''
+    : Object.keys(parameters)
+      .map(key => routeParams[key])
+      .join('/')
+
   return (
    <>
+
+   <Flex
+    spacing={0.1}
+      sx={{ 
+        width: t => `calc(100vw - 640px - ${t.spacing(4)})`,
+        border: 1, 
+        p: t => t.spacing(0.5,2),
+        borderColor: 'divider',
+        borderRadius: 8,
+        backgroundColor: t => t.palette.grey[200]
+        }}>
+      <Text small active sx={{mr: 1}}>
+        URL
+      </Text>
+     
+      <Text muted={!!suffix} small> {value}</Text>
+      {!!suffix && <>/<Text hover onClick={handleButtonClick} small active success>{suffix}</Text></>}
+       
+      <Spacer />
+        <Launch />
+        <Text hover onClick={handleButtonClick} small>Open</Text>
+   </Flex>
  
-   <TextField
+   {/* <TextField
       disabled
       size="small" 
       {...props}
-      sx={{ width: "calc(100vw - 640px)" }}
       value={value}
       autoComplete="off"
       onChange={onChange}
       InputProps={adornment}
       autoFocus
-    />
+    /> */}
     
   {!!parameters && <ParameterPopover 
       anchorEl={anchorEl}

@@ -526,7 +526,9 @@ export const ComponentCollapse = ({
 
   const active = settings.find(setting => {
     return (!!args[setting.label] && args[setting.label] !== 'null') || 
-    ['top','bottom','right','left'].some(dir => !!args[`${setting.label}-${dir}`] && args[`${setting.label}-${dir}`] !== 'null');
+      ['top','bottom','right','left']
+        .some(dir => !!args[`${setting.label}-${dir}`] && args[`${setting.label}-${dir}`] !== 'null') || 
+       component.boundProps?.find(prop => prop.attribute === setting.label);
   })
 
   const closeCollapse = isOn => {
@@ -683,17 +685,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
     ]
   }
 
-  const support = {
-    name: 'Support',
-    settings: [
-      {
-        label: 'debug',
-        title: 'Debug component',
-        type: 'boolean',
-        order: -7
-      }
-    ]
-  }
+
 
   return <>  
 {showSettings && <>
@@ -702,7 +694,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   {debug}
 </>}
 
-  {[visibility, support].concat(categories)
+  {[visibility].concat(categories)
     .sort(sortByOrder)
     .map(category => <ComponentCollapse
       {...collapseProps} 

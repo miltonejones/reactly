@@ -18,7 +18,7 @@ const Layout = styled(Box)(({ theme }) => ({
 const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props }) => {
   const syntaxRef = React.useRef(null) 
   const [bs, setBS] = React.useState(code); 
-  const [showLineNumbers, setShowLineNumbers] = React.useState(true);
+  const [showLineNumbers, setShowLineNumbers] = React.useState(false);
   const args = {
     ref: externalRef || syntaxRef
   }
@@ -33,7 +33,7 @@ const CodePane = ({ code,  onCodeChange, style, css, font, externalRef, ...props
  return (
    <Layout data-testid="test-for-CodePane" {...args}> 
 {!code && (<Flex 
-      sx={{ justifyContent: 'center', border: 1, borderColor: 'divider'}}>
+      sx={{ justifyContent: 'center', border: 1, borderColor: 'divider', height: '100%'}}>
     No code in the abode
     </Flex>)} 
  

@@ -457,7 +457,18 @@ export const TextInput = ({ sx, prompt, buttons, ...props }) => {
   return  <TextField autoComplete="off" {...props} InputProps={adornment} sx={{ ...props.sx, fontSize: '0.85rem' }}/> 
 }
  
-export const Text = styled(Box)(({ theme, hover, active, small, error, tiny, link, fullWidth, muted, spacing = 1 }) => ({
+export const Text = styled(Box)(({ 
+  theme, 
+  hover, 
+  active, 
+  small, 
+  error, 
+  tiny, 
+  link, 
+  fullWidth, 
+  muted, 
+  success,
+  spacing = 1 }) => ({
   display: 'flex',
   color:muted 
     ? theme.palette.grey[600]
@@ -465,7 +476,9 @@ export const Text = styled(Box)(({ theme, hover, active, small, error, tiny, lin
       ? theme.palette.error.main 
       : (link 
           ? theme.palette.primary.main 
-          : theme.palette.black
+          : success
+            ? theme.palette.success.main
+            : theme.palette.black
           )),
   textDecoration: link ? 'underline' : 'none',
   gap: theme.spacing(spacing) ,
