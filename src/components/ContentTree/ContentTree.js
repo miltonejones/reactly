@@ -1,7 +1,7 @@
 import React from "react";
 import { styled, List, Link, ListItemButton, 
   ListItemIcon, ListItemText, ListItemSecondaryAction ,
-  Typography, Box, Collapse
+  Typography, Box, Collapse, Popover
   } from "@mui/material";
  
 import { Article, Add, MoreVert, Error, Close, Delete, RadioButtonUnchecked, Remove } from "@mui/icons-material";
@@ -9,6 +9,7 @@ import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
 import { AppStateContext, EditorStateContext } from '../../context';
 import { useReactly } from "../../hooks";
 import { SearchLine } from "../ScriptDrawer/ScriptDrawer";
+import { ComponentList } from "../pages/Editor/components/NavigationPane/NavigationPane";
 
 
 const NodeText = styled(Typography)(({ theme, on, indent }) => ({
@@ -73,7 +74,19 @@ export const ComponentQuickMenu = ({ component, onClose, parentID, ...props }) =
  
 
 const ContentTree = (props) => {
+  const [anchor, setAnchor] = React.useState({
+    element: null,
+    elementID: null
+  });
+  const { element, elementID } = anchor;
 
+  const handlePopoverClose = () => setAnchor({}); 
+  const handlePopoverClick = (elementID) => (event) => { 
+    setAnchor({
+      element: event.currentTarget,
+      elementID
+    });
+  };
   const { queryState = {}, appContext, selectedPage  } = React.useContext(AppStateContext);
   const { selectedComponent = {}} = queryState;
   const componentParent = selectedPage || appContext;
@@ -88,6 +101,7 @@ const ContentTree = (props) => {
   if (!tree) return <i />
   const components = tree.filter(f => !f.componentID);
   return (
+   <>
     <Content> 
       <List dense>
         {components 
@@ -99,15 +113,34 @@ const ContentTree = (props) => {
           onCreate={onCreate} 
           onNameChange={reactly.onNameChange} 
           onDrop={reactly.onDropComponent} 
-
+          handlePopoverClick={handlePopoverClick}
           key={c.ID}
           {...props}
           selectedComponent={selectedComponent} 
           trees={tree} 
           key={c.ComponentName} 
           tree={c} /> )} 
+
+
+        <Contents label={<Link onClick={handlePopoverClick()}>Add component</Link>} indent={0} />
+
       </List>
+
     </Content>
+   <Popover
+      open={!!anchor.element}
+      anchorEl={anchor.element}
+      onClose={handlePopoverClose} 
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}>
+
+   <Box sx={{p:2}}>
+   <ComponentList componentID={anchor.elementID} />
+   </Box>
+   </Popover>
+   </>
   );
 };
 
@@ -118,7 +151,7 @@ const getChildNames = (node, nodes, out = []) => {
   return out;
 }
 
-const Contents = ({  tree, parentID, onDrop, trees, 
+const Contents = ({  tree, parentID, onDrop, trees,  handlePopoverClick,
   onCustomName, quickComponent, label, indent = 0, onNameChange, 
   onCreate, onSelect, selectedComponent, ...props  }) => { 
   const { Library } = React.useContext(AppStateContext);
@@ -226,6 +259,7 @@ const Contents = ({  tree, parentID, onDrop, trees,
           .sort(componentOrder)
           .map(c => <Contents 
             {...props}
+            handlePopoverClick={handlePopoverClick}
             quickComponent={quickComponent} 
             onCreate={onCreate} 
             onDrop={onDrop} 
@@ -235,8 +269,8 @@ const Contents = ({  tree, parentID, onDrop, trees,
             onNameChange={onNameChange}
             onSelect={onSelect} trees={trees} indent={indent + 3} key={c.ID} tree={c} /> )}</>}
   
-        {allowChildren && !allowedChildren && <Contents 
-          label={<Link onClick={() => onCreate(tree.ID)}>Add component</Link>} indent={indent + 3} />} 
+        {allowChildren && !allowedChildren && <Contents   handlePopoverClick={handlePopoverClick}
+          label={<Link onClick={handlePopoverClick(tree.ID)}>Add component</Link>} indent={indent + 3} />} 
 
         {!!allowedChildren && allowedChildren.map(allowed => <Contents 
           label={<Link onClick={() => quickComponent(allowed, tree.ID)}>Add {allowed}</Link>} indent={indent + 3} />)} 

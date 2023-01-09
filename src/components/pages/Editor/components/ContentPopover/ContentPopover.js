@@ -18,10 +18,8 @@ const ContentPopover = ({
   control: Control = BorderButton , 
   children, 
   ...props }) => {
-  const [anchorEl, setAnchorEl] = React.useState(null);;
-
-  const handlePopoverClose = () => setAnchorEl(null);
-
+  const [anchorEl, setAnchorEl] = React.useState(null);; 
+  const handlePopoverClose = () => setAnchorEl(null); 
   const handlePopoverClick = (event) => { 
     setAnchorEl(event.currentTarget);
   };

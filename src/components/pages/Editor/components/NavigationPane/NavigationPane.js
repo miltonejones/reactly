@@ -29,10 +29,9 @@ const ComponentItem = ({ item, icon: Icon, onChange }) => {
     <Icon />
     <Text tiny>{item.substr(0,12).replace(/([A-Z])/g, " $1")}</Text>
   </LibraryItem>
-
 }
 
-const ComponentList = () => {
+export const ComponentList = ({ componentID }) => {
   const reactly = useReactly();
   const [filter, setFilter] = React.useState('');
   const {  
@@ -63,7 +62,7 @@ const ComponentList = () => {
     }}>
       {libraryKeys
       .filter(f => !filter || f.toLowerCase().indexOf(filter.toLowerCase()) > -1)
-      .map(key => <ComponentItem icon={Icons[Library[key].Icon]} onChange={reactly.quickComponent} item={key} key={key}/>)}
+      .map(key => <ComponentItem icon={Icons[Library[key].Icon]} onChange={(item) => reactly.quickComponent(item, componentID)} item={key} key={key}/>)}
     </Box>
     </Box>
   </Stack>

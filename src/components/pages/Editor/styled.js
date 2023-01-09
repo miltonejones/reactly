@@ -10,9 +10,11 @@ export const LibraryItem = styled(Stack)(({ theme }) => ({
   whiteSpace: 'nowrap',
   textOverflow: 'ellipsis', 
   cursor: 'pointer',
+  transition: 'all 0.2s linear',
   '&:hover': {
     backgroundColor: theme.palette.primary.main,
-    color: theme.palette.common.white
+    color: theme.palette.common.white,
+    fontWeight: 600
   }
 }));
 
