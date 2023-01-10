@@ -681,6 +681,12 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
         title: 'Hide component',
         type: 'boolean',
         order: -5
+      },
+      {
+        label: 'visible',
+        title: 'Show component',
+        type: 'boolean',
+        order: -4
       }
     ]
   }

@@ -13,7 +13,7 @@ export const useApplicationLoader = (state, preview) => {
   // get configuration for the all applications or,
   // if the route has a pagename, just the application with that page
   const downloadApplicationConfig = React.useCallback(async () => {  
-      
+      // alert(pagename)
     // downloads app info from server
     const applicationConfig = !!pagename
       ? await getApplicationByName(appname, pagename)
@@ -30,7 +30,7 @@ export const useApplicationLoader = (state, preview) => {
     state.setBusy(`Committing changes...`) 
     await setApplication(app); 
     await downloadApplicationConfig();
-  }, []);
+  }, [downloadApplicationConfig, setApplication, state]);
 
   // replace a page in the application JSON with an updated one
   const updateApplicationData = React.useCallback((downloadedPage) => {

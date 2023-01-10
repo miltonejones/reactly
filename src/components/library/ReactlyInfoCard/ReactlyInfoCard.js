@@ -35,8 +35,13 @@ const ReactlyComponentInfoCard = (props) => {
   const { repeaterProps, ...repeater } = useRepeater(props);
   const { index, selectedIndex } = repeaterProps;
 
-  const selected = repeater.selectionCompare(selectedIndex, index)
+  // const { image } = useImageLoader(args.image, args.defaultImage)
   const args = getSettings(repeater.settings || settings);
+  const { image: photo } = args;
+  const [image, setImage] = React.useState(photo)
+
+
+  const selected = repeater.selectionCompare(selectedIndex, index)
 
   const Icon = Icons[args.action_icon];
   
@@ -55,8 +60,6 @@ const ReactlyComponentInfoCard = (props) => {
   const fontWeight = selected ? 600 : 400
   const maxWidth = '100%';
   const overflow = 'hidden'
-
-  const { image } = useImageLoader(args.image, args.defaultImage)
 
   const titleBar = <CardHeader
         avatar={avatar}
@@ -82,6 +85,7 @@ const ReactlyComponentInfoCard = (props) => {
         component="img"
         height={args.image_height || 200}
         image={image}
+        onError={() => setImage(DEFAULT_IMAGE)}
         alt={args.label}
       />}
 

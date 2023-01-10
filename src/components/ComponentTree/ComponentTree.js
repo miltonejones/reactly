@@ -8,13 +8,9 @@ import {
   Menu,  
   MenuItem, 
 } from "@mui/material";
-import {
- Close,
- Edit,  
-} from "@mui/icons-material"; 
+
 import { AppStateContext, EditorStateContext } from "../../context"; 
-import { Helmet } from "react-helmet";
-import { TinyButton } from "..";   
+import { Helmet } from "react-helmet"; 
 import { getSettings } from '../library/util';
 import { PageStateContext, usePageContext } from "../../hooks/usePageContext"; 
 import Observer from "../../util/Observer"; 
@@ -266,6 +262,10 @@ export const RenderComponent = ({
  
   if (eventMap.invisible) {
     return <i/>
+  }
+
+  if (eventMap.hasOwnProperty('visible') && !eventMap.visible) {
+    return <i />
   }
 
   return (

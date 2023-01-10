@@ -4,7 +4,7 @@ import { Flex, Text, DeleteConfirmMenu, PopoverPrompt, TinyButton } from '../../
 import { Edit, Close } from "@mui/icons-material"; 
 import { ComponentQuickMenu } from '../../../ContentTree/ContentTree';
 import { useReactly } from "../../../../hooks";
-import { AppStateContext } from "../../../../context"; 
+import { AppStateContext, EditorStateContext } from "../../../../context"; 
  
 const Layout = styled(Box)(({ theme, active, hilit }) => ({ 
   outline: hilit ? `dotted 1px ${theme.palette.grey[600]}` : 'none',
@@ -34,6 +34,7 @@ const ComponentContainer = ({  name, ...props}) => {
   const [selected, setActive] = React.useState(false); 
   const [offset, setOffset] = React.useState(null); 
  
+  const { selectComponent } = React.useContext(EditorStateContext);
   const { selectedPage, preview, setQueryState, queryState } = React.useContext(AppStateContext);
   const { on, ...component } = props;
   const { ComponentType, pageID, ID } = component; 
@@ -71,7 +72,8 @@ const ComponentContainer = ({  name, ...props}) => {
   } 
   
   const handleClick = () => {
-    setQueryState(s => ({...s, selectedComponent: on ? null : component}));
+    selectComponent(component, on)
+    // setQueryState(s => ({...s, selectedComponent: on ? null : component}));
   }
 
   if (suppressContainer) return props.children;
