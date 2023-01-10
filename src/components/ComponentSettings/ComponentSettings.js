@@ -669,9 +669,9 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   }
 
 
-  if (!categories) {
-    return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{orderer}{debug}</>
-  }
+  // if (!categories) {
+  //   return <><Alert sx={{m: 1}}>"{component.ComponentType}" has no configurable settings.</Alert>{orderer}{debug}</>
+  // }
 
   const visibility = {
     name: 'Visibility',
@@ -679,6 +679,18 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
       {
         label: 'invisible',
         title: 'Hide component',
+        type: 'boolean',
+        order: -5
+      }
+    ]
+  }
+
+  const support = {
+    name: 'Debugging',
+    settings: [
+      {
+        label: 'debug',
+        title: 'debug mode',
         type: 'boolean',
         order: -5
       }
@@ -694,7 +706,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   {debug}
 </>}
 
-  {[visibility].concat(categories)
+  {[visibility, support].concat(categories||[])
     .sort(sortByOrder)
     .map(category => <ComponentCollapse
       {...collapseProps} 

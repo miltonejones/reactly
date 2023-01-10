@@ -195,6 +195,7 @@ export const useEditor = () => {
   const dropResourceEvent = async (appID, pageID, resourceID, eventID) => {
     editResource(appID, resourceID, async (resource) => {
       Object.assign(resource, { events: resource.events.filter(f => f.ID !== eventID)   }) ; 
+      dropObject('appevents', eventID);
     }); 
   }
 

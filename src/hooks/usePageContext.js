@@ -77,13 +77,13 @@ export const usePageContext = () => {
 
 
   const drillPath = React.useCallback((object, path) => {
- 
-    const arr = path.split(".");
+    const delimiter = '/';
+    const arr = path.split(delimiter);
     const first = arr.shift();
     const node = object[first];
 
     if (arr.length) {
-      return drillPath(node, arr.join("."));
+      return drillPath(node, arr.join(delimiter));
     }
 
     return node;
@@ -300,7 +300,12 @@ export const usePageContext = () => {
     const datum = {
       resourceID: resource.ID,
       name: resource.name ,
-      records: []
+      records: [],
+      update: (index, key, value) => {
+        resource.records = resource.records.map((record, i) => i === index 
+          ? {...record, [key]: value} 
+          : record);
+      }
     };
  
     if (listening("dataExec")) { 
@@ -765,7 +770,6 @@ export const usePageContext = () => {
       if (boundProps) {
         // get current state at the time the component renders
 
-
         boundProps.map((boundProp) => {
 
           const { attribute, boundTo: boundKey } = boundProp;
@@ -776,7 +780,7 @@ export const usePageContext = () => {
             try {
 
               const script = scripts?.find(d => d.ID === boundTo)
-              const prop =  invokeScriptSync(script , component,  execResourceByName)
+              const prop =  invokeScriptSync(script , component,  execResourceByName, clientState)
             //  console.log ({ boundTo, attribute, prop, eventHandlers })
 
             if (listening('attachEventHandlers')) {
@@ -849,8 +853,6 @@ export const usePageContext = () => {
             }
           }
         });
-
-
       }
 
       // Object.keys(eventHandlers).map (key => console.log (key, typeof eventHandlers[key]))

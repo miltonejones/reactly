@@ -44,7 +44,7 @@ export const useTextBind = (settings, selectedPage) => {
       const val = interpolateText(args[arg], pageClientState);
       return {
         arg,
-        val: val || 'arg'
+        val: val || args[arg]
       }
     })
     .reduce((items, prop) => {
@@ -76,7 +76,9 @@ const ReactlyComponent = ({
       const binding = row[item];
       const setting = binding.SettingName;
       const value = binding.record[item];
-      settings = settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
+      settings = settings?.find(f => f.SettingName === setting)
+        ? settings?.map(f => f.SettingName === setting ? {...f, SettingValue: value} : f)
+        : (settings||[]).concat( {SettingName: setting, SettingValue: value } );
     }) 
   }
 
@@ -131,21 +133,15 @@ const ReactlyComponent = ({
  
   if (childComponents?.length && Library[props.ComponentType].allowedChildren) {
     return  <Component {...fixed} {...props}  style={completed} sx={{...props.sx, ...style, ...extra}}> 
-            { childComponents.sort(componentOrder).map(guy => <>
-        
-              <ChildComponent component={guy} key={guy.ID}  />
-            </>)}
+            { childComponents.sort(componentOrder).map(guy =>   <ChildComponent component={guy} key={guy.ID}  /> )}
           </Component>
   }
 
  return (  
-  <>
-{/* [  <pre>
-    {JSON.stringify(props.pageID,0,2)}
-  </pre>] */}
+ 
  <Component {...fixed} {...props}    sx={{...props.sx, ...style, ...extra}} > 
     {fixed.children || children}
- </Component></>
+ </Component> 
    )
 } 
 

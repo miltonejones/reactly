@@ -10,7 +10,7 @@ import { usePageResourceState } from '../../../hooks/usePageResourceState';
 import { useImageLoader } from '../ReactlyInfoCard/ReactlyInfoCard';
 import { useRunScript } from '../../../hooks/subhook/useRunScript';
 
-const truncate = (value, length) => {
+export const truncate = (value, length) => {
   try {
 
     if (!value.substr || !length) {
@@ -26,8 +26,7 @@ const truncate = (value, length) => {
   }
 }
   
-const ReactlyComponentTable = ({ children, ...props }) => {
-  const { pageResourceState } = React.useContext(PageStateContext);
+const ReactlyComponentTable = ({ children, ...props }) => { 
   const { componentEditing, preview, onHeadClick, onRowClick, onCellClick, settings} = props;
  
 
@@ -46,12 +45,19 @@ const ReactlyComponentTable = ({ children, ...props }) => {
     <Box sx={{m: 2}}>{args.emptyMessage}</Box></>
   }
 
+  const selectionCompare = (source, comparedTo) => {
+    if (args.multiple && Array.isArray(source)) {
+      return source?.indexOf(comparedTo) > -1
+    }
+    return source?.toString() === comparedTo?.toString()
+  }
+
   const isSelected = (row, i) => {
     try {
       if (args.use_id) {
-        return resource.records[i][args.selectedColumn].toString() === props.selectedID.toString()
+        return selectionCompare(resource.records[i][args.selectedColumn], props.selectedID)
       }
-      return props.selectedIndex?.toString() === i.toString();
+      return selectionCompare(props.selectedIndex, i);
     } catch (e) {
       return false;
     }

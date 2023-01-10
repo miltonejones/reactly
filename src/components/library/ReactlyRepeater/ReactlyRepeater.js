@@ -1,11 +1,9 @@
 import React from 'react';
-import {  Box, Card } from '@mui/material'; 
-import { GenericStyles, LayoutStyles } from '../styles'; 
-import { Loop } from '@mui/icons-material';
+import {  Box, Card } from '@mui/material';  
 import ReactlyComponent from '../reactly';
 import { getSettings } from '../util';
-import { AppStateContext } from '../../../context';
-import { RepeaterContext } from '../../../context';
+import { AppStateContext, RepeaterContext } from '../../../context';
+import { useRepeater } from '../../../hooks/useRepeater';
 
 
 
@@ -13,26 +11,11 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
   const { pageResourceState } = React.useContext(AppStateContext); 
   const { componentEditing, preview, onRowClick, onCellClick, settings} = props;
   
-  const args = getSettings(settings);
-  let obj = null, dataRows = [], resource;
+  const args = getSettings(settings); 
+  const repeater = useRepeater(props); 
+ 
 
-
-  if (args.bindings)  {
-    obj = JSON.parse(args.bindings); 
-    const id = obj.resourceID;
-    resource = pageResourceState.find(f => f.resourceID === obj.resourceID);
-    if (resource?.records) {
-      dataRows = resource.records.map(record => {
-        return Object.keys(obj.bindings).reduce((items, res) => {
-          items[res] = {
-            ...obj.bindings[res],
-            record
-          }
-          return items;
-        }, {})
-      })
-    }
-  }
+ 
  
  return (
   <>  
@@ -41,12 +24,12 @@ const ReactlyComponentRepeater = ({ children, ...props }) => {
 
 </pre> */}
  <ReactlyComponent component={Box} {...props}>
-      {dataRows?.map((row, i) => <RepeaterContext.Provider  
+      {repeater.dataRows?.map((row, i) => <RepeaterContext.Provider  
         value={{ 
           row,
-          index: i,
+          index: i, 
           selectedIndex: props.selectedIndex || args.selectedIndex,
-          ID: !args.selectedColumn ? i : resource.records[i][args.selectedColumn],
+          ID: !args.selectedColumn ? i : repeater.resource.records[i][args.selectedColumn],
          }}
       >
      
@@ -100,19 +83,8 @@ const Settings = {
   ]
 }
 
-const ReactlyRepeater = {
-  Icon: Loop,
-  Component: ReactlyComponentRepeater, 
-  Settings,
-  Styles: {
-    categories: [ 
-      ...LayoutStyles.categories, 
-    ]
-  }, 
-  allowChildren: !0,
-  Defaults: {
-    emptyMessage: 'No records to display.'
-   }
+const ReactlyRepeater = { 
+  Component: ReactlyComponentRepeater,  
 }
  
 

@@ -404,7 +404,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
     return <i />
   } 
 
-  const dot = path.join('.');
+  const dot = path.join('/');
   const fields = resource.columns;
 
     if (Array.isArray(nodes)) {
@@ -659,7 +659,7 @@ const ConnectionDrawer = () => {
 
   const columnLabel = (node, col) => {
     if (!node) return col;
-    return `${node}.${col}`
+    return `${node}/${col}`
   }
   
 
@@ -736,6 +736,7 @@ const ConnectionDrawer = () => {
         </Grid>}
 
         {!!answer && <Grid item xs={3} sx={{borderRight: 1, borderColor: 'divider'}}>
+          <JsonModal json={answer} />
           <Typography sx={{pl: 1}} variant="caption"><b>Choose columns</b></Typography>
           <Divider  sx={{mb: 2}}/>
           <Box sx={{...sx, pl: 2}}>

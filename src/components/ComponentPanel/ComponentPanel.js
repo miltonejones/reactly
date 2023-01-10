@@ -84,7 +84,7 @@ const ComponentPanel = () => {
 
   const others = componentList.filter(f => !!Library[f.ComponentType] &&  Library[f.ComponentType].allowChildren)
 
-  const changes = [
+  const changeMethods = [
     reactly.onSettingsChange, 
     reactly.onStyleChange, 
     reactly.onEventChange
@@ -92,8 +92,8 @@ const ComponentPanel = () => {
 
   const onChange = !component && !!selectedPage 
     ? reactly.onPropChange
-    : changes[value];
-
+    : changeMethods[value];
+// 
   // const selectedComponent = Library[component?.ComponentType];
 
   const panelProps = {
