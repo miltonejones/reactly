@@ -4,11 +4,15 @@ import { QuickSelect, Flex,TinyButton, Spacer, TextBtn,Text, PillMenu, Pill } fr
 import { Json } from '../../../../colorize';
 import { getPropertyOptions } from '../../util';
 import {  Save } from "@mui/icons-material"; 
+import { useReactly } from '../../../../hooks/useReactly';
+import { AppStateContext } from '../../../../context';
   
-
+const NEW_STATE_ITEM = 'New date variable...';
 
 const StateValue = ({ Value, Type, handleChange, page, component, application, resources, selectedEvent, ...props }) => {
-  const options = getPropertyOptions(page, selectedEvent, component, resources, application?.state);
+  const options = [NEW_STATE_ITEM].concat (
+    getPropertyOptions(page, selectedEvent, component, resources, application?.state)
+  );
   const initialType = typeof Value === 'string' && Value.indexOf('|') > 0 ? 'toggle' : 'system';
   const [first, last] = typeof Value !== 'string' ? [] : Value.split('|')
   const [inputType, setInputType] = React.useState(initialType);
@@ -81,7 +85,13 @@ const StateValue = ({ Value, Type, handleChange, page, component, application, r
   if (options?.length && inputType !== 'text') {
     return <>
     {/* [{Type}] */}
-    <QuickSelect options={options} free onChange={handleChange} value={Value?.toString()} label="to"/>
+    <QuickSelect 
+      options={options} 
+      free 
+      onChange={handleChange} 
+      value={Value?.toString()} 
+      label="to"
+    />
 
     <Flex>
        <PillMenu options={['system', 'text', 'toggle']} value={inputType} onChange={setInputType} />
@@ -111,20 +121,12 @@ const SetState = ({ event = {}, application, page, component, resources, handleS
 
   const { parameters } = page;
 
+  const { Prompt } = React.useContext(AppStateContext);
+  const reactly = useReactly();
+
   if (!page.state && !parameters && !application.state) {
     return <>Page has no state variables</>
   }
-
-  // const handled = !((page.state || application.state) && event.action) 
-  //   ? {}
-  //   : (page.state.concat(application.state)).find(f => {
-  //     const [key,val] = state.target?.split('.');
-  //     if (val) {
-  //       return f.Key === val;
-  //     }
-  //     return f.Key === state.target 
-  //   });
-
   const stateList = ((page.state||[]).concat(application.state||[]));
 
 // console.log ({ stateList, target: state.target })
@@ -142,7 +144,17 @@ const SetState = ({ event = {}, application, page, component, resources, handleS
 
   !!application.state && application.state.map(s => {
     return options.push(`application.${s.Key}`);
-  })
+  });
+
+  const handleStateCreate = async () => {
+    const stateKey = await Prompt('Enter a name for the new state');
+    if (!stateKey) return false;
+    reactly.onStateChange(null, stateKey);
+    return stateKey;
+  }
+
+
+
 
  return (
   <>
@@ -151,8 +163,15 @@ const SetState = ({ event = {}, application, page, component, resources, handleS
       <Typography>Set the value of</Typography>
 
 
-     <QuickSelect options={options} value={target} 
-            onChange={value => setState(s => ({...s, target: value}))}/>
+     <QuickSelect options={[NEW_STATE_ITEM].concat(options)} value={target} 
+            onChange={async (value) => {
+              if (value === NEW_STATE_ITEM) {
+                const prop = await handleStateCreate();// alert(1)
+                if (!prop) return;
+                value = prop;
+              }
+              setState(s => ({...s, target: value}))
+            }}/>
  
       <StateValue 
         {...selectedState} 
@@ -163,7 +182,12 @@ const SetState = ({ event = {}, application, page, component, resources, handleS
         component={component}
         selectedEvent={selectedEvent}
         page={page}
-        handleChange={value => { 
+        handleChange={async (value) => { 
+          if (value === NEW_STATE_ITEM) {
+            const prop = await handleStateCreate();// alert(1)
+            if (!prop) return;
+            value = prop;
+          }
           setState(s => ({...s, value}))
         }}
       />

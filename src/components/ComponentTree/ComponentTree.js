@@ -260,12 +260,14 @@ export const RenderComponent = ({
   const eventMap = attachEventHandlers(component);
   const settings = getSettings(component.settings);
  
-  if (eventMap.invisible) {
-    return <i/>
-  }
-
-  if (eventMap.hasOwnProperty('visible') && !eventMap.visible) {
-    return <i />
+  if (!on) {
+    if (eventMap.invisible) {
+      return <i/>
+    }
+  
+    if (eventMap.hasOwnProperty('visible') && !eventMap.visible) {
+      return <i />
+    }
   }
 
   return (

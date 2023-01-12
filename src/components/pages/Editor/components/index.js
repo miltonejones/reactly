@@ -6,6 +6,7 @@ import ComponentTabs from "./ComponentTabs/ComponentTabs";
 import ControlButton from "./ControlButton/ControlButton";
 import Addressbox from "./Addressbox/Addressbox";
 import MainMenu from "./MainMenu/MainMenu";
+import ComponentList from "./ComponentList/ComponentList";
 import ContentPopover from "./ContentPopover/ContentPopover";
 import Toolbar from "./Toolbar/Toolbar";
 
@@ -18,6 +19,7 @@ export {
   ControlButton,
   Addressbox,
   ContentPopover,
+  ComponentList,
   MainMenu,
   Toolbar
 }

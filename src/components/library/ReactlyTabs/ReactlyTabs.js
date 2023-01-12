@@ -7,10 +7,20 @@ import { getSettings } from '../util';
     
 
 
-const ReactlyComponentTabs = ({ children, ...props }) => {
+const ReactlyComponentTabs = ({ children, onTabChange, ...props }) => {
   const args = getSettings(props.settings); 
+  const handleChange = (event, newValue) => {
+    onTabChange && onTabChange(event, {
+      value: newValue
+    });
+  };
   return (
-    <ReactlyComponent component={Tabs} {...props} value={parseInt(args.value)} />
+    <ReactlyComponent 
+      component={Tabs} 
+      {...props} 
+      onChange={handleChange}
+      value={parseInt(props.value || args.value)}
+     />
   );
 }
 

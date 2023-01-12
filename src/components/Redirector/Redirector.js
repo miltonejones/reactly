@@ -9,7 +9,9 @@ const Redirector = () => {
   const { appname, pagename } = useParams();
 
   if (!!appContext) {
+
     const { homePage } = appContext;
+ 
   
     if (!!homePage && !pagename && !preview) {
       const path = appContext.pages.find(f => f.ID === homePage).PagePath;

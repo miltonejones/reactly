@@ -45,7 +45,7 @@ export const useRunScript = () => {
       : [{
         label: 'Application'
       }].concat(appContext.scripts
-        .filter(filter)
+        .filter(filter) 
         .map(s => ({
         ...s,
         label: s.name,
@@ -73,7 +73,7 @@ export const useRunScript = () => {
         label: pg.PageName
       })
       out = out.concat((pg.scripts || []) 
-        .filter(filter)
+        .filter(filter) 
         .map(s => ({
           ...s,
           label: s.name,
@@ -86,6 +86,7 @@ export const useRunScript = () => {
 
       return out;
     }, []))
+    //.filter(f => !f.componentID)
   }
 
   const scriptList = getApplicationScripts()

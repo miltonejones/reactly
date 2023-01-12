@@ -131,7 +131,9 @@ const ReactlyComponent = ({
     }, {})
 
  
-  if (childComponents?.length && Library[props.ComponentType].allowedChildren) {
+  if (childComponents?.length && 
+      Library[props.ComponentType] && 
+      Library[props.ComponentType].allowedChildren) {
     return  <Component {...fixed} {...props}  style={completed} sx={{...props.sx, ...style, ...extra}}> 
             { childComponents.sort(componentOrder).map(guy =>   <ChildComponent component={guy} key={guy.ID}  /> )}
           </Component>

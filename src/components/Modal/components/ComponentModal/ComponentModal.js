@@ -3,6 +3,7 @@ import { styled, Box , Stack, Card, TextField} from '@mui/material';
 import { Flex, Text } from '../../..'
 import { Icons } from '../../../library/icons'
 import { AppStateContext } from '../../../../context';
+import { ComponentList } from '../../../pages/Editor/components';
  
 const Layout = styled(Box)(({ theme }) => ({
  margin: theme.spacing(1),
@@ -32,7 +33,9 @@ const ComponentModal = ({ onChange, components = [] }) => {
   }
  return (
    <Layout data-testid="test-for-ComponentModal">
-    <Stack>
+
+    <ComponentList />
+    {/* <Stack>
 
     <Flex baseline wrap sx={{ maxHeight: 400, overflowY: 'auto', pb: 1 }}>
 
@@ -52,8 +55,9 @@ const ComponentModal = ({ onChange, components = [] }) => {
     })}
 
     </Flex>
-    <TextField sx={{ mt: 2 }} autoComplete="off" fullWidth size="small" value={name} placeholder="Component Name" onChange={rename}/>
-    </Stack>
+    <TextField sx={{ mt: 2 }} autoComplete="off" fullWidth size="small" 
+    value={name} placeholder="Component Name" onChange={rename}/>
+    </Stack> */}
    </Layout>
  );
 }

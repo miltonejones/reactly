@@ -9,7 +9,7 @@ import { QuickMenu, Tiny, Tooltag, DeleteConfirmMenu } from "..";
 import { AppStateContext, EditorStateContext } from '../../context';
 import { useReactly } from "../../hooks";
 import { SearchLine } from "../ScriptDrawer/ScriptDrawer";
-import { ComponentList } from "../pages/Editor/components/NavigationPane/NavigationPane";
+import { ComponentList } from "../pages/Editor/components";
 
 
 const NodeText = styled(Typography)(({ theme, on, indent }) => ({
@@ -42,7 +42,9 @@ export const ComponentQuickMenu = ({ component, onClose, parentID, ...props }) =
     },
     {
       name: 'Add Component before ' ,
-      action: () => onCreate(componentID, { before: !0, order: component.order})
+      action: (value,  event) => { 
+         onCreate(componentID, { before: !0, order: component.order})
+      }
     },  
     {
       name: 'Add Component after',
@@ -248,7 +250,7 @@ const Contents = ({  tree, parentID, onDrop, trees,  handlePopoverClick,
           <DeleteConfirmMenu hidden={!(on || over)}  sx={{mr: 1}} message={`Delete component ${nodeLabel}?`} 
               onDelete={(e) => !!e && onDrop(tree.ID, true)}/>
 
-          <ComponentQuickMenu parentID={parentID} component={tree} />
+          <ComponentQuickMenu handlePopoverClick={handlePopoverClick} parentID={parentID} component={tree} />
  
         </ListItemSecondaryAction>}
       </Tooltag>  
