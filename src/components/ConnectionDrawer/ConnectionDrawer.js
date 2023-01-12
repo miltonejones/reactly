@@ -432,7 +432,7 @@ const ConnectionTree = ({ nodes, resource, onAddProp, indent = 0, path = []}) =>
             <Text small onClick={() => {
               onAddProp(node, dot);
             }} sx={{ml: indent}} key={node}
-            > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node} !!</Text>
+            > <Check on={fields?.indexOf(node) > -1 || node === resource.node} /> {node}</Text>
             <ConnectionTree resource={resource} fields={fields} onAddProp={onAddProp}  
                 path={path.concat(node)} nodes={nodes[node][0]} indent={indent + 4} /> 
             <Divider />
