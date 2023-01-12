@@ -14,7 +14,7 @@ const DEFAULT_IMAGE = 'https://www.sky-tunes.com/assets/default_album_cover.jpg'
 
 
 export const useImageLoader = (src, defaultImage) => {
-  const [image, setImage] = React.useState(defaultImage || DEFAULT_IMAGE);
+  const [image, setImage] = React.useState();
 
   React.useEffect(() => {
     if (src) {
@@ -22,9 +22,12 @@ export const useImageLoader = (src, defaultImage) => {
       im.onload = () => {
         setImage(src);
       }
+      im.onerror = () => {
+        setImage(defaultImage || DEFAULT_IMAGE)
+      }
       im.src = src;
     }
-  }, [image, src]);
+  }, [image, src, defaultImage, DEFAULT_IMAGE]);
 
   return { image }
 }
@@ -35,10 +38,10 @@ const ReactlyComponentInfoCard = (props) => {
   const { repeaterProps, ...repeater } = useRepeater(props);
   const { index, selectedIndex } = repeaterProps;
 
-  // const { image } = useImageLoader(args.image, args.defaultImage)
   const args = getSettings(repeater.settings || settings);
-  const { image: photo } = args;
-  const [image, setImage] = React.useState(photo)
+   const { image } = useImageLoader(args.image, args.defaultImage)
+  // const { image: photo } = args;
+  // const [image, setImage] = React.useState(photo)
 
 
   const selected = repeater.selectionCompare(selectedIndex, index)
@@ -84,8 +87,7 @@ const ReactlyComponentInfoCard = (props) => {
       }}
         component="img"
         height={args.image_height || 200}
-        image={image}
-        onError={() => setImage(DEFAULT_IMAGE)}
+        image={image} 
         alt={args.label}
       />}
 

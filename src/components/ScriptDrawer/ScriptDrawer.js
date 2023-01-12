@@ -156,17 +156,20 @@ const ScriptDrawer = ( ) => {
     reactly.onScriptChange(ID, name, code, { parentID, comment });
   }
 
-  const saveScriptToFolder = (scriptID, name, code, parentID, pageID) => {
-    reactly.onScriptChange(scriptID, name, code, { pageID, parentID });
+const saveScriptToFolder = (scriptID, name, code, parentID, pageID) => {
 
-    // save updated code to tabs array
-    setSelected({
-      ID: scriptID,
-      name,
-      code,
-      parentID,
-    });
-  };
+  reactly.onScriptChange(scriptID, name, code, { pageID, parentID });
+
+  // save updated code to tabs array
+  setSelected({
+    ID: scriptID,
+    name,
+    code,
+    parentID,
+    pageID
+  });
+  
+};
 
   const { copy } = useClipboard();
   const ref = React.useRef(null);
@@ -202,6 +205,7 @@ const ScriptDrawer = ( ) => {
   };
 
   const setSelected = (object) => {
+    // alert (object.pageID);
     commitSelected({ code: "" });
     setTimeout(() => {
       onSelected(object);
@@ -362,7 +366,9 @@ const ScriptDrawer = ( ) => {
     );
 
   const toptLevel = scripts?.filter((f) => !f.code && !f.parentID);
-
+  const scriptPage = appContext.pages?.find(page => page.ID === selected?.pageID)
+  const scriptPageName = scriptPage?.PageName;
+  
   return (
     <OpenDrawer open={open} anchor="bottom">
       <Layout big={big}>
@@ -581,6 +587,8 @@ const ScriptDrawer = ( ) => {
               </Collapse>
 
               <Spacer />
+
+              <Text small muted>[{scriptPageName}]</Text>
 
               <TextBtn
                 onClick={() => {
