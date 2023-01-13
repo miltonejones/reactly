@@ -138,23 +138,24 @@ const NavigationPane = ( ) => {
       </Stack>
 
       <Hide hidden={collapsed.left || !componentParent }> 
-            <Box sx={{p: 1}}>
-            <TextInput 
-              label="Search"
-              fullWidth
-              size="small"
-              value={filtertext}
-              onChange={e => setFilterText(e.target.value)}
-              buttons={
-                <TinyButton icon={!!filtertext ? Close : Search} 
-                  onClick={() => setFilterText('')}
-                  />
-              }
-            />
-            </Box>
         <Divider />
 
-        <Stack sx={{ p: 1, height: "calc(100vh - 464px)" }}>
+        <Box sx={{p: 1}}>
+          <TextInput 
+            label="Search"
+            fullWidth
+            size="small"
+            value={filtertext}
+            onChange={e => setFilterText(e.target.value)}
+            buttons={
+              <TinyButton icon={!!filtertext ? Close : Search} 
+                onClick={() => setFilterText('')}
+                />
+            }
+          />
+      </Box>
+
+        <Stack sx={{ p: t => t.spacing(0, 1), height: "calc(100vh - 472px)" }}>
           <Flex spacing={1}>
             <Flex fullWidth>
               <Text small>

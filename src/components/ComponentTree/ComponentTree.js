@@ -37,7 +37,7 @@ const Preview = ({
         componentEditing={props.on}
         sx={{
           ...sx,
-          outline: props.on || hilit ? "dotted 4px red" : "none",
+          outline: props.on || hilit ? "dotted 2px red" : "none",
           outlineOffset: 4,
         }}
       >

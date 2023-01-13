@@ -68,7 +68,7 @@ const ApplicationTree = ({ children, ...props }) => {
       return state;
     }); 
     // alert('APP LOADED')
-  }, [handleAppLoad]);
+  }, [handleAppLoad, applicationProps]);
 
      
   if (!queryState.appLoaded) {

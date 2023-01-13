@@ -134,13 +134,14 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
     handleNavigation();
   }, [location]);
 
+  const { setLibraryLoaded, libraryLoaded } = state;
   // runs on page load. downloads initial config
   React.useEffect(() => {
-    if (!state.libraryLoaded) {
+    if (!libraryLoaded) {
       initializePage();
-      state.setLibraryLoaded(true);
+      setLibraryLoaded(true);
     }
-  }, [state]);
+  }, [setLibraryLoaded, libraryLoaded]);
 
   if (!Boolean(state.applicationData)) {
     return <LoadingScreen />;

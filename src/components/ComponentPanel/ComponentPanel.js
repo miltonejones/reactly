@@ -4,17 +4,19 @@ import React from 'react';
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
 import { Spacer , QuickSelect , PopoverPrompt} from '..';
-import { TextBtn, TextInput, TinyButton } from '..';
+import {  TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
-import { ExpandMore, Save, Close, ContentPaste, CopyAll, Input, Add, Delete } from "@mui/icons-material";
+import { ExpandMore, Save, Close, ContentPaste, 
+      CopyAll, InfoOutlined, MoreVert, Input, Add, Delete } from "@mui/icons-material";
 import { AppStateContext, EditorStateContext } from '../../context'; 
 import { Text } from '../Control/Control';
 import { ApplicationForm } from '..';
 import { useTextTransform, useReactly } from '../../hooks';
 import { uniqueId } from '../library/util'; 
 import { ContentPopover } from '../pages/Editor/components';
+import { Hide } from '../pages/Editor/styled';
  
-const Tiny = ({icon: Icon}) => <Icon sx={{m: 0, width: 16, height: 16}} />
+const Tiny = ({ icon: Icon }) => <Icon sx={{ m: 0, width: 16, height: 16 }} />
 
 export const TabButton = styled(Tab)(({ theme, uppercase }) => ({ 
   textTransform: uppercase ? 'uppercase' : 'capitalize',
@@ -26,7 +28,7 @@ export const TabButton = styled(Tab)(({ theme, uppercase }) => ({
 }));
 
 const ComponentPanel = () => {
-  
+   
   const { 
     appContext,
     queryState,
@@ -38,6 +40,7 @@ const ComponentPanel = () => {
   const { Library } = React.useContext(AppStateContext);
   const { 
     setCollapsed,
+    selectComponent,
     collapsed: collapse,
     setShowSettings,
     showSettings 
@@ -94,7 +97,7 @@ const ComponentPanel = () => {
     ? reactly.onPropChange
     : changeMethods[value];
 // 
-  // const selectedComponent = Library[component?.ComponentType];
+  const currentComponent = Library[component?.ComponentType];
 
   const panelProps = {
     onEventDelete: reactly.onEventDelete, 
@@ -169,84 +172,127 @@ const ComponentPanel = () => {
   }
 
   const componentLabel = !!component 
-  ? `${component.ComponentType}: ${component.ComponentName}` : (selectedPage?.PageName || appContext.Name)
-  
-  return <Stack sx={{mb: 10}}>
-     <Flex sx={{ m: 1}} direction={collapsed ? 'column' : 'row'}>
+  ? `${component.ComponentType}: ${component.ComponentName}` 
+  : (!!selectedPage 
+      ? `Page: ${selectedPage.PageName}`
+      : `Application: ${appContext.Name}`
+    )
 
-      {showApp && <>
+  const ComponentIcon = !currentComponent ? null : currentComponent.Icon;
+
+  const handleSettingsCopy = () => setQueryState(s => ({
+    ...s,
+    clipboard: {
+      type: component?.ComponentType,
+      name: component?.ComponentName,
+      id: component?.ID,
+      settings: component.settings,
+      styles: component.styles,
+      events: component.events?.map(e => ({...e, ID: uniqueId()}))
+    }
+  }));
+
+  const handleOptionsClick = value => { 
+    if (!value) return;
+    const { action } = menuOptions.find(f => f.label === value);
+    !!action && action();
+  }
+
+  const menuOptions = [
+    {
+      label: 'Copy settings',
+      icon: CopyAll,
+      action: handleSettingsCopy
       
-        <Chip label={appContext.Name} />
+    },
+    {
+      label: `${showSettings ? 'Hide' : 'Show'} advanced`,
+      icon: Settings,
+      action: () => setShowSettings(!showSettings)
+    },
+    {
+      label: '-',
+    },
+    {
+      label: 'Close',
+      icon: Close,
+      action: () => selectComponent(component, !0)
+    }
+  ]
 
-      <Spacer />
+  return (
+    <Stack sx={{mb: 10}}>
+      <Flex sx={{ m: 0 }} direction={collapsed ? 'column' : 'row'}>
 
-      </>} 
+        <Hide hidden={!showApp}>
+          <Chip label={appContext.Name} />
+          <Spacer />
+        </Hide>
 
+        <Hide hidden={!(!collapsed && (!!component?.ComponentName || selectedPage?.PageName))}>
+          <Flex sx={{
+                backgroundColor: t => t.palette.grey[200],
+                p: t => t.spacing(0.25, 1),
+                borderRadius: 1
+              }}
+            >
+          
+            <Text small>{componentLabel}</Text>
 
-      {!collapsed && (!!component?.ComponentName || selectedPage?.PageName) && <>
+            <Hide hidden={!component?.ComponentName}>
+              <PopoverPrompt  
+                onChange={value => !!value && reactly.onNameChange(component.ID, component.ComponentName, value)} 
+                value={component?.ComponentName}
+                label="Enter a new name"
+                component={TinyButton}
+                icon={InfoOutlined}
+              />
 
-        <Chip variant="outlined" size="small" icon={<Article />} label={componentLabel} 
-        deleteIcon={ <Close />} onDelete={onDelete}/> 
-
-      <Spacer />
-        <RotateButton deg={showSettings ? 90 : 270}  onClick={
-          () => setShowSettings(!showSettings)
-        }>
-             <Settings />
-        </RotateButton>
-
-   
-       {!!component?.ComponentName && <RotateButton 
-          disabled={!!queryState.clipboard}
-          onClick={
-          () => setQueryState(s => ({
-            ...s,
-            clipboard: {
-              type: component?.ComponentType,
-              name: component?.ComponentName,
-              id: component?.ID,
-              settings: component.settings,
-              styles: component.styles,
-              events: component.events?.map(e => ({...e, ID: uniqueId()}))
-            }
-          }))
-        }>
-             <CopyAll />
-        </RotateButton>}
-
-      </>}
-       
+              <QuickMenu 
+                onChange={handleOptionsClick}
+                options={menuOptions.map(f => f.label)}
+                icons={menuOptions.map(f => f.icon)}
+                label={<TinyButton icon={MoreVert} /> } 
+              />
+            </Hide>
+          
+          </Flex>
+        </Hide>
+    
+        <Spacer />
+  
         <RotateButton deg={collapsed ? 90 : 270}  onClick={onCollapse}>
-             {collapsed ? <ExpandMore /> : <Close />}
+          {collapsed ? <ExpandMore /> : <Close />}
         </RotateButton>
 
-
-        {collapsed && <Stack>
-          {buttons.map((Btn, i)=> {
-          const Content = panels[i];
-          return <ContentPopover title={<>
-          <Btn />
-          {componentLabel + " " + Object.keys(tabNames)[i]}
-          </>}  icon={Btn} key={i}>
-            <Content  {...panelProps}/>
-          </ContentPopover>})}
-          </Stack>}
-
-     </Flex>
+        <Hide hidden={!collapsed}>
+          <Stack>
+            {buttons.map((Btn, i)=> {
+            const Content = panels[i];
+            return <ContentPopover title={<>
+            <Btn />
+            {componentLabel + " " + Object.keys(tabNames)[i]}
+            </>}  icon={Btn} key={i}>
+              <Content  {...panelProps}/>
+            </ContentPopover>})}
+          </Stack>
+        </Hide>   
+        
+      </Flex>
 
       {!collapsed && (!!component || selectedPage) && <>
         
-     <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
+      <Box  sx={{ borderBottom: 1, borderColor: 'divider'  }}>
       <Tabs sx={{minHeight: 24, mt: 1, ml: 1 }} value={value} onChange={handleChange} >
         {Object.keys(tabNames).map(tab => (
            <TabButton icon={<Tiny icon={tabNames[tab]}/>} iconPosition="start"  label={tab} key={tab}   />
         ))}  
       </Tabs>
-    </Box>
+      </Box>
 
       <Flex sx={{m: 1}}>
 
-    {!!queryState.clipboard && 
+      {!!queryState.clipboard && 
       ((value < 3 && !!queryState.clipboard.styles)) &&
       <Chip variant="outlined"  icon={<ContentPaste />} 
         label={<>Paste <b>{queryState.clipboard.type}: {queryState.clipboard.name}</b> {pasteTypes[value]}</>}
@@ -261,7 +307,7 @@ const ComponentPanel = () => {
           })) 
         }}/> }
 
-      </Flex>
+    </Flex>
 
     <Collapse in={showSettings} sx={{mb: 0, pb: 0}}>
         <Box sx={{p: 1}}>
@@ -304,7 +350,8 @@ const ComponentPanel = () => {
 
     {!component?.ComponentName && value === 2 && <ComponentEvents  {...panelProps}  />}
 
-      </>}
+      </>
+      }
 
     {showApp && value !== 2 && <ApplicationForm 
       applications={appContext} 
@@ -312,7 +359,7 @@ const ComponentPanel = () => {
       /> }
  
 
-    </Stack>
+    </Stack>)
  
 }
 
