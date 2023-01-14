@@ -1,9 +1,9 @@
 import React from 'react';
  import { styled, Box,  Stack, Tabs, Tab, Chip, Collapse, LinearProgress,
-   Divider, Alert } from '@mui/material'; 
+   Divider, Paper, Alert } from '@mui/material'; 
 import {  ComponentSettings, ComponentStyles, ComponentEvents, ThemePanel } from '..'; 
 import { Palette, Settings, Bolt, Article, FormatColorFill } from "@mui/icons-material";
-import { Spacer , QuickSelect , PopoverPrompt} from '..';
+import { Spacer , QuickSelect , DeleteConfirmMenu, PopoverPrompt} from '..';
 import {  TextBtn, TextInput, TinyButton } from '..';
 import { Flex, RotateButton, QuickMenu } from '..';
 import { ExpandMore, Save, Close, ContentPaste, 
@@ -230,23 +230,42 @@ const ComponentPanel = () => {
         </Hide>
 
         <Hide hidden={!(!collapsed && (!!component?.ComponentName || selectedPage?.PageName))}>
+          <Paper>
+            
           <Flex sx={{
                 backgroundColor: t => t.palette.grey[200],
-                p: t => t.spacing(0.25, 1),
+                p: t => t.spacing(0.25, 0.5),
                 borderRadius: 1
               }}
             >
           
-            <Text small>{componentLabel}</Text>
+            <Hide hidden={!!component?.ComponentName}>
+              <Text small>{componentLabel}</Text>
+            </Hide>
 
             <Hide hidden={!component?.ComponentName}>
+
+              <TinyButton icon={Close} onClick={() => selectComponent(component, !0)} />
+
+              <Text muted small>{component?.ComponentType}</Text>
+            
               <PopoverPrompt  
-                onChange={value => !!value && reactly.onNameChange(component.ID, component.ComponentName, value)} 
+                onChange={value => !!value && reactly.onNameChange(component?.ID, component?.ComponentName, value)} 
                 value={component?.ComponentName}
-                label="Enter a new name"
-                component={TinyButton}
-                icon={InfoOutlined}
+                label={`Enter a new name for "${component?.ComponentName}"`}
+                component={Text}
+                hover
+                small
+              >{component?.ComponentName}</PopoverPrompt>
+
+
+              <DeleteConfirmMenu    
+                message={`Delete component "${component?.ComponentName}"?`} 
+                onDelete={(value) => { 
+                  !!value && reactly.onDropComponent(component?.ID, 1)
+                }}
               />
+
 
               <QuickMenu 
                 onChange={handleOptionsClick}
@@ -257,6 +276,7 @@ const ComponentPanel = () => {
             </Hide>
           
           </Flex>
+          </Paper>
         </Hide>
     
         <Spacer />

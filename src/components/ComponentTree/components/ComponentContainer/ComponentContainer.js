@@ -18,7 +18,7 @@ const Tip = styled(Card)(({ theme, active , menu, offset}) => ({
   display: 'flex',
   alignItems: 'center',
   padding: theme.spacing(1),
-  [offset.vertical]: theme.spacing(-4), 
+  [offset.vertical]: theme.spacing(-5), 
   [offset.horizontal]: theme.spacing(2),  
   transition: 'opacity 0.2s linear',
   cursor: 'pointer',

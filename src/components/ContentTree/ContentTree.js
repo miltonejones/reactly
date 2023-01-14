@@ -10,6 +10,7 @@ import { AppStateContext, EditorStateContext } from '../../context';
 import { useReactly } from "../../hooks";
 import { SearchLine } from "../ScriptDrawer/ScriptDrawer";
 import { ComponentList } from "../pages/Editor/components";
+import { Hide } from "../pages/Editor/styled";
 
 
 const NodeText = styled(Typography)(({ theme, on, indent }) => ({
@@ -255,9 +256,9 @@ const Contents = ({  tree, parentID, onDrop, trees,  handlePopoverClick,
         </ListItemSecondaryAction>}
       </Tooltag>  
       
-      <Collapse in={expanded}>
+      <Hide hidden={!expanded}>
         
-        {!!kids?.length && <>{kids 
+        {!!kids?.length && expanded && <>{kids 
           .sort(componentOrder)
           .map(c => <Contents 
             {...props}
@@ -277,7 +278,7 @@ const Contents = ({  tree, parentID, onDrop, trees,  handlePopoverClick,
         {!!allowedChildren && allowedChildren.map(allowed => <Contents 
           label={<Link onClick={() => quickComponent(allowed, tree.ID)}>Add {allowed}</Link>} indent={indent + 3} />)} 
 
-      </Collapse>
+      </Hide>
 
        </>
   );

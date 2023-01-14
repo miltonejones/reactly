@@ -6,12 +6,13 @@ import { AppStateContext } from '../../../../context';
 const Layout = styled(Box)(({ theme }) => ({
  display: 'flex',
  position:  'relative',
- border: 'solid 1px 1px 1px 6px red',
-//  padding: theme.spacing(0, 1),
+//  border: 'solid 1px 1px 1px 6px red',
+ padding: theme.spacing(0.25, 1),
 //  borderColor: 'white',
- width:  'calc(100% - 8px)', 
+ width:  `calc(100% - ${theme.spacing(2)})`, 
  '--editor-opacity':  0,
  '&:hover': {
+  backgroundColor: theme.palette.grey[200],
   borderColor: theme.palette.grey[700], 
    '--editor-opacity':  1,
  }
@@ -19,7 +20,7 @@ const Layout = styled(Box)(({ theme }) => ({
 
 const EditTip = styled(Card)(({ theme }) => ({ 
   position:  'absolute', 
-  top: theme.spacing(-2), 
+  top: theme.spacing(-3), 
   right: theme.spacing(4),  
   cursor: 'pointer',
   opacity: 'var(--editor-opacity)',

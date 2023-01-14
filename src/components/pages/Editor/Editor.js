@@ -111,9 +111,9 @@ const Editor = () => {
           }
         });
   
-        if (active) {
-          delete state.tabs[selectedPage.PageName][component.ID];
-        } 
+        // if (active) {
+        //   delete state.tabs[selectedPage.PageName][component.ID];
+        // } 
       }
 
       return {
