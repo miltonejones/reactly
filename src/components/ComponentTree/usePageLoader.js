@@ -34,29 +34,30 @@ export const usePageLoader = () =>{
       if (!selectedPage || selectedPage.skeleton) {
         return report(false);
       }
-      setBusy && setBusy('loading page...');
-      setPageState('Setting page state...');
+      return report(true);
+      // setBusy && setBusy('loading page...');
+      // setPageState('Setting page state...');
 
 
-      const stateProps = !selectedPage?.state
-        ? null
-        : objectReduce(selectedPage.state); 
+      // const stateProps = !selectedPage?.state
+      //   ? null
+      //   : objectReduce(selectedPage.state); 
 
 
-      // set client state if it is not already set
-      setPageClientState(state => {     
+      // // set client state if it is not already set
+      // setPageClientState(state => {     
 
-        shout({ stateProps, state }, 'Setting page state...');
+      //   shout({ stateProps, state }, 'Setting page state...');
 
-        const hasState = !!state && !!Object.keys(state).length;
-        shout({ hasState, stateProps }, 'loading page state');
-        if ( !hasState && !!stateProps && !!Object.keys(stateProps).length ) {  
-          report(stateProps);
-          return stateProps;
-        } 
-        report(state);
-        return state;
-      }); 
+      //   const hasState = !!state && !!Object.keys(state).length;
+      //   shout({ hasState, stateProps }, 'loading page state');
+      //   if ( !hasState && !!stateProps && !!Object.keys(stateProps).length ) {  
+      //     report(stateProps);
+      //     return stateProps;
+      //   } 
+      //   report(state);
+      //   return state;
+      // }); 
     })
 
 

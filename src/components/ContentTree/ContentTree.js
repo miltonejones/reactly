@@ -221,7 +221,7 @@ const Contents = ({  tree, parentID, onDrop, trees,  handlePopoverClick,
 // console.log ({ type: tree?.ComponentType, icon: iconOwner?.Icon, Library })
   const nodeLabel = !tree 
     ? label 
-    : `${tree.ComponentType}: ${tree.ComponentName}`
+    : tree.ComponentName // `${tree.ComponentType}: ${tree.ComponentName}`
   return (
     <> 
       <Tooltag component={ListItemButton} title={nodeLabel} sx={{ ml:indent , p: 0 }}

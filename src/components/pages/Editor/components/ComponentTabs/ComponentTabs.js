@@ -1,15 +1,16 @@
 import React from 'react';
-import { Tabs } from '@mui/material';
+import { Tabs, Box } from '@mui/material'; 
 import { TabButton, TinyButton } from '../../../..';
 import { AppStateContext, EditorStateContext } from '../../../../../context';
 import { Close } from "@mui/icons-material";
-import { Box } from '@mui/material'; 
  
 const ComponentTabs = () => {
   const { selectedPage, queryState } = React.useContext(AppStateContext);
   const { selectComponentByID, showTabs } = React.useContext(EditorStateContext);
   const componentTabs = queryState.tabs?.[selectedPage?.PageName];
-  if (!(!!componentTabs && showTabs)) return <i />
+  if (!(!!componentTabs && 
+    Object.keys(componentTabs).length &&  
+    showTabs)) return <i />
 
   return (
     <Box sx={{mb: 1, borderBottom: 1, borderColor: 'divider'}}>

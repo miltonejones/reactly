@@ -31,50 +31,31 @@ const EditTip = styled(Card)(({ theme }) => ({
 
 const Ico = ({icon: Icon, active}) => <Icon sx={{
   color : t => active 
-    ? t.palette.primary.main 
+    ? t.palette.error.main 
     : t.palette.grey[400],
   '&:hover': {
     color: t => t.palette.primary.main 
   }  }} />
 
 const EditGroup = ({ view, setView, ...props }) => {
-  // const [view, setView] = React.useState('edit');
-
-  // React.useEffect(() => {
-  //   console.log ({ props });
-  // }, [props]);
-
-  // const handleChange = (event, nextView) => {
-  //   switch (nextView) {
-  //     case 'bind':
-  //       bindPropertyClicked && bindPropertyClicked();
-  //       break;
-  //     default: 
-  //       alert(`Unknown action ${nextView}`);
-
-  //   }
-  //   setView(nextView);
-  // };
-
-   //   onChange={handleChange}
+ 
   const views = {
     edit: <Ico icon={Edit} active={view==='edit'}/>,
     code: <Ico icon={Code} active={view==='code'} />,
-    bind: <Ico icon={AddLink}  active={view==='bind'}  />,
-  }
+    bind: <Ico icon={AddLink} active={view==='bind'}  />,
+  };
 
   return (
   <> 
   
    <ToggleButtonGroup  
       value={view}
-      exclusive
-      
+      exclusive  
     >
       {Object.keys(views).map(v => (
       <ToggleButton 
-        sx={{ width: 24,  height: 24, p: 1 }}
-        key={v} 
+        sx={{ width: 24, height: 24, p: 1 }}
+        key={v}  
         size="small" 
         onClick={() => setView(v)}
         value={v}>
@@ -93,12 +74,12 @@ const EditGroup = ({ view, setView, ...props }) => {
   )
 }
  
-const def = (label) => `function transform (component, options) {
-  const { getState, setState, api } = options;
+const def = (label) => `function transform (page, options) {
+  const { api } = options;
   // add your code here
 
   return ${label};
-}`
+}`;
 
 const InputContainer = ({ children, label, onScriptChange, ...props }) => {
   const { isBound, scripts, bindPropertyClicked } = props;
@@ -109,15 +90,14 @@ const InputContainer = ({ children, label, onScriptChange, ...props }) => {
   const isScript = scope === 'scripts';
   const code = !(isScript && scripts && scriptID) ? def(label) : scripts.find(f =>  f.ID === scriptID).code;
  
-
   const {  
     EditCode, 
   } = React.useContext(AppStateContext);
 
-
   const resetBinding = () => {
     !!isBound && bindPropertyClicked();
   }
+
   const setView = async (v) => {
     switch(v) {
       case 'edit':
@@ -133,8 +113,7 @@ const InputContainer = ({ children, label, onScriptChange, ...props }) => {
         break;
       default:
         // do nothing
-    }
-    
+    } 
   }
 
  return (
@@ -144,5 +123,6 @@ const InputContainer = ({ children, label, onScriptChange, ...props }) => {
    </Layout>
  );
 }
+
 InputContainer.defaultProps = {};
 export default InputContainer;

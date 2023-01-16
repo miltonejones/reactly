@@ -73,8 +73,9 @@ return <>
 <AU {...props} small={small}  hover={hover}
   active={open ? 1 : 0} error={error || open ? 1 : 0} onClick={handleClick}
   >
-    {!!LabelIcon && <TinyButton icon={LabelIcon}  sx={{mr: 1}}/>}
-    {label || 'Choose'}</AU> 
+    {!!LabelIcon && <TinyButton icon={LabelIcon}  sx={{mr: !!label ? 1 : 0}}/>}
+    {label}
+</AU> 
 {!!caret && <TinyButton onClick={handleClick} icon={ExpandMore} deg={open ? 180 : 0} />}
 
 <Menu  

@@ -6,6 +6,7 @@ import IconComponentInput from './IconComponentInput/IconComponentInput';
 import ListBinderComponentInput from './ListBinderComponentInput/ListBinderComponentInput';
 import ListTableComponentInput from './ListTableComponentInput/ListTableComponentInput';
 import InputContainer from './InputContainer/InputContainer';
+import ComponentOrderComponentInput from './ComponentOrderComponentInput/ComponentOrderComponentInput';
 
 
 export {
@@ -16,5 +17,6 @@ export {
   IconComponentInput,
   ListBinderComponentInput,
   ListTableComponentInput,
-  InputContainer
+  InputContainer,
+  ComponentOrderComponentInput
 }

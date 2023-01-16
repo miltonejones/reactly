@@ -244,7 +244,7 @@ export const Tooltag = ({
  ...props
 }) => { 
   return (
-    <HtmlTooltip placement="left-start" arrow title={title}> 
+    <HtmlTooltip   arrow title={title}> 
 
       <Component {...props}>
        {children}</Component>

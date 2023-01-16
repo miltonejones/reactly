@@ -15,7 +15,8 @@ import {
   ListComponentInput,
   ListBinderComponentInput,
   ListTableComponentInput,
-  InputContainer
+  InputContainer,
+  ComponentOrderComponentInput
 } from './components' 
 import IconComponentInput from './components/IconComponentInput/IconComponentInput';
 import ShadowComponentInput from './components/ShadowComponentInput/ShadowComponentInput';
@@ -238,7 +239,6 @@ export const ComponentInputBody = (props) => {
 
   const { bindableProps }  = Library[component.ComponentType] ?? {}
   const header = <>   
- 
   <Typography sx={{whiteSpace: 'nowrap', fontSize: '0.85rem', textTransform: 'capitalize'}} small>{title}</Typography>
   </>
 
@@ -268,7 +268,7 @@ export const ComponentInputBody = (props) => {
     tablecolumn: ListTableComponentInput,
     repeatertable: ListTableComponentInput,
     ref: ReferenceComponentInput,
-    shadow: ShadowComponentInput
+    shadow: ShadowComponentInput, 
   }
 
   const isTypeMenu = types?.length && !customProp && !colorProp ;
@@ -608,6 +608,9 @@ const OrderSlider = ({ ticks, value, onChange }) => {
 const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, showSettings, resources }) => {
   const [tick, setTick] = React.useState(1)
   const { Library } = React.useContext(AppStateContext);
+  if (!component) {
+    return  <i />
+  }
   if (!component?.settings) {
     return <Alert sx={{m: 1}}>This component has no configurable settings!!.</Alert>
   }
@@ -636,7 +639,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
   </Flex>  
   </>
 
-  const orderer = !ticks ? null : <Box>
+  const orderer = !(ticks?.length > 1) ? null : <Box>
   <Flex onClick={() => setTick(!tick)} sx={{ borderBottom: 1, borderColor: 'divider', p: 1}}>
    <Text small active> Change component order</Text>
    <Spacer />
@@ -698,19 +701,15 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
         label: 'debug',
         title: 'debug mode',
         type: 'boolean',
-        order: -5
+        order: -105
       }
     ]
   }
-
+ 
 
 
   return <>  
-{showSettings && <>
-
-  {orderer}
-  {debug}
-</>}
+ 
 
   {[visibility, support].concat(categories||[])
     .sort(sortByOrder)
@@ -721,6 +720,7 @@ const ComponentSettings = ({ selectedPage, component, onChange,onScriptChange, s
       key={category.name}
     />)} 
  
+  {orderer}
  </>
 }
 

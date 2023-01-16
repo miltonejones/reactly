@@ -135,7 +135,7 @@ const Editor = () => {
     <EditorStateContext.Provider value={{  
       ...settings.drawerState, 
       ...settings,
- 
+      navigate,
       handlePageNavigate, 
       selectComponent,  
       selectComponentByID, 
@@ -185,7 +185,7 @@ const Editor = () => {
                 {/* component tabs */}
                 <ComponentTabs />
   
-                <Box sx={{m: 2 }}>
+                <Box sx={{m: t => t.spacing(2,2,12,2) }}>
 
                   {/* application scope components */}
                   <ApplicationTree  />

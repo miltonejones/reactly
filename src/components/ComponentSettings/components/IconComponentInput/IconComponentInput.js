@@ -16,7 +16,8 @@ const IconComponentInput = ({ label, value, onChange, ...props}) => {
  return (
    <Box {...props}> 
     <QuickSelect 
-      value={JSON.stringify(value)} options={Object.keys(Icons)} onChange={onChange} label={label} renderOption={renderOption}/>
+      value={JSON.stringify(value)} options={Object.keys(Icons)} 
+        onChange={onChange} label={label} renderOption={renderOption}/>
    </Box>
  );
 }

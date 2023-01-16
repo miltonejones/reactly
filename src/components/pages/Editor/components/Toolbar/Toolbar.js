@@ -52,9 +52,10 @@ const Toolbar = () => {
  
  
 
-  const currentPagePath = ["apps", appContext?.path].concat(
-    !selectedPage?.PagePath ? [] : selectedPage.PagePath
-  );
+  const currentPagePath = ["apps", appContext?.path]
+    // .concat(
+    //   !selectedPage?.PagePath ? [] : selectedPage.PagePath
+    // );
 
   if (!appContext) {
     return <>No application</>
@@ -85,9 +86,7 @@ const Toolbar = () => {
         <ArrowBack />
       </IconButton>
 
-      <Hide hidden={!pageLoaded}>
-        <Addressbox value={`/${currentPagePath.join("/")}`}   />
-      </Hide>
+      <Addressbox value={`/${currentPagePath.join("/")}`} path={selectedPage?.PagePath} />
     
 
 

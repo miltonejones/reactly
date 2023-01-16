@@ -23,7 +23,7 @@ export const Layout = styled(Grid)(({ collapsed, showTabs }) => {
 
   const PANE_HEIGHT = 'calc(100vh - 64px)';
   const LEFT_PANE_WIDTH = collapsed.left ? 60 : 360;
-  const RIGHT_PANE_WIDTH = collapsed.right ? 60 : 360;
+  const RIGHT_PANE_WIDTH = collapsed.right ? 60 : 340;
 
   let centerOffset = 48;
   centerOffset += LEFT_PANE_WIDTH;

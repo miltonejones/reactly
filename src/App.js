@@ -102,7 +102,7 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
   // download library and application components before rendering
   const initializePage = React.useCallback(async () => {
     // download app config
-    await loader.downloadApplicationConfig();
+    // await loader.downloadApplicationConfig();
 
     // download reactly component library
     await reactly.getReactlyConfig();
@@ -184,6 +184,8 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
       {/* redirect to app home page if no page specified  */}
       <Redirector />
 
+      {/* [{JSON.stringify(loader.machineProps)}] */}
+
       <Component
         debug={debug}
         {...props} 
@@ -192,6 +194,12 @@ function RenderComponent({ preview, debug, component: Component, ...props }) {
 
       <Modal {...modal.modalProps} />
 
+      <Snackbar
+        message={JSON.stringify(loader.machineProps.value)}
+        open={!!loader.machineProps.value}
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+      />
+      
       {/* app notifications */}
       <Snackbar
         message={state.busy.toString()}

@@ -1,20 +1,47 @@
 import React from 'react';
+import { useLocation } from "react-router-dom";
 import { styled, InputAdornment, TextField } from '@mui/material';
 import { useTextTransform } from '../../../../../hooks';
 import { AppStateContext, EditorStateContext } from '../../../../../context';
 import { ParameterPopover   } from '..';
 import { Launch } from "@mui/icons-material";
-import { Flex } from '../../../..';
-import { Text } from '../../../..';
-import { Spacer } from '../../../..';
+import { Flex, Text, Spacer, QuickMenu } from '../../../..';
+
+
+const OpenButton = ( { value, path, handlePopoverClick }) => { 
+  const { queryState, selectedPage } = React.useContext(AppStateContext); 
+  const [ parameters, setParameters ] = React.useState(selectedPage?.parameters);
+  
+  const handleButtonClick = (event) => { 
+    if (parameters && 
+        Object.keys(parameters).length) {
+      return handlePopoverClick(event);
+    } 
+    window.open([value, path].join('/'))
+  }
+
+  return <>
+  
+   <Launch />
+   <Text hover onClick={handleButtonClick} small>Open</Text>
+  </>
+
+}
  
-const Addressbox = ( { value, onChange, ...props }) => {
-  const { queryState, setQueryState, selectedPage } = React.useContext(AppStateContext); 
+const Addressbox = ( { value, path, onChange, ...props }) => {
+  const location = useLocation();
+  const { navigate } = React.useContext(EditorStateContext); 
+  const { queryState, appContext, setQueryState, selectedPage } = React.useContext(AppStateContext); 
   const [parameters, setParameters] = React.useState(selectedPage?.parameters)
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const { getParametersInScope } = useTextTransform();
   const routeParams = getParametersInScope();
+  const { pageLoaded } = queryState; 
+
+  React.useEffect(() => {
+    setParameters(selectedPage?.parameters);
+  }, [location, selectedPage])
 
   const handlePopoverClick =  (event) => {  
     setAnchorEl(event.currentTarget);
@@ -29,7 +56,7 @@ const Addressbox = ( { value, onChange, ...props }) => {
         Object.keys(parameters).length) {
       return handlePopoverClick(event);
     } 
-    window.open(value)
+    window.open([value, path].join('/'))
   }
 
   const openPage = () => {
@@ -45,6 +72,8 @@ const Addressbox = ( { value, onChange, ...props }) => {
       [param]: event.target.value 
     }))
   }
+
+  
 
  
 
@@ -87,12 +116,27 @@ const Addressbox = ( { value, onChange, ...props }) => {
         URL
       </Text>
      
-      <Text muted={!!suffix} small> {value}</Text>
+      <Text muted={!!suffix} hover small onClick={() => navigate('/')}> {value}</Text>
+      {!!path && <>/<QuickMenu 
+        small
+        label={path} 
+        value={path} 
+        onChange={value => !!value && navigate(`/edit/${appContext.path}/${value}`)}
+        options={appContext
+          .pages
+          .filter(f => !f.pageID && !(f.parameters && !!Object.keys(f.parameters).length))
+          .map(f => f.PagePath) } 
+      /></>}
       {!!suffix && <>/<Text hover onClick={handleButtonClick} small active success>{suffix}</Text></>}
        
       <Spacer />
-        <Launch />
-        <Text hover onClick={handleButtonClick} small>Open</Text>
+      {!!pageLoaded && <OpenButton
+          value={value}
+          path={path}
+          handleButtonClick={handleButtonClick}
+      />}
+        {/* <Launch />
+        <Text hover onClick={handleButtonClick} small>Open</Text> */}
    </Flex>
  
    {/* <TextField
